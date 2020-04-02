@@ -1,29 +1,13 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { Random } from './Random';
+import { SIRView } from './SIRView';
 
 const App = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Hello world
-        </a>
-              <Random />
-
-      </header>
-    </div>
-  );
-}
+    return (
+        <div className="App">
+            <SIRView />
+        </div>
+    );
+};
 
 export default App;
