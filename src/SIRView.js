@@ -2,7 +2,7 @@ import React from 'react';
 import { SIRForm } from './SIRForm';
 import { Grid } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { simpleSir } from './model/sir';
+import { simpleSir, dummyModel } from './model/sir';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) =>
 export const SIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
+    // eslint-disable-next-line no-console
     console.log({ values });
     return (
         <div className={classes.root}>
