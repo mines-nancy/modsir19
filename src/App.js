@@ -15,7 +15,7 @@ const App = () => {
             </Box>
             <Box m={8}>
                 <Typography variant="h5" component="h2">
-                    Dntrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
+                    Entrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
                     CALCULER.
                 </Typography>
             </Box>
