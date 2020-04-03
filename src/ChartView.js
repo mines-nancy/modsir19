@@ -1,11 +1,15 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { dummyModel } from './model/sir';
+import { generer_dates } from './model/generateur_dates'
 
 export const Chart = ({ s0, lambda, beta }) => {
     const { saints, infectes, retires } = dummyModel(s0, lambda, beta);
+    const start_date = new Date(2020, 4, 4);
+    const dates_range = generer_dates(start_date, saints.length);
+
     const lineData = {
-        labels: new Array(saints.length),
+        labels: dates_range,
         datasets: [
             {
                 label: ['Population saine'],
