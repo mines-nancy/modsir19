@@ -3,6 +3,7 @@ import { SIRForm } from './SIRForm';
 import { Grid } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { simpleSir, dummyModel } from './model/sir';
+import { Chart } from './ChartView';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -22,7 +23,7 @@ export const SIRView = () => {
                 <Grid item>
                     <SIRForm onChange={(values) => setValues(values)} />
                 </Grid>
-                {values && <Grid item>Result = {simpleSir(values)}</Grid>}
+                {values && <Grid item> {Chart(values)} </Grid>}
             </Grid>
         </div>
     );

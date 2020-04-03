@@ -27,11 +27,23 @@ const useStyles = makeStyles((theme) =>
 
 const validationSchema = (t) =>
     Yup.object().shape({
-        S: Yup.number()
+        s0: Yup.number()
             .typeError('error.shouldBeNumber')
             .positive('error.positiveNumber')
-            .min(10, 'error.tooSmall')
+            .min(0, 'error.tooSmall')
+            .max(1, 'error.tooLarge')
+            .required('error.required'),
+        lambda: Yup.number()
+            .typeError('error.shouldBeNumber')
+            .positive('error.positiveNumber')
+            .min(0, 'error.tooSmall')
             .max(20, 'error.tooLarge')
+            .required('error.required'),
+        beta: Yup.number()
+            .typeError('error.shouldBeNumber')
+            .positive('error.positiveNumber')
+            .min(0, 'error.tooSmall')
+            .max(1, 'error.tooLarge')
             .required('error.required'),
     });
 
@@ -39,16 +51,21 @@ export const SIRForm = ({ onChange }) => {
     const classes = useStyles();
 
     const initialValues = {
-        S: '',
+        s0: '0.7',
+        lambda: '12',
+        beta: '0.5',
     };
 
-    const name = 'S';
+    const name_s0 = 's0';
+    const name_lambda = 'lambda';
+    const name_beta = 'beta';
+
     return (
         <Formik
             enableReinitialize
             initialValues={initialValues}
             onSubmit={(values, { setSubmitting }) => {
-                onChange({ s: values['S'], i: 2, r: 1 });
+                onChange({ s0: values['s0'], lambda: values['lambda'], beta: values['beta'] });
             }}
             validationSchema={validationSchema()}
         >
@@ -64,16 +81,48 @@ export const SIRForm = ({ onChange }) => {
                         <FormControl className={classes.formControl}>
                             <TextField
                                 className={classes.textField}
-                                name={name}
-                                label={'Parametre S'}
-                                value={values[name]}
+                                name={name_s0}
+                                label={'Parametre s0'}
+                                value={values[name_s0]}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                helperText={errors[name] && touched[name] && errors[name]}
-                                error={Boolean(errors[name] && touched[name])}
+                                helperText={errors[name_s0] && touched[name_s0] && errors[name_s0]}
+                                error={Boolean(errors[name_s0] && touched[name_s0])}
+                            ></TextField>
+                            <TextField
+                                className={classes.textField}
+                                name={name_lambda}
+                                label={'Parametre lambda'}
+                                value={values[name_lambda]}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                helperText={
+                                    errors[name_lambda] &&
+                                    touched[name_lambda] &&
+                                    errors[name_lambda]
+                                }
+                                error={Boolean(errors[name_lambda] && touched[name_lambda])}
+                            ></TextField>
+                            <TextField
+                                className={classes.textField}
+                                name={name_beta}
+                                label={'Parametre beta'}
+                                value={values[name_beta]}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                helperText={
+                                    errors[name_beta] && touched[name_beta] && errors[name_beta]
+                                }
+                                error={Boolean(errors[name_beta] && touched[name_beta])}
                             ></TextField>
                         </FormControl>
                     </Grid>
