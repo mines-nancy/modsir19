@@ -17,7 +17,7 @@ const App = () => {
                 Dummy result {dummyModel().saints}
             </Typography>
             <Box m={8} h={30}>
-                {Chart(0.9, 6, 0.6)}
+                {Chart({ s0: 0.9, lambda: 6, beta: 0.6 })}
             </Box>
             <Box m={8} h={30}>
                 <SIRView />

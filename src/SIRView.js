@@ -23,7 +23,7 @@ export const SIRView = () => {
                 <Grid item>
                     <SIRForm onChange={(values) => setValues(values)} />
                 </Grid>
-                {values && <Grid item> {Chart(values.s0, values.lambda, values.beta)} </Grid>}
+                {values && <Grid item> {Chart(values)} </Grid>}
             </Grid>
         </div>
     );
