@@ -7,3 +7,7 @@ Commando-covid
 ## To install the project
 
 `make install` to install needed packages
+
+## Deployment
+
+`make deploy` to deploy to gh-pages
