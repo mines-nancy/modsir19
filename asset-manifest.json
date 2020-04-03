@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/commando-covid/static/css/main.5f361e03.chunk.css",
-    "main.js": "/commando-covid/static/js/main.ce552abc.chunk.js",
-    "main.js.map": "/commando-covid/static/js/main.ce552abc.chunk.js.map",
+    "main.js": "/commando-covid/static/js/main.12c06c4b.chunk.js",
+    "main.js.map": "/commando-covid/static/js/main.12c06c4b.chunk.js.map",
     "runtime-main.js": "/commando-covid/static/js/runtime-main.593b9fdf.js",
     "runtime-main.js.map": "/commando-covid/static/js/runtime-main.593b9fdf.js.map",
     "static/js/2.c45075ce.chunk.js": "/commando-covid/static/js/2.c45075ce.chunk.js",
     "static/js/2.c45075ce.chunk.js.map": "/commando-covid/static/js/2.c45075ce.chunk.js.map",
     "index.html": "/commando-covid/index.html",
-    "precache-manifest.c2b71e6bfddb907a7ce704f69443f292.js": "/commando-covid/precache-manifest.c2b71e6bfddb907a7ce704f69443f292.js",
+    "precache-manifest.887ede69f89c60c7f9b6ac8c38c8a34a.js": "/commando-covid/precache-manifest.887ede69f89c60c7f9b6ac8c38c8a34a.js",
     "service-worker.js": "/commando-covid/service-worker.js",
     "static/css/main.5f361e03.chunk.css.map": "/commando-covid/static/css/main.5f361e03.chunk.css.map",
     "static/js/2.c45075ce.chunk.js.LICENSE.txt": "/commando-covid/static/js/2.c45075ce.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.593b9fdf.js",
     "static/js/2.c45075ce.chunk.js",
     "static/css/main.5f361e03.chunk.css",
-    "static/js/main.ce552abc.chunk.js"
+    "static/js/main.12c06c4b.chunk.js"
   ]
 }
