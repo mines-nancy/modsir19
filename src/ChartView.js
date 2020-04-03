@@ -40,6 +40,26 @@ export const Chart = ({ s0, lambda, beta }) => {
                         text: 'Modèle SIR simple',
                         fontSize: 25,
                     },
+                    scales: {
+                        yAxes: [
+                            {
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Part de la population',
+                                    fontSize: 18,
+                                },
+                            },
+                        ],
+                        xAxes: [
+                            {
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Temps',
+                                    fontSize: 18,
+                                },
+                            },
+                        ],
+                    },
                 }}
             />
         </div>
