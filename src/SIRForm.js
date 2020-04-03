@@ -42,13 +42,14 @@ export const SIRForm = ({ onChange }) => {
         S: '',
     };
 
-    const name = 'S';
+    const name_S = 'S';
+    const name_I = 'I';
     return (
         <Formik
             enableReinitialize
             initialValues={initialValues}
             onSubmit={(values, { setSubmitting }) => {
-                onChange({ s: values['S'], i: 2, r: 1 });
+                onChange({ s: values['S'], i: values['I'], r: 1 });
             }}
             validationSchema={validationSchema()}
         >
@@ -64,16 +65,29 @@ export const SIRForm = ({ onChange }) => {
                         <FormControl className={classes.formControl}>
                             <TextField
                                 className={classes.textField}
-                                name={name}
+                                name={name_S}
                                 label={'Parametre S'}
-                                value={values[name]}
+                                value={values[name_S]}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                helperText={errors[name] && touched[name] && errors[name]}
-                                error={Boolean(errors[name] && touched[name])}
+                                helperText={errors[name_S] && touched[name_S] && errors[name_S]}
+                                error={Boolean(errors[name_S] && touched[name_S])}
+                            ></TextField>
+                            <TextField
+                                className={classes.textField}
+                                name={name_I}
+                                label={'Parametre I'}
+                                value={values[name_I]}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                helperText={errors[name_I] && touched[name_I] && errors[name_I]}
+                                error={Boolean(errors[name_I] && touched[name_I])}
                             ></TextField>
                         </FormControl>
                     </Grid>
