@@ -27,11 +27,23 @@ const useStyles = makeStyles((theme) =>
 
 const validationSchema = (t) =>
     Yup.object().shape({
-        S: Yup.number()
+        s0: Yup.number()
+            .typeError('error.shouldBeNumber')
+            .positive('error.positiveNumber')
+            .min(0, 'error.tooSmall')
+            .max(1, 'error.tooLarge')
+            .required('error.required'),
+        lambda: Yup.number()
             .typeError('error.shouldBeNumber')
             .positive('error.positiveNumber')
             .min(0, 'error.tooSmall')
             .max(20, 'error.tooLarge')
+            .required('error.required'),
+        beta: Yup.number()
+            .typeError('error.shouldBeNumber')
+            .positive('error.positiveNumber')
+            .min(0, 'error.tooSmall')
+            .max(1, 'error.tooLarge')
             .required('error.required'),
     });
 
@@ -39,7 +51,9 @@ export const SIRForm = ({ onChange }) => {
     const classes = useStyles();
 
     const initialValues = {
-        S: '',
+        s0: '0.7',
+        lambda: '12',
+        beta: '0.5',
     };
 
     const name_s0 = 's0';
