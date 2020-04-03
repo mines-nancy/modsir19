@@ -3,8 +3,7 @@ import './App.css';
 import { Typography, Box } from '@material-ui/core';
 import { SIRView } from './SIRView';
 import { dummyModel } from './model/sir';
-import { Chart } from 'chart.js';
-import ChartPage from './ChartView';
+import { Chart } from './ChartView';
 
 const App = () => {
     return (
@@ -18,7 +17,10 @@ const App = () => {
                 Dummy result {dummyModel().saints}
             </Typography>
             <Box m={8} h={30}>
-                <ChartPage />
+                {Chart(0.9, 6, 0.6)}
+            </Box>
+            <Box m={8} h={30}>
+                <SIRView />
             </Box>
         </div>
     );

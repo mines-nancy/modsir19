@@ -2,22 +2,22 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { dummyModel } from './model/sir';
 
-const Chart = () => {
+export const Chart = (s0, lambda, beta) => {
     const initialState = {
         lineData: {
-            labels: new Array(dummyModel().saints.length),
+            labels: new Array(dummyModel(s0, lambda, beta).saints.length),
             datasets: [
                 {
                     label: ['Population saine'],
-                    data: dummyModel().saints,
+                    data: dummyModel(s0, lambda, beta).saints,
                 },
                 {
                     label: ['Population infectée'],
-                    data: dummyModel().infectes,
+                    data: dummyModel(s0, lambda, beta).infectes,
                 },
                 {
                     label: ['Population rétablie'],
-                    data: dummyModel().retires,
+                    data: dummyModel(s0, lambda, beta).retires,
                 },
             ],
         },
@@ -41,5 +41,3 @@ const Chart = () => {
         </div>
     );
 };
-
-export default Chart;

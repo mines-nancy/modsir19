@@ -30,7 +30,7 @@ const validationSchema = (t) =>
         S: Yup.number()
             .typeError('error.shouldBeNumber')
             .positive('error.positiveNumber')
-            .min(10, 'error.tooSmall')
+            .min(0, 'error.tooSmall')
             .max(20, 'error.tooLarge')
             .required('error.required'),
     });
@@ -42,14 +42,16 @@ export const SIRForm = ({ onChange }) => {
         S: '',
     };
 
-    const name_S = 'S';
-    const name_I = 'I';
+    const name_s0 = 's0';
+    const name_lambda = 'lambda';
+    const name_beta = 'beta';
+
     return (
         <Formik
             enableReinitialize
             initialValues={initialValues}
             onSubmit={(values, { setSubmitting }) => {
-                onChange({ s: values['S'], i: values['I'], r: 1 });
+                onChange({ s0: values['s0'], lambda: values['lambda'], beta: values['beta'] });
             }}
             validationSchema={validationSchema()}
         >
@@ -65,29 +67,48 @@ export const SIRForm = ({ onChange }) => {
                         <FormControl className={classes.formControl}>
                             <TextField
                                 className={classes.textField}
-                                name={name_S}
-                                label={'Parametre S'}
-                                value={values[name_S]}
+                                name={name_s0}
+                                label={'Parametre s0'}
+                                value={values[name_s0]}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                helperText={errors[name_S] && touched[name_S] && errors[name_S]}
-                                error={Boolean(errors[name_S] && touched[name_S])}
+                                helperText={errors[name_s0] && touched[name_s0] && errors[name_s0]}
+                                error={Boolean(errors[name_s0] && touched[name_s0])}
                             ></TextField>
                             <TextField
                                 className={classes.textField}
-                                name={name_I}
-                                label={'Parametre I'}
-                                value={values[name_I]}
+                                name={name_lambda}
+                                label={'Parametre lambda'}
+                                value={values[name_lambda]}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                helperText={errors[name_I] && touched[name_I] && errors[name_I]}
-                                error={Boolean(errors[name_I] && touched[name_I])}
+                                helperText={
+                                    errors[name_lambda] &&
+                                    touched[name_lambda] &&
+                                    errors[name_lambda]
+                                }
+                                error={Boolean(errors[name_lambda] && touched[name_lambda])}
+                            ></TextField>
+                            <TextField
+                                className={classes.textField}
+                                name={name_beta}
+                                label={'Parametre beta'}
+                                value={values[name_beta]}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                helperText={
+                                    errors[name_beta] && touched[name_beta] && errors[name_beta]
+                                }
+                                error={Boolean(errors[name_beta] && touched[name_beta])}
                             ></TextField>
                         </FormControl>
                     </Grid>

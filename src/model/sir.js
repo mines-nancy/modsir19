@@ -5,12 +5,9 @@ export const simpleSir = (params) => {
     return result;
 };
 
-export const dummyModel = () => {
+export const dummyModel = (s0, lambda, beta) => {
     const maxTime = 30;
-    const beta = 0.5;
-    const lambda = 12;
-    const s0 = 0.7;
-    const i0 = 0.3;
+    const i0 = 1 - s0;
     const r0 = 0;
 
     var saints = [];
