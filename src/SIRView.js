@@ -18,11 +18,13 @@ export const SIRView = () => {
     console.log({ values });
     return (
         <div className={classes.root}>
-            <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
-                <Grid item xs={12}>
+            <Grid container justify="center" alignItems="center" spacing={3}>
+                <Grid item xs={4}>
                     <SIRForm onChange={(values) => setValues(values)} />
                 </Grid>
-                {values && <Grid item> {Chart(values)} </Grid>}
+                <Grid item xs={8}>
+                    {values && Chart(values)}
+                </Grid>
             </Grid>
         </div>
     );

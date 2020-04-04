@@ -38,7 +38,7 @@ export const Chart = ({ s0, lambda, beta }) => {
     };
 
     return (
-        <div className="Chart">
+        <div style={{width: 700}} className="Chart">
             <Line
                 data={lineData}
                 width="10"
