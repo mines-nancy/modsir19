@@ -3,7 +3,7 @@ export function generer_dates(jour_0, nombre_de_jours)
 {
     const options_date = { weekday: 'long', year: 'numeric', month: 'long', day:'numeric'} ;
 
-    // Durée d'une journée en ms
+    // DurÃ©e d'une journÃ©e en ms
     const un_jour = 86400000 ;
     //86400000?;
 
@@ -24,4 +24,3 @@ export function generer_dates(jour_0, nombre_de_jours)
 
     return(tab_dates)
 }
-
