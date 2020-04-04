@@ -64,7 +64,8 @@ const App = () => {
                 </Typography>
             </Box>
             <Typography variant="body1" component="h2">
-                Dummy result {dummyModel().saints}
+                Entrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
+                CALCULER.
             </Typography>
             <Box m={8} h={30}>
                 {Chart({ s0: 0.9, lambda: 6, beta: 0.6 })}
