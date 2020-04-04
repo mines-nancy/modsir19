@@ -1,8 +1,10 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Grid, TextField, FormControl, Button } from '@material-ui/core';
+import { Grid, FormControl, Button } from '@material-ui/core';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import FormikFormText from './components/FormikFormText';
+import { useTranslate } from 'react-polyglot';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -49,16 +51,12 @@ const validationSchema = (t) =>
 
 export const SIRForm = ({ onChange }) => {
     const classes = useStyles();
-
+    const t = useTranslate();
     const initialValues = {
         s0: '0.7',
         lambda: '12',
         beta: '0.5',
     };
-
-    const name_s0 = 's0';
-    const name_lambda = 'lambda';
-    const name_beta = 'beta';
 
     return (
         <Formik
@@ -69,7 +67,7 @@ export const SIRForm = ({ onChange }) => {
             }}
             validationSchema={validationSchema()}
         >
-            {({ values, touched, errors, handleChange, handleBlur }) => (
+            {(props) => (
                 <Form>
                     <Grid
                         className={classes.grid}
@@ -80,55 +78,13 @@ export const SIRForm = ({ onChange }) => {
                     >
                         <FormControl className={classes.formControl}>
                             <Grid item>
-                                <TextField
-                                    className={classes.textField}
-                                    name={name_s0}
-                                    label={'Parametre s0'}
-                                    value={values[name_s0]}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    helperText={errors[name_s0] && touched[name_s0] && errors[name_s0]}
-                                    error={Boolean(errors[name_s0] && touched[name_s0])}
-                                ></TextField>
+                                <FormikFormText name="s0" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <TextField
-                                    className={classes.textField}
-                                    name={name_lambda}
-                                    label={'Parametre lambda'}
-                                    value={values[name_lambda]}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    helperText={
-                                        errors[name_lambda] &&
-                                        touched[name_lambda] &&
-                                        errors[name_lambda]
-                                    }
-                                    error={Boolean(errors[name_lambda] && touched[name_lambda])}
-                                ></TextField>
+                                <FormikFormText name="lambda" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <TextField
-                                    className={classes.textField}
-                                    name={name_beta}
-                                    label={'Parametre beta'}
-                                    value={values[name_beta]}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    helperText={
-                                        errors[name_beta] && touched[name_beta] && errors[name_beta]
-                                    }
-                                    error={Boolean(errors[name_beta] && touched[name_beta])}
-                                ></TextField>
+                                <FormikFormText name="beta" formikProps={props} />
                             </Grid>
                         </FormControl>
                         <Grid item>
@@ -138,7 +94,7 @@ export const SIRForm = ({ onChange }) => {
                                 color="primary"
                                 type="submit"
                             >
-                                Calculer
+                                {t('form.compute')}
                             </Button>
                         </Grid>
                     </Grid>
