@@ -13,6 +13,11 @@ const App = () => {
     const [locale, setLocale] = localeStateHook;
     const [placeholderData, setPlaceholderData] = useState({ a: 0, b: 0 });
     const [placeholderDataPOST, setPlaceholderDataPOST] = useState({ result: 0 });
+    const [placeholderDataPOST_SIR, setPlaceholderDataPOST_SIR] = useState({
+        healthy: [0, 0],
+        infected: [0, 0],
+        removed: [0, 0],
+    });
 
     useEffect(() => {
         fetch('/get_data_sample').then((response) =>
@@ -48,6 +53,28 @@ const App = () => {
         }
     };
 
+    const handleClickSIR = async () => {
+        // Computation of the values of the SIR model in the back
+        const inputFunction = { s0: 0.9, lambda: 12, beta: 0.5 };
+        const response = await fetch('/get_simple_sir', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(inputFunction),
+        });
+
+        if (response.ok) {
+            // eslint-disable-next-line no-console
+            console.log('response worked!');
+            response.json().then((data) => {
+                // eslint-disable-next-line no-console
+                console.log(data);
+                setPlaceholderDataPOST_SIR(data);
+            });
+        }
+    };
+
     return (
         <LocaleContext.Provider value={localeStateHook}>
             <I18n locale={locale} messages={locale === 'fr' ? messages.fr : messages.en}>
@@ -75,7 +102,10 @@ const App = () => {
                         sur CALCULER.
                     </Typography>
                     <Box m={8} h={30}>
-                        {Chart({ s0: 0.9, lambda: 6, beta: 0.6 })}
+                        <Button color="primary" onClick={handleClickSIR}>
+                            Afficher graphique
+                        </Button>
+                        {Chart(placeholderDataPOST_SIR)}
                         <Typography variant="h5" component="h2">
                             Entrer les paramètres du modèle SIR dans les champs suivants puis
                             cliquer sur CALCULER.
