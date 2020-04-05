@@ -5,6 +5,7 @@ Created on 05/04/2020
 @author: Paul Festor
 """
 
+
 def simple_sir (s0, lambd, beta):
 
     maxTime = 30

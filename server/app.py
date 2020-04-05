@@ -4,7 +4,9 @@ Created on 04/04/2020
 
 @author: Paul Festor
 """
+
 from flask import Flask, jsonify, request
+from models.simple_sir import simple_sir
 
 
 def add(x, y):
@@ -27,6 +29,16 @@ def add_data():
     y = request_data["y"]
     result = add(x, y)
     return jsonify({'result': result})
+
+# Sample GET request
+@app.route('/get_simple_sir', methods=["GET"])
+def get_simple_sir():
+    request_data = request.get_json()
+    s0 = request_data["s0"]
+    lambd = request_data["lambda"]
+    beta = request_data["beta"]
+    data = simple_sir(s0=s0, lambd=lambd, beta=beta)
+    return jsonify(data)
 
 
 if __name__ == "__main__":
