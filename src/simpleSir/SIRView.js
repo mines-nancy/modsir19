@@ -1,6 +1,6 @@
 import React from 'react';
 import { SIRForm } from './SIRForm';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Chart } from './ChartView';
 
@@ -18,6 +18,10 @@ export const SIRView = () => {
     console.log({ values });
     return (
         <div className={classes.root}>
+            <Typography variant="h5" component="h2">
+                Entrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
+                CALCULER.
+            </Typography>
             <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
                 <Grid item xs={12}>
                     <SIRForm onChange={(values) => setValues(values)} />

@@ -1,10 +1,10 @@
-import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Grid, FormControl, Button } from '@material-ui/core';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
-import FormikFormText from './components/FormikFormText';
-import { useTranslate } from 'react-polyglot';
+import React from './node_modules/react';
+import { createStyles, makeStyles } from './node_modules/@material-ui/core/styles';
+import { Grid, FormControl, Button } from './node_modules/@material-ui/core';
+import { Formik, Form } from './node_modules/formik';
+import * as Yup from './node_modules/yup';
+import { useTranslate } from './node_modules/react-polyglot';
+import FormikFormText from '../components/FormikFormText';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
