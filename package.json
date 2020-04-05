@@ -12,6 +12,7 @@
         "formik": "^2.1.4",
         "node-polyglot": "^2.4.0",
         "react": "^16.13.1",
+        "react-app-polyfill": "^1.0.6",
         "react-chartjs-2": "^2.9.0",
         "react-dom": "^16.13.1",
         "react-polyglot": "^0.6.1",
@@ -36,7 +37,8 @@
         "production": [
             ">0.2%",
             "not dead",
-            "not op_mini all"
+            "not op_mini all",
+            "ie >= 11"
         ],
         "development": [
             "last 1 chrome version",
