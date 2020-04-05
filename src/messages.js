@@ -1,6 +1,7 @@
 const messages = {
     fr: {
         pageNotFound: 'Page non trouvée',
+        returnToHomepage: 'Retourner à la page principale',
         cancel: 'Annuler',
         save: 'Enregistrer',
         appBar: {
@@ -12,6 +13,10 @@ const messages = {
             help: 'Aide',
             login: 'Se connecter',
             logout: 'Se déconnecter',
+        },
+        home: {
+            simpleSIR: 'Modèle SIR simple',
+            testAPI: "Tester l'API",
         },
         error: {
             shouldBeNumber: 'Doit être un nombre',
