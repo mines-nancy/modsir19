@@ -22,7 +22,7 @@ def complex_sir_v1(population: int,
     :param Thr: Delay between being sent to gospital and recovering
     :param Thic: Delay between being sent to gospital and then sent to intensive care
     :param Tice: Delay between entering and exiting intensive care services
-    :param lim_time: Nimber of simulated days
+    :param lim_time: Number of simulated days
 
     :return: Tuple of the list of all variables of interest of the model
     """
@@ -48,19 +48,19 @@ def complex_sir_v1(population: int,
         day = model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population,
                         new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih,
                         Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, Tice, time)
+        
+        recovered.append(day["recovered"])
+        exposed.append(day["exposed"])
+        infected.append(day["infected"])
+        hospitalized.append(day["hospitalized"])
+        intensive_care.append(day["intensive_care"])
+        exit_intensive.append(day["exit_intensive"])
+        dead.append(day["dead"])
 
-        recovered = day["recovered"]
-        exposed = day["exposed"]
-        infected = day["infected"]
-        hospitalized = day["hospitalized"]
-        intensive_care = day["intensive_care"]
-        exit_intensive = day["exit"]
-        dead = day["dead"]
-
-        new_infected = day["new_infected"]
-        new_hospitalized = day["new_hospitalized"]
-        new_intensive_care = day["new_intensive"]
-        new_exit_intensive = day["new_exit"]
+        new_infected.append(day["new_infected"])
+        new_hospitalized.append(day["new_hospitalized"])
+        new_intensive_care.append(day["new_intensive_care"])
+        new_exit_intensive.append(day["new_exit_intensive"])
 
     return {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead, "hospitalized": dead,
             "intensive_care": intensive_care, "exit_intensive": exit_intensive, "exit_intensive": exit_intensive}
@@ -78,13 +78,13 @@ def model_day(recovered: [float], exposed: [float], infected: [float], hospitali
     :param exposed: Time series of the number of people who are exposed each day (one day time step)
     :param infected: Time series of the number of people who were infected each day so far (one day time step)
     :param hospitalized: Time series of the number of people who were hospitalized each day so far (one day time step)
-    :param intensive_care: Time series of the number of people who were hospitalized each day so far (one day time step)
-    :param exit_intensive:
-    :param dead:
-    :param new_infected:
-    :param new_hospitalized:
-    :param new_intensive_care:
-    :param new_exit_intensive:
+    :param intensive_care: Time series of the number of people who were in intensive care unit each day so far (one day time step)
+    :param exit_intensive: Time series of the number of people who were in their last day of intensive care each day so far (one day time step)
+    :param dead: Time series of the number of people who died each day so far (one day time step)
+    :param new_infected: Time series of the number of new people infected 
+    :param new_hospitalized: Time series of the number of new people hospitalized
+    :param new_intensive_care: Time series of the number of new people in the intensive care unit
+    :param new_exit_intensive: Time series of the number of people who go out of intensive care
     :param Kei: Coefficient from exposed to infected
     :param Kir: Coefficient from infected to recovered
     :param Kih: Coefficient from infected to hospitalized
@@ -99,39 +99,25 @@ def model_day(recovered: [float], exposed: [float], infected: [float], hospitali
     :param Thic: Delay between being sent to gospital and then sent to intensive care
     :param Tice: Delay between entering and exiting intensive care services
     :param time: Day after start day the simulation is currently at
+    
     :return:
     """
-    # On copie les listes pour ne pas avoir de problème
-    recover = deepcopy(recovered)
-    expose = deepcopy(exposed)
-    infect = deepcopy(infected)
-    hospitalize = deepcopy(hospitalized)
-    intensive = deepcopy(intensive_care)
-    exi = deepcopy(exit_intensive)
-    death = deepcopy(dead)
-
-    new_infect = deepcopy(new_infected)
-    new_hospitalize = deepcopy(new_hospitalized)
-    new_intensive = deepcopy(new_intensive_care)
-    new_exi = deepcopy(new_exit_intensive)
-
+    
     # On commence par calculer les nouveaux arrivant de chaque service
-    new_infect.append(exposed_to_infected(time, Kei, Tei, exposed, infected))
-    new_hospitalize.append(infected_to_hospitalized(time, Kih, Tih, new_infected))
-    new_intensive.append(hospitalized_to_intensive(time, Khic, Thic, new_hospitalized))
-    new_exi.append(intensive_to_exi(time, Tice, new_intensive_care))
+    new_infect = exposed_to_infected(time, Kei, Tei, exposed, infected)
+    new_hospitalize = infected_to_hospitalized(time, Kih, Tih, new_infected)
+    new_intensive = hospitalized_to_intensive(time, Khic, Thic, new_hospitalized)
+    new_exi = intensive_to_exi(time, Tice, new_intensive_care)
 
     # On calcule le nombre de personnes dans chaque service
-    recover.append(
-        recover_day(Tir, Thr, Kir, Khr, Ker, time, recovered, new_infected, new_hospitalized, exit_intensive))
-    expose.append(expose_day(time, Kei, Tei, exposed, infected))
-    infect.append(infect_day(time, Kei, Kir, Kih, Tei, Tir, Tih, exposed, infected, new_infected))
-    hospitalize.append(
-        hospitalize_day(time, Kih, Khic, Khr, Tih, Thic, Thr, hospitalized, new_infected, new_hospitalized))
-    intensive.append(intensive_day(time, Khic, Thic, Tice, new_intensive_care, new_hospitalized))
-    exi.append(exi_day(time, Ker, Ked, Tice, new_intensive_care, new_exit_intensive))
+    recover = recover_day(Tir, Thr, Kir, Khr, Ker, time, recovered, new_infected, new_hospitalized, exit_intensive)
+    expose = expose_day(time, Kei, Tei, exposed, infected)
+    infect = infect_day(time, Kei, Kir, Kih, Tei, Tir, Tih, exposed, infected, new_infected)
+    hospitalize = hospitalize_day(time, Kih, Khic, Khr, Tih, Thic, Thr, hospitalized, new_infected, new_hospitalized)
+    intensive = intensive_day(time, Khic, Thic, Tice, new_intensive_care, new_hospitalized)
+    exi = exi_day(time, Ker, Ked, Tice, new_intensive_care, new_exit_intensive)
     # print(new_exit_intensive)
-    death.append(death_day(dead, new_exit_intensive, Ked))
+    death  = death_day(dead, new_exit_intensive, Ked))
 
     return {"recovered": recover, "exposed": expose, "infected": infect, "hospitalized": hospitalize,
             "intensive": intensive, "exit": exi, "dead": death, "new_infected": new_infect,
@@ -144,8 +130,8 @@ def expose_day(time: int, Kei: float, Tei: int, exposed: [float], infected: [flo
     :param time: Day after start day the simulation is currently at
     :param Kei: Coefficient from exposed to infected
     :param Tei: Delay between being infected and infecting others
-    :param exposed:
-    :param infected:
+    :param exposed: Time series of the number of people who are exposed each day (one day time step)
+    :param infected: Time series of the number of people who were infected each day so far (one day time step)
     :return: Volume of the exposed population
     """
 
@@ -168,10 +154,10 @@ def infect_day(time: int, Kei: float, Kir: float, Kih: float,
     :param Tei: Delay between being infected and infecting others
     :param Tir: Delay between being infected and recovering
     :param Tih: Delay between being infected and being sent to gospital
-    :param exposed:
-    :param infected:
-    :param new_infected:
-    :return:
+    :param exposed: Time series of the number of people who are exposed each day (one day time step)
+    :param infected: Time series of the number of people who were infected each day so far (one day time step)
+    :param new_infected: Time series of the number of new people infected
+    :return: Volume of the infected population
     """
 
     i1 = exposed_to_infected(time, Kei, Tei, exposed, infected)
@@ -192,11 +178,11 @@ def recover_day(time: int, Kir: float, Khr: float, Ker: float,
     :param Ker: Coefficient from exit intensive to recovered
     :param Tir: Delay between being infected and recovering
     :param Thr: Delay between being sent to gospital and recovering
-    :param recovered:
-    :param new_infected:
-    :param new_hospitalized:
-    :param new_exit_intensive:
-    :return:
+    :param recovered: Time series of the number of people who recovered so far (one day time step)
+    :param new_infected: Time series of the number of new people infected 
+    :param new_hospitalized: Time series of the number of new people hospitalized
+    :param new_exit_intensive: Time series of the number of people who go out of intensive care
+    :return: Volume of the recovered population
     """
 
     r1 = recover_1(time, Kir, Tir, new_infected)
@@ -218,10 +204,10 @@ def hospitalize_day(time: int, Kih: float, Khic: float, Khr: float,
     :param Tih: Delay between being infected and being sent to gospital
     :param Thic: Delay between being sent to gospital and then sent to intensive care
     :param Thr: Delay between being sent to gospital and recovering
-    :param hospitalized:
-    :param new_infected:
-    :param new_hospitalized:
-    :return:
+    :param hospitalized: Time series of the number of people who were hospitalized each day so far (one day time step)
+    :param new_infected: Time series of the number of new people infected 
+    :param new_hospitalized: Time series of the number of new people hospitalized
+    :return: Volume of the hospitalized population
     """
 
     h1 = infected_to_hospitalized(time, Kih, Tih, new_infected)
@@ -240,9 +226,9 @@ def intensive_day(time: int, Khic: float,
     :param Khic: Coefficient from hospitalized to intensive care
     :param Thic: Delay between being sent to gospital and then sent to intensive care
     :param Tice: Delay between entering and exiting intensive care services
-    :param new_intensive_care:
-    :param new_hospitalized:
-    :return:
+    :param new_intensive_care: Time series of the number of new people in the intensive care unit
+    :param new_hospitalized: Time series of the number of new people hospitalized
+    :return: Volume of the people in intensive care
     """
     i1 = hospitalized_to_intensive(time, Khic, Thic, new_hospitalized)
     i2 = intensive_to_exi(time, Tice, new_intensive_care)
@@ -259,9 +245,9 @@ def exi_day(time: int, Ker: float, Ked: float,
     :param Ker: Coefficient from exit intensive to recovered
     :param Ked: Coefficient from exit intensive to dead
     :param Tice: Delay between entering and exiting intensive care services
-    :param new_intensive_care:
-    :param exit_intensive:
-    :return:
+    :param new_intensive_care: Time series of the number of new people in the intensive care unit
+    :param exit_intensive: Time series of the number of people who were in their last day of intensive care each day so far (one day time step)
+    :return: Volume of people in exit
     """
     e1 = intensive_to_exi(time, Tice, new_intensive_care)
     e2 = recover_3(Ker, exit_intensive)
@@ -274,9 +260,9 @@ def death_day(Ked: float, dead: [float], exit_intensive: [float]) -> float:
     """
     Computes the volume of dead people
     :param Ked: Coefficient from exit intensive to dead
-    :param dead:
-    :param exit_intensive:
-    :return:
+    :param dead: Time series of the number of people who died each day so far (one day time step)
+    :param exit_intensive: Time series of the number of people who were in their last day of intensive care each day so far (one day time step)
+    :return: Volume of the dead population
     """
     d = exi_to_death(Ked, exit_intensive)
 
@@ -294,7 +280,7 @@ def exposed_to_infected(time: int, Kei: float, Tei: int,
     :param Tei: Delay between being infected and infecting others
     :param exposed: history of esposed people so far
     :param infected: history of infected people so far
-    :return:
+    :return: number of people who go from  exposed to infected
     """
     if time < Tei:
         return 0
@@ -308,8 +294,8 @@ def recover_1(time: int, Kir: float, Tir: int, new_infected: [float]) -> float:
     :param time: Day after start day the simulation is currently at
     :param Kir: Coefficient from infected to recovered
     :param Tir: Delay between being infected and recovering
-    :param new_infected:
-    :return:
+    :param new_infected: Time series of the number of new people infected 
+    :return: number of people who go from infected to recovered
     """
     if time < Tir:
         return 0
@@ -323,8 +309,8 @@ def recover_2(time, Khr, Thr, new_hospitalized):
     :param time: Day after start day the simulation is currently at
     :param Khr: Coefficient from hospitalized to recovered
     :param Thr: Delay between being sent to gospital and recovering
-    :param new_hospitalized:
-    :return:
+    :param new_hospitalized: Time series of the number of new people hospitalized
+    :return: number of people who go from hospitalized to recovered
     """
     if time < Thr:
         return 0
@@ -336,8 +322,8 @@ def recover_3(Ker, new_exit_intensive):
     """
     Computes the variation between exit of intensive care and recovered
     :param Ker: Coefficient from exit intensive to recovered
-    :param new_exit_intensive:
-    :return:
+    :param new_exit_intensive: Time series of the number of people who go out of intensive care
+    :return: number of people who go from exit to recovered
     """
     return Ker * new_exit_intensive[-1]
 
@@ -348,8 +334,8 @@ def infected_to_hospitalized(time, Kih, Tih, new_infected):
     :param time: Day after start day the simulation is currently at
     :param Kih: Coefficient from infected to hospitalized
     :param Tih: Delay between being infected and being sent to gospital
-    :param new_infected:
-    :return:
+    :param new_infected: Time series of the number of new people infected 
+    :return: number of people who go from infected to hospitalized
     """
 
     if time < Tih:
@@ -364,8 +350,8 @@ def hospitalized_to_intensive(time, Khic, Thic, new_hospitalized):
     :param time: Day after start day the simulation is currently at
     :param Khic: Coefficient from hospitalized to intensive care
     :param Thic: Delay between being sent to gospital and then sent to intensive care
-    :param new_hospitalized:
-    :return:
+    :param new_hospitalized: Time series of the number of new people hospitalized
+    :return: number of people who go from hospitalized to intensive
     """
     if time < Thic:
         return 0
@@ -373,13 +359,14 @@ def hospitalized_to_intensive(time, Khic, Thic, new_hospitalized):
         return Khic * new_hospitalized[-Thic]
 
 
+
 def intensive_to_exi(time, Tice, new_intensive_care):
     """
     Computes the variation between intensive care and intensive care exit
     :param time: Day after start day the simulation is currently at
     :param Tice: Delay between entering and exiting intensive care services
-    :param new_intensive_care:
-    :return:
+    :param new_intensive_care: Time series of the number of new people in the intensive care unit
+    :return: number of people who go from intensive care to exit
     """
     if time < Tice:
         return 0
@@ -391,7 +378,8 @@ def exi_to_death(Ked, new_exit_intensive):
     """
     Computes the variation between intensive care exit and daths
     :param Ked: Coefficient from exit intensive to dead
-    :param new_exit_intensive:
-    :return:
+    :param new_exit_intensive: Time series of the number of people who go out of intensive care
+    :return: number of people who go from exit to dead
     """
     return Ked * new_exit_intensive[-1]
+
