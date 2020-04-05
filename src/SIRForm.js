@@ -58,12 +58,15 @@ export const SIRForm = ({ onChange }) => {
         beta: '0.5',
     };
 
+
+
     return (
         <Formik
             enableReinitialize
             initialValues={initialValues}
             onSubmit={(values, { setSubmitting }) => {
-                onChange({ s0: values['s0'], lambda: values['lambda'], beta: values['beta'] });
+                onChange({ s0: values['s0'], lambda: values['lambda'], beta: values['beta'] }
+                );
             }}
             validationSchema={validationSchema()}
         >

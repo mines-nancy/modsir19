@@ -31,7 +31,7 @@ def add_data():
     return jsonify({'result': result})
 
 # Sample GET request
-@app.route('/get_simple_sir', methods=["GET"])
+@app.route('/get_simple_sir', methods=["POST"])
 def get_simple_sir():
     request_data = request.get_json()
     s0 = request_data["s0"]

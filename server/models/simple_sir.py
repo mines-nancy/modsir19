@@ -12,20 +12,20 @@ def simple_sir (s0, lambd, beta):
     i0 = 1 - s0
     r0 = 0
 
-    saints = list()
+    healthy = list()
     infected = list()
     removed = list()
 
-    saints.append(s0)
+    healthy.append(s0)
     infected.append(i0)
     removed.append(r0)
 
     for time in range(1, maxTime):
-        saints.append(saints[time - 1] * (1 - beta))
-        infected.append(infected[time - 1] * (1 - 1 / lambd) + saints[time - 1] * beta)
+        healthy.append(healthy[time - 1] * (1 - beta))
+        infected.append(infected[time - 1] * (1 - 1 / lambd) + healthy[time - 1] * beta)
         removed.append(infected[time - 1] * (1 / lambd) + removed[time - 1])
 
-    return {"saints": saints, "infected": infected, "removed": removed}
+    return {"healthy": healthy, "infected": infected, "removed": removed}
 
 
 if __name__ == "__main__":
