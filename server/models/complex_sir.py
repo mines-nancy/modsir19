@@ -1,13 +1,10 @@
 from copy import deepcopy
-import matplotlib.pyplot as plt
 
 
-def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, lim_time) :
-    '''
+def complex_sir_v1(population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, lim_time):
+    """
     Fonction principale
-    '''
-    
-    
+    """
     
     recovered = [0]
     exposed = [Kpe*(population - 1)]
@@ -21,9 +18,8 @@ def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, T
     new_hospitalized = [0]
     new_intensive_care = [0]
     new_exit_intensive = [0]
-    
 
-    for time in range (1, lim_time) :
+    for time in range (1, lim_time):
         
     # effet confinement :        
     #   if time == 200 :
@@ -47,12 +43,10 @@ def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, T
     return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive
 
 
-
-    
-def model_day (recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population, new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, time) :
-    '''
+def model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population, new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, time):
+    """
     Fonction qui fait évoluer le modèle sur une journée
-    '''
+    """
     
     # On copie les listes pour ne pas avoir de problème
     recover = deepcopy(recovered)
@@ -89,10 +83,10 @@ def model_day (recovered, exposed, infected, hospitalized, intensive_care, exit_
     
 #
 
-def expose_day (time, Kei, Tei, exposed, infected) :
-    '''
+def expose_day(time, Kei, Tei, exposed, infected):
+    """
     Calcule le volume de gens exposés
-    '''
+    """
     
     e1 = exposed_to_infected (time, Kei, Tei, exposed, infected)
     
@@ -101,10 +95,10 @@ def expose_day (time, Kei, Tei, exposed, infected) :
 
 #
 
-def infect_day (time, Kei, Kir, Kih, Tei, Tir, Tih, exposed, infected, new_infected) :
-    '''
+def infect_day(time, Kei, Kir, Kih, Tei, Tir, Tih, exposed, infected, new_infected):
+    """
     Calcule le volume de gens infectés
-    '''
+    """
     
     i1 = exposed_to_infected (time, Kei, Tei, exposed, infected)
     i2 = recover_1(time, Kir, Tir, new_infected)
@@ -112,12 +106,11 @@ def infect_day (time, Kei, Kir, Kih, Tei, Tir, Tih, exposed, infected, new_infec
     
     return infected[-1] + i1 - i2 - i3
 
-#
 
-def recover_day (Tir, Thr, Kir, Khr, Ker, time, recovered, new_infected, new_hospitalized, new_exit_intensive) :
-    '''
+def recover_day(Tir, Thr, Kir, Khr, Ker, time, recovered, new_infected, new_hospitalized, new_exit_intensive):
+    """
     Calcule le volume de gens guéris
-    '''
+    """
     
     r1 = recover_1(time, Kir, Tir, new_infected)
     r2 = recover_2(time, Khr, Thr, new_hospitalized) 
@@ -126,12 +119,10 @@ def recover_day (Tir, Thr, Kir, Khr, Ker, time, recovered, new_infected, new_hos
     return recovered[-1] + r1 + r2 + r3
 
 
-#
-
-def hospitalize_day (time, Kih, Khic, Khr, Tih, Thic, Thr, hospitalized, new_infected, new_hospitalized) :
-    '''
+def hospitalize_day(time, Kih, Khic, Khr, Tih, Thic, Thr, hospitalized, new_infected, new_hospitalized):
+    """
     Calcule le volume de gens hospitalisés
-    '''
+    """
     
     h1 = infected_to_hospitalized(time, Kih, Tih, new_infected)
     h2 = hospitalized_to_intensive(time, Khic, Thic, new_hospitalized)
@@ -139,7 +130,6 @@ def hospitalize_day (time, Kih, Khic, Khr, Tih, Thic, Thr, hospitalized, new_inf
     
     return hospitalized[-1] + h1 - h2 - h3
 
-#
 
 def intensive_day (time, Khic, Thic, Tice, new_intensive_care, new_hospitalized):
     
@@ -148,97 +138,95 @@ def intensive_day (time, Khic, Thic, Tice, new_intensive_care, new_hospitalized)
     
     return new_intensive_care[-1] + i1 - i2
 
-#
 
-def exi_day (time, Ker, Ked, Tice, new_intensive_care, exit_intensive) :
+def exi_day(time, Ker, Ked, Tice, new_intensive_care, exit_intensive):
     
     e1 = intensive_to_exi (time, Tice, new_intensive_care)
     e2 = recover_3 (Ker, exit_intensive)
     e3 = exi_to_death (Ked, exit_intensive)
     
     return exit_intensive[-1] + e1 - e2 - e3
-    
 
-#
     
-def death_day (dead, exit_intensive, Ked) :
-    '''
+def death_day(dead, exit_intensive, Ked):
+    """
     Calcule le volume de gens morts
-    '''
+    """
     d = exi_to_death (Ked, exit_intensive)
     
     return dead[-1] + d
 
 
-#
+####
 
-def exposed_to_infected (time, Kei, Tei, exposed, infected) :
-    '''
+def exposed_to_infected(time, Kei, Tei, exposed, infected):
+    """
     Calcule la variation entre exposed et infected
-    '''
+    """
     
-    if time < Tei :
+    if time < Tei:
         return 0
-    else :
+    else:
         return Kei * (exposed[-1] * infected[-Tei]) / exposed[0]
 
-def recover_1 (time, Kir, Tir, new_infected) :
-    '''
+
+def recover_1(time, Kir, Tir, new_infected):
+    """
     Calcule la variation entre infected et recovered
-    '''
-    if time < Tir :
+    """
+    if time < Tir:
         return 0
-    else :
+    else:
         return Kir * new_infected[-Tir]
 
 
-def recover_2 (time, Khr, Thr, new_hospitalized) :
-    '''
+def recover_2(time, Khr, Thr, new_hospitalized):
+    """
     Calcule la variation entre hospitalized et recovered
-    '''
-    if time < Thr :
+    """
+    if time < Thr:
         return 0
-    else :
+    else:
         return Khr * new_hospitalized[-Thr]
 
 
-def recover_3 (Ker, new_exit_intensive) :
-    '''
+def recover_3 (Ker, new_exit_intensive):
+    """
     Calcule la variation entre exit_intensive et recovered
-    '''
+    """
     return Ker * new_exit_intensive[-1]
 
 
-def infected_to_hospitalized(time, Kih, Tih, new_infected) :
-    '''
+def infected_to_hospitalized(time, Kih, Tih, new_infected):
+    """
     Calcule la variation entre infected et hospitalized
-    '''
+    """
     
-    if time < Tih :
+    if time < Tih:
         return 0
-    else :
+    else:
         return Kih * new_infected[-Tih]
 
 
-def hospitalized_to_intensive(time, Khic, Thic, new_hospitalized) :
-    '''
+def hospitalized_to_intensive(time, Khic, Thic, new_hospitalized):
+    """
     Calcule la variation entre hospitalized et intensive
-    '''
-    if time < Thic :
+    """
+    if time < Thic:
         return 0
-    else :
+    else:
         return Khic * new_hospitalized[-Thic]
 
 
-def intensive_to_exi (time, Tice, new_intensive_care) :
+def intensive_to_exi(time, Tice, new_intensive_care):
     
-    if time < Tice :
+    if time < Tice:
         return 0
-    else :
+    else:
         return new_intensive_care[-(Tice-1)]
 
 
-def exi_to_death (Ked, new_exit_intensive) :
+def exi_to_death(Ked, new_exit_intensive):
     
     return Ked * new_exit_intensive[-1]
 
