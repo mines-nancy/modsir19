@@ -6,6 +6,7 @@ import { I18n } from 'react-polyglot';
 import LocaleContext from './utils/localeContext';
 import messages from './messages';
 import { Chart } from './ChartView';
+import { NavigationAppBar } from './components/MenuAppBar';
 
 const App = () => {
     const initialLocale = 'fr';
@@ -57,6 +58,7 @@ const App = () => {
                             Projet MODCOV19 - prototype v1.0
                         </Typography>
                     </Box>
+                    <NavigationAppBar />
                     <Box m={8}>
                         <Typography variant="h4" component="h2">
                             Data récupérée de l'API python: (a: {placeholderData.a}, b:{' '}
