@@ -21,6 +21,12 @@ class Simulator:
         current_state.infected_to_recovered(self._history, next_state)
         current_state.infected_to_hospitalized(self._history, next_state)
         current_state.hospitalized_to_recovered(self._history, next_state)
+        current_state.hospitalized_to_intensive_care(self._history, next_state)
+        current_state.intensive_care_to_exit_intensive_care(
+            self._history, next_state)
+        current_state.exit_intensive_care_to_recovered(
+            self._history, next_state)
+        current_state.exit_intensive_care_to_dead(self._history, next_state)
 
         self._state = next_state
 
@@ -33,7 +39,7 @@ if __name__ == "__main__":
                           kem=0.24,
                           kmg=0.81,
                           kmh=0.19,
-                          khic=0,
+                          khr=0.26,
                           khg=0.74,
                           ked=0,
                           ker=0,
@@ -41,7 +47,7 @@ if __name__ == "__main__":
                           tmg=9,
                           tmh=6,
                           thg=6,
-                          thic=0,
+                          thr=1,
                           tice=0,
                           time=0,
                           population=Box('P'),
@@ -50,8 +56,8 @@ if __name__ == "__main__":
                           infected=Box('M'),
                           hospitalized=Box('H'),
                           intensive_care=Box('R'),
-                          exit_intensive=Box('SR'),
-                          dead=Box('P')
+                          exit_intensive_care=Box('SR'),
+                          dead=Box('D')
                           )
 
     initial_state.exposed.add(100)

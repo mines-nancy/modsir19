@@ -8,7 +8,7 @@ class State:
                  kem: float,
                  kmg: float,
                  kmh: float,
-                 khic: float,
+                 khr: float,
                  khg: float,
                  ked: float,
                  ker: float,
@@ -16,7 +16,7 @@ class State:
                  tmg: int,
                  tmh: int,
                  thg: int,
-                 thic: int,
+                 thr: int,
                  tice: int,
                  time,
                  population,
@@ -25,7 +25,7 @@ class State:
                  infected,
                  hospitalized,
                  intensive_care,
-                 exit_intensive,
+                 exit_intensive_care,
                  dead,
                  ):
 
@@ -35,7 +35,7 @@ class State:
         self.infected = infected
         self.hospitalized = hospitalized
         self.intensive_care = intensive_care
-        self.exit_intensive = exit_intensive
+        self.exit_intensive_care = exit_intensive_care
         self.dead = dead
         self.time = time
 
@@ -43,7 +43,7 @@ class State:
         self.kem = kem
         self.kmg = kmg
         self.kmh = kmh
-        self.khic = khic
+        self.khr = khr
         self.khg = khg
         self.ked = ked
         self.ker = ker
@@ -51,13 +51,14 @@ class State:
         self.tmg = tmg
         self.tmh = tmh
         self.thg = thg
-        self.thic = thic
+        self.thr = thr
         self.tice = tice
 
     def __str__(self):
         pop = self.exposed.size() + self.infected.size() + \
-            self.hospitalized.size() + self.recovered.size()
-        return f'{self.exposed} {self.infected} {self.hospitalized} {self.recovered} POP={pop}'
+            self.hospitalized.size() + self.intensive_care.size() + \
+            self.exit_intensive_care.size() + self.recovered.size() + self.dead.size()
+        return f'{self.exposed} {self.infected} {self.hospitalized} {self.intensive_care} {self.exit_intensive_care} {self.recovered} {self.dead} POP={pop}'
 
     def increment_time(self):
         self.time += 1
@@ -107,3 +108,21 @@ class State:
         new_recovered = self.khg * state_thg.hospitalized.size()
         next_state.hospitalized.remove(new_recovered)
         next_state.recovered.add(new_recovered)
+
+    def hospitalized_to_intensive_care(self, history, next_state):
+        state_thr = history.get_last_state(self.time - self.thr)
+        if state_thr == None:
+            return
+
+        new_intensive_care = self.khr * state_thr.hospitalized.size()
+        next_state.hospitalized.remove(new_intensive_care)
+        next_state.intensive_care.add(new_intensive_care)
+
+    def intensive_care_to_exit_intensive_care(self, history, next_state):
+        pass
+
+    def exit_intensive_care_to_recovered(self, history, next_state):
+        pass
+
+    def exit_intensive_care_to_dead(self, history, next_state):
+        pass
