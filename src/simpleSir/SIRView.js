@@ -4,6 +4,7 @@ import { Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Chart } from './ChartView';
 import api from '../utils/api';
+import Sliders from './SIRSliders';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -33,6 +34,9 @@ export const SIRView = () => {
                 CALCULER.
             </Typography>
             <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
+                <Grid item  xs={12}>
+                <Sliders />
+                </Grid>
                 <Grid item xs={12}>
                     <SIRForm onChange={handleClick} />
                 </Grid>
