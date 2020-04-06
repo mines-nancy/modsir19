@@ -9,6 +9,7 @@ from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 
 from models.simple_sir import simple_sir
+from models.complex_sir import model
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -40,7 +41,7 @@ def add_data():
     result = add(x, y)
     return jsonify({'result': result})
 
-# Sample GET request
+# Sample SIR GET request
 @app.route('/get_simple_sir', methods=["GET"])
 def get_simple_sir():
     input=json.loads(request.args.get('parameters'))
@@ -49,6 +50,37 @@ def get_simple_sir():
     lambd = input["lambda"]
     beta = input["beta"]
     data = simple_sir(s0=s0, lambd=lambd, beta=beta)
+    return jsonify(data)
+
+# Complex SIR GET request
+@app.route('/get_complex_sir', methods=["GET"])
+def get_complex_sir():
+    input = json.loads(request.args.get('parameters'))
+    print(input)
+
+    population = input["population"]
+    Kpe = input["Kpe"]
+    Kei = input["Kei"]
+    Kir = input["Kir"]
+    Khic = input["Khic"]
+    Ked = input["Ked"]
+    Khr = 1 - Khic
+    Kih = 1 - Kir
+    Ker = 1 - Ked
+
+    Tei = input["Tei"]
+    Tir = input["Tir"]
+    Tih = input["Tih"]
+    Thr = input["Thr"]
+    Thic = input["Thic"]
+    Tice = input["Tice"]
+
+    lim_time = input["lim_time"]
+
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, lim_time)
+    data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead, "hospitalized": hospitalized,
+            "intensive_care": intensive_care, "exit_intensive": exit_intensive}
+
     return jsonify(data)
 
 
