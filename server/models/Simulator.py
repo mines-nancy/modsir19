@@ -66,6 +66,6 @@ if __name__ == "__main__":
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
-    for i in range(30):
+    for i in range(100):
         simulator.step()
         print(simulator.get_state())

@@ -66,6 +66,14 @@ class State:
     def get_time0(self):
         return 0
 
+    # compute Delta Box(t - tDelay)
+    def delta(self, history, boxname, delay):
+        past_state = history.get_last_state(self.time - delay)
+        previous_past_state = history.get_last_state(self.time - delay - 1)
+        if past_state == None or previous_past_state == None:
+            return 0
+        return getattr(past_state, boxname).size() - getattr(previous_past_state, boxname).size()
+
     def exposed_to_infected(self, history, next_state):
         state0 = history.get_last_state(self.get_time0())
         state_tem = history.get_last_state(self.time - self.tem)
@@ -76,64 +84,45 @@ class State:
         # print(f'exposed0: {exposed0}')
         infected_tem = state_tem.infected
         # print(f'infected_tem: {infected_tem}')
-        new_infected = self.kem * \
-            (self.exposed.size() * infected_tem.size()) / exposed0.size()
+        delta = self.kem * (self.exposed.size() *
+                            infected_tem.size()) / exposed0.size()
         # print(f'new_infected: {new_infected}')
-        next_state.exposed.remove(new_infected)
-        next_state.infected.add(new_infected)
+        next_state.exposed.remove(delta)
+        next_state.infected.add(delta)
 
     def infected_to_recovered(self, history, next_state):
-        state_tmg = history.get_last_state(self.time - self.tmg)
-        if state_tmg == None:
-            return
-
-        new_recovered = self.kmg * state_tmg.infected.size()
-        next_state.infected.remove(new_recovered)
-        next_state.recovered.add(new_recovered)
+        delta = self.kmg * self.delta(history, 'infected', self.tmg)
+        # print(f'infected_to_recovered: {delta}')
+        next_state.infected.remove(delta)
+        next_state.recovered.add(delta)
 
     def infected_to_hospitalized(self, history, next_state):
-        state_tmh = history.get_last_state(self.time - self.tmh)
-        if state_tmh == None:
-            return
-
-        new_hospitalized = self.kmh * state_tmh.infected.size()
-        next_state.infected.remove(new_hospitalized)
-        next_state.hospitalized.add(new_hospitalized)
+        delta = self.kmh * self.delta(history, 'infected', self.tmh)
+        # print(f'infected_to_hospitalized: {delta}')
+        next_state.infected.remove(delta)
+        next_state.hospitalized.add(delta)
 
     def hospitalized_to_recovered(self, history, next_state):
-        state_thg = history.get_last_state(self.time - self.thg)
-        if state_thg == None:
-            return
-
-        new_recovered = self.khg * state_thg.hospitalized.size()
-        next_state.hospitalized.remove(new_recovered)
-        next_state.recovered.add(new_recovered)
+        delta = self.khg * self.delta(history, 'hospitalized', self.thg)
+        next_state.hospitalized.remove(delta)
+        next_state.recovered.add(delta)
 
     def hospitalized_to_intensive_care(self, history, next_state):
-        state_thr = history.get_last_state(self.time - self.thr)
-        if state_thr == None:
-            return
-
-        new_intensive_care = self.khr * state_thr.hospitalized.size()
-        next_state.hospitalized.remove(new_intensive_care)
-        next_state.intensive_care.add(new_intensive_care)
+        delta = self.khr * self.delta(history, 'hospitalized', self.thr)
+        next_state.hospitalized.remove(delta)
+        next_state.intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history, next_state):
-        tice = 10
-        state_ic = history.get_last_state(self.time - (tice-1))
-        if state_ic == None:
-            return
-
-        new_exit_intensive_care = state_ic.intensive_care.size()
-        next_state.intensive_care.remove(new_exit_intensive_care)
-        next_state.exit_intensive_care.add(new_exit_intensive_care)
+        delta = 0.7 * self.delta(history, 'intensive_care', 1)
+        next_state.intensive_care.remove(delta)
+        next_state.exit_intensive_care.add(delta)
 
     def exit_intensive_care_to_recovered(self, history, next_state):
-        new_recovered = self.krg * self.exit_intensive_care.size()
-        next_state.exit_intensive_care.remove(new_recovered)
-        next_state.recovered.add(new_recovered)
+        delta = self.krg * self.exit_intensive_care.size()
+        next_state.exit_intensive_care.remove(delta)
+        next_state.recovered.add(delta)
 
     def exit_intensive_care_to_dead(self, history, next_state):
-        new_dead = self.krd * self.exit_intensive_care.size()
-        next_state.exit_intensive_care.remove(new_dead)
-        next_state.dead.add(new_dead)
+        delta = self.krd * self.exit_intensive_care.size()
+        next_state.exit_intensive_care.remove(delta)
+        next_state.dead.add(delta)
