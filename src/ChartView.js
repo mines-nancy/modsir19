@@ -7,9 +7,9 @@ const jour_0 = new Date(2020, 0, 23);
 
 //var tab_dates = generer_dates(jour_0, dummyModel().saints.length) ;
 
-export const Chart = ({ healthy, infected, removed }) => {
+export const Chart = ( params ) => {
     //const { sains, infectes, retires } = dummyModel(s0, lambda, beta);
-
+    { healthy, infected, removed } = params;
     const start_date = new Date(2020, 4, 4);
     //const dates_range = generer_dates(start_date, saints.length);
 

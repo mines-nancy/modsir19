@@ -14,9 +14,9 @@ const App = () => {
     const [placeholderData, setPlaceholderData] = useState({ a: 0, b: 0 });
     const [placeholderDataPOST, setPlaceholderDataPOST] = useState({ result: 0 });
     const [placeholderDataPOST_SIR, setPlaceholderDataPOST_SIR] = useState({
-        healthy: [0, 0],
-        infected: [0, 0],
-        removed: [0, 0],
+        healthy: [0, 1, 2],
+        infected: [0, 2, 1],
+        removed: [1, 0, 2],
     });
 
     useEffect(() => {
@@ -56,6 +56,8 @@ const App = () => {
     const handleClickSIR = async () => {
         // Computation of the values of the SIR model in the back
         const inputFunction = { s0: 0.9, lambda: 12, beta: 0.5 };
+        // eslint-disable-next-line no-console
+        console.log(placeholderDataPOST_SIR.healthy.length);
         const response = await fetch('/get_simple_sir', {
             method: 'POST',
             headers: {
@@ -71,6 +73,8 @@ const App = () => {
                 // eslint-disable-next-line no-console
                 console.log(data);
                 setPlaceholderDataPOST_SIR(data);
+                console.log(placeholderDataPOST_SIR.healthy);
+                console.log(placeholderDataPOST_SIR.healthy.length);
             });
         }
     };
