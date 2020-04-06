@@ -58,7 +58,7 @@ def get_complex_sir():
     input = json.loads(request.args.get('parameters'))
     print(input)
 
-    population = input["population"]
+    population = int(input["population"])
     Kpe = input["Kpe"]
     Kei = input["Kei"]
     Kir = input["Kir"]
@@ -68,17 +68,17 @@ def get_complex_sir():
     Kih = 1 - Kir
     Ker = 1 - Ked
 
-    Tei = input["Tei"]
-    Tir = input["Tir"]
-    Tih = input["Tih"]
-    Thr = input["Thr"]
-    Thic = input["Thic"]
-    Tice = input["Tice"]
+    Tei = int(input["Tei"])
+    Tir = int(input["Tir"])
+    Tih = int(input["Tih"])
+    Thr = int(input["Thr"])
+    Thic = int(input["Thic"])
+    Tice = int(input["Tice"])
 
-    lim_time = input["lim_time"]
+    lim_time = int(input["lim_time"])
 
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, lim_time)
-    data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead, "hospitalized": hospitalized,
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, Tice, lim_time)
+    data = {"recovered":       recovered, "exposed": exposed, "infected": infected, "dead": dead, "hospitalized": hospitalized,
             "intensive_care": intensive_care, "exit_intensive": exit_intensive}
 
     return jsonify(data)

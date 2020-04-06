@@ -20,7 +20,7 @@ export const ComplexSIRView = () => {
     console.log({ values });
 
     const handleClick = async (parameters) => {
-        const response = await api.get('/get_simple_sir', {
+        const response = await api.get('/get_complex_sir', {
             params: { parameters },
         });
         setValues(response.data);
@@ -29,7 +29,7 @@ export const ComplexSIRView = () => {
     return (
         <div className={classes.root}>
             <Typography variant="h5" component="h2">
-                Entrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
+                Entrer les paramètres du modèle SIR complexe dans les champs suivants puis cliquer sur
                 CALCULER.
             </Typography>
             <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>

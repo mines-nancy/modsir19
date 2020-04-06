@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 
-def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, lim_time) :
+def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, Tice, lim_time) :
     '''
     Fonction principale
     '''
@@ -23,7 +23,9 @@ def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, T
     
     for time in range (1, lim_time) :
         
-        day = model_day (recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population, new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, time)
+        day = model_day (recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population,
+                         new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker,
+                         Tei, Tir, Tih, Thr, Thic, Tice, time)
         
         recovered = day[0]
         exposed = day[1]
@@ -43,7 +45,9 @@ def model (population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, T
 
 
     
-def model_day (recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population, new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, time) :
+def model_day (recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population,
+               new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, Kpe, Kei, Kir, Kih, Khic, Khr,
+               Ked, Ker, Tei, Tir, Tih, Thr, Thic, Tice, time) :
     '''
     Fonction qui fait évoluer le modèle sur une journée
     '''

@@ -8,27 +8,59 @@ const jour_0 = new Date(2020, 0, 23);
 var tab_dates = generer_dates(jour_0, dummyModel().healthy.length);
 
 export const Chart = (values) => {
-    const { healthy, infected, removed } = values;
+    const {
+        recovered,
+        exposed,
+        infected,
+        dead,
+        hospitalized,
+        intensive_care,
+        exit_intensive,
+    } = values;
 
     const lineData = {
-        labels: tab_dates,
+        labels: generer_dates(jour_0, recovered.length),
         datasets: [
             {
-                label: ['Population saine'],
-                data: healthy,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: ['Population infectée'],
-                data: infected,
+                label: ['exposed'],
+                data: exposed,
                 backgroundColor: 'rgba(255, 206, 86, 0.6)',
                 borderWidth: 2,
             },
             {
-                label: ['Population rétablie'],
-                data: removed,
+                label: ['infected'],
+                data: infected,
+                backgroundColor: 'rgba(255, 158, 132, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['dead'],
+                data: dead,
+                backgroundColor: 'rgba(88, 88, 88, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['hospitalized'],
+                data: hospitalized,
                 backgroundColor: 'rgba(255, 88, 132, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['intensive_care'],
+                data: intensive_care,
+                backgroundColor: 'rgba(54, 54, 255, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['exit_intensive'],
+                data: exit_intensive,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['recovered'],
+                data: recovered,
+                backgroundColor: 'rgba(88, 235, 88, 0.6)',
                 borderWidth: 2,
             },
         ],
@@ -43,7 +75,7 @@ export const Chart = (values) => {
                 options={{
                     title: {
                         display: true,
-                        text: 'Modèle SIR simple',
+                        text: 'Modèle SIR Complexe',
                         fontSize: 25,
                     },
                     scales: {
@@ -51,7 +83,7 @@ export const Chart = (values) => {
                             {
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Part de la population',
+                                    labelString: 'Volume de population',
                                     fontSize: 18,
                                 },
                             },
