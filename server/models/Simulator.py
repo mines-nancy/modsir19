@@ -19,6 +19,8 @@ class Simulator:
 
         current_state.exposed_to_infected(self._history, next_state)
         current_state.infected_to_recovered(self._history, next_state)
+        current_state.infected_to_hospitalized(self._history, next_state)
+        current_state.hospitalized_to_recovered(self._history, next_state)
 
         self._state = next_state
 
@@ -30,15 +32,15 @@ if __name__ == "__main__":
     initial_state = State(kpe=0.6,
                           kem=0.24,
                           kmg=0.81,
-                          kih=0,
+                          kmh=0.19,
                           khic=0,
-                          khr=0,
+                          khg=0.74,
                           ked=0,
                           ker=0,
                           tem=6,
                           tmg=9,
-                          tih=0,
-                          thr=0,
+                          tmh=6,
+                          thg=6,
                           thic=0,
                           tice=0,
                           time=0,

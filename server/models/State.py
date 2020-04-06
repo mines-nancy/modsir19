@@ -7,15 +7,15 @@ class State:
                  kpe: float,
                  kem: float,
                  kmg: float,
-                 kih: float,
+                 kmh: float,
                  khic: float,
-                 khr: float,
+                 khg: float,
                  ked: float,
                  ker: float,
                  tem: int,
                  tmg: int,
-                 tih: int,
-                 thr: int,
+                 tmh: int,
+                 thg: int,
                  thic: int,
                  tice: int,
                  time,
@@ -42,21 +42,22 @@ class State:
         self.kpe = kpe
         self.kem = kem
         self.kmg = kmg
-        self.kih = kih
+        self.kmh = kmh
         self.khic = khic
-        self.khr = khr
+        self.khg = khg
         self.ked = ked
         self.ker = ker
         self.tem = tem
         self.tmg = tmg
-        self.tih = tih
-        self.thr = thr
+        self.tmh = tmh
+        self.thg = thg
         self.thic = thic
         self.tice = tice
 
     def __str__(self):
-        pop = self.exposed.size() + self.infected.size() + self.recovered.size()
-        return f'{self.exposed} {self.infected} {self.recovered} POP={pop}'
+        pop = self.exposed.size() + self.infected.size() + \
+            self.hospitalized.size() + self.recovered.size()
+        return f'{self.exposed} {self.infected} {self.hospitalized} {self.recovered} POP={pop}'
 
     def increment_time(self):
         self.time += 1
@@ -87,4 +88,22 @@ class State:
 
         new_recovered = self.kmg * state_tmg.infected.size()
         next_state.infected.remove(new_recovered)
+        next_state.recovered.add(new_recovered)
+
+    def infected_to_hospitalized(self, history, next_state):
+        state_tmh = history.get_last_state(self.time - self.tmh)
+        if state_tmh == None:
+            return
+
+        new_hospitalized = self.kmh * state_tmh.infected.size()
+        next_state.infected.remove(new_hospitalized)
+        next_state.hospitalized.add(new_hospitalized)
+
+    def hospitalized_to_recovered(self, history, next_state):
+        state_thg = history.get_last_state(self.time - self.thg)
+        if state_thg == None:
+            return
+
+        new_recovered = self.khg * state_thg.hospitalized.size()
+        next_state.hospitalized.remove(new_recovered)
         next_state.recovered.add(new_recovered)
