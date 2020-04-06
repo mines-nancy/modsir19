@@ -5,6 +5,7 @@ import { Paper, Tabs, Tab } from '@material-ui/core';
 import { useTranslate } from 'react-polyglot';
 import { TestAPI } from './testApi/TestAPI';
 import { SIRView } from './simpleSir/SIRView';
+import { ComplexSIRView } from './complexSir/ComplexSIRView';
 
 const Home = ({ match }) => {
     const path = match ? match.path : '';
@@ -33,6 +34,12 @@ const Home = ({ match }) => {
                             to={`${path}/simpleSIR`}
                         />
                         <Tab
+                            label={t('home.complexSIR')}
+                            component={RouterLink}
+                            value={`${path}/complexSIR`}
+                            to={`${path}/complexSIR`}
+                        />
+                        <Tab
                             label={t('home.testAPI')}
                             component={RouterLink}
                             value={`${path}/testAPI`}
@@ -53,6 +60,13 @@ const Home = ({ match }) => {
                         render={(routeProps) => {
                             setValue(`${path}/simpleSIR`);
                             return <SIRView />;
+                        }}
+                    />
+                    <Route
+                        path={`${path}/complexSIR`}
+                        render={(routeProps) => {
+                            setValue(`${path}/complexSIR`);
+                            return <ComplexSIRView />;
                         }}
                     />
                     <Route

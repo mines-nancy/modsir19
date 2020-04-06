@@ -16,6 +16,7 @@ const messages = {
         },
         home: {
             simpleSIR: 'Modèle SIR simple',
+            complexSIR: 'Modèle SIR complexe',
             testAPI: "Tester l'API",
         },
         error: {
