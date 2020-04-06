@@ -41,8 +41,8 @@ if __name__ == "__main__":
                           kmh=0.19,
                           khr=0.26,
                           khg=0.74,
-                          ked=0,
-                          ker=0,
+                          krd=0.5,
+                          krg=0.5,
                           tem=6,
                           tmg=9,
                           tmh=6,
@@ -66,6 +66,6 @@ if __name__ == "__main__":
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
-    for i in range(20):
+    for i in range(30):
         simulator.step()
         print(simulator.get_state())

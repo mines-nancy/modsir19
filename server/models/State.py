@@ -10,8 +10,8 @@ class State:
                  kmh: float,
                  khr: float,
                  khg: float,
-                 ked: float,
-                 ker: float,
+                 krd: float,
+                 krg: float,
                  tem: int,
                  tmg: int,
                  tmh: int,
@@ -45,8 +45,8 @@ class State:
         self.kmh = kmh
         self.khr = khr
         self.khg = khg
-        self.ked = ked
-        self.ker = ker
+        self.krd = krd
+        self.krg = krg
         self.tem = tem
         self.tmg = tmg
         self.tmh = tmh
@@ -119,10 +119,21 @@ class State:
         next_state.intensive_care.add(new_intensive_care)
 
     def intensive_care_to_exit_intensive_care(self, history, next_state):
-        pass
+        tice = 10
+        state_ic = history.get_last_state(self.time - (tice-1))
+        if state_ic == None:
+            return
+
+        new_exit_intensive_care = state_ic.intensive_care.size()
+        next_state.intensive_care.remove(new_exit_intensive_care)
+        next_state.exit_intensive_care.add(new_exit_intensive_care)
 
     def exit_intensive_care_to_recovered(self, history, next_state):
-        pass
+        new_recovered = self.krg * self.exit_intensive_care.size()
+        next_state.exit_intensive_care.remove(new_recovered)
+        next_state.recovered.add(new_recovered)
 
     def exit_intensive_care_to_dead(self, history, next_state):
-        pass
+        new_dead = self.krd * self.exit_intensive_care.size()
+        next_state.exit_intensive_care.remove(new_dead)
+        next_state.dead.add(new_dead)
