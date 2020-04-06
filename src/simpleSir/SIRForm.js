@@ -53,9 +53,9 @@ export const SIRForm = ({ onChange }) => {
     const classes = useStyles();
     const t = useTranslate();
     const initialValues = {
-        s0: '0.7',
-        lambda: '12',
-        beta: '0.5',
+        s0: 0.7,
+        lambda: 12,
+        beta: 0.5,
     };
 
     return (

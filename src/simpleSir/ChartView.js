@@ -5,31 +5,29 @@ import { generer_dates } from '../model/generateur_dates';
 
 const jour_0 = new Date(2020, 0, 23);
 
-var tab_dates = generer_dates(jour_0, dummyModel().saints.length);
+var tab_dates = generer_dates(jour_0, dummyModel().healthy.length);
 
-export const Chart = ({ s0, lambda, beta }) => {
-    const { saints, infectes, retires } = dummyModel(s0, lambda, beta);
-    const start_date = new Date(2020, 4, 4);
-    const dates_range = generer_dates(start_date, saints.length);
+export const Chart = (values) => {
+    const { healthy, infected, removed } = values;
 
     const lineData = {
         labels: tab_dates,
         datasets: [
             {
                 label: ['Population saine'],
-                data: saints,
+                data: healthy,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
                 borderWidth: 2,
             },
             {
                 label: ['Population infectée'],
-                data: infectes,
+                data: infected,
                 backgroundColor: 'rgba(255, 206, 86, 0.6)',
                 borderWidth: 2,
             },
             {
                 label: ['Population rétablie'],
-                data: retires,
+                data: removed,
                 backgroundColor: 'rgba(255, 88, 132, 0.6)',
                 borderWidth: 2,
             },
