@@ -53,9 +53,9 @@ export const SIRForm = ({ onChange }) => {
     const classes = useStyles();
     const t = useTranslate();
     const initialValues = {
-        s0: '0.7',
-        lambda: '12',
-        beta: '0.5',
+        s0: 0.7,
+        lambda: 12,
+        beta: 0.5,
     };
 
     return (
@@ -63,7 +63,11 @@ export const SIRForm = ({ onChange }) => {
             enableReinitialize
             initialValues={initialValues}
             onSubmit={(values, { setSubmitting }) => {
-                onChange({ s0: values['s0'], lambda: values['lambda'], beta: values['beta'] });
+                onChange({
+                    s0: parseFloat(values['s0']),
+                    lambda: parseFloat(values['lambda']),
+                    beta: parseFloat(values['beta']),
+                });
             }}
             validationSchema={validationSchema()}
         >

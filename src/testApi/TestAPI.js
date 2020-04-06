@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@material-ui/core';
+import api from '../utils/api';
 
 export const TestAPI = () => {
     const [placeholderData, setPlaceholderData] = useState({ a: 0, b: 0 });
     const [placeholderDataPOST, setPlaceholderDataPOST] = useState({ result: 0 });
+    const [placeholderDataGET, setPlaceholderDataGET] = useState({ result: 0 });
 
     useEffect(() => {
         fetch('/get_data_sample').then((response) =>
@@ -19,24 +21,16 @@ export const TestAPI = () => {
     const handleClick = async () => {
         // Example pour envoyer un appel POST a l'API
         const inputFunction = { x: 2, y: 3 };
-        const response = await fetch('/add_data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(inputFunction),
-        });
 
-        if (response.ok) {
-            // eslint-disable-next-line no-console
-            console.log('response worked!');
-            response.json().then((data) => {
-                // eslint-disable-next-line no-console
-                console.log(data);
-                // At this point, data is {"a": 2, "b": 3}
-                setPlaceholderDataPOST(data);
-            });
-        }
+        const responseGET = await api.get('/get_add_data', {
+            params: { inputFunction },
+        });
+        setPlaceholderDataGET(responseGET.data);
+
+        const responsePOST = await api.post('/add_data', {
+            inputFunction,
+        });
+        setPlaceholderDataPOST(responsePOST.data);
     };
 
     return (
@@ -44,12 +38,15 @@ export const TestAPI = () => {
             <Typography variant="h4" component="h2">
                 Data récupérée de l'API python: (a: {placeholderData.a}, b: {placeholderData.b})
             </Typography>
+
             <Button color="primary" onClick={handleClick}>
                 Recupérer données
             </Button>
             <Typography variant="h4" component="h2">
-                Reponse de l'API Python à la requête POST envoyée par le bouton: 2 + 3 =
-                {placeholderDataPOST.result}
+                GET 2 + 3 = {placeholderDataGET.result}
+            </Typography>
+            <Typography variant="h4" component="h2">
+                POST 2 + 3 = {placeholderDataPOST.result}
             </Typography>
         </Box>
     );

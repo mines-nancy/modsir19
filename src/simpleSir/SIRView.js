@@ -3,6 +3,7 @@ import { SIRForm } from './SIRForm';
 import { Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Chart } from './ChartView';
+import api from '../utils/api';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -11,11 +12,20 @@ const useStyles = makeStyles((theme) =>
         },
     }),
 );
+
 export const SIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
     // eslint-disable-next-line no-console
     console.log({ values });
+
+    const handleClick = async (parameters) => {
+        const response = await api.get('/get_simple_sir', {
+            params: { parameters },
+        });
+        setValues(response.data);
+    };
+
     return (
         <div className={classes.root}>
             <Typography variant="h5" component="h2">
@@ -24,7 +34,7 @@ export const SIRView = () => {
             </Typography>
             <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
                 <Grid item xs={12}>
-                    <SIRForm onChange={(values) => setValues(values)} />
+                    <SIRForm onChange={handleClick} />
                 </Grid>
                 {values && <Grid item> {Chart(values)} </Grid>}
             </Grid>
