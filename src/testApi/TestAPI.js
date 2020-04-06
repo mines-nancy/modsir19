@@ -8,14 +8,11 @@ export const TestAPI = () => {
     const [placeholderDataGET, setPlaceholderDataGET] = useState({ result: 0 });
 
     useEffect(() => {
-        fetch('/get_data_sample').then((response) =>
-            response.json().then((data) => {
-                // eslint-disable-next-line no-console
-                console.log(data);
-                // At this point, data is {"a": 2, "b": 3}
-                setPlaceholderData(data);
-            }),
-        );
+        const f = async () => {
+            const response = await api.get('/get_data_sample');
+            setPlaceholderData(response.data);
+        };
+        f();
     }, []);
 
     const handleClick = async () => {
