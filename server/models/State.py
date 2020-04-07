@@ -54,11 +54,21 @@ class State:
         self.thr = thr
         self.tice = tice
 
+    def reinit_boxes(self):
+        self.population.reinit()
+        self.recovered.reinit()
+        self.exposed.reinit()
+        self.infected.reinit()
+        self.hospitalized.reinit()
+        self.intensive_care.reinit()
+        self.exit_intensive_care.reinit()
+        self.dead.reinit()
+
     def __str__(self):
         pop = self.exposed.size() + self.infected.size() + \
             self.hospitalized.size() + self.intensive_care.size() + \
             self.exit_intensive_care.size() + self.recovered.size() + self.dead.size()
-        return f'{self.exposed} {self.infected} {self.hospitalized} {self.intensive_care} {self.exit_intensive_care} {self.recovered} {self.dead} POP={pop}'
+        return f'{self.exposed} {self.infected} {self.hospitalized} {self.intensive_care} {self.exit_intensive_care} {self.recovered} {self.dead} POP={round(pop,2)}'
 
     def increment_time(self):
         self.time += 1
@@ -69,10 +79,12 @@ class State:
     # compute Delta Box(t - tDelay)
     def delta(self, history, boxname, delay):
         past_state = history.get_last_state(self.time - delay)
-        previous_past_state = history.get_last_state(self.time - delay - 1)
-        if past_state == None or previous_past_state == None:
+        # previous_past_state = history.get_last_state(self.time - delay - 1)
+        if past_state == None:
             return 0
-        return getattr(past_state, boxname).size() - getattr(previous_past_state, boxname).size()
+        res = getattr(past_state, boxname).input()
+        # - \ getattr(previous_past_state, boxname).size()
+        return res
 
     def exposed_to_infected(self, history, next_state):
         state0 = history.get_last_state(self.get_time0())

@@ -15,6 +15,7 @@ class Simulator:
         self._history.store(current_state)
 
         next_state = copy.deepcopy(current_state)
+        next_state.reinit_boxes()
         next_state.increment_time()
 
         current_state.exposed_to_infected(self._history, next_state)
