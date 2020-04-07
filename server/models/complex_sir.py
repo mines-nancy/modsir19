@@ -11,7 +11,7 @@ def model(population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg
     infected = [1]
     hospitalized = [0]
     intensive_care = [0]
-    exit_intensive = [0]
+    exit_intensive_care = [0]
     dead = [0]
 
     new_infected = [1]
@@ -21,7 +21,7 @@ def model(population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg
 
     for time in range(1, lim_time):
 
-        day = model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population,
+        day = model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive_care, dead, population,
                         new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, kpe, kem, kmg, kmh, khr, khg, krd, krg,
                         tem, tmg, tmh, thg, thr, trsr, time)
 
@@ -30,7 +30,7 @@ def model(population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg
         infected = day[2]
         hospitalized = day[3]
         intensive_care = day[4]
-        exit_intensive = day[5]
+        exit_intensive_care = day[5]
         dead = day[6]
 
         new_infected = day[7]
@@ -38,10 +38,10 @@ def model(population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg
         new_intensive_care = day[9]
         new_exit_intensive = day[10]
 
-    return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive
+    return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
 
 
-def model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive, dead, population,
+def model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive_care, dead, population,
               new_infected, new_hospitalized, new_intensive_care, new_exit_intensive, kpe, kem, kmg, kmh, khr, khg,
               krd, krg, tem, tmg, tmh, thg, thr, trsr, time):
     '''
@@ -54,7 +54,7 @@ def model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_i
     infect = deepcopy(infected)
     hospitalize = deepcopy(hospitalized)
     intensive = deepcopy(intensive_care)
-    exi = deepcopy(exit_intensive)
+    exi = deepcopy(exit_intensive_care)
     death = deepcopy(dead)
 
     new_infect = deepcopy(new_infected)
@@ -72,7 +72,7 @@ def model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_i
 
     # On calcule le nombre de personnes dans chaque service
     recover.append(recover_day(tmg, thg, kmg, khg, krg, time,
-                               recovered, new_infected, new_hospitalized, exit_intensive))
+                               recovered, new_infected, new_hospitalized, exit_intensive_care))
     expose.append(expose_day(time, kem, tem, exposed, infected))
     infect.append(infect_day(time, kem, kmg, kmh, tem, tmg,
                              tmh, exposed, infected, new_infected))
@@ -154,22 +154,22 @@ def intensive_day(time, khr, thr, trsr, new_intensive_care, new_hospitalized):
 #
 
 
-def exi_day(time, krg, krd, trsr, new_intensive_care, exit_intensive):
+def exi_day(time, krg, krd, trsr, new_intensive_care, exit_intensive_care):
 
     e1 = intensive_to_exi(time, trsr, new_intensive_care)
-    e2 = recover_3(krg, exit_intensive)
-    e3 = exi_to_death(krd, exit_intensive)
+    e2 = recover_3(krg, exit_intensive_care)
+    e3 = exi_to_death(krd, exit_intensive_care)
 
-    return exit_intensive[-1] + e1 - e2 - e3
+    return exit_intensive_care[-1] + e1 - e2 - e3
 
 
 #
 
-def death_day(dead, exit_intensive, krd):
+def death_day(dead, exit_intensive_care, krd):
     '''
     Calcule le volume de gens morts
     '''
-    d = exi_to_death(krd, exit_intensive)
+    d = exi_to_death(krd, exit_intensive_care)
 
     return dead[-1] + d
 
@@ -209,7 +209,7 @@ def recover_2(time, khg, thg, new_hospitalized):
 
 def recover_3(krg, new_exit_intensive):
     '''
-    Calcule la variation entre exit_intensive et recovered
+    Calcule la variation entre exit_intensive_care et recovered
     '''
     return krg * new_exit_intensive[-1]
 
@@ -255,7 +255,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     legende = ['recovered', 'exposed', 'infected', 'dead',
-               'hospitalized', 'intensive_care', 'exit_intensive']
+               'hospitalized', 'intensive_care', 'exit_intensive_care']
 
     population = 500000  # population
 

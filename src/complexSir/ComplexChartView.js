@@ -1,11 +1,8 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
-import { dummyModel } from '../model/sir';
 import { generer_dates } from '../model/generateur_dates';
 
 const jour_0 = new Date(2020, 0, 23);
-
-var tab_dates = generer_dates(jour_0, dummyModel().healthy.length);
 
 export const Chart = (values) => {
     const {
@@ -15,7 +12,7 @@ export const Chart = (values) => {
         dead,
         hospitalized,
         intensive_care,
-        exit_intensive,
+        exit_intensive_care,
     } = values;
 
     const lineData = {
@@ -28,8 +25,8 @@ export const Chart = (values) => {
                 borderWidth: 2,
             },
             {
-                label: ['exit_intensive'],
-                data: exit_intensive,
+                label: ['exit_intensive_care'],
+                data: exit_intensive_care,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
                 borderWidth: 2,
             },

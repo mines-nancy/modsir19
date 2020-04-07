@@ -29,8 +29,8 @@ export const ComplexSIRView = () => {
     return (
         <div className={classes.root}>
             <Typography variant="h5" component="h2">
-                Entrer les paramètres du modèle SIR complexe dans les champs suivants puis cliquer sur
-                CALCULER.
+                Entrer les paramètres du modèle SIR complexe dans les champs suivants puis cliquer
+                sur CALCULER.
             </Typography>
             <Grid container justify="center" alignItems="center" spacing={3}>
                 <Grid item xs={12}>

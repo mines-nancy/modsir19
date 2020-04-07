@@ -1,6 +1,6 @@
-from History import History
-from State import State
-from Box import Box
+from models.history import History
+from models.state import State
+from models.box import Box
 import copy
 
 
@@ -34,6 +34,45 @@ class Simulator:
     def get_state(self):
         return self._state
 
+    def extract_series(self):
+        recovered = self._history.extract_serie('recovered')
+        exposed = self._history.extract_serie('exposed')
+        infected = self._history.extract_serie('infected')
+        hospitalized = self._history.extract_serie('hospitalized')
+        intensive_care = self._history.extract_serie('intensive_care')
+        exit_intensive_care = self._history.extract_serie(
+            'exit_intensive_care')
+        dead = self._history.extract_serie('dead')
+
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+
+
+def run_simulator(population,
+                  kpe, kem, kmg, kmh, khr, khg, krd, krg,
+                  tem, tmg, tmh, thg, thr, trsr, lim_time):
+    initial_state = State(kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, time=0,
+                          population=Box('P'),
+                          recovered=Box('G'),
+                          exposed=Box('E'),
+                          infected=Box('M'),
+                          hospitalized=Box('H'),
+                          intensive_care=Box('R'),
+                          exit_intensive_care=Box('SR'),
+                          dead=Box('D')
+                          )
+    initial_state.exposed.add(kpe*population)
+    initial_state.exposed.remove(1)
+    initial_state.infected.add(1)
+
+    simulator = Simulator(initial_state)
+    # print(simulator.get_state())
+
+    for i in range(lim_time):
+        simulator.step()
+        # print(simulator.get_state())
+
+    return simulator.extract_series()
+
 
 if __name__ == "__main__":
     initial_state = State(kpe=0.6,
@@ -60,12 +99,14 @@ if __name__ == "__main__":
                           dead=Box('D')
                           )
 
-    initial_state.exposed.add(1000)
+    population = 300000
+    initial_state.exposed.add(initial_state.kpe*population)
+    initial_state.exposed.remove(1)
     initial_state.infected.add(1)
 
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
-    for i in range(200):
+    for i in range(6*30):
         simulator.step()
         print(simulator.get_state())

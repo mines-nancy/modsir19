@@ -10,6 +10,7 @@ from flask_cors import CORS, cross_origin
 
 from models.simple_sir import simple_sir
 from models.complex_sir import model
+from models.simulator import run_simulator
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -61,16 +62,12 @@ def get_complex_sir():
 
     population = int(input["population"])
     lim_time = int(input["lim_time"])
-    r_0 = input["r_0"]
+    r0 = input["r0"]
 
     kpe = input["kpe"]
-    kmg = input["kmg"]
-    khr = input["khr"]
     krd = input["krd"]
-    khg = 1 - khr
-    kmh = 1 - kmg
-    krg = 1 - krd
-
+    taux_tgs = input["taux_tgs"]
+    taux_thr = input["taux_thr"]
     tem = int(input["tem"])
     tmg = int(input["tmg"])
     tmh = int(input["tmh"])
@@ -78,12 +75,24 @@ def get_complex_sir():
     thr = int(input["thr"])
     trsr = int(input["trsr"])
 
-    kem = r_0 / (kmg*tmg + kmg*tmh)
+    kmg = taux_tgs
+    kmh = 1 - taux_tgs
+    kem = r0 / (kmg*tmg + kmh*tmh)
+    khr = taux_thr/(1 - taux_tgs)
+    khg = 1-taux_thr/(1-taux_tgs)
+    krg = 1 - krd
 
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(
+    # model v1
+    # recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = model(
+    # population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
+
+    # model v2
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = run_simulator(
         population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
-    data = {"recovered":       recovered, "exposed": exposed, "infected": infected, "dead": dead, "hospitalized": hospitalized,
-            "intensive_care": intensive_care, "exit_intensive": exit_intensive}
+
+    data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
+            "hospitalized": hospitalized, "intensive_care": intensive_care,
+            "exit_intensive_care": exit_intensive_care}
 
     return jsonify(data)
 

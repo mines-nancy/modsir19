@@ -6,7 +6,10 @@ class Box:
         self._output = 0  # number of outputs
 
     def __str__(self):
-        return f'{self._name}: {round(self.size(),2)}'
+        input = round(self._input, 2)
+        output = round(self._output, 2)
+        size = round(self.size(), 2)
+        return f'{self._name}[+{input},-{output}]: {size}'
 
     def size(self):
         return self._value + self._input - self._output

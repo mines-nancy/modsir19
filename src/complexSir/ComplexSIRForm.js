@@ -40,25 +40,25 @@ const validationSchema = (t) =>
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        r_0: Yup.number()
+        krd: Yup.number()
+            .typeError('Veuillez entrer un nombre')
+            .positive('Veuillez entrer un nombre entre 0 et 1.')
+            .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
+            .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
+            .required('Ce champs est obligatoire'),
+        r0: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 5.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 5.')
             .max(5, 'Veuillez entrer un nombre entre 0 et 5.')
             .required('Ce champs est obligatoire'),
-        kmg: Yup.number()
+        taux_tgs: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        khr: Yup.number()
-            .typeError('Veuillez entrer un nombre')
-            .positive('Veuillez entrer un nombre entre 0 et 1.')
-            .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
-            .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
-            .required('Ce champs est obligatoire'),
-        krd: Yup.number()
+        taux_thr: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
@@ -107,10 +107,10 @@ export const SIRForm = ({ onChange }) => {
     const initialValues = {
         population: 500000,
         kpe: 0.6,
-        r_0: 2.3,
-        kmg: 0.81,
-        khr: 0.7,
-        krd: 1,
+        krd: 0.5,
+        r0: 2.3,
+        taux_tgs: 0.81,
+        taux_thr: 0.05,
         tem: 6,
         tmg: 9,
         tmh: 6,
@@ -128,10 +128,10 @@ export const SIRForm = ({ onChange }) => {
                 onChange({
                     population: parseFloat(values['population']),
                     kpe: parseFloat(values['kpe']),
-                    r_0: parseFloat(values['r_0']),
-                    kmg: parseFloat(values['kmg']),
-                    khr: parseFloat(values['khr']),
                     krd: parseFloat(values['krd']),
+                    r0: parseFloat(values['r0']),
+                    taux_tgs: parseFloat(values['taux_tgs']),
+                    taux_thr: parseFloat(values['taux_thr']),
                     tem: parseFloat(values['tem']),
                     tmg: parseFloat(values['tmg']),
                     tmh: parseFloat(values['tmh']),
@@ -160,13 +160,13 @@ export const SIRForm = ({ onChange }) => {
                                 <FormikFormText name="kpe" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="r_0" formikProps={props} />
+                                <FormikFormText name="r0" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="kmg" formikProps={props} />
+                                <FormikFormText name="taux_tgs" formikProps={props} />
                             </Grid>
-r_0                            <Grid item>
-                                <FormikFormText name="khr" formikProps={props} />
+                            <Grid item>
+                                <FormikFormText name="taux_thr" formikProps={props} />
                             </Grid>
                             <Grid item>
                                 <FormikFormText name="krd" formikProps={props} />
