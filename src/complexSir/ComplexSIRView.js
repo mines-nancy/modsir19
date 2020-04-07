@@ -1,8 +1,8 @@
 import React from 'react';
-import { SIRForm } from './SIRForm';
+import { SIRForm } from './ComplexSIRForm';
 import { Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Chart } from './ChartView';
+import { Chart } from './ComplexChartView';
 import api from '../utils/api';
 
 const useStyles = makeStyles((theme) =>
@@ -13,14 +13,14 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-export const SIRView = () => {
+export const ComplexSIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
     // eslint-disable-next-line no-console
     console.log({ values });
 
     const handleClick = async (parameters) => {
-        const response = await api.get('/get_simple_sir', {
+        const response = await api.get('/get_complex_sir', {
             params: { parameters },
         });
         setValues(response.data);
@@ -29,7 +29,7 @@ export const SIRView = () => {
     return (
         <div className={classes.root}>
             <Typography variant="h5" component="h2">
-                Entrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
+                Entrer les paramètres du modèle SIR complexe dans les champs suivants puis cliquer sur
                 CALCULER.
             </Typography>
             <Grid container justify="center" alignItems="center" spacing={3}>
@@ -37,7 +37,7 @@ export const SIRView = () => {
                     <SIRForm onChange={handleClick} />
                 </Grid>
                 {values && (
-                    <Grid item xs={6}>
+                    <Grid item xs={8}>
                         {' '}
                         {Chart(values)}{' '}
                     </Grid>
