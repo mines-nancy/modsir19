@@ -127,7 +127,6 @@ class State:
         delta = 0
         for i in range(len(nb_exit_after_n_days)):
             delta += nb_exit_after_n_days[i] * self.delta(history, 'intensive_care', (1+i))
-        print(f'exit: {delta}')
         next_state.intensive_care.remove(delta)
         next_state.exit_intensive_care.add(delta)
 

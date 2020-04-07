@@ -10,6 +10,8 @@ class History:
 
     def get_last_state(self,time):
         states = self.get_states(time)
+        if len(states) > 1:
+            print(f'Warning: {len(states)} states for time {time}')
         if len(states) > 0:
             return states[-1]
         return None
