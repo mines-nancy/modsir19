@@ -34,62 +34,62 @@ const validationSchema = (t) =>
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
             .required('Ce champs est obligatoire'),
-        Kpe: Yup.number()
+        kpe: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        Kei: Yup.number()
+        kem: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        Kir: Yup.number()
+        kmg: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        Khic: Yup.number()
+        khr: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        Ked: Yup.number()
+        krd: Yup.number()
             .typeError('Veuillez entrer un nombre')
             .positive('Veuillez entrer un nombre entre 0 et 1.')
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        Tei: Yup.number()
+        tem: Yup.number()
             .typeError('Veuillez entrer un nombre entier positif')
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
             .required('Ce champs est obligatoire'),
-        Tir: Yup.number()
+        tmg: Yup.number()
             .typeError('Veuillez entrer un nombre entier positif')
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
             .required('Ce champs est obligatoire'),
-        Tih: Yup.number()
+        tmh: Yup.number()
             .typeError('Veuillez entrer un nombre entier positif')
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
             .required('Ce champs est obligatoire'),
-        Thr: Yup.number()
+        thg: Yup.number()
             .typeError('Veuillez entrer un nombre entier positif')
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
             .required('Ce champs est obligatoire'),
-        Thic: Yup.number()
+        thr: Yup.number()
             .typeError('Veuillez entrer un nombre entier positif')
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
-            .required('Ce champs est obligatoire'),    
-        Tice: Yup.number()
+            .required('Ce champs est obligatoire'),
+        trsr: Yup.number()
             .typeError('Veuillez entrer un nombre entier positif')
             .positive('Veuillez entrer un nombre positif.')
             .min(0, 'Veuillez entrer un nombre positif.')
@@ -106,20 +106,20 @@ export const SIRForm = ({ onChange }) => {
     const t = useTranslate();
     const initialValues = {
         population: 500000,
-        Kpe: 0.6,
-        Kei: 0.24,
-        Kir: 0.81,
-        Kih: 1 - 0.81,
-        Khic: 0.7,
-        Khr: 1 - 0.7,
-        Ked: 1,
-        Ker: 1 - 1,
-        Tei: 6,
-        Tir: 9,
-        Tih: 6,
-        Thr: 6,
-        Thic: 1,
-        Tice: 10,
+        kpe: 0.6,
+        kem: 0.24,
+        kmg: 0.81,
+        kmh: 1 - 0.81,
+        khr: 0.7,
+        khg: 1 - 0.7,
+        krd: 1,
+        krg: 1 - 1,
+        tem: 6,
+        tmg: 9,
+        tmh: 6,
+        thg: 6,
+        thr: 1,
+        trsr: 10,
         lim_time: 250,
     };
 
@@ -130,20 +130,20 @@ export const SIRForm = ({ onChange }) => {
             onSubmit={(values, { setSubmitting }) => {
                 onChange({
                     population: parseFloat(values['population']),
-                    Kpe: parseFloat(values['Kpe']),
-                    Kei: parseFloat(values['Kei']),
-                    Kir: parseFloat(values['Kir']),
-                    Kih: parseFloat(values['Kih']),
-                    Khic: parseFloat(values['Khic']),
-                    Khr: parseFloat(values['Khr']),
-                    Ked: parseFloat(values['Ked']),
-                    Ker: parseFloat(values['Ker']),
-                    Tei: parseFloat(values['Tei']),
-                    Tir: parseFloat(values['Tir']),
-                    Tih: parseFloat(values['Tih']),
-                    Thr: parseFloat(values['Thr']),
-                    Thic: parseFloat(values['Thic']),
-                    Tice: parseFloat(values['Tice']),
+                    kpe: parseFloat(values['kpe']),
+                    kem: parseFloat(values['kem']),
+                    kmg: parseFloat(values['kmg']),
+                    kmh: parseFloat(values['kmh']),
+                    khr: parseFloat(values['khr']),
+                    khg: parseFloat(values['khg']),
+                    krd: parseFloat(values['krd']),
+                    krg: parseFloat(values['krg']),
+                    tem: parseFloat(values['tem']),
+                    tmg: parseFloat(values['tmg']),
+                    tmh: parseFloat(values['tmh']),
+                    thg: parseFloat(values['thg']),
+                    thr: parseFloat(values['thr']),
+                    trsr: parseFloat(values['trsr']),
                     lim_time: parseFloat(values['lim_time']),
                 });
             }}
@@ -163,46 +163,46 @@ export const SIRForm = ({ onChange }) => {
                                 <FormikFormText name="population" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Kpe" formikProps={props} />
+                                <FormikFormText name="kpe" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Kei" formikProps={props} />
+                                <FormikFormText name="kem" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Kir" formikProps={props} />
+                                <FormikFormText name="kmg" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Kih" formikProps={props} />
+                                <FormikFormText name="kmh" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Khic" formikProps={props} />
+                                <FormikFormText name="khr" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Khr" formikProps={props} />
+                                <FormikFormText name="khg" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Ked" formikProps={props} />
+                                <FormikFormText name="krd" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Ker" formikProps={props} />
+                                <FormikFormText name="krg" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Tei" formikProps={props} />
+                                <FormikFormText name="tem" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Tir" formikProps={props} />
+                                <FormikFormText name="tmg" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Tih" formikProps={props} />
+                                <FormikFormText name="tmh" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Thr" formikProps={props} />
+                                <FormikFormText name="thg" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Thic" formikProps={props} />
+                                <FormikFormText name="thr" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="Tice" formikProps={props} />
+                                <FormikFormText name="trsr" formikProps={props} />
                             </Grid>
                             <Grid item>
                                 <FormikFormText name="lim_time" formikProps={props} />

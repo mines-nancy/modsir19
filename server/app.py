@@ -15,6 +15,7 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+
 def add(x, y):
     return x + y
 
@@ -27,8 +28,8 @@ def get_data_sample():
 # Sample GET request with parameters
 @app.route('/get_add_data', methods=["GET"])
 def get_add_data():
-    input=json.loads(request.args.get('inputFunction'))
-    return jsonify({'result': add(input['x'],input['y'])})
+    input = json.loads(request.args.get('inputFunction'))
+    return jsonify({'result': add(input['x'], input['y'])})
 
 
 # Sample POST request
@@ -44,7 +45,7 @@ def add_data():
 # Sample SIR GET request
 @app.route('/get_simple_sir', methods=["GET"])
 def get_simple_sir():
-    input=json.loads(request.args.get('parameters'))
+    input = json.loads(request.args.get('parameters'))
     print(input)
     s0 = input["s0"]
     lambd = input["lambda"]
@@ -59,25 +60,26 @@ def get_complex_sir():
     print(input)
 
     population = int(input["population"])
-    Kpe = input["Kpe"]
-    Kei = input["Kei"]
-    Kir = input["Kir"]
-    Khic = input["Khic"]
-    Ked = input["Ked"]
-    Khr = 1 - Khic
-    Kih = 1 - Kir
-    Ker = 1 - Ked
+    kpe = input["kpe"]
+    kem = input["kem"]
+    kmg = input["kmg"]
+    khr = input["khr"]
+    krd = input["krd"]
+    khg = 1 - khr
+    kmh = 1 - kmg
+    krg = 1 - krd
 
-    Tei = int(input["Tei"])
-    Tir = int(input["Tir"])
-    Tih = int(input["Tih"])
-    Thr = int(input["Thr"])
-    Thic = int(input["Thic"])
-    Tice = int(input["Tice"])
+    tem = int(input["tem"])
+    tmg = int(input["tmg"])
+    tmh = int(input["tmh"])
+    thg = int(input["thg"])
+    thr = int(input["thr"])
+    trsr = int(input["trsr"])
 
     lim_time = int(input["lim_time"])
 
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(population, Kpe, Kei, Kir, Kih, Khic, Khr, Ked, Ker, Tei, Tir, Tih, Thr, Thic, Tice, lim_time)
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(
+        population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
     data = {"recovered":       recovered, "exposed": exposed, "infected": infected, "dead": dead, "hospitalized": hospitalized,
             "intensive_care": intensive_care, "exit_intensive": exit_intensive}
 
