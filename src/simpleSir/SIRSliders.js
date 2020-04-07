@@ -14,6 +14,9 @@ const useStyles = makeStyles({
     input: {
         width: 42,
     },
+    slider: {
+        width: 150,
+    },
 });
 
 export default function Sliders({ onChange }) {
@@ -25,6 +28,7 @@ export default function Sliders({ onChange }) {
         lambda: 12,
         beta: 0.5,
     };
+
 
     const [value_s0, setValue_s0] = React.useState(0);
     const [value_lambda, setValue_lambda] = React.useState(1);
@@ -98,117 +102,115 @@ export default function Sliders({ onChange }) {
     };
 
     return (
-                    <Grid
-                        className={classes.grid}
-                        container
-                        direction="row"
-                        justify="center"
-                        alignItems="center"
-                    >
-                            <Grid item>
-                                <Typography id="input-slider" gutterBottom>
-                                    Paramètre s0
-                                </Typography>
-                                <Grid container spacing={2} alignItems="center">
-                                    <Grid item xs>
-                                        <Slider
-                                            value={typeof value_s0 === 'number' ? value_s0 : s0.min}
-                                            min={s0.min}
-                                            max={s0.max}
-                                            step={s0.step}
-                                            onChange={handleSliderChange_s0}
-                                            aria-labelledby="input-slider"
-                                        />
-                                    </Grid>
-                                    <Grid item>
-                                        <Input
-                                            className={classes.input}
-                                            value={value_s0}
-                                            margin="dense"
-                                            onChange={handleInputChange_s0}
-                                            onBlur={handleBlur_s0(value_s0)}
-                                            inputProps={{
-                                                step: s0.step,
-                                                min: s0.min,
-                                                max: s0.max,
-                                                type: 'number',
-                                                'aria-labelledby': 'input-slider',
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item>
-                                <Typography id="input-slider" gutterBottom>
-                                    Paramètre lambda
-                                </Typography>
-                                <Grid container spacing={2} alignItems="center">
-                                    <Grid item xs>
-                                        <Slider
-                                            value={
-                                                typeof value_lambda === 'number'
-                                                    ? value_lambda
-                                                    : lambda.max
-                                            }
-                                            min={lambda.min}
-                                            max={lambda.max}
-                                            step={lambda.step}
-                                            onChange={handleSliderChange_lambda}
-                                            aria-labelledby="input-slider"
-                                        />
-                                    </Grid>
-                                    <Grid item>
-                                        <Input
-                                            className={classes.input}
-                                            value={value_lambda}
-                                            margin="dense"
-                                            onChange={handleInputChange_lambda}
-                                            onBlur={handleBlur_lambda(value_lambda)}
-                                            inputProps={{
-                                                step: lambda.step,
-                                                min: lambda.min,
-                                                max: lambda.max,
-                                                type: 'number',
-                                                'aria-labelledby': 'input-slider',
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item>
-                                <Typography id="input-slider" gutterBottom>
-                                    Paramètre beta
-                                </Typography>
-                                <Grid container spacing={2} alignItems="center">
-                                    <Grid item xs>
-                                        <Slider
-                                            value={typeof value_beta === 'number' ? value_beta : 0}
-                                            min={beta.min}
-                                            max={beta.max}
-                                            step={beta.step}
-                                            onChange={handleSliderChange_beta}
-                                            aria-labelledby="input-slider"
-                                        />
-                                    </Grid>
-                                    <Grid item>
-                                        <Input
-                                            className={classes.input}
-                                            value={value_beta}
-                                            margin="dense"
-                                            onChange={handleInputChange_beta}
-                                            onBlur={handleBlur_beta(value_beta)}
-                                            inputProps={{
-                                                step: beta.step,
-                                                min: beta.min,
-                                                max: beta.max,
-                                                type: 'number',
-                                                'aria-labelledby': 'input-slider',
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                                </Grid>
-                                </Grid>
-                            
+        <Grid
+            className={classes.grid}
+            container
+            direction="column"
+            justify="right"
+            alignItems="center"
+        >
+            <Grid item>
+                <Typography id="input-slider" gutterBottom>
+                    Paramètre s0
+                </Typography>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={9}>
+                        <Slider
+                            className={classes.slider}
+                            value={typeof value_s0 === 'number' ? value_s0 : s0.min}
+                            min={s0.min}
+                            max={s0.max}
+                            step={s0.step}
+                            onChange={handleSliderChange_s0}
+                            aria-labelledby="input-slider"
+                        />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Input
+                            className={classes.input}
+                            value={value_s0}
+                            margin="dense"
+                            onChange={handleInputChange_s0}
+                            onBlur={handleBlur_s0(value_s0)}
+                            inputProps={{
+                                step: s0.step,
+                                min: s0.min,
+                                max: s0.max,
+                                type: 'number',
+                                'aria-labelledby': 'input-slider',
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item>
+                <Typography id="input-slider" gutterBottom>
+                    Paramètre lambda
+                </Typography>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs>
+                        <Slider
+                            className={classes.slider}
+                            value={typeof value_lambda === 'number' ? value_lambda : lambda.max}
+                            min={lambda.min}
+                            max={lambda.max}
+                            step={lambda.step}
+                            onChange={handleSliderChange_lambda}
+                            aria-labelledby="input-slider"
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Input
+                            className={classes.input}
+                            value={value_lambda}
+                            margin="dense"
+                            onChange={handleInputChange_lambda}
+                            onBlur={handleBlur_lambda(value_lambda)}
+                            inputProps={{
+                                step: lambda.step,
+                                min: lambda.min,
+                                max: lambda.max,
+                                type: 'number',
+                                'aria-labelledby': 'input-slider',
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item>
+                <Typography id="input-slider" gutterBottom>
+                    Paramètre beta
+                </Typography>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs>
+                        <Slider
+                            className={classes.slider}
+                            value={typeof value_beta === 'number' ? value_beta : 0}
+                            min={beta.min}
+                            max={beta.max}
+                            step={beta.step}
+                            onChange={handleSliderChange_beta}
+                            aria-labelledby="input-slider"
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Input
+                            className={classes.input}
+                            value={value_beta}
+                            margin="dense"
+                            onChange={handleInputChange_beta}
+                            onBlur={handleBlur_beta(value_beta)}
+                            inputProps={{
+                                step: beta.step,
+                                min: beta.min,
+                                max: beta.max,
+                                type: 'number',
+                                'aria-labelledby': 'input-slider',
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
     );
 }

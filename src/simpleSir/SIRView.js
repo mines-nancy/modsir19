@@ -34,11 +34,14 @@ export const SIRView = () => {
                 CALCULER.
             </Typography>
            
-            <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
+            <Grid container direction="row" justify="center" alignItems="center" spacing={3}>
                 <Grid item xs={3}>
                     <Sliders onChange={handleClick} />
                 </Grid>
-                {values && <Grid item xs = {6}> {Chart(values)} </Grid>}
+                <Grid item xs = {6}>
+                {values && <Grid item> {Chart(values)} </Grid>}
+                </Grid>
+                
             </Grid>
         </div>
     );
