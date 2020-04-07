@@ -30,9 +30,9 @@ export default function Sliders({ onChange }) {
     const [value_lambda, setValue_lambda] = React.useState(1);
     const [value_beta, setValue_beta] = React.useState(0);
 
-    const s0 = { step: 0.1, min: 0, max: 1 };
+    const s0 = { step: 0.01, min: 0, max: 1 };
     const lambda = { step: 1, min: 1, max: 20 };
-    const beta = { step: 0.1, min: 0, max: 1 };
+    const beta = { step: 0.01, min: 0, max: 1 };
 
     const handleSliderChange_s0 = (event, newValue) => {
         setValue_s0(newValue);
@@ -98,19 +98,6 @@ export default function Sliders({ onChange }) {
     };
 
     return (
-        <Formik
-            enableReinitialize
-            initialValues={initialValues}
-            onSubmit={(values, { setSubmitting }) => {
-                onChange({
-                    s0: parseFloat(value_s0),
-                    lambda: parseFloat(value_lambda),
-                    beta: parseFloat(value_beta),
-                });
-            }}
-        >
-            {(props) => (
-                <Form>
                     <Grid
                         className={classes.grid}
                         container
@@ -118,7 +105,6 @@ export default function Sliders({ onChange }) {
                         justify="center"
                         alignItems="center"
                     >
-                        <FormControl className={classes.formControl}>
                             <Grid item>
                                 <Typography id="input-slider" gutterBottom>
                                     Paramètre s0
@@ -221,21 +207,8 @@ export default function Sliders({ onChange }) {
                                         />
                                     </Grid>
                                 </Grid>
-                            </Grid>
-                        </FormControl>
-                        <Grid item>
-                            <Button
-                                className={classes.actions}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                            >
-                                {t('form.compute')}
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Form>
-            )}
-        </Formik>
+                                </Grid>
+                                </Grid>
+                            
     );
 }
