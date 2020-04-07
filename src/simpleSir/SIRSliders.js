@@ -36,6 +36,11 @@ export default function Sliders({ onChange }) {
 
     const handleSliderChange_s0 = (event, newValue) => {
         setValue_s0(newValue);
+        onChange({
+            s0: parseFloat(value_s0),
+            lambda: parseFloat(value_lambda),
+            beta: parseFloat(value_beta),
+        });
     };
 
     const handleInputChange_s0 = (event) => {
@@ -52,6 +57,11 @@ export default function Sliders({ onChange }) {
 
     const handleSliderChange_lambda = (event, newValue) => {
         setValue_lambda(newValue);
+        onChange({
+            s0: parseFloat(value_s0),
+            lambda: parseFloat(value_lambda),
+            beta: parseFloat(value_beta),
+        });
     };
 
     const handleInputChange_lambda = (event) => {
@@ -68,6 +78,11 @@ export default function Sliders({ onChange }) {
 
     const handleSliderChange_beta = (event, newValue) => {
         setValue_beta(newValue);
+        onChange({
+            s0: parseFloat(value_s0),
+            lambda: parseFloat(value_lambda),
+            beta: parseFloat(value_beta),
+        });
     };
 
     const handleInputChange_beta = (event) => {
