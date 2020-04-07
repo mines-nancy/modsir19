@@ -60,8 +60,10 @@ def get_complex_sir():
     print(input)
 
     population = int(input["population"])
+    lim_time = int(input["lim_time"])
+    r_0 = input["r_0"]
+
     kpe = input["kpe"]
-    kem = input["kem"]
     kmg = input["kmg"]
     khr = input["khr"]
     krd = input["krd"]
@@ -76,7 +78,7 @@ def get_complex_sir():
     thr = int(input["thr"])
     trsr = int(input["trsr"])
 
-    lim_time = int(input["lim_time"])
+    kem = r_0 / (kmg*tmg + kmg*tmh)
 
     recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive = model(
         population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)

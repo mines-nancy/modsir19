@@ -75,7 +75,7 @@ export const Chart = (values) => {
                 options={{
                     title: {
                         display: true,
-                        text: 'Modèle SIR Complexezzzzzz',
+                        text: 'Modèle SIR Complexe',
                         fontSize: 25,
                     },
                     scales: {

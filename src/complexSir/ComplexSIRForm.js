@@ -40,11 +40,11 @@ const validationSchema = (t) =>
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        kem: Yup.number()
+        r_0: Yup.number()
             .typeError('Veuillez entrer un nombre')
-            .positive('Veuillez entrer un nombre entre 0 et 1.')
-            .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
-            .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
+            .positive('Veuillez entrer un nombre entre 0 et 5.')
+            .min(0, 'Veuillez entrer un nombre entre 0 et 5.')
+            .max(5, 'Veuillez entrer un nombre entre 0 et 5.')
             .required('Ce champs est obligatoire'),
         kmg: Yup.number()
             .typeError('Veuillez entrer un nombre')
@@ -107,13 +107,10 @@ export const SIRForm = ({ onChange }) => {
     const initialValues = {
         population: 500000,
         kpe: 0.6,
-        kem: 0.24,
+        r_0: 2.3,
         kmg: 0.81,
-        kmh: 1 - 0.81,
         khr: 0.7,
-        khg: 1 - 0.7,
         krd: 1,
-        krg: 1 - 1,
         tem: 6,
         tmg: 9,
         tmh: 6,
@@ -131,13 +128,10 @@ export const SIRForm = ({ onChange }) => {
                 onChange({
                     population: parseFloat(values['population']),
                     kpe: parseFloat(values['kpe']),
-                    kem: parseFloat(values['kem']),
+                    r_0: parseFloat(values['r_0']),
                     kmg: parseFloat(values['kmg']),
-                    kmh: parseFloat(values['kmh']),
                     khr: parseFloat(values['khr']),
-                    khg: parseFloat(values['khg']),
                     krd: parseFloat(values['krd']),
-                    krg: parseFloat(values['krg']),
                     tem: parseFloat(values['tem']),
                     tmg: parseFloat(values['tmg']),
                     tmh: parseFloat(values['tmh']),
@@ -166,25 +160,16 @@ export const SIRForm = ({ onChange }) => {
                                 <FormikFormText name="kpe" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="kem" formikProps={props} />
+                                <FormikFormText name="r_0" formikProps={props} />
                             </Grid>
                             <Grid item>
                                 <FormikFormText name="kmg" formikProps={props} />
                             </Grid>
-                            <Grid item>
-                                <FormikFormText name="kmh" formikProps={props} />
-                            </Grid>
-                            <Grid item>
+r_0                            <Grid item>
                                 <FormikFormText name="khr" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="khg" formikProps={props} />
-                            </Grid>
-                            <Grid item>
                                 <FormikFormText name="krd" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="krg" formikProps={props} />
                             </Grid>
                             <Grid item>
                                 <FormikFormText name="tem" formikProps={props} />
