@@ -17,7 +17,6 @@ class State:
                  tmh: int,
                  thg: int,
                  thr: int,
-                 tice: int,
                  time,
                  population,
                  recovered,
@@ -52,7 +51,6 @@ class State:
         self.tmh = tmh
         self.thg = thg
         self.thr = thr
-        self.tice = tice
 
     def reinit_boxes(self):
         self.population.reinit()
@@ -125,7 +123,11 @@ class State:
         next_state.intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history, next_state):
-        delta = 0.7 * self.delta(history, 'intensive_care', 1)
+        nb_exit_after_n_days = [0,0,0,0.01,0.02,0.03,0.04,0.05,0.07,0.08,0.10,0.12,0.14,0.13,0.09,0.05,0.03,0.02,0.01,0.01]
+        delta = 0
+        for i in range(len(nb_exit_after_n_days)):
+            delta += nb_exit_after_n_days[i] * self.delta(history, 'intensive_care', (1+i))
+        print(f'exit: {delta}')
         next_state.intensive_care.remove(delta)
         next_state.exit_intensive_care.add(delta)
 

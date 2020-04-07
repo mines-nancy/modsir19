@@ -49,7 +49,6 @@ if __name__ == "__main__":
                           tmh=6,
                           thg=6,
                           thr=1,
-                          tice=0,
                           time=0,
                           population=Box('P'),
                           recovered=Box('G'),
@@ -61,12 +60,12 @@ if __name__ == "__main__":
                           dead=Box('D')
                           )
 
-    initial_state.exposed.add(100)
+    initial_state.exposed.add(1000)
     initial_state.infected.add(1)
 
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
-    for i in range(100):
+    for i in range(200):
         simulator.step()
         print(simulator.get_state())
