@@ -32,11 +32,16 @@ export const SIRView = () => {
                 Entrer les paramètres du modèle SIR dans les champs suivants puis cliquer sur
                 CALCULER.
             </Typography>
-            <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
+            <Grid container justify="center" alignItems="center" spacing={3}>
                 <Grid item xs={12}>
                     <SIRForm onChange={handleClick} />
                 </Grid>
-                {values && <Grid item> {Chart(values)} </Grid>}
+                {values && (
+                    <Grid item xs={6}>
+                        {' '}
+                        {Chart(values)}{' '}
+                    </Grid>
+                )}
             </Grid>
         </div>
     );
