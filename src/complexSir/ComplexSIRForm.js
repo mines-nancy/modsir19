@@ -109,11 +109,8 @@ export const SIRForm = ({ onChange }) => {
         kpe: 0.6,
         kem: 0.24,
         kmg: 0.81,
-        kmh: 1 - 0.81,
         khr: 0.7,
-        khg: 1 - 0.7,
         krd: 1,
-        krg: 1 - 1,
         tem: 6,
         tmg: 9,
         tmh: 6,
@@ -133,11 +130,8 @@ export const SIRForm = ({ onChange }) => {
                     kpe: parseFloat(values['kpe']),
                     kem: parseFloat(values['kem']),
                     kmg: parseFloat(values['kmg']),
-                    kmh: parseFloat(values['kmh']),
                     khr: parseFloat(values['khr']),
-                    khg: parseFloat(values['khg']),
                     krd: parseFloat(values['krd']),
-                    krg: parseFloat(values['krg']),
                     tem: parseFloat(values['tem']),
                     tmg: parseFloat(values['tmg']),
                     tmh: parseFloat(values['tmh']),
@@ -172,19 +166,10 @@ export const SIRForm = ({ onChange }) => {
                                 <FormikFormText name="kmg" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="kmh" formikProps={props} />
-                            </Grid>
-                            <Grid item>
                                 <FormikFormText name="khr" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="khg" formikProps={props} />
-                            </Grid>
-                            <Grid item>
                                 <FormikFormText name="krd" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="krg" formikProps={props} />
                             </Grid>
                             <Grid item>
                                 <FormikFormText name="tem" formikProps={props} />
