@@ -40,11 +40,11 @@ const validationSchema = (t) =>
             .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
             .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
             .required('Ce champs est obligatoire'),
-        kem: Yup.number()
+        r_0: Yup.number()
             .typeError('Veuillez entrer un nombre')
-            .positive('Veuillez entrer un nombre entre 0 et 1.')
-            .min(0, 'Veuillez entrer un nombre entre 0 et 1.')
-            .max(1, 'Veuillez entrer un nombre entre 0 et 1.')
+            .positive('Veuillez entrer un nombre entre 0 et 5.')
+            .min(0, 'Veuillez entrer un nombre entre 0 et 5.')
+            .max(5, 'Veuillez entrer un nombre entre 0 et 5.')
             .required('Ce champs est obligatoire'),
         kmg: Yup.number()
             .typeError('Veuillez entrer un nombre')
@@ -107,7 +107,7 @@ export const SIRForm = ({ onChange }) => {
     const initialValues = {
         population: 500000,
         kpe: 0.6,
-        kem: 0.24,
+        r_0: 2.3,
         kmg: 0.81,
         khr: 0.7,
         krd: 1,
@@ -128,7 +128,7 @@ export const SIRForm = ({ onChange }) => {
                 onChange({
                     population: parseFloat(values['population']),
                     kpe: parseFloat(values['kpe']),
-                    kem: parseFloat(values['kem']),
+                    r_0: parseFloat(values['r_0']),
                     kmg: parseFloat(values['kmg']),
                     khr: parseFloat(values['khr']),
                     krd: parseFloat(values['krd']),
@@ -160,12 +160,12 @@ export const SIRForm = ({ onChange }) => {
                                 <FormikFormText name="kpe" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="kem" formikProps={props} />
+                                <FormikFormText name="r_0" formikProps={props} />
                             </Grid>
                             <Grid item>
                                 <FormikFormText name="kmg" formikProps={props} />
                             </Grid>
-                            <Grid item>
+r_0                            <Grid item>
                                 <FormikFormText name="khr" formikProps={props} />
                             </Grid>
                             <Grid item>
