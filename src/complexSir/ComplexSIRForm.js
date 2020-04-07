@@ -149,61 +149,38 @@ export const SIRForm = ({ onChange }) => {
                         className={classes.grid}
                         container
                         direction="row"
-                        justify="center"
+                        justify="flex-start"
                         alignItems="center"
                     >
-                        <FormControl className={classes.formControl}>
-                            <Grid item>
-                                <FormikFormText name="population" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="kpe" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="r0" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="taux_tgs" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="taux_thr" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="krd" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="tem" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="tmg" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="tmh" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="thg" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="thr" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="trsr" formikProps={props} />
-                            </Grid>
-                            <Grid item>
-                                <FormikFormText name="lim_time" formikProps={props} />
-                            </Grid>
-                        </FormControl>
-                        <Grid item>
-                            <Button
-                                className={classes.actions}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                            >
-                                {t('form.compute')}
-                            </Button>
-                        </Grid>
+                        <FormikFormText name="population" formikProps={props} />
+                        <FormikFormText name="kpe" formikProps={props} />
+                        <FormikFormText name="r0" formikProps={props} />
+                        <FormikFormText name="taux_tgs" formikProps={props} />
+                        <FormikFormText name="taux_thr" formikProps={props} />
+                        <FormikFormText name="krd" formikProps={props} />
                     </Grid>
+                    <Grid
+                        className={classes.grid}
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center"
+                    >
+                        <FormikFormText name="tem" formikProps={props} />
+                        <FormikFormText name="tmg" formikProps={props} />
+                        <FormikFormText name="tmh" formikProps={props} />
+                        <FormikFormText name="thg" formikProps={props} />
+                        <FormikFormText name="thr" formikProps={props} />
+                        <FormikFormText name="lim_time" formikProps={props} />
+                    </Grid>
+                    <Button
+                        className={classes.actions}
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                    >
+                        {t('form.compute')}
+                    </Button>
                 </Form>
             )}
         </Formik>

@@ -28,8 +28,8 @@ const messages = {
         },
         form: {
             population: 'Population',
-            r0: 'Paramètre r0',
-            s0: 'Paramètre s0',
+            r0: 'R0',
+            s0: 'S0',
             lambda: 'Paramètre lambda',
             beta: 'Paramètre beta',
             compute: 'Calculer',

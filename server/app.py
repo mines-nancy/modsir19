@@ -73,7 +73,7 @@ def get_complex_sir():
     tmh = int(input["tmh"])
     thg = int(input["thg"])
     thr = int(input["thr"])
-    trsr = int(input["trsr"])
+    trsr = 10  # int(input["trsr"])
 
     kmg = taux_tgs
     kmh = 1 - taux_tgs
