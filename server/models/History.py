@@ -1,11 +1,9 @@
-import copy
-
 class History:
     def __init__(self):
         self.sorted_history = []
 
     def store(self,state):
-        self.sorted_history.append(copy.deepcopy(state))
+        self.sorted_history.append(state)
 
     def get_states(self,time):
         return [state for state in self.sorted_history if state.time == time]
