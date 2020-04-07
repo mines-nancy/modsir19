@@ -1,5 +1,5 @@
-from Box import Box
-from History import History
+from models.box import Box
+from models.history import History
 
 
 class State:
@@ -74,15 +74,12 @@ class State:
     def get_time0(self):
         return 0
 
-    # compute Delta Box(t - tDelay)
+    # compute Delta Box(t - delay)
     def delta(self, history, boxname, delay):
         past_state = history.get_last_state(self.time - delay)
-        # previous_past_state = history.get_last_state(self.time - delay - 1)
         if past_state == None:
             return 0
-        res = getattr(past_state, boxname).input()
-        # - \ getattr(previous_past_state, boxname).size()
-        return res
+        return getattr(past_state, boxname).input()
 
     def exposed_to_infected(self, history, next_state):
         state0 = history.get_last_state(self.get_time0())
@@ -90,13 +87,8 @@ class State:
         if state0 == None or state_tem == None:
             return
 
-        exposed0 = state0.exposed
-        # print(f'exposed0: {exposed0}')
-        infected_tem = state_tem.infected
-        # print(f'infected_tem: {infected_tem}')
         delta = self.kem * (self.exposed.size() *
-                            infected_tem.size()) / exposed0.size()
-        # print(f'new_infected: {new_infected}')
+                            state_tem.infected.size()) / state0.exposed.size()
         next_state.exposed.remove(delta)
         next_state.infected.add(delta)
 
@@ -123,10 +115,12 @@ class State:
         next_state.intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history, next_state):
-        nb_exit_after_n_days = [0,0,0,0.01,0.02,0.03,0.04,0.05,0.07,0.08,0.10,0.12,0.14,0.13,0.09,0.05,0.03,0.02,0.01,0.01]
+        nb_exit_after_n_days = [0, 0, 0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07,
+                                0.08, 0.10, 0.12, 0.14, 0.13, 0.09, 0.05, 0.03, 0.02, 0.01, 0.01]
         delta = 0
         for i in range(len(nb_exit_after_n_days)):
-            delta += nb_exit_after_n_days[i] * self.delta(history, 'intensive_care', (1+i))
+            delta += nb_exit_after_n_days[i] * \
+                self.delta(history, 'intensive_care', (1+i))
         next_state.intensive_care.remove(delta)
         next_state.exit_intensive_care.add(delta)
 

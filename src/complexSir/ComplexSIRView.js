@@ -1,7 +1,7 @@
 import React from 'react';
-import { SIRForm } from './ComplexSIRForm';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Typography, Card, CardContent } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { SIRForm } from './ComplexSIRForm';
 import { Chart } from './ComplexChartView';
 import api from '../utils/api';
 
@@ -9,6 +9,12 @@ const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
             flexGrow: 1,
+            paddingTop: theme.spacing(4),
+            paddingLeft: theme.spacing(4),
+            paddingRight: theme.spacing(4),
+        },
+        card: {
+            margin: '3pt',
         },
     }),
 );
@@ -28,20 +34,25 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-            <Typography variant="h5" component="h2">
-                Entrer les paramètres du modèle SIR complexe dans les champs suivants puis cliquer sur
-                CALCULER.
-            </Typography>
-            <Grid container justify="center" alignItems="center" spacing={3}>
-                <Grid item xs={12}>
-                    <SIRForm onChange={handleClick} />
-                </Grid>
-                {values && (
-                    <Grid item xs={8}>
-                        {' '}
-                        {Chart(values)}{' '}
-                    </Grid>
-                )}
+            <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
+                <Card className={classes.card}>
+                    <CardContent>
+                        <Typography variant="h5" component="h2">
+                            Paramètres du modèle SIR complexe
+                        </Typography>
+                        <Grid container justify="center" alignItems="center" spacing={3}>
+                            <Grid item xs={12}>
+                                <SIRForm onChange={handleClick} />
+                            </Grid>
+                            {values && (
+                                <Grid item xs={8}>
+                                    {' '}
+                                    {Chart(values)}{' '}
+                                </Grid>
+                            )}
+                        </Grid>
+                    </CardContent>
+                </Card>
             </Grid>
         </div>
     );
