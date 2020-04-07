@@ -22,30 +22,6 @@ export const Chart = (values) => {
         labels: generer_dates(jour_0, recovered.length),
         datasets: [
             {
-                label: ['exposed'],
-                data: exposed,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: ['infected'],
-                data: infected,
-                backgroundColor: 'rgba(255, 158, 132, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: ['dead'],
-                data: dead,
-                backgroundColor: 'rgba(88, 88, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: ['hospitalized'],
-                data: hospitalized,
-                backgroundColor: 'rgba(255, 88, 132, 0.6)',
-                borderWidth: 2,
-            },
-            {
                 label: ['intensive_care'],
                 data: intensive_care,
                 backgroundColor: 'rgba(54, 54, 255, 0.6)',
@@ -58,9 +34,33 @@ export const Chart = (values) => {
                 borderWidth: 2,
             },
             {
+                label: ['hospitalized'],
+                data: hospitalized,
+                backgroundColor: 'rgba(255, 88, 132, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['dead'],
+                data: dead,
+                backgroundColor: 'rgba(88, 88, 88, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['infected'],
+                data: infected,
+                backgroundColor: 'rgba(255, 158, 132, 0.6)',
+                borderWidth: 2,
+            },
+            {
                 label: ['recovered'],
                 data: recovered,
                 backgroundColor: 'rgba(88, 235, 88, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: ['exposed'],
+                data: exposed,
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
                 borderWidth: 2,
             },
         ],
@@ -75,7 +75,7 @@ export const Chart = (values) => {
                 options={{
                     title: {
                         display: true,
-                        text: 'Modèle SIR Complexe',
+                        text: 'Modèle SIR Complexezzzzzz',
                         fontSize: 25,
                     },
                     scales: {
