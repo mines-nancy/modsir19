@@ -1,5 +1,6 @@
 const messages = {
     fr: {
+        projectTitle: 'Projet MODSIR19',
         pageNotFound: 'Page non trouvée',
         returnToHomepage: 'Retourner à la page principale',
         cancel: 'Annuler',
