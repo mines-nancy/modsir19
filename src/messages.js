@@ -1,5 +1,6 @@
 const messages = {
     fr: {
+        projectTitle: 'Projet MODSIR19',
         pageNotFound: 'Page non trouvée',
         returnToHomepage: 'Retourner à la page principale',
         cancel: 'Annuler',
@@ -46,13 +47,13 @@ const messages = {
             lim_time: 'Nombre de jours',
             tip: {
                 population: 'Effectif de la population',
-                s0: 'TODO: Définir ce paramètre',
-                lambda: 'TODO: Définir ce paramètre',
-                beta: 'TODO: Définir ce paramètre',
+                s0: "Proportion initiale d'individus sains",
+                lambda: 'Temps moyen avant guérison',
+                beta: "Taux d'infection en individus par unité de temps",
                 r0: 'Taux de contagiosité standard',
                 taux_tgs: 'Taux de guérison spontannée',
                 taux_thr: "Taux de patients très graves d'emblée",
-                kpe: 'Taux de polpulation exposée',
+                kpe: 'Taux de population exposée',
                 krd: 'Taux de décès en réanimation',
                 tem: 'Temps Exposé - Malade',
                 tmg: 'Temps Malade - Guéri',
@@ -60,8 +61,16 @@ const messages = {
                 thg: 'Temps Hospitalisé - Guéri',
                 thr: 'Temps Hospitalisé - Réanimation',
                 trsr: 'Temps Réanimation - Sortie de Réanimation',
-                lim_time: 'Nombre de jours de la simulation',
+                lim_time: 'Nombre de jours simulés',
             },
+        },
+        chart: {
+            exposed: 'exposés',
+            infected: 'infectés',
+            hospitalized: 'hospitalisés',
+            intensive_care: 'soins intensifs',
+            exit_intensive_care: 'sortie soins intensifs',
+            dead: 'décédés',
         },
     },
 };

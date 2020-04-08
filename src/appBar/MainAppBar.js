@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import LeftMenu from './LeftMenu';
 import { Link } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTranslate } from 'react-polyglot';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme) =>
 
 export const MainAppBar = () => {
     const classes = useStyles();
+    const t = useTranslate();
 
     return (
         <div className={classes.root}>
@@ -31,7 +33,7 @@ export const MainAppBar = () => {
                     <LeftMenu />
                     <Typography variant="h6" className={classes.title}>
                         <Link component={RouterLink} color="inherit" to="/">
-                            Projet MODCOV19
+                            {t('projectTitle')}
                         </Link>
                     </Typography>
                 </Toolbar>
