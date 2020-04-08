@@ -66,7 +66,7 @@ const messages = {
         },
         chart: {
             exposed: 'exposés',
-            onfected: 'infectés',
+            infected: 'infectés',
             hospitalized: 'hospitalisés',
             intensive_care: 'soins intensifs',
             exit_intensive_care: 'sortie soins intensifs',
