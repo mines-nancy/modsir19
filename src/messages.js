@@ -63,6 +63,14 @@ const messages = {
                 lim_time: 'Nombre de jours simulés',
             },
         },
+        chart: {
+            exposed: 'exposés',
+            onfected: 'infectés',
+            hospitalized: 'hospitalisés',
+            intensive_care: 'soins intensifs',
+            exit_intensive_care: 'sortie soins intensifs',
+            dead: 'décédés',
+        },
     },
 };
 
