@@ -1,17 +1,14 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
-import { dummyModel } from '../model/sir';
-import { generer_dates } from '../model/generateur_dates';
+import { generateDates } from '../utils/dateGenerator';
 
-const jour_0 = new Date(2020, 0, 23);
-
-var tab_dates = generer_dates(jour_0, dummyModel().healthy.length);
+const day0 = new Date(2020, 0, 23);
 
 export const Chart = (values) => {
     const { healthy, infected, removed } = values;
 
     const lineData = {
-        labels: tab_dates,
+        labels: generateDates(day0, healthy.length),
         datasets: [
             {
                 label: ['Population saine'],
@@ -45,6 +42,18 @@ export const Chart = (values) => {
                         display: true,
                         text: 'Modèle SIR simple',
                         fontSize: 25,
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: (tooltipItem, data) => {
+                                let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += Math.round(tooltipItem.yLabel * 100) / 100;
+                                return label;
+                            },
+                        },
                     },
                     scales: {
                         yAxes: [

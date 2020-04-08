@@ -18,14 +18,16 @@ const AboutDialog = ({ onClose }) => {
 
     return (
         <div>
-            <MenuItem onClick={handleClickOpen}>{t('appBar.about')} MODCOV19</MenuItem>
+            <MenuItem onClick={handleClickOpen}>
+                {t('appBar.about')} {t('projectTitle')}
+            </MenuItem>
             <Dialog
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">{'MODCOV19'}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{t('projectTitle')}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         {t('appBar.developpedBy')} Mines-Nancy. © 2020.

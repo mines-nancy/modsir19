@@ -14,6 +14,7 @@ const messages = {
             help: 'Aide',
             login: 'Se connecter',
             logout: 'Se déconnecter',
+            mainMenu: 'Menu',
         },
         home: {
             simpleSIR: 'Modèle SIR simple',
