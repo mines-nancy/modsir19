@@ -19,6 +19,9 @@ class Box:
         self._input = 0
         self._output = 0
 
+    def value(self):
+        return self._value
+
     def input(self):
         return self._input
 
