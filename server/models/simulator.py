@@ -11,23 +11,20 @@ class Simulator:
 
     def step(self):
         current_state = self._state
-        print(f'Step - time = {current_state.time}')
         self._history.store(current_state)
 
         next_state = copy.deepcopy(current_state)
         next_state.reinit_boxes()
         next_state.increment_time()
 
-        current_state.exposed_to_infected(self._history, next_state)
-        current_state.infected_to_recovered(self._history, next_state)
-        current_state.infected_to_hospitalized(self._history, next_state)
-        current_state.hospitalized_to_recovered(self._history, next_state)
-        current_state.hospitalized_to_intensive_care(self._history, next_state)
-        current_state.intensive_care_to_exit_intensive_care(
-            self._history, next_state)
-        current_state.exit_intensive_care_to_recovered(
-            self._history, next_state)
-        current_state.exit_intensive_care_to_dead(self._history, next_state)
+        next_state.exposed_to_infected(self._history)
+        next_state.infected_to_recovered(self._history)
+        next_state.infected_to_hospitalized(self._history)
+        next_state.hospitalized_to_recovered(self._history)
+        next_state.hospitalized_to_intensive_care(self._history)
+        next_state.intensive_care_to_exit_intensive_care(self._history)
+        next_state.exit_intensive_care_to_recovered(self._history)
+        next_state.exit_intensive_care_to_dead(self._history)
 
         self._state = next_state
 
@@ -66,6 +63,7 @@ def run_simulator(population,
 
     simulator = Simulator(initial_state)
     # print(simulator.get_state())
+    # print(f'Step - time = {current_state.time}')
 
     for i in range(lim_time):
         simulator.step()
