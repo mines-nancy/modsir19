@@ -8,7 +8,7 @@ import { SIRView } from './simpleSir/SIRView';
 import { ComplexSIRView } from './complexSir/ComplexSIRView';
 
 const Home = ({ match }) => {
-    const path = match ? match.path : '';
+    const path = match ? (match.path === '/' ? '' : match.path) : '';
     const [value, setValue] = React.useState(`${path}/simpleSIR`);
     const t = useTranslate();
 
@@ -50,11 +50,7 @@ const Home = ({ match }) => {
             </header>
             <main>
                 <Switch>
-                    <Route
-                        path={`${path}`}
-                        exact
-                        render={() => <Redirect to={`${path}/simpleSIR`} />}
-                    />
+                    <Route path={`/`} exact render={() => <Redirect to={`${path}/simpleSIR`} />} />
                     <Route
                         path={`${path}/simpleSIR`}
                         render={(routeProps) => {
