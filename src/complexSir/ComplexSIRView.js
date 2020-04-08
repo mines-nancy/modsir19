@@ -4,6 +4,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { SIRForm } from './ComplexSIRForm';
 import { Chart } from './ComplexChartView';
 import api from '../utils/api';
+import ComplexSIRSliders from './ComplexSIRSliders'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -42,7 +43,7 @@ export const ComplexSIRView = () => {
                         </Typography>
                         <Grid container justify="center" alignItems="center" spacing={3}>
                             <Grid item xs={12}>
-                                <SIRForm onChange={handleClick} />
+                                <ComplexSIRSliders onChange={handleClick} />
                             </Grid>
                             {values && (
                                 <Grid item xs={8}>
