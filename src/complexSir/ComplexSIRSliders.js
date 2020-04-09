@@ -1,22 +1,27 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { Grid, Tooltip } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
 
-const useStyles = makeStyles({
-    root: {
-        width: 250,
-    },
-    input: {
-        width: 42,
-    },
-    slider: {
-        width: 150,
-    },
-});
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        root: {
+            width: 250,
+        },
+        input: {
+            width: 75,
+        },
+        slider: {
+            width: 100,
+        },
+        sliderWithInput: {
+            margin: theme.spacing(2),
+        },
+    }),
+);
 
 const SliderWithInput = ({
     name,
@@ -27,30 +32,44 @@ const SliderWithInput = ({
     onSliderChange,
     onInputChange,
     onBlur,
+    tooltipTitle,
 }) => {
     const classes = useStyles();
-
     const t = useTranslate();
+    const [open, setOpen] = React.useState(false);
 
     return (
-        <Grid item>
+        <div className={classes.sliderWithInput}>
             <Typography id="input-slider" gutterBottom>
                 {t(`form.${name}`)}
             </Typography>
+
             <Grid container spacing={2} alignItems="center">
                 <Grid item xs>
-                    <Slider
-                        name={name}
-                        className={classes.slider}
-                        value={value}
-                        min={min}
-                        max={max}
-                        step={step}
-                        onChange={(event, newValue) => {
-                            onSliderChange(event, newValue, name);
-                        }}
-                        aria-labelledby="input-slider"
-                    />
+                    <Tooltip
+                        title={tooltipTitle ? tooltipTitle : t(`form.tip.${name}`)}
+                        disableFocusListener={true}
+                        disableHoverListener={Boolean(
+                            !tooltipTitle && t(`form.tip.${name}`) === '',
+                        )}
+                        open={open}
+                    >
+                        <Slider
+                            name={name}
+                            className={classes.slider}
+                            value={value}
+                            min={min}
+                            max={max}
+                            step={step}
+                            onChange={(event, newValue) => {
+                                onSliderChange(event, newValue, name);
+                            }}
+                            onMouseEnter={() => setOpen(true)}
+                            onMouseLeave={() => setOpen(false)}
+                            onClick={() => setOpen(false)}
+                            aria-labelledby="input-slider"
+                        />
+                    </Tooltip>
                 </Grid>
                 <Grid item>
                     <Input
@@ -70,7 +89,7 @@ const SliderWithInput = ({
                     />
                 </Grid>
             </Grid>
-        </Grid>
+        </div>
     );
 };
 
@@ -156,7 +175,6 @@ export default function ComplexSIRSliders({ onChange }) {
     } = values;
 
     React.useEffect(() => {
-        console.log('values changes');
         onChange(values);
     }, [onChange, values]);
 
@@ -259,12 +277,19 @@ export default function ComplexSIRSliders({ onChange }) {
                     onInputChange={handleInputChange}
                     onBlur={handleBlur}
                 />
-
+            </Grid>
+            <Grid
+                className={classes.grid}
+                container
+                direction="row"
+                justify="right"
+                alignItems="center"
+            >
                 <SliderWithInput
                     name="tem"
                     value={tem}
                     min={0}
-                    max={100}
+                    max={30}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}
@@ -274,7 +299,7 @@ export default function ComplexSIRSliders({ onChange }) {
                     name="tmg"
                     value={tmg}
                     min={0}
-                    max={100}
+                    max={30}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}
@@ -284,7 +309,7 @@ export default function ComplexSIRSliders({ onChange }) {
                     name="tmh"
                     value={tmh}
                     min={0}
-                    max={100}
+                    max={30}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}
@@ -294,7 +319,7 @@ export default function ComplexSIRSliders({ onChange }) {
                     name="thg"
                     value={thg}
                     min={0}
-                    max={100}
+                    max={30}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}
@@ -304,7 +329,7 @@ export default function ComplexSIRSliders({ onChange }) {
                     name="thr"
                     value={thr}
                     min={0}
-                    max={100}
+                    max={30}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}
