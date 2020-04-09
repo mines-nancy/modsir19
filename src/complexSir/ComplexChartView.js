@@ -5,7 +5,7 @@ import { generateDates } from '../utils/dateGenerator';
 
 const day0 = new Date(2020, 0, 23);
 
-export const Chart = (values) => {
+export const Chart = ({ values }) => {
     const t = useTranslate();
 
     const {
