@@ -1,7 +1,7 @@
 const prod = process.env.NODE_ENV === 'production'; // Anything else is treated as 'dev'
 
 export const API_URL = prod
-    ? 'https://covid19.nancyclotep.com/modsir19servertest'
+    ? 'https://simurea.nancyclotep.com/modsir19servertest'
     : 'http://localhost:5000';
 
 if (!API_URL) {

@@ -78,8 +78,8 @@ def get_complex_sir():
     kmg = taux_tgs
     kmh = 1 - taux_tgs
     kem = r0 / (kmg*tmg + kmh*tmh)
-    khr = taux_thr/(1 - taux_tgs)
-    khg = 1-taux_thr/(1-taux_tgs)
+    khr = taux_thr / (1 - taux_tgs)
+    khg = 1 - khr
     krg = 1 - krd
 
     # model v1
