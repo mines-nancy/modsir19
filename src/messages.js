@@ -14,6 +14,7 @@ const messages = {
             help: 'Aide',
             login: 'Se connecter',
             logout: 'Se déconnecter',
+            mainMenu: 'Menu',
         },
         home: {
             simpleSIR: 'Modèle SIR simple',
@@ -67,6 +68,7 @@ const messages = {
         chart: {
             exposed: 'exposés',
             infected: 'infectés',
+            recovered: 'guéris',
             hospitalized: 'hospitalisés',
             intensive_care: 'soins intensifs',
             exit_intensive_care: 'sortie soins intensifs',

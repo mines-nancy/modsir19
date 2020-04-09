@@ -12,6 +12,7 @@
         "awesome-debounce-promise": "^2.1.0",
         "axios": "^0.19.2",
         "chart.js": "^2.9.3",
+        "date-fns": "^2.11.1",
         "formik": "^2.1.4",
         "node-polyglot": "^2.4.0",
         "react": "^16.13.1",

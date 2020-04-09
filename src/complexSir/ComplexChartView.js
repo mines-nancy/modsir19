@@ -1,9 +1,9 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
-import { generer_dates } from '../model/generateur_dates';
 import { useTranslate } from 'react-polyglot';
+import { generateDates } from '../utils/dateGenerator';
 
-const jour_0 = new Date(2020, 0, 23);
+const day0 = new Date(2020, 0, 23);
 
 export const Chart = ({ values }) => {
     const t = useTranslate();
@@ -19,7 +19,7 @@ export const Chart = ({ values }) => {
     } = values;
 
     const lineData = {
-        labels: generer_dates(jour_0, recovered.length),
+        labels: generateDates(day0, exposed.length),
         datasets: [
             {
                 label: [t('chart.intensive_care')],
@@ -77,6 +77,18 @@ export const Chart = ({ values }) => {
                         display: true,
                         text: 'Modèle SIR Complexe',
                         fontSize: 25,
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: (tooltipItem, data) => {
+                                let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += Math.round(tooltipItem.yLabel * 100) / 100;
+                                return label;
+                            },
+                        },
                     },
                     scales: {
                         yAxes: [
