@@ -1,10 +1,10 @@
 import React from 'react';
 import { Grid, Typography, Card, CardContent } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { SIRForm } from './ComplexSIRForm';
 import { Chart } from './ComplexChartView';
 import api from '../utils/api';
-import ComplexSIRSliders from './ComplexSIRSliders'
+import ComplexSIRSliders from './ComplexSIRSliders';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -20,18 +20,23 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
+const getModel = async (parameters) =>
+    await api.get('/get_complex_sir', {
+        params: { parameters },
+    });
+const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
+
 export const ComplexSIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
-    // eslint-disable-next-line no-console
-    console.log({ values });
 
-    const handleClick = async (parameters) => {
-        const response = await api.get('/get_complex_sir', {
-            params: { parameters },
-        });
-        setValues(response.data);
-    };
+    const handleChange = React.useCallback(
+        async (parameters) => {
+            const response = await getModelDebounced(parameters);
+            setValues(response.data);
+        },
+        [setValues],
+    );
 
     return (
         <div className={classes.root}>
@@ -43,12 +48,11 @@ export const ComplexSIRView = () => {
                         </Typography>
                         <Grid container justify="center" alignItems="center" spacing={3}>
                             <Grid item xs={12}>
-                                <ComplexSIRSliders onChange={handleClick} />
+                                <ComplexSIRSliders onChange={handleChange} />
                             </Grid>
                             {values && (
                                 <Grid item xs={8}>
-                                    {' '}
-                                    {Chart(values)}{' '}
+                                    {Chart(values)}
                                 </Grid>
                             )}
                         </Grid>
