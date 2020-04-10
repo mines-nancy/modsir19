@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
+import { MaterialUIPickers } from './MaterialUIDatePicker';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -158,6 +159,11 @@ const initialState = {
 export default function ComplexSIRSliders({ onChange }) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
+    const [selectedDate, setSelectedDate] = React.useState(new Date('2020-01-18'));
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
 
     const {
         population,
@@ -346,6 +352,7 @@ export default function ComplexSIRSliders({ onChange }) {
                     onInputChange={handleInputChange}
                     onBlur={handleBlur}
                 />
+                <MaterialUIPickers />
             </Grid>
         </Grid>
     );
