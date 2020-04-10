@@ -87,12 +87,12 @@ def get_complex_sir():
     # population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     # model v2
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = run_simulator(
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized, cumulated_intensive_care = run_simulator(
         population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
-            "exit_intensive_care": exit_intensive_care}
+            "exit_intensive_care": exit_intensive_care, "cumulated_hospitalized": cumulated_hospitalized, "cumulated_intensive_care": cumulated_intensive_care}
 
     return jsonify(data)
 

@@ -16,6 +16,8 @@ export const Chart = ({ values }) => {
         hospitalized,
         intensive_care,
         exit_intensive_care,
+        cumulated_hospitalized,
+        cumulated_intensive_care,
     } = values;
 
     const lineData = {
@@ -28,6 +30,12 @@ export const Chart = ({ values }) => {
                 borderWidth: 2,
             },
             {
+                label: t('chart.cumulated_intensive_care'),
+                data: cumulated_intensive_care,
+                backgroundColor: 'rgba(86, 12, 168, 0.6)',
+                borderWidth: 2,
+            },
+            {
                 label: t('chart.exit_intensive_care'),
                 data: exit_intensive_care,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
@@ -37,6 +45,12 @@ export const Chart = ({ values }) => {
                 label: t('chart.hospitalized'),
                 data: hospitalized,
                 backgroundColor: 'rgba(255, 88, 132, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: t('chart.cumulated_hospitalized'),
+                data: cumulated_hospitalized,
+                backgroundColor: 'rgba(180, 0, 120, 0.6)',
                 borderWidth: 2,
             },
             {

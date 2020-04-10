@@ -26,6 +26,8 @@ class State:
                  intensive_care,
                  exit_intensive_care,
                  dead,
+                 cumulated_hospitalized,
+                 cumulated_intensive_care
                  ):
 
         self.population = population
@@ -37,6 +39,8 @@ class State:
         self.exit_intensive_care = exit_intensive_care
         self.dead = dead
         self.time = time
+        self.cumulated_hospitalized = cumulated_hospitalized
+        self.cumulated_intensive_care = cumulated_intensive_care
 
         self.kpe = kpe
         self.kem = kem
@@ -61,6 +65,8 @@ class State:
         self.intensive_care.reinit()
         self.exit_intensive_care.reinit()
         self.dead.reinit()
+        self.cumulated_hospitalized.reinit()
+        self.cumulated_intensive_care.reinit()
 
     def __str__(self):
         pop = self.exposed.size() + self.infected.size() + \
@@ -113,6 +119,7 @@ class State:
         # print(f'infected_to_hospitalized: {delta}')
         self.infected.remove(delta)
         self.hospitalized.add(delta)
+        self.cumulated_hospitalized.add(delta)
 
     def hospitalized_to_recovered(self, history):
         delta = self.khg * \
@@ -125,6 +132,7 @@ class State:
             self.get_past_input(history, 'hospitalized', 1+self.thr)
         self.hospitalized.remove(delta)
         self.intensive_care.add(delta)
+        self.cumulated_intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history):
         nb_exit_after_n_days = [0, 0, 0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07,

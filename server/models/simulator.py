@@ -25,7 +25,6 @@ class Simulator:
         next_state.intensive_care_to_exit_intensive_care(self._history)
         next_state.exit_intensive_care_to_recovered(self._history)
         next_state.exit_intensive_care_to_dead(self._history)
-
         self._state = next_state
 
     def get_state(self):
@@ -38,10 +37,12 @@ class Simulator:
         hospitalized = self._history.extract_serie('hospitalized')
         intensive_care = self._history.extract_serie('intensive_care')
         exit_intensive_care = self._history.extract_serie(
-            'exit_intensive_care')
+                'exit_intensive_care')
         dead = self._history.extract_serie('dead')
+        cumulated_hospitalized = self._history.extract_serie('cumulated_hospitalized')
+        cumulated_intensive_care = self._history.extract_serie('cumulated_intensive_care')
 
-        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized, cumulated_intensive_care
 
 
 def run_simulator(population,
@@ -55,7 +56,9 @@ def run_simulator(population,
                           hospitalized=Box('H'),
                           intensive_care=Box('R'),
                           exit_intensive_care=Box('SR'),
-                          dead=Box('D')
+                          dead=Box('D'),
+                          cumulated_hospitalized=Box('CH'),
+                          cumulated_intensive_care=Box('CR')
                           )
     initial_state.exposed.add(kpe*population)
     initial_state.exposed.remove(1)
@@ -94,7 +97,9 @@ if __name__ == "__main__":
                           hospitalized=Box('H'),
                           intensive_care=Box('R'),
                           exit_intensive_care=Box('SR'),
-                          dead=Box('D')
+                          dead=Box('D'),
+                          cumulated_hospitalized=Box('CH'),
+                          cumulated_intensive_care=Box('CR')
                           )
 
     population = 300000

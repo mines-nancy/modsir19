@@ -38,7 +38,7 @@ def model(population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg
         new_intensive_care = day[9]
         new_exit_intensive = day[10]
 
-    return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+    return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cum_hospitalized, cum_intensive_care
 
 
 def model_day(recovered, exposed, infected, hospitalized, intensive_care, exit_intensive_care, dead, population,

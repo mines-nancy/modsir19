@@ -73,6 +73,8 @@ const messages = {
             intensive_care: 'soins intensifs',
             exit_intensive_care: 'sortie soins intensifs',
             dead: 'décédés',
+            cumulated_hospitalized: 'hospitalisés cumulés',
+            cumulated_intensive_care: 'soins intensifs cumulés',
         },
     },
 };
