@@ -76,10 +76,13 @@ def get_complex_sir():
     trsr = 10  # int(input["trsr"])
 
     kmg = taux_tgs
-    kmh = 1 - taux_tgs
+    kmh = 1 - kmg
     kem = r0 / (kmg*tmg + kmh*tmh)
-    khr = taux_thr/(1 - taux_tgs)
-    khg = 1-taux_thr/(1-taux_tgs)
+    khr = taux_thr / (1 - taux_tgs)
+    if khr > 1:
+        khr = 1
+    khg = 1 - khr
+
     krg = 1 - krd
 
     # model v1

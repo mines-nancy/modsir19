@@ -18,26 +18,8 @@ class State:
                  thg: int,
                  thr: int,
                  time,
-                 population,
-                 recovered,
-                 exposed,
-                 infected,
-                 hospitalized,
-                 intensive_care,
-                 exit_intensive_care,
-                 dead,
+                 population
                  ):
-
-        self.population = population
-        self.recovered = recovered
-        self.exposed = exposed
-        self.infected = infected
-        self.hospitalized = hospitalized
-        self.intensive_care = intensive_care
-        self.exit_intensive_care = exit_intensive_care
-        self.dead = dead
-        self.time = time
-
         self.kpe = kpe
         self.kem = kem
         self.kmg = kmg
@@ -52,100 +34,99 @@ class State:
         self.thg = thg
         self.thr = thr
 
-    def reinit_boxes(self):
-        self.population.reinit()
-        self.recovered.reinit()
-        self.exposed.reinit()
-        self.infected.reinit()
-        self.hospitalized.reinit()
-        self.intensive_care.reinit()
-        self.exit_intensive_care.reinit()
-        self.dead.reinit()
+        self.exposed = Box('E', 0)
+        self.infected_g = Box('MG', tmg)
+        self.infected_h = Box('MH', tmh)
+        self.recovered = Box('G')
+        self.hospitalized_g = Box('HG', thg)
+        self.hospitalized_r = Box('HR', thr)
+        self.intensive_care = Box('R', 8)
+        self.dead = Box('D')
+        self.time = time
+
+        self.e0 = kpe*population
+        self.exposed.add(self.e0)
+        self.infected_h.add(1)
 
     def __str__(self):
-        pop = self.exposed.size() + self.infected.size() + \
-            self.hospitalized.size() + self.intensive_care.size() + \
-            self.exit_intensive_care.size() + self.recovered.size() + self.dead.size()
-        return f'{self.exposed} {self.infected} {self.hospitalized} {self.intensive_care} {self.exit_intensive_care} {self.recovered} {self.dead} POP={round(pop,2)}'
+        pop = self.exposed.full_size() + \
+            self.infected_g.full_size() + \
+            self.infected_h.full_size() + \
+            self.hospitalized_g.full_size() + \
+            self.hospitalized_r.full_size() + \
+            self.intensive_care.full_size() + \
+            self.recovered.full_size() + \
+            self.dead.full_size()
+        return f'{self.exposed} {self.infected_g} {self.infected_h} {self.hospitalized_g} {self.hospitalized_r} {self.intensive_care} {self.recovered} {self.dead} POP={round(pop,2)}'
 
-    def increment_time(self):
+    def extract_series(self, history):
+        exposed = []
+        recovered = []
+        infected = []
+        hospitalized = []
+        intensive_care = []
+        exit_intensive_care = []
+        dead = []
+        for state in history.sorted_list():
+            exposed.append(state.exposed.full_size())
+            recovered.append(state.recovered.full_size())
+            infected.append(state.infected_g.full_size() +
+                            state.infected_h.full_size())
+            hospitalized.append(state.hospitalized_g.full_size() +
+                                state.infected_h.full_size())
+            dead.append(state.dead.full_size())
+            intensive_care.append(state.intensive_care.full_size())
+
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+
+    def step(self, history, previous_state):
         self.time += 1
+        self.exposed.step()
+        self.infected_g.step()
+        self.infected_h.step()
+        self.hospitalized_g.step()
+        self.hospitalized_r.step()
+        self.intensive_care.step()
+        self.step_exposed(history, previous_state)
+        self.step_infected(history, previous_state)
+        self.step_hospitalized(history, previous_state)
+        self.step_intensive_care(history, previous_state)
 
     def get_time0(self):
         return 0
 
-    def get_past_size(self, history, boxname, delay):
-        if delay == 1:  # current value correspond to previous size
-            return getattr(self, boxname).value()
+    def move(self, src, dest, delta):
+        src.remove(delta)
+        dest.add(delta)
 
-        past_state = history.get_last_state(self.time - delay)
-        if past_state == None:
-            return 0
-        return getattr(past_state, boxname).size()
-
-    def get_past_input(self, history, boxname, delay):
-        past_state = history.get_last_state(self.time - delay)
-        if past_state == None:
-            return 0
-        return getattr(past_state, boxname).input()
-
-    def exposed_to_infected(self, history):
-        state0 = history.get_last_state(self.get_time0())
-        if state0 == None:
+    def step_exposed(self, history, previous_state):
+        state_tem = history.get_last_state(self.time - (1+self.tem))
+        if state_tem == None:
             return
 
-        state0_exposed_size = state0.exposed.size()
-        previous_exposed_size = self.get_past_size(history, 'exposed', 1)
-        infected_tem_size = self.get_past_size(history, 'infected', 1+self.tem)
-        delta = self.kem * previous_exposed_size * \
-            infected_tem_size / state0_exposed_size
-        self.exposed.remove(delta)
-        self.infected.add(delta)
+        infected_size = state_tem.infected_g.size()+state_tem.infected_h.size()
+        # print(f'infected_input {infected_input}')
+        delta = self.kem * self.exposed.output() * \
+            (infected_size) / self.e0
+        # print(f'delta kmg {self.kmg*delta} delta kmh {self.kmh*delta}')
+        self.move(self.exposed, self.infected_g, self.kmg*delta)
+        self.move(self.exposed, self.infected_h, self.kmh*delta)
 
-    def infected_to_recovered(self, history):
-        delta = self.kmg * self.get_past_input(history, 'infected', 1+self.tmg)
-        # print(f'infected_to_recovered: {delta}')
-        self.infected.remove(delta)
-        self.recovered.add(delta)
+    def step_infected(self, history, previous_state):
+        self.move(self.infected_g, self.recovered, self.infected_g.output())
+        self.move(self.infected_h, self.hospitalized_g,
+                  self.khg * self.infected_h.output())
+        self.move(self.infected_h, self.hospitalized_r,
+                  self.khr * self.infected_h.output())
 
-    def infected_to_hospitalized(self, history):
-        delta = self.kmh * self.get_past_input(history, 'infected', 1+self.tmh)
-        # print(f'infected_to_hospitalized: {delta}')
-        self.infected.remove(delta)
-        self.hospitalized.add(delta)
+    def step_hospitalized(self, history, previous_state):
+        self.move(self.hospitalized_g, self.recovered,
+                  self.hospitalized_g.output())
+        self.move(self.hospitalized_r, self.intensive_care,
+                  self.hospitalized_r.output())
 
-    def hospitalized_to_recovered(self, history):
-        delta = self.khg * \
-            self.get_past_input(history, 'hospitalized', 1+self.thg)
-        self.hospitalized.remove(delta)
-        self.recovered.add(delta)
-
-    def hospitalized_to_intensive_care(self, history):
-        delta = self.khr * \
-            self.get_past_input(history, 'hospitalized', 1+self.thr)
-        self.hospitalized.remove(delta)
-        self.intensive_care.add(delta)
-
-    def intensive_care_to_exit_intensive_care(self, history):
-        nb_exit_after_n_days = [0, 0, 0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07,
-                                0.08, 0.10, 0.12, 0.14, 0.13, 0.09, 0.05, 0.03, 0.02, 0.01, 0.01]
-        delta = 0
-        for i in range(len(nb_exit_after_n_days)):
-            delta += nb_exit_after_n_days[i] * \
-                self.get_past_input(history, 'intensive_care', (1+1+i)
-                                    )  # +1 for previous, +1 for array element corresponds to 1 day
-
-        self.intensive_care.remove(delta)
-        self.exit_intensive_care.add(delta)
-
-    def exit_intensive_care_to_recovered(self, history):
-        delta = self.krg * \
-            self.get_past_size(history, 'exit_intensive_care', 1)
-        self.exit_intensive_care.remove(delta)
-        self.recovered.add(delta)
-
-    def exit_intensive_care_to_dead(self, history):
-        delta = self.krd * \
-            self.get_past_size(history, 'exit_intensive_care', 1)
-        self.exit_intensive_care.remove(delta)
-        self.dead.add(delta)
+    def step_intensive_care(self, history, previous_state):
+        self.move(self.intensive_care, self.recovered,
+                  self.krg * self.intensive_care.output())
+        self.move(self.intensive_care, self.dead,
+                  self.krd * self.intensive_care.output())
