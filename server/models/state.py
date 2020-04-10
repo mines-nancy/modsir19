@@ -12,13 +12,12 @@ class State:
                  khg: float,
                  krd: float,
                  krg: float,
-                 kie: float,
                  tem: int,
                  tmg: int,
                  tmh: int,
                  thg: int,
                  thr: int,
-                 tie: int,
+                 trsr: int,
                  time,
                  population,
                  recovered,
@@ -53,7 +52,7 @@ class State:
         self.tmh = tmh
         self.thg = thg
         self.thr = thr
-        self.tie = tie
+        self.trsr = trsr
 
     def reinit_boxes(self):
         self.population.reinit()
@@ -131,7 +130,7 @@ class State:
 
     def intensive_care_to_exit_intensive_care(self, history):
         delta = 1 * \
-            self.get_past_input(history, 'intensive_care', 1+self.tie)
+            self.get_past_input(history, 'intensive_care', 1+self.trsr)
         self.intensive_care.remove(delta)
         self.exit_intensive_care.add(delta)
 
