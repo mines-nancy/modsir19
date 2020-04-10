@@ -48,7 +48,6 @@ class State:
         self.khg = khg
         self.krd = krd
         self.krg = krg
-        self.kie = kie
         self.tem = tem
         self.tmg = tmg
         self.tmh = tmh
@@ -131,7 +130,7 @@ class State:
         self.intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history):
-        delta = self.kie * \
+        delta = 1 * \
             self.get_past_input(history, 'intensive_care', 1+self.tie)
         self.intensive_care.remove(delta)
         self.exit_intensive_care.add(delta)
