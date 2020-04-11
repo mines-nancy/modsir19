@@ -35,59 +35,56 @@ class State:
         self.thg = thg
         self.thr = thr
 
-        self.exposed = Box('E', 0)
-        self.infected_g = Box('MG', tmg)
-        self.infected_h = Box('MH', tmh)
-        self.recovered = Box('G')
-        self.hospitalized_g = Box('HG', thg)
-        self.hospitalized_r = Box('HR', thr)
-        self.intensive_care = Box('R', 8)
-        self.dead = Box('D')
+        self._boxes = {
+            'E': Box('E', 0),
+            'MG': Box('MG', tmg),
+            'MH': Box('MH', tmh),
+            'G': Box('G'),
+            'HG': Box('HG', thg),
+            'HR': Box('HR', thr),
+            'R': Box('R', 8),
+            'D': Box('D')
+        }
+
         self.time = time
 
         self.e0 = kpe*population
-        self.exposed.add(self.e0)
-        self.infected_h.add(1)
+        self.box('E').add(self.e0)
+        self.box('MH').add(1)
+
+    def boxes(self):
+        return self._boxes.values()
+
+    def boxnames(self):
+        return self._boxes.keys()
+
+    def box(self, name):
+        return self._boxes[name]
+
+    def output(self, name):
+        return self.box(name).output()
 
     def __str__(self):
-        pop = self.exposed.full_size() + \
-            self.infected_g.full_size() + \
-            self.infected_h.full_size() + \
-            self.hospitalized_g.full_size() + \
-            self.hospitalized_r.full_size() + \
-            self.intensive_care.full_size() + \
-            self.recovered.full_size() + \
-            self.dead.full_size()
-        return f'{self.exposed} {self.infected_g} {self.infected_h} {self.hospitalized_g} {self.hospitalized_r} {self.intensive_care} {self.recovered} {self.dead} POP={round(pop,2)}'
+        pop = sum([box.full_size() for box in self.boxes()])
+        return f'{self.box("E")} {self.box("MG")} {self.box("MH")} {self.box("HG")} {self.box("HR")} {self.box("R")} {self.box("G")} {self.box("D")} POP={round(pop,2)}'
 
     def extract_series(self, history):
-        exposed = []
-        recovered = []
-        infected = []
-        hospitalized = []
-        intensive_care = []
-        exit_intensive_care = []
-        dead = []
+        series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
+                  'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R']}
+        # sum the sizes of boxes
+        lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
-            exposed.append(state.exposed.full_size())
-            recovered.append(state.recovered.full_size())
-            infected.append(state.infected_g.full_size() +
-                            state.infected_h.full_size())
-            hospitalized.append(state.hospitalized_g.full_size() +
-                                state.infected_h.full_size())
-            dead.append(state.dead.full_size())
-            intensive_care.append(state.intensive_care.full_size())
-
-        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+            sizes = {name: state.box(name).full_size()
+                     for name in self.boxnames()}
+            for name in lists.keys():
+                lists[name].append(sum([sizes[n] for n in series[name]]))
+        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], []
 
     def step(self, history):
         self.time += 1
-        self.exposed.step()
-        self.infected_g.step()
-        self.infected_h.step()
-        self.hospitalized_g.step()
-        self.hospitalized_r.step()
-        self.intensive_care.step()
+        for box in self.boxes():
+            box.step()
+
         self.step_exposed(history)
         self.step_infected(history)
         self.step_hospitalized(history)
@@ -96,38 +93,29 @@ class State:
     def get_time0(self):
         return 0
 
-    def move(self, src, dest, delta):
-        src.remove(delta)
-        dest.add(delta)
+    def move(self, src_name, dest_name, delta):
+        self.box(src_name).remove(delta)
+        self.box(dest_name).add(delta)
 
     def step_exposed(self, history):
         state_tem = history.get_last_state(self.time - (1+self.tem))
         if state_tem == None:
             return
 
-        infected_size = state_tem.infected_g.size()+state_tem.infected_h.size()
-        # print(f'infected_input {infected_input}')
-        delta = self.kem * self.exposed.output() * \
-            (infected_size) / self.e0
-        # print(f'delta kmg {self.kmg*delta} delta kmh {self.kmh*delta}')
-        self.move(self.exposed, self.infected_g, self.kmg*delta)
-        self.move(self.exposed, self.infected_h, self.kmh*delta)
+        infected_size = state_tem.box('MG').size()+state_tem.box('MH').size()
+        delta = self.kem * self.output('E') * (infected_size) / self.e0
+        self.move('E', 'MG', self.kmg * delta)
+        self.move('E', 'MH', self.kmh * delta)
 
     def step_infected(self, history):
-        self.move(self.infected_g, self.recovered, self.infected_g.output())
-        self.move(self.infected_h, self.hospitalized_g,
-                  self.khg * self.infected_h.output())
-        self.move(self.infected_h, self.hospitalized_r,
-                  self.khr * self.infected_h.output())
+        self.move('MG', 'G', self.output('MG'))
+        self.move('MH', 'HG', self.khg * self.output('MH'))
+        self.move('MH', 'HR', self.khr * self.output('MH'))
 
     def step_hospitalized(self, history):
-        self.move(self.hospitalized_g, self.recovered,
-                  self.hospitalized_g.output())
-        self.move(self.hospitalized_r, self.intensive_care,
-                  self.hospitalized_r.output())
+        self.move('HG', 'G', self.output('HG'))
+        self.move('HR', 'R', self.output('HR'))
 
     def step_intensive_care(self, history):
-        self.move(self.intensive_care, self.recovered,
-                  self.krg * self.intensive_care.output())
-        self.move(self.intensive_care, self.dead,
-                  self.krd * self.intensive_care.output())
+        self.move('R', 'G', self.krg * self.output('R'))
+        self.move('R', 'D', self.krd * self.output('R'))
