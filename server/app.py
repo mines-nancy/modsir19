@@ -13,7 +13,7 @@ from models.simple_sir import simple_sir
 from models.complex_sir import model
 from models.simulator import run_simulator
 
-# Test master update to deploy
+# Test master update to deploy 2
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
