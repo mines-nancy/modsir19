@@ -47,7 +47,7 @@ class Simulator:
 def run_simulator(population,
                   kpe, kem, kmg, kmh, khr, khg, krd, krg,
                   tem, tmg, tmh, thg, thr, trsr, lim_time):
-    initial_state = State(kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, time=0,
+    initial_state = State(kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, time=0,
                           population=Box('P'),
                           recovered=Box('G'),
                           exposed=Box('E'),
@@ -86,6 +86,7 @@ if __name__ == "__main__":
                           tmh=6,
                           thg=6,
                           thr=1,
+                          trsr=8,
                           time=0,
                           population=Box('P'),
                           recovered=Box('G'),

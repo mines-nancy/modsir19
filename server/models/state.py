@@ -17,6 +17,7 @@ class State:
                  tmh: int,
                  thg: int,
                  thr: int,
+                 trsr: int,
                  time,
                  population,
                  recovered,
@@ -51,6 +52,7 @@ class State:
         self.tmh = tmh
         self.thg = thg
         self.thr = thr
+        self.trsr = trsr
 
     def reinit_boxes(self):
         self.population.reinit()
@@ -127,14 +129,8 @@ class State:
         self.intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history):
-        nb_exit_after_n_days = [0, 0, 0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07,
-                                0.08, 0.10, 0.12, 0.14, 0.13, 0.09, 0.05, 0.03, 0.02, 0.01, 0.01]
-        delta = 0
-        for i in range(len(nb_exit_after_n_days)):
-            delta += nb_exit_after_n_days[i] * \
-                self.get_past_input(history, 'intensive_care', (1+1+i)
-                                    )  # +1 for previous, +1 for array element corresponds to 1 day
-
+        delta = 1 * \
+            self.get_past_input(history, 'intensive_care', 1+self.trsr)
         self.intensive_care.remove(delta)
         self.exit_intensive_care.add(delta)
 
