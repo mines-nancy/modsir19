@@ -21,19 +21,25 @@ class State:
                  time,
                  population
                  ):
-        self.kpe = kpe
-        self.kem = kem
-        self.kmg = kmg
-        self.kmh = kmh
-        self.khr = khr
-        self.khg = khg
-        self.krd = krd
-        self.krg = krg
-        self.tem = tem
-        self.tmg = tmg
-        self.tmh = tmh
-        self.thg = thg
-        self.thr = thr
+
+        self._delays = {
+            'tem': tem,
+            'tmg': tmg,
+            'tmh': tmh,
+            'thg': thg,
+            'thr': thr
+        }
+
+        self._coefficients = {
+            'kpe': kpe,
+            'kem': kem,
+            'kmg': kmg,
+            'kmh': kmh,
+            'khr': khr,
+            'khg': khg,
+            'krd': krd,
+            'krg': krg,
+        }
 
         self._boxes = {
             'E': Box('E', 0),
@@ -44,6 +50,15 @@ class State:
             'HR': Box('HR', thr),
             'R': Box('R', 8),
             'D': Box('D')
+        }
+
+        # src -> [targets]
+        self._moves = {
+            'MG': [('G', 1)],
+            'MH': [('HG', khg), ('HR', khr)],
+            'HG': [('G', 1)],
+            'HR': [('R', 1)],
+            'R': [('G', krg), ('D', krd)],
         }
 
         self.time = time
@@ -64,9 +79,47 @@ class State:
     def output(self, name):
         return self.box(name).output()
 
+    def delay(self, name):
+        return self._delays[name]
+
+    def coefficient(self, name):
+        return self._coefficients[name]
+
     def __str__(self):
         pop = sum([box.full_size() for box in self.boxes()])
         return f'{self.box("E")} {self.box("MG")} {self.box("MH")} {self.box("HG")} {self.box("HR")} {self.box("R")} {self.box("G")} {self.box("D")} POP={round(pop,2)}'
+
+    def get_time0(self):
+        return 0
+
+    def move(self, src_name, dest_name, delta):
+        self.box(src_name).remove(delta)
+        self.box(dest_name).add(delta)
+
+    def step(self, history):
+        self.time += 1
+        for box in self.boxes():
+            box.step()
+
+        self.step_exposed(history)
+        self.generic_steps(self._moves)
+
+    def generic_steps(self, moves):
+        for src_name in moves.keys():
+            for dest_name, coefficient in moves[src_name]:
+                self.move(src_name, dest_name, coefficient *
+                          self.output(src_name))
+
+    def step_exposed(self, history):
+        state_tem = history.get_last_state(self.time - (1+self.delay('tem')))
+        if state_tem == None:
+            return
+
+        infected_size = state_tem.box('MG').size()+state_tem.box('MH').size()
+        delta = self.coefficient('kem') * self.output('E') * \
+            (infected_size) / self.e0
+        self.move('E', 'MG', self.coefficient('kmg') * delta)
+        self.move('E', 'MH', self.coefficient('kmh') * delta)
 
     def extract_series(self, history):
         series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
@@ -79,43 +132,3 @@ class State:
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
         return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], []
-
-    def step(self, history):
-        self.time += 1
-        for box in self.boxes():
-            box.step()
-
-        self.step_exposed(history)
-        self.step_infected(history)
-        self.step_hospitalized(history)
-        self.step_intensive_care(history)
-
-    def get_time0(self):
-        return 0
-
-    def move(self, src_name, dest_name, delta):
-        self.box(src_name).remove(delta)
-        self.box(dest_name).add(delta)
-
-    def step_exposed(self, history):
-        state_tem = history.get_last_state(self.time - (1+self.tem))
-        if state_tem == None:
-            return
-
-        infected_size = state_tem.box('MG').size()+state_tem.box('MH').size()
-        delta = self.kem * self.output('E') * (infected_size) / self.e0
-        self.move('E', 'MG', self.kmg * delta)
-        self.move('E', 'MH', self.kmh * delta)
-
-    def step_infected(self, history):
-        self.move('MG', 'G', self.output('MG'))
-        self.move('MH', 'HG', self.khg * self.output('MH'))
-        self.move('MH', 'HR', self.khr * self.output('MH'))
-
-    def step_hospitalized(self, history):
-        self.move('HG', 'G', self.output('HG'))
-        self.move('HR', 'R', self.output('HR'))
-
-    def step_intensive_care(self, history):
-        self.move('R', 'G', self.krg * self.output('R'))
-        self.move('R', 'D', self.krd * self.output('R'))
