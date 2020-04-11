@@ -2,12 +2,21 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const day0 = new Date(2020, 0, 23);
 
-export const Chart = ({ values }) => {
-    const t = useTranslate();
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        root: {
+            maxWidth: 640,
+        },
+    }),
+);
 
+export const Chart = ({ values }) => {
+    const classes = useStyles();
+    const t = useTranslate();
     const {
         recovered,
         exposed,
@@ -67,14 +76,14 @@ export const Chart = ({ values }) => {
     };
 
     return (
-        <div className="Chart">
+        <div className={classes.root}>
             <Line
                 data={lineData}
                 width="10"
                 height="10"
                 options={{
                     title: {
-                        display: true,
+                        display: false,
                         text: 'Modèle SIR Complexe',
                         fontSize: 25,
                     },
