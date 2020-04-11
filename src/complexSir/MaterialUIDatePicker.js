@@ -1,4 +1,3 @@
-import 'date-fns';
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
@@ -6,7 +5,6 @@ import {
     KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
 import DateFnsUtils from '@date-io/date-fns';
 
 export const MaterialUIPickers = () => {
