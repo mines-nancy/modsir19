@@ -39,7 +39,6 @@ class Box:
         self._queue.appendleft(input)
 
     def size(self):
-        # return sum([x for x in self._queue])
         return self._size
 
     def full_size(self):

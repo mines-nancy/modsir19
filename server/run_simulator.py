@@ -1,4 +1,5 @@
-from models.state import State
+from models.queue.state import State
+# from models.past_input.state import State
 from models.simulator import Simulator
 
 if __name__ == "__main__":
@@ -15,6 +16,7 @@ if __name__ == "__main__":
                           tmh=6,
                           thg=6,
                           thr=1,
+                          trsr=10,
                           time=0,
                           population=300000
                           )

@@ -27,9 +27,3 @@ class History:
         if len(states) > 0:
             return states[-1]
         return None
-
-    def extract_serie(self, boxname):
-        res = []
-        for state in self.sorted_history:
-            res.append(getattr(state, boxname).full_size())
-        return res

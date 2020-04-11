@@ -1,4 +1,4 @@
-from models.box import Box
+from models.queue.box import Box
 from models.history import History
 
 
@@ -17,6 +17,7 @@ class State:
                  tmh: int,
                  thg: int,
                  thr: int,
+                 trsr: int,
                  time,
                  population
                  ):
@@ -79,7 +80,7 @@ class State:
 
         return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
 
-    def step(self, history, previous_state):
+    def step(self, history):
         self.time += 1
         self.exposed.step()
         self.infected_g.step()
@@ -87,10 +88,10 @@ class State:
         self.hospitalized_g.step()
         self.hospitalized_r.step()
         self.intensive_care.step()
-        self.step_exposed(history, previous_state)
-        self.step_infected(history, previous_state)
-        self.step_hospitalized(history, previous_state)
-        self.step_intensive_care(history, previous_state)
+        self.step_exposed(history)
+        self.step_infected(history)
+        self.step_hospitalized(history)
+        self.step_intensive_care(history)
 
     def get_time0(self):
         return 0
@@ -99,7 +100,7 @@ class State:
         src.remove(delta)
         dest.add(delta)
 
-    def step_exposed(self, history, previous_state):
+    def step_exposed(self, history):
         state_tem = history.get_last_state(self.time - (1+self.tem))
         if state_tem == None:
             return
@@ -112,20 +113,20 @@ class State:
         self.move(self.exposed, self.infected_g, self.kmg*delta)
         self.move(self.exposed, self.infected_h, self.kmh*delta)
 
-    def step_infected(self, history, previous_state):
+    def step_infected(self, history):
         self.move(self.infected_g, self.recovered, self.infected_g.output())
         self.move(self.infected_h, self.hospitalized_g,
                   self.khg * self.infected_h.output())
         self.move(self.infected_h, self.hospitalized_r,
                   self.khr * self.infected_h.output())
 
-    def step_hospitalized(self, history, previous_state):
+    def step_hospitalized(self, history):
         self.move(self.hospitalized_g, self.recovered,
                   self.hospitalized_g.output())
         self.move(self.hospitalized_r, self.intensive_care,
                   self.hospitalized_r.output())
 
-    def step_intensive_care(self, history, previous_state):
+    def step_intensive_care(self, history):
         self.move(self.intensive_care, self.recovered,
                   self.krg * self.intensive_care.output())
         self.move(self.intensive_care, self.dead,

@@ -1,6 +1,6 @@
 from models.history import History
-from models.state import State
-from models.box import Box
+from models.queue.state import State
+# from models.past_input.state import State
 import copy
 
 
@@ -14,7 +14,7 @@ class Simulator:
         self._history.store(current_state)
 
         next_state = copy.deepcopy(current_state)
-        next_state.step(self._history, current_state)
+        next_state.step(self._history)
 
         self._state = next_state
 
@@ -29,7 +29,7 @@ def run_simulator(population,
                   kpe, kem, kmg, kmh, khr, khg, krd, krg,
                   tem, tmg, tmh, thg, thr, trsr, lim_time):
     initial_state = State(kpe, kem, kmg, kmh, khr, khg, krd, krg,
-                          tem, tmg, tmh, thg, thr, time=0, population=population)
+                          tem, tmg, tmh, thg, thr, trsr, time=0, population=population)
 
     simulator = Simulator(initial_state)
     # print(simulator.get_state())
