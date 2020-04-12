@@ -1,10 +1,13 @@
 import React from 'react';
-import { Grid, Typography, Card, CardContent } from '@material-ui/core';
+import { Grid, Drawer, Toolbar } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+
 import { Chart } from './ComplexChartView';
 import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -14,8 +17,30 @@ const useStyles = makeStyles((theme) =>
             paddingLeft: theme.spacing(4),
             paddingRight: theme.spacing(4),
         },
+        grid: {
+            alignItems: 'center',
+        },
         card: {
             margin: '3pt',
+        },
+
+        appBar: {
+            width: `calc(100% - ${drawerWidth}px)`,
+            marginRight: drawerWidth,
+        },
+        drawer: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
+        drawerPaper: {
+            width: drawerWidth,
+        },
+        // necessary for content to be below app bar
+        toolbar: theme.mixins.toolbar,
+        content: {
+            flexGrow: 1,
+            backgroundColor: theme.palette.background.default,
+            padding: theme.spacing(3),
         },
     }),
 );
@@ -40,25 +65,28 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-            <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
-                <Card className={classes.card}>
-                    <CardContent>
-                        <Typography variant="h5" component="h2">
-                            Paramètres du modèle SIR complexe
-                        </Typography>
-                        <Grid container justify="center" alignItems="center" spacing={3}>
-                            <Grid item xs={12}>
-                                <ComplexSIRSliders onChange={handleChange} />
-                            </Grid>
-                            {values && (
-                                <Grid item xs={8}>
-                                    <Chart values={values} />
-                                </Grid>
-                            )}
+            <div className={classes.toolbar}>
+                <Grid container direction="column" alignItems="stretch">
+                    {values && (
+                        <Grid item>
+                            <Chart values={values} />
                         </Grid>
-                    </CardContent>
-                </Card>
-            </Grid>
+                    )}
+                </Grid>
+            </div>
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+                anchor="right"
+            >
+                <Toolbar />
+                <div className={classes.toolbar}>
+                    <ComplexSIRSliders onChange={handleChange} />
+                </div>
+            </Drawer>
         </div>
     );
 };

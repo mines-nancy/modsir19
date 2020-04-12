@@ -2,6 +2,7 @@
 """
 Created on 04/04/2020
 
+
 @author: Paul Festor
 """
 
@@ -11,6 +12,8 @@ from flask_cors import CORS, cross_origin
 from models.simple_sir import simple_sir
 from models.complex_sir import model
 from models.simulator import run_simulator
+
+# Test master update to deploy 2
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -73,7 +76,7 @@ def get_complex_sir():
     tmh = int(input["tmh"])
     thg = int(input["thg"])
     thr = int(input["thr"])
-    trsr = 10  # int(input["trsr"])
+    trsr = int(input["trsr"])
 
     kmg = taux_tgs
     kmh = 1 - kmg

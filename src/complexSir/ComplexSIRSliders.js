@@ -118,6 +118,8 @@ const stateReducer = (state, action) => {
             return { ...state, thg: action.payload };
         case 'SET_THR':
             return { ...state, thr: action.payload };
+        case 'SET_TRSR' :
+            return { ...state, trsr: action.payload };
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
         default:
@@ -137,6 +139,7 @@ const setters = {
     tmh: 'SET_TMH',
     thg: 'SET_THG',
     thr: 'SET_THR',
+    trsr: 'SET_TRSR',
     lim_time: 'SET_LIM_TIME',
 };
 
@@ -152,6 +155,7 @@ const initialState = {
     tmh: 6,
     thg: 6,
     thr: 1,
+    trsr: 8,
     lim_time: 250,
 };
 
@@ -171,6 +175,7 @@ export default function ComplexSIRSliders({ onChange }) {
         tmh,
         thg,
         thr,
+        trsr,
         lim_time,
     } = values;
 
@@ -330,6 +335,17 @@ export default function ComplexSIRSliders({ onChange }) {
                     value={thr}
                     min={0}
                     max={30}
+                    step={1}
+                    onSliderChange={handleSliderChange}
+                    onInputChange={handleInputChange}
+                    onBlur={handleBlur}
+                />
+
+                <SliderWithInput
+                    name="trsr"
+                    value={trsr}
+                    min={0}
+                    max={20}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}
