@@ -54,7 +54,7 @@ export const ComplexSIRView = () => {
                             </Grid>
                             {values && (
                                 <Grid item xs={8}>
-                                    <Chart params={values} />
+                                    <Chart values={values} />
                                 </Grid>
                             )}
                         </Grid>

@@ -3,18 +3,8 @@ import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
 
-export const Chart = ({ params }) => {
+export const Chart = ({ values }) => {
     const t = useTranslate();
-
-    console.log({ params });
-    const { date, ...values } = params;
-
-    // eslint-disable-next-line no-console
-    console.log({ date });
-    // eslint-disable-next-line no-console
-    console.log({ values });
-
-    const day0 = new Date(2020, 2, 10);
 
     const {
         recovered,
@@ -24,7 +14,10 @@ export const Chart = ({ params }) => {
         hospitalized,
         intensive_care,
         exit_intensive_care,
+        j_0,
     } = values;
+
+    const day0 = new Date(j_0);
 
     const lineData = {
         labels: generateDates(day0, exposed.length),
