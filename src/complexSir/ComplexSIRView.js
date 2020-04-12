@@ -1,10 +1,23 @@
 import React from 'react';
-import { Grid, Typography, Card, CardContent } from '@material-ui/core';
+import {
+    Grid,
+    Drawer,
+    Toolbar,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    Divider,
+} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+
 import { Chart } from './ComplexChartView';
 import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+
+const drawerWidth = 270;
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -14,8 +27,32 @@ const useStyles = makeStyles((theme) =>
             paddingLeft: theme.spacing(4),
             paddingRight: theme.spacing(4),
         },
+        grid: {
+            alignItems: 'center',
+        },
         card: {
             margin: '3pt',
+        },
+        appBar: {
+            zIndex: theme.zIndex.drawer + 1,
+        },
+        drawer: {
+            width: drawerWidth,
+            flexShrink: 0,
+        },
+        drawerPaper: {
+            width: drawerWidth,
+        },
+        drawerContainer: {
+            overflow: 'auto',
+        },
+        content: {
+            flexGrow: 1,
+            // backgroundColor: theme.palette.background.default,
+            // padding: theme.spacing(1),
+        },
+        radio: {
+            margin: theme.spacing(2),
         },
     }),
 );
@@ -24,43 +61,68 @@ const getModel = async (parameters) =>
     await api.get('/get_complex_sir', {
         params: { parameters },
     });
+
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 export const ComplexSIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
+    const [model, setModel] = React.useState('queue');
 
-    const handleChange = React.useCallback(
+    const handleSlidersChange = React.useCallback(
         async (parameters) => {
-            // eslint-disable-next-line no-console
-            console.log({ parameters });
             const response = await getModelDebounced(parameters);
+
             setValues(response.data);
         },
-        [setValues],
+        [model],
     );
 
     return (
         <div className={classes.root}>
-            <Grid container direction="column" justify="center" alignItems="stretch" spacing={3}>
-                <Card className={classes.card}>
-                    <CardContent>
-                        <Typography variant="h5" component="h2">
-                            Paramètres du modèle SIR complexe
-                        </Typography>
-                        <Grid container justify="center" alignItems="center" spacing={3}>
-                            <Grid item xs={12}>
-                                <ComplexSIRSliders onChange={handleChange} />
-                            </Grid>
-                            {values && (
-                                <Grid item xs={8}>
-                                    <Chart values={values} />
-                                </Grid>
-                            )}
+            <div className={classes.content}>
+                <Grid container direction="column" alignItems="stretch">
+                    {values && (
+                        <Grid item>
+                            <Chart values={values} />
                         </Grid>
-                    </CardContent>
-                </Card>
-            </Grid>
+                    )}
+                </Grid>
+            </div>
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+                anchor="right"
+            >
+                <Toolbar />
+                <div className={classes.drawerContainer}>
+                    <FormControl className={classes.radio} component="fieldset">
+                        <FormLabel component="legend">Modèle</FormLabel>
+                        <RadioGroup
+                            aria-label="model"
+                            name="model"
+                            value={model}
+                            onChange={(event) => setModel(event.target.value)}
+                        >
+                            <FormControlLabel
+                                value="past_input"
+                                control={<Radio color="primary" />}
+                                label="Delta t"
+                            />
+                            <FormControlLabel
+                                value="queue"
+                                control={<Radio color="primary" />}
+                                label="File d'attente"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                    <Divider />
+                    <ComplexSIRSliders onChange={handleSlidersChange} />
+                </div>
+            </Drawer>
         </div>
     );
 };

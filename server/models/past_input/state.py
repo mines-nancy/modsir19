@@ -1,4 +1,4 @@
-from models.box import Box
+from models.past_input.box import Box
 from models.history import History
 
 
@@ -17,27 +17,10 @@ class State:
                  tmh: int,
                  thg: int,
                  thr: int,
+                 trsr: int,
                  time,
                  population,
-                 recovered,
-                 exposed,
-                 infected,
-                 hospitalized,
-                 intensive_care,
-                 exit_intensive_care,
-                 dead,
                  ):
-
-        self.population = population
-        self.recovered = recovered
-        self.exposed = exposed
-        self.infected = infected
-        self.hospitalized = hospitalized
-        self.intensive_care = intensive_care
-        self.exit_intensive_care = exit_intensive_care
-        self.dead = dead
-        self.time = time
-
         self.kpe = kpe
         self.kem = kem
         self.kmg = kmg
@@ -51,9 +34,22 @@ class State:
         self.tmh = tmh
         self.thg = thg
         self.thr = thr
+        self.trsr = trsr
+
+        self.exposed = Box('E')
+        self.infected = Box('M')
+        self.recovered = Box('G')
+        self.hospitalized = Box('H')
+        self.intensive_care = Box('R')
+        self.exit_intensive_care = Box('SR')
+        self.dead = Box('D')
+
+        self.time = time
+        self.e0 = kpe * population
+        self.exposed.add(self.e0)
+        self.infected.add(1)
 
     def reinit_boxes(self):
-        self.population.reinit()
         self.recovered.reinit()
         self.exposed.reinit()
         self.infected.reinit()
@@ -68,8 +64,39 @@ class State:
             self.exit_intensive_care.size() + self.recovered.size() + self.dead.size()
         return f'{self.exposed} {self.infected} {self.hospitalized} {self.intensive_care} {self.exit_intensive_care} {self.recovered} {self.dead} POP={round(pop,2)}'
 
+    def extract_series(self, history):
+        exposed = []
+        recovered = []
+        infected = []
+        hospitalized = []
+        intensive_care = []
+        exit_intensive_care = []
+        dead = []
+        for state in history.sorted_list():
+            exposed.append(state.exposed.full_size())
+            recovered.append(state.recovered.full_size())
+            infected.append(state.infected.full_size())
+            hospitalized.append(state.hospitalized.full_size())
+            dead.append(state.dead.full_size())
+            intensive_care.append(state.intensive_care.full_size())
+            exit_intensive_care.append(
+                state.exit_intensive_care.full_size())
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+
     def increment_time(self):
         self.time += 1
+
+    def step(self, history):
+        self.time += 1
+        self.reinit_boxes()
+        self.exposed_to_infected(history)
+        self.infected_to_recovered(history)
+        self.infected_to_hospitalized(history)
+        self.hospitalized_to_recovered(history)
+        self.hospitalized_to_intensive_care(history)
+        self.intensive_care_to_exit_intensive_care(history)
+        self.exit_intensive_care_to_recovered(history)
+        self.exit_intensive_care_to_dead(history)
 
     def get_time0(self):
         return 0
@@ -127,14 +154,8 @@ class State:
         self.intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history):
-        nb_exit_after_n_days = [0, 0, 0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.07,
-                                0.08, 0.10, 0.12, 0.14, 0.13, 0.09, 0.05, 0.03, 0.02, 0.01, 0.01]
-        delta = 0
-        for i in range(len(nb_exit_after_n_days)):
-            delta += nb_exit_after_n_days[i] * \
-                self.get_past_input(history, 'intensive_care', (1+1+i)
-                                    )  # +1 for previous, +1 for array element corresponds to 1 day
-
+        delta = 1 * \
+            self.get_past_input(history, 'intensive_care', 1+self.trsr)
         self.intensive_care.remove(delta)
         self.exit_intensive_care.add(delta)
 

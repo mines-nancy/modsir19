@@ -13,6 +13,9 @@ const useStyles = makeStyles((theme) =>
         root: {
             flexGrow: 1,
         },
+        appBar: {
+            zIndex: theme.zIndex.drawer + 1,
+        },
         title: {
             flexGrow: 1,
         },
@@ -28,7 +31,7 @@ export const MainAppBar = () => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static">
+            <AppBar position="fixed" className={classes.appBar}>
                 <Toolbar>
                     <LeftMenu />
                     <Typography variant="h6" className={classes.title}>

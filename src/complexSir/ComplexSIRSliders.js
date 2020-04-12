@@ -38,40 +38,29 @@ const SliderWithInput = ({
 }) => {
     const classes = useStyles();
     const t = useTranslate();
-    const [open, setOpen] = React.useState(false);
 
     return (
         <div className={classes.sliderWithInput}>
-            <Typography id="input-slider" gutterBottom>
-                {t(`form.${name}`)}
-            </Typography>
+            <Tooltip title={tooltipTitle ? tooltipTitle : t(`form.tip.${name}`)}>
+                <Typography id="input-slider" gutterBottom>
+                    {t(`form.${name}`)}
+                </Typography>
+            </Tooltip>
 
             <Grid container spacing={2} alignItems="center">
-                <Grid item xs>
-                    <Tooltip
-                        title={tooltipTitle ? tooltipTitle : t(`form.tip.${name}`)}
-                        disableFocusListener={true}
-                        disableHoverListener={Boolean(
-                            !tooltipTitle && t(`form.tip.${name}`) === '',
-                        )}
-                        open={open}
-                    >
-                        <Slider
-                            name={name}
-                            className={classes.slider}
-                            value={value}
-                            min={min}
-                            max={max}
-                            step={step}
-                            onChange={(event, newValue) => {
-                                onSliderChange(event, newValue, name);
-                            }}
-                            onMouseEnter={() => setOpen(true)}
-                            onMouseLeave={() => setOpen(false)}
-                            onClick={() => setOpen(false)}
-                            aria-labelledby="input-slider"
-                        />
-                    </Tooltip>
+                <Grid item>
+                    <Slider
+                        name={name}
+                        className={classes.slider}
+                        value={value}
+                        min={min}
+                        max={max}
+                        step={step}
+                        onChange={(event, newValue) => {
+                            onSliderChange(event, newValue, name);
+                        }}
+                        aria-labelledby="input-slider"
+                    />
                 </Grid>
                 <Grid item>
                     <Input
@@ -120,6 +109,8 @@ const stateReducer = (state, action) => {
             return { ...state, thg: action.payload };
         case 'SET_THR':
             return { ...state, thr: action.payload };
+        case 'SET_TRSR':
+            return { ...state, trsr: action.payload };
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
         case 'SET_J_0':
@@ -141,6 +132,7 @@ const setters = {
     tmh: 'SET_TMH',
     thg: 'SET_THG',
     thr: 'SET_THR',
+    trsr: 'SET_TRSR',
     lim_time: 'SET_LIM_TIME',
     j_0: 'SET_J_0',
 };
@@ -157,6 +149,7 @@ const initialState = {
     tmh: 6,
     thg: 6,
     thr: 1,
+    trsr: 8,
     lim_time: 250,
     j_0: new Date(2020, 1, 3),
 };
@@ -177,6 +170,7 @@ export default function ComplexSIRSliders({ onChange }) {
         tmh,
         thg,
         thr,
+        trsr,
         lim_time,
         j_0,
     } = values;
@@ -339,6 +333,17 @@ export default function ComplexSIRSliders({ onChange }) {
                     value={thr}
                     min={0}
                     max={30}
+                    step={1}
+                    onSliderChange={handleSliderChange}
+                    onInputChange={handleInputChange}
+                    onBlur={handleBlur}
+                />
+
+                <SliderWithInput
+                    name="trsr"
+                    value={trsr}
+                    min={0}
+                    max={20}
                     step={1}
                     onSliderChange={handleSliderChange}
                     onInputChange={handleInputChange}

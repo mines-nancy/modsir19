@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch, Redirect, Link as RouterLink } from 'react-router-dom';
 import NotFound from './NotFound';
-import { Paper, Tabs, Tab } from '@material-ui/core';
+import { Paper, Tabs, Tab, Toolbar } from '@material-ui/core';
 import { useTranslate } from 'react-polyglot';
 import { TestAPI } from './testApi/TestAPI';
 import { SIRView } from './simpleSir/SIRView';
@@ -19,6 +19,7 @@ const Home = ({ match }) => {
     return (
         <>
             <header>
+                <Toolbar />
                 <Paper square>
                     <Tabs
                         value={value}

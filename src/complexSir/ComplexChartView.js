@@ -2,10 +2,20 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 export const Chart = ({ values }) => {
     const t = useTranslate();
 
+const useStyles = makeStyles((theme) =>
+    createStyles({
+        root: {
+            maxWidth: 640,
+        },
+    }),
+);
+
+const data = ({ t, day0, values }) => {
     const {
         recovered,
         exposed,
@@ -19,7 +29,7 @@ export const Chart = ({ values }) => {
 
     const day0 = new Date(j_0);
 
-    const lineData = {
+    return {
         labels: generateDates(day0, exposed.length),
         datasets: [
             {
@@ -66,53 +76,57 @@ export const Chart = ({ values }) => {
             },
         ],
     };
+};
+
+const options = {
+    title: {
+        display: false,
+        text: 'Modèle SIR Complexe',
+        fontSize: 25,
+    },
+    tooltips: {
+        callbacks: {
+            label: (tooltipItem, data) => {
+                let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                if (label) {
+                    label += ': ';
+                }
+                label += Math.round(tooltipItem.yLabel * 100) / 100;
+                return label;
+            },
+        },
+    },
+    scales: {
+        yAxes: [
+            {
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Volume de population',
+                    fontSize: 18,
+                },
+            },
+        ],
+        xAxes: [
+            {
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Temps',
+                    fontSize: 18,
+                },
+            },
+        ],
+    },
+};
+
+export const Chart = ({ values }) => {
+    const classes = useStyles();
+    const t = useTranslate();
+
+    const lineData = data({ t, day0, values });
 
     return (
-        <div className="Chart">
-            <Line
-                data={lineData}
-                width="10"
-                height="10"
-                options={{
-                    title: {
-                        display: true,
-                        text: 'Modèle SIR Complexe',
-                        fontSize: 25,
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: (tooltipItem, data) => {
-                                let label = data.datasets[tooltipItem.datasetIndex].label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += Math.round(tooltipItem.yLabel * 100) / 100;
-                                return label;
-                            },
-                        },
-                    },
-                    scales: {
-                        yAxes: [
-                            {
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: 'Volume de population',
-                                    fontSize: 18,
-                                },
-                            },
-                        ],
-                        xAxes: [
-                            {
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: 'Temps',
-                                    fontSize: 18,
-                                },
-                            },
-                        ],
-                    },
-                }}
-            />
+        <div className={classes.root}>
+            <Line data={lineData} width="300" height="300" options={options} />
         </div>
     );
 };
