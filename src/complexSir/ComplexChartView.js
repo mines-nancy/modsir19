@@ -14,9 +14,7 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-export const Chart = ({ values }) => {
-    const classes = useStyles();
-    const t = useTranslate();
+const data = ({ t, day0, values }) => {
     const {
         recovered,
         exposed,
@@ -27,7 +25,7 @@ export const Chart = ({ values }) => {
         exit_intensive_care,
     } = values;
 
-    const lineData = {
+    return {
         labels: generateDates(day0, exposed.length),
         datasets: [
             {
@@ -74,53 +72,57 @@ export const Chart = ({ values }) => {
             },
         ],
     };
+};
+
+const options = {
+    title: {
+        display: false,
+        text: 'Modèle SIR Complexe',
+        fontSize: 25,
+    },
+    tooltips: {
+        callbacks: {
+            label: (tooltipItem, data) => {
+                let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                if (label) {
+                    label += ': ';
+                }
+                label += Math.round(tooltipItem.yLabel * 100) / 100;
+                return label;
+            },
+        },
+    },
+    scales: {
+        yAxes: [
+            {
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Volume de population',
+                    fontSize: 18,
+                },
+            },
+        ],
+        xAxes: [
+            {
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Temps',
+                    fontSize: 18,
+                },
+            },
+        ],
+    },
+};
+
+export const Chart = ({ values }) => {
+    const classes = useStyles();
+    const t = useTranslate();
+
+    const lineData = data({ t, day0, values });
 
     return (
         <div className={classes.root}>
-            <Line
-                data={lineData}
-                width="10"
-                height="10"
-                options={{
-                    title: {
-                        display: false,
-                        text: 'Modèle SIR Complexe',
-                        fontSize: 25,
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: (tooltipItem, data) => {
-                                let label = data.datasets[tooltipItem.datasetIndex].label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += Math.round(tooltipItem.yLabel * 100) / 100;
-                                return label;
-                            },
-                        },
-                    },
-                    scales: {
-                        yAxes: [
-                            {
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: 'Volume de population',
-                                    fontSize: 18,
-                                },
-                            },
-                        ],
-                        xAxes: [
-                            {
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: 'Temps',
-                                    fontSize: 18,
-                                },
-                            },
-                        ],
-                    },
-                }}
-            />
+            <Line data={lineData} width="300" height="300" options={options} />
         </div>
     );
 };
