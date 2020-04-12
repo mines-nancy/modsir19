@@ -5,6 +5,12 @@ import { Chart } from './ComplexChartView';
 import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -32,6 +38,8 @@ export const ComplexSIRView = () => {
 
     const handleChange = React.useCallback(
         async (parameters) => {
+            // eslint-disable-next-line no-console
+            console.log(parameters);
             const response = await getModelDebounced(parameters);
             setValues(response.data);
         },

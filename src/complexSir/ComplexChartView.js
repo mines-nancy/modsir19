@@ -3,10 +3,11 @@ import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
 
-const day0 = new Date(2020, 0, 23);
 
-export const Chart = ({ values }) => {
+export const Chart = ({ values }, j_0) => {
     const t = useTranslate();
+
+    const day0 = new Date(2020, 10, 2);
 
     const {
         recovered,

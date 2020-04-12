@@ -5,7 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
-import { MaterialUIPickers } from './MaterialUIDatePicker';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -121,6 +122,8 @@ const stateReducer = (state, action) => {
             return { ...state, thr: action.payload };
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
+        case 'SET_J_0':
+            return { ...state, j_0: action.payload };
         default:
             return state;
     }
@@ -139,6 +142,7 @@ const setters = {
     thg: 'SET_THG',
     thr: 'SET_THR',
     lim_time: 'SET_LIM_TIME',
+    j_0: 'SET_J_0',
 };
 
 const initialState = {
@@ -154,6 +158,7 @@ const initialState = {
     thg: 6,
     thr: 1,
     lim_time: 250,
+    j_0: new Date(2020, 1, 3),
 };
 
 export default function ComplexSIRSliders({ onChange }) {
@@ -178,6 +183,7 @@ export default function ComplexSIRSliders({ onChange }) {
         thg,
         thr,
         lim_time,
+        j_0,
     } = values;
 
     React.useEffect(() => {
@@ -352,7 +358,24 @@ export default function ComplexSIRSliders({ onChange }) {
                     onInputChange={handleInputChange}
                     onBlur={handleBlur}
                 />
-                <MaterialUIPickers />
+
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Grid container justify="space-around">
+                        <KeyboardDatePicker
+                            disableToolbar
+                            variant="inline"
+                            format="MM/dd/yyyy"
+                            margin="normal"
+                            id="date-picker-inline"
+                            label="Date picker inline"
+                            value={j_0}
+                            onChange={handleInputChange}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
+                    </Grid>
+                </MuiPickersUtilsProvider>
             </Grid>
         </Grid>
     );
