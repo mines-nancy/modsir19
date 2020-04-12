@@ -118,7 +118,7 @@ class State:
 
         infected_size = state_tem.box('MG').size() + state_tem.box('MH').size()
         delta = self.coefficient('kem') * \
-            (previous_state.box('E').size() * infected_size) / self.e0
+            (previous_state.box('E').output() * infected_size) / self.e0
         self.move('E', 'MG', self.coefficient('kmg') * delta)
         self.move('E', 'MH', self.coefficient('kmh') * delta)
 
