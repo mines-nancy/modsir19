@@ -6,12 +6,13 @@ import { generateDates } from '../utils/dateGenerator';
 export const Chart = ({ params }) => {
     const t = useTranslate();
 
-    const { date, values } = params;
+    console.log({ params });
+    const { date, ...values } = params;
 
     // eslint-disable-next-line no-console
-    console.log(date);
+    console.log({ date });
     // eslint-disable-next-line no-console
-    console.log(values);
+    console.log({ values });
 
     const day0 = new Date(2020, 2, 10);
 

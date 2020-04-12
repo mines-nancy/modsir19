@@ -96,7 +96,7 @@ const SliderWithInput = ({
 };
 
 const stateReducer = (state, action) => {
-    // console.log(state, action);
+    console.log(state, action);
     switch (action.type) {
         case 'SET_POPULATION':
             return { ...state, population: action.payload };
@@ -182,6 +182,8 @@ export default function ComplexSIRSliders({ onChange }) {
     } = values;
 
     React.useEffect(() => {
+        console.log('call on change');
+        console.log({ values });
         onChange(values);
     }, [onChange, values]);
 
@@ -353,6 +355,31 @@ export default function ComplexSIRSliders({ onChange }) {
                     onInputChange={handleInputChange}
                     onBlur={handleBlur}
                 />
+            </Grid>
+            <Grid
+                className={classes.grid}
+                container
+                direction="row"
+                justify="right"
+                alignItems="center"
+            >
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Grid container justify="space-around">
+                        <KeyboardDatePicker
+                            disableToolbar
+                            variant="inline"
+                            format="MM/dd/yyyy"
+                            margin="normal"
+                            id="date-picker-inline"
+                            label="Date picker inline"
+                            value={j_0}
+                            onChange={(date) => dispatch({ type: setters['j_0'], payload: date })}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
+                    </Grid>
+                </MuiPickersUtilsProvider>
             </Grid>
         </Grid>
     );

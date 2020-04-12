@@ -5,11 +5,6 @@ import { Chart } from './ComplexChartView';
 import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -34,16 +29,11 @@ const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 export const ComplexSIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
-    const [selectedDate, setSelectedDate] = React.useState(Date(2020, 2, 10));
-
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    };
 
     const handleChange = React.useCallback(
         async (parameters) => {
             // eslint-disable-next-line no-console
-            console.log(parameters);
+            console.log({ parameters });
             const response = await getModelDebounced(parameters);
             setValues(response.data);
         },
@@ -62,26 +52,9 @@ export const ComplexSIRView = () => {
                             <Grid item xs={12}>
                                 <ComplexSIRSliders onChange={handleChange} />
                             </Grid>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <Grid container justify="space-around">
-                                    <KeyboardDatePicker
-                                        disableToolbar
-                                        variant="inline"
-                                        format="MM/dd/yyyy"
-                                        margin="normal"
-                                        id="date-picker-inline"
-                                        label="Date picker inline"
-                                        value={selectedDate}
-                                        onChange={handleDateChange}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </Grid>
-                            </MuiPickersUtilsProvider>
                             {values && (
                                 <Grid item xs={8}>
-                                    <Chart params={{ date: selectedDate, values: values }} />
+                                    <Chart params={values} />
                                 </Grid>
                             )}
                         </Grid>
