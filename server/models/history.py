@@ -2,6 +2,9 @@ class History:
     def __init__(self):
         self.sorted_history = []
 
+    def sorted_list(self):
+        return self.sorted_history
+
     def store(self, state):
         self.sorted_history.append(state)
 
@@ -24,9 +27,3 @@ class History:
         if len(states) > 0:
             return states[-1]
         return None
-
-    def extract_serie(self, boxname):
-        res = []
-        for state in self.sorted_history:
-            res.append(getattr(state, boxname).size())
-        return res
