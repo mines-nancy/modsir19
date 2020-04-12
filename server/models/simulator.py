@@ -1,6 +1,6 @@
 from models.history import History
-from models.queue.state import State
-# from models.past_input.state import State
+from models.queue.state import State as QueueState
+from models.past_input.state import State as PastInputState
 import copy
 
 
@@ -25,11 +25,15 @@ class Simulator:
         return self._state.extract_series(self._history)
 
 
-def run_simulator(population,
+def run_simulator(model, population,
                   kpe, kem, kmg, kmh, khr, khg, krd, krg,
                   tem, tmg, tmh, thg, thr, trsr, lim_time):
-    initial_state = State(kpe, kem, kmg, kmh, khr, khg, krd, krg,
-                          tem, tmg, tmh, thg, thr, trsr, time=0, population=population)
+    if model == 'past_input':
+        initial_state = PastInputState(kpe, kem, kmg, kmh, khr, khg, krd, krg,
+                                       tem, tmg, tmh, thg, thr, trsr, time=0, population=population)
+    else:
+        initial_state = QueueState(kpe, kem, kmg, kmh, khr, khg, krd, krg,
+                                   tem, tmg, tmh, thg, thr, trsr, time=0, population=population)
 
     simulator = Simulator(initial_state)
     # print(simulator.get_state())

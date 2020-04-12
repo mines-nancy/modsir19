@@ -10,7 +10,6 @@ from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 
 from models.simple_sir import simple_sir
-from models.complex_sir import model
 from models.simulator import run_simulator
 
 # Test master update to deploy 2
@@ -63,6 +62,8 @@ def get_complex_sir():
     input = json.loads(request.args.get('parameters'))
     print(input)
 
+    model = str(input["model"])
+
     population = int(input["population"])
     lim_time = int(input["lim_time"])
     r0 = input["r0"]
@@ -88,13 +89,9 @@ def get_complex_sir():
 
     krg = 1 - krd
 
-    # model v1
-    # recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = model(
-    # population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
-
     # model v2
     recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = run_simulator(
-        population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
+        model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,

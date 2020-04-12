@@ -1,5 +1,15 @@
 import React from 'react';
-import { Grid, Drawer, Toolbar } from '@material-ui/core';
+import {
+    Grid,
+    Drawer,
+    Toolbar,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    Divider,
+} from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './ComplexChartView';
@@ -41,6 +51,9 @@ const useStyles = makeStyles((theme) =>
             // backgroundColor: theme.palette.background.default,
             // padding: theme.spacing(1),
         },
+        radio: {
+            margin: theme.spacing(2),
+        },
     }),
 );
 
@@ -48,18 +61,20 @@ const getModel = async (parameters) =>
     await api.get('/get_complex_sir', {
         params: { parameters },
     });
+
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 export const ComplexSIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
+    const [model, setModel] = React.useState('queue');
 
-    const handleChange = React.useCallback(
+    const handleSlidersChange = React.useCallback(
         async (parameters) => {
-            const response = await getModelDebounced(parameters);
+            const response = await getModelDebounced({ ...parameters, model });
             setValues(response.data);
         },
-        [setValues],
+        [model],
     );
 
     return (
@@ -83,7 +98,28 @@ export const ComplexSIRView = () => {
             >
                 <Toolbar />
                 <div className={classes.drawerContainer}>
-                    <ComplexSIRSliders onChange={handleChange} />
+                    <FormControl className={classes.radio} component="fieldset">
+                        <FormLabel component="legend">Modèle</FormLabel>
+                        <RadioGroup
+                            aria-label="model"
+                            name="model"
+                            value={model}
+                            onChange={(event) => setModel(event.target.value)}
+                        >
+                            <FormControlLabel
+                                value="past_input"
+                                control={<Radio color="primary" />}
+                                label="Delta t"
+                            />
+                            <FormControlLabel
+                                value="queue"
+                                control={<Radio color="primary" />}
+                                label="File d'attente"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                    <Divider />
+                    <ComplexSIRSliders onChange={handleSlidersChange} />
                 </div>
             </Drawer>
         </div>
