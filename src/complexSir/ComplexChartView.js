@@ -4,8 +4,6 @@ import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-const day0 = new Date(2020, 0, 23);
-
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
@@ -14,7 +12,50 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const data = ({ t, day0, values }) => {
+const options = {
+    title: {
+        display: false,
+        text: 'Modèle SIR Complexe',
+        fontSize: 25,
+    },
+    tooltips: {
+        callbacks: {
+            label: (tooltipItem, data) => {
+                let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                if (label) {
+                    label += ': ';
+                }
+                label += Math.round(tooltipItem.yLabel * 100) / 100;
+                return label;
+            },
+        },
+    },
+    scales: {
+        yAxes: [
+            {
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Volume de population',
+                    fontSize: 18,
+                },
+            },
+        ],
+        xAxes: [
+            {
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Temps',
+                    fontSize: 18,
+                },
+            },
+        ],
+    },
+};
+
+export const Chart = ({ values }) => {
+    const classes = useStyles();
+    const t = useTranslate();
+
     const {
         recovered,
         exposed,
@@ -23,9 +64,12 @@ const data = ({ t, day0, values }) => {
         hospitalized,
         intensive_care,
         exit_intensive_care,
+        j_0,
     } = values;
 
-    return {
+    const day0 = new Date(j_0);
+
+    const lineData =  {
         labels: generateDates(day0, exposed.length),
         datasets: [
             {
@@ -72,53 +116,6 @@ const data = ({ t, day0, values }) => {
             },
         ],
     };
-};
-
-const options = {
-    title: {
-        display: false,
-        text: 'Modèle SIR Complexe',
-        fontSize: 25,
-    },
-    tooltips: {
-        callbacks: {
-            label: (tooltipItem, data) => {
-                let label = data.datasets[tooltipItem.datasetIndex].label || '';
-                if (label) {
-                    label += ': ';
-                }
-                label += Math.round(tooltipItem.yLabel * 100) / 100;
-                return label;
-            },
-        },
-    },
-    scales: {
-        yAxes: [
-            {
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Volume de population',
-                    fontSize: 18,
-                },
-            },
-        ],
-        xAxes: [
-            {
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Temps',
-                    fontSize: 18,
-                },
-            },
-        ],
-    },
-};
-
-export const Chart = ({ values }) => {
-    const classes = useStyles();
-    const t = useTranslate();
-
-    const lineData = data({ t, day0, values });
 
     return (
         <div className={classes.root}>

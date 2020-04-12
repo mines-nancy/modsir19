@@ -5,6 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -83,7 +85,7 @@ const SliderWithInput = ({
 };
 
 const stateReducer = (state, action) => {
-    // console.log(state, action);
+    console.log(state, action);
     switch (action.type) {
         case 'SET_POPULATION':
             return { ...state, population: action.payload };
@@ -111,6 +113,8 @@ const stateReducer = (state, action) => {
             return { ...state, trsr: action.payload };
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
+        case 'SET_J_0':
+            return { ...state, j_0: action.payload };
         default:
             return state;
     }
@@ -130,6 +134,7 @@ const setters = {
     thr: 'SET_THR',
     trsr: 'SET_TRSR',
     lim_time: 'SET_LIM_TIME',
+    j_0: 'SET_J_0',
 };
 
 const initialState = {
@@ -146,11 +151,13 @@ const initialState = {
     thr: 1,
     trsr: 8,
     lim_time: 250,
+    j_0: new Date(2020, 1, 3),
 };
 
 export default function ComplexSIRSliders({ onChange }) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
+    const t = useTranslate();
 
     const {
         population,
@@ -166,9 +173,12 @@ export default function ComplexSIRSliders({ onChange }) {
         thr,
         trsr,
         lim_time,
+        j_0,
     } = values;
 
     React.useEffect(() => {
+        console.log('call on change');
+        console.log({ values });
         onChange(values);
     }, [onChange, values]);
 
@@ -351,6 +361,31 @@ export default function ComplexSIRSliders({ onChange }) {
                     onInputChange={handleInputChange}
                     onBlur={handleBlur}
                 />
+            </Grid>
+            <Grid
+                className={classes.grid}
+                container
+                direction="row"
+                justify="right"
+                alignItems="center"
+            >
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Grid container justify="space-around">
+                        <KeyboardDatePicker
+                            disableToolbar
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            margin="normal"
+                            id="date-picker-inline"
+                            label={t('form.j_0')}
+                            value={j_0}
+                            onChange={(date) => dispatch({ type: setters['j_0'], payload: date })}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                        />
+                    </Grid>
+                </MuiPickersUtilsProvider>
             </Grid>
         </Grid>
     );
