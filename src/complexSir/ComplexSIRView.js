@@ -12,7 +12,6 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            flexGrow: 1,
             paddingTop: theme.spacing(4),
             paddingLeft: theme.spacing(4),
             paddingRight: theme.spacing(4),
@@ -54,6 +53,7 @@ const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 export const ComplexSIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
+    console.log(values)
 
     const handleChange = React.useCallback(
         async (parameters) => {
@@ -65,28 +65,21 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-            <div className={classes.toolbar}>
-                <Grid container direction="column" alignItems="stretch">
-                    {values && (
-                        <Grid item>
-                            <Chart values={values} />
+                <Grid container direction="row">
+                    <Grid container direction="row" item xs={12} md={7}>
+                        <Grid item sm={1}>
                         </Grid>
-                    )}
+                        <Grid item sm={10}>
+                            {values ? <Chart values={values} /> : <p>No input values</p>}
+                        </Grid>
+                        <Grid item sm={1}>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} md={5}>
+                        <ComplexSIRSliders onChange={handleChange} />
+                    </Grid>
                 </Grid>
-            </div>
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-                anchor="right"
-            >
-                <Toolbar />
-                <div className={classes.toolbar}>
-                    <ComplexSIRSliders onChange={handleChange} />
-                </div>
-            </Drawer>
+
         </div>
     );
 };
