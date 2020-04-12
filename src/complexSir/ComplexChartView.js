@@ -3,11 +3,17 @@ import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
 
-
-export const Chart = ({ values }, j_0) => {
+export const Chart = ({ params }) => {
     const t = useTranslate();
 
-    const day0 = new Date(2020, 10, 2);
+    const { date, values } = params;
+
+    // eslint-disable-next-line no-console
+    console.log(date);
+    // eslint-disable-next-line no-console
+    console.log(values);
+
+    const day0 = new Date(2020, 2, 10);
 
     const {
         recovered,

@@ -164,11 +164,6 @@ const initialState = {
 export default function ComplexSIRSliders({ onChange }) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
-    const [selectedDate, setSelectedDate] = React.useState(new Date('2020-01-18'));
-
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    };
 
     const {
         population,
@@ -358,24 +353,6 @@ export default function ComplexSIRSliders({ onChange }) {
                     onInputChange={handleInputChange}
                     onBlur={handleBlur}
                 />
-
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Grid container justify="space-around">
-                        <KeyboardDatePicker
-                            disableToolbar
-                            variant="inline"
-                            format="MM/dd/yyyy"
-                            margin="normal"
-                            id="date-picker-inline"
-                            label="Date picker inline"
-                            value={j_0}
-                            onChange={handleInputChange}
-                            KeyboardButtonProps={{
-                                'aria-label': 'change date',
-                            }}
-                        />
-                    </Grid>
-                </MuiPickersUtilsProvider>
             </Grid>
         </Grid>
     );
