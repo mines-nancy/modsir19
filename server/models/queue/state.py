@@ -111,13 +111,14 @@ class State:
                           self.output(src_name))
 
     def step_exposed(self, history):
+        previous_state = history.get_last_state(self.time - 1)
         state_tem = history.get_last_state(self.time - (1+self.delay('tem')))
-        if state_tem == None:
+        if state_tem == None or previous_state == None:
             return
 
-        infected_size = state_tem.box('MG').size()+state_tem.box('MH').size()
-        delta = self.coefficient('kem') * self.output('E') * \
-            (infected_size) / self.e0
+        infected_size = state_tem.box('MG').size() + state_tem.box('MH').size()
+        delta = self.coefficient('kem') * \
+            (previous_state.box('E').size() * infected_size) / self.e0
         self.move('E', 'MG', self.coefficient('kmg') * delta)
         self.move('E', 'MH', self.coefficient('kmh') * delta)
 
