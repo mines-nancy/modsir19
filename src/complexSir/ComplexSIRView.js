@@ -7,7 +7,7 @@ import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
-const drawerWidth = 240;
+const drawerWidth = 270;
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -23,10 +23,8 @@ const useStyles = makeStyles((theme) =>
         card: {
             margin: '3pt',
         },
-
         appBar: {
-            width: `calc(100% - ${drawerWidth}px)`,
-            marginRight: drawerWidth,
+            zIndex: theme.zIndex.drawer + 1,
         },
         drawer: {
             width: drawerWidth,
@@ -35,12 +33,13 @@ const useStyles = makeStyles((theme) =>
         drawerPaper: {
             width: drawerWidth,
         },
-        // necessary for content to be below app bar
-        toolbar: theme.mixins.toolbar,
+        drawerContainer: {
+            overflow: 'auto',
+        },
         content: {
             flexGrow: 1,
-            backgroundColor: theme.palette.background.default,
-            padding: theme.spacing(3),
+            // backgroundColor: theme.palette.background.default,
+            // padding: theme.spacing(1),
         },
     }),
 );
@@ -65,7 +64,7 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-            <div className={classes.toolbar}>
+            <div className={classes.content}>
                 <Grid container direction="column" alignItems="stretch">
                     {values && (
                         <Grid item>
@@ -83,7 +82,7 @@ export const ComplexSIRView = () => {
                 anchor="right"
             >
                 <Toolbar />
-                <div className={classes.toolbar}>
+                <div className={classes.drawerContainer}>
                     <ComplexSIRSliders onChange={handleChange} />
                 </div>
             </Drawer>
