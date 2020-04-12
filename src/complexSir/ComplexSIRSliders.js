@@ -104,10 +104,16 @@ const stateReducer = (state, action) => {
             return { ...state, krd: action.payload };
         case 'SET_R0':
             return { ...state, r0: action.payload };
-        case 'SET_TAUX_TGS':
-            return { ...state, taux_tgs: action.payload };
-        case 'SET_TAUX_THR':
-            return { ...state, taux_thr: action.payload };
+        case 'SET_TAUX_TGS': {
+            const taux_tgs = action.payload;
+            const taux_thr = taux_tgs + state.taux_thr <= 1 ? state.taux_thr : 1 - taux_tgs;
+            return { ...state, taux_tgs: action.payload, taux_thr };
+        }
+        case 'SET_TAUX_THR': {
+            const taux_thr = action.payload;
+            const taux_tgs = taux_thr + state.taux_tgs <= 1 ? state.taux_tgs : 1 - taux_thr;
+            return { ...state, taux_thr: action.payload, taux_tgs };
+        }
         case 'SET_TEM':
             return { ...state, tem: action.payload };
         case 'SET_TMG':
@@ -118,7 +124,7 @@ const stateReducer = (state, action) => {
             return { ...state, thg: action.payload };
         case 'SET_THR':
             return { ...state, thr: action.payload };
-        case 'SET_TRSR' :
+        case 'SET_TRSR':
             return { ...state, trsr: action.payload };
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
