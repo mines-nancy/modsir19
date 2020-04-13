@@ -15,32 +15,35 @@ class State:
 
         self._boxes = {
             'SE': BoxDms('SE', 0),
-            'INCUB': BoxDms('INCUB', delays.dm_imcub),
-            'IR': BoxDms('IR', delays.dm_r),
-            'IH': BoxDms('IH', delays.dm_h),
-            'SM': BoxDms('SM', delays.dm_sm),
-            'SI': BoxDms('SI', delays.dm_si),
-            'SS': BoxDms('SS', delays.dm_ss),
+            'INCUB': BoxDms('INCUB', delays['dm_incub']),
+            'IR': BoxDms('IR', delays['dm_r']),
+            'IH': BoxDms('IH', delays['dm_h']),
+            'SM': BoxDms('SM', delays['dm_sm']),
+            'SI': BoxDms('SI', delays['dm_si']),
+            'SS': BoxDms('SS', delays['dm_ss']),
+            'R': BoxDms('R'),
             'DC': BoxDms('DC')
         }
 
         # src -> [targets]
         self._moves = {
-            'INCUB': [('IR', coefficients.pc_ir)],
-            'INCUB': [('IH', coefficients.pc_ih)],
+            'INCUB': [('IR', coefficients['pc_ir'])],
+            'INCUB': [('IH', coefficients['pc_ih'])],
             'IR': [('R', 1)],
-            'IH': [('SM', coefficients.pc_sm), ('SI', coefficients.pc_si)],
-            'SM': [('SI', coefficients.pc_sm_si),
-                   ('SS', coefficients.pc_sm_out * coefficients.pc_h_ss),
-                   ('R', coefficients.pc_sm_out * coefficients.pc_h_r)],
-            'SI': [('DC', coefficients.pc_si_dc),
-                   ('SS', coefficients.pc_si_out * coefficients.pc_h_ss),
-                   ('R', coefficients.pc_si_out * coefficients.pc_h_r)],
+            'IH': [('SM', coefficients['pc_sm']), ('SI', coefficients['pc_si'])],
+            'SM': [('SI', coefficients['pc_sm_si']),
+                   ('SS', coefficients['pc_sm_out'] * coefficients['pc_h_ss']),
+                   ('R', coefficients['pc_sm_out'] * coefficients['pc_h_r'])],
+            'SI': [('DC', coefficients['pc_si_dc']),
+                   ('SS', coefficients['pc_si_out']
+                    * coefficients['pc_h_ss']),
+                   ('R', coefficients['pc_si_out'] * coefficients['pc_h_r'])],
+            'SS': [('R', 1)],
         }
 
         self.time = time
 
-        self.e0 = delays.kpe * population
+        self.e0 = coefficients['kpe'] * population
         self.box('SE').add(self.e0-1)
         self.box('INCUB').add(1)
 
@@ -64,7 +67,7 @@ class State:
 
     def __str__(self):
         pop = sum([box.full_size() for box in self.boxes()])
-        return f'{self.box("E")} {self.box("MG")} {self.box("MH")} {self.box("HG")} {self.box("HR")} {self.box("R")} {self.box("G")} {self.box("D")} POP={round(pop,2)}'
+        return f'{self.box("SE")} {self.box("INCUB")} {self.box("IR")} {self.box("IH")} {self.box("SM")} {self.box("SI")} {self.box("SS")} {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
 
     def get_time0(self):
         return 0
@@ -92,9 +95,8 @@ class State:
             self.box('IR').size() + self.box('IH').size() + \
             self.box('R').size()
         previous_state = history.get_last_state(self.time - 1)
-        delta = self._coefficients.r * self._coefficients.beta * \
-            self.box('SE').output() * \
-            (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
+        delta = self.coefficient('r') * self.coefficient('beta') * self.box('SE').output(
+        ) * (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
