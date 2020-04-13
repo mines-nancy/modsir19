@@ -69,7 +69,7 @@ export const ComplexSIRView = () => {
     const handleSlidersChange = React.useCallback(
         async (parameters) => {
             const response = await getModelDebounced({ ...parameters, model });
-            setValues(response.data);
+            setValues({ ...response.data, j_0: parameters.j_0 });
         },
         [model],
     );

@@ -16,8 +16,6 @@ const useStyles = makeStyles((theme) =>
 export const SIRView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
-    // eslint-disable-next-line no-console
-    console.log({ values });
 
     const handleClick = async (parameters) => {
         const response = await api.get('/get_simple_sir', {

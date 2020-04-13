@@ -85,7 +85,7 @@ const SliderWithInput = ({
 };
 
 const stateReducer = (state, action) => {
-    console.log(state, action);
+    // console.log(state, action);
     switch (action.type) {
         case 'SET_POPULATION':
             return { ...state, population: action.payload };
@@ -151,7 +151,7 @@ const initialState = {
     thr: 1,
     trsr: 8,
     lim_time: 250,
-    j_0: new Date(2020, 1, 3),
+    j_0: new Date(2020, 0, 23),
 };
 
 export default function ComplexSIRSliders({ onChange }) {
@@ -177,8 +177,6 @@ export default function ComplexSIRSliders({ onChange }) {
     } = values;
 
     React.useEffect(() => {
-        console.log('call on change');
-        console.log({ values });
         onChange(values);
     }, [onChange, values]);
 
