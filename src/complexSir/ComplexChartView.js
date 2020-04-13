@@ -52,10 +52,7 @@ const options = {
     },
 };
 
-export const Chart = ({ values }) => {
-    const classes = useStyles();
-    const t = useTranslate();
-
+const data = ({ t, values }) => {
     const {
         recovered,
         exposed,
@@ -67,9 +64,12 @@ export const Chart = ({ values }) => {
         j_0,
     } = values;
 
+    // eslint-disable-next-line no-console
+    console.log(values);
+
     const day0 = new Date(j_0);
 
-    const lineData =  {
+    return {
         labels: generateDates(day0, exposed.length),
         datasets: [
             {
@@ -116,6 +116,14 @@ export const Chart = ({ values }) => {
             },
         ],
     };
+};
+
+export const Chart = ({ values }) => {
+    const classes = useStyles();
+    const t = useTranslate();
+
+
+    const lineData = data({ t, values });
 
     return (
         <div className={classes.root}>

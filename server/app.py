@@ -95,7 +95,7 @@ def get_complex_sir():
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
-            "exit_intensive_care": exit_intensive_care}
+            "exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
 
     return jsonify(data)
 
