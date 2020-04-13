@@ -19,10 +19,10 @@ const useStyles = makeStyles((theme) =>
             marginTop: 40,
         },
         input: {
-            width: 75,
+            width: 70,
         },
         slider: {
-            width: 100,
+            width: 60,
         },
         sliderWithInput: {
             margin: theme.spacing(2),
@@ -52,7 +52,7 @@ const SliderWithInput = ({
                 </Typography>
             </Tooltip>
 
-            <Grid container spacing={2} alignItems="center">
+            <Grid container alignItems="center">
                 <Grid item={6}>
                     <Slider
                         name={name}
