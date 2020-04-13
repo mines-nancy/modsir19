@@ -13,6 +13,7 @@ import {
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './ComplexChartView';
+import { DownloadButton } from './ComplexSIRDownloadButton';
 import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
@@ -78,44 +79,44 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-                <Grid container direction="row">
-                    <Grid container direction="row" item xs={12} md={7}>
-                        <Grid item sm={1}>
-                        </Grid>
-                        <Grid item sm={10}>
-                            {values ? <Chart values={values} /> : <p>No input values</p>}
-                        </Grid>
-                        <Grid item sm={1}>
-                        </Grid>
+            <Grid container direction="row">
+                <Grid container direction="row" item xs={12} md={7}>
+                    <Grid item sm={1}></Grid>
+                    <Grid item sm={10}>
+                        {values ? <Chart values={values} /> : <p>No input values</p>}
                     </Grid>
-
-                    <Grid item xs={12} md={5}>
-                        <FormControl className={classes.radio} component="fieldset">
-                            <FormLabel component="legend">Modèle</FormLabel>
-                            <RadioGroup
-                                aria-label="model"
-                                name="model"
-                                value={model}
-                                onChange={(event) => setModel(event.target.value)}
-                                row
-                            >
-                                <FormControlLabel
-                                    value="past_input"
-                                    control={<Radio color="primary" />}
-                                    label="Delta t"
-                                />
-                                <FormControlLabel
-                                    value="queue"
-                                    control={<Radio color="primary" />}
-                                    label="File d'attente"
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                        <Divider />
-                        <ComplexSIRSliders onChange={handleSlidersChange} />
+                    <Grid item sm={1}></Grid>
+                    <Grid item sm={10}>
+                        {values ? <DownloadButton values={values}/> : <p></p>}
                     </Grid>
                 </Grid>
 
+                <Grid item xs={12} md={5}>
+                    <FormControl className={classes.radio} component="fieldset">
+                        <FormLabel component="legend">Modèle</FormLabel>
+                        <RadioGroup
+                            aria-label="model"
+                            name="model"
+                            value={model}
+                            onChange={(event) => setModel(event.target.value)}
+                            row
+                        >
+                            <FormControlLabel
+                                value="past_input"
+                                control={<Radio color="primary" />}
+                                label="Delta t"
+                            />
+                            <FormControlLabel
+                                value="queue"
+                                control={<Radio color="primary" />}
+                                label="File d'attente"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                    <Divider />
+                    <ComplexSIRSliders onChange={handleSlidersChange} />
+                </Grid>
+            </Grid>
         </div>
     );
 };
