@@ -202,12 +202,12 @@ const initialState = {
     population: 500000,
     kpe: 0.6,
     r: 3,
-    dm_incub: 0.5,
-    dm_r: 0.5,
-    dm_h: 0.5,
-    dm_sm: 0.5,
-    dm_si: 0.5,
-    dm_ss: 0.5,
+    dm_incub: 3,
+    dm_r: 9,
+    dm_h: 6,
+    dm_sm: 6,
+    dm_si: 6,
+    dm_ss: 21,
     beta: 0.5,
     pc_ir: 0.5,
     pc_ih: 0.5,
@@ -290,18 +290,19 @@ export default function SirPlusHSliders({ onChange }) {
     );
 
     const disease_sliders = [
-        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
-        { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
         { name: 'r', value: r, min: 0, max: 5, step: 0.01 },
-        { name: 'dm_incub', value: dm_incub, min: 0, max: 1, step: 0.01 },
-        { name: 'dm_r', value: dm_r, min: 0, max: 1, step: 0.01 },
-        { name: 'dm_h', value: dm_h, min: 0, max: 1, step: 0.01 },
-        { name: 'dm_sm', value: dm_sm, min: 0, max: 1, step: 0.01 },
-        { name: 'dm_si', value: dm_si, min: 0, max: 1, step: 0.01 },
-        { name: 'dm_ss', value: dm_ss, min: 0, max: 1, step: 0.01 },
         { name: 'beta', value: beta, min: 0, max: 1, step: 0.01 },
+        { name: 'dm_incub', value: dm_incub, min: 0, max: 30, step: 1 },
+        { name: 'dm_r', value: dm_r, min: 0, max: 30, step: 1 },
+        { name: 'dm_h', value: dm_h, min: 0, max: 30, step: 1 },
         { name: 'pc_ir', value: pc_ir, min: 0, max: 1, step: 0.01 },
         { name: 'pc_ih', value: pc_ih, min: 0, max: 1, step: 0.01 },
+    ];
+
+    const hospital_management_sliders = [
+        { name: 'dm_sm', value: dm_sm, min: 0, max: 30, step: 1 },
+        { name: 'dm_si', value: dm_si, min: 0, max: 30, step: 1 },
+        { name: 'dm_ss', value: dm_ss, min: 0, max: 30, step: 1 },
         { name: 'pc_sm', value: pc_sm, min: 0, max: 1, step: 0.01 },
         { name: 'pc_si', value: pc_si, min: 0, max: 1, step: 0.01 },
         { name: 'pc_sm_si', value: pc_sm_si, min: 0, max: 1, step: 0.01 },
@@ -310,18 +311,51 @@ export default function SirPlusHSliders({ onChange }) {
         { name: 'pc_si_out', value: pc_si_out, min: 0, max: 1, step: 0.01 },
         { name: 'pc_h_ss', value: pc_h_ss, min: 0, max: 1, step: 0.01 },
         { name: 'pc_h_r', value: pc_h_r, min: 0, max: 1, step: 0.01 },
-        { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
     ];
 
-    const hospital_management_sliders = [];
-
-    const evolution_rules_sliders = [];
+    const general_rules_sliders = [
+        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
+        { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
+        { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
+    ];
 
     return (
         <div className={classes.root}>
             <ExpansionPanel
                 expanded={expanded === 'panel1'}
                 onChange={handlePannelChange('panel1')}
+            >
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel3bh-content"
+                    id="panel3bh-header"
+                >
+                    <Typography className={classes.heading}>
+                        {t('pannel_title.general_rules_sliders')}
+                    </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Grid container direction="row" alignItems="center">
+                        {general_rules_sliders.map((sl) => (
+                            <Grid item xs={4}>
+                                <SliderWithInput
+                                    name={sl.name}
+                                    value={sl.value}
+                                    min={sl.min}
+                                    max={sl.max}
+                                    step={sl.step}
+                                    onSliderChange={handleSliderChange}
+                                    onInputChange={handleInputChange}
+                                    onBlur={handleBlur}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel
+                expanded={expanded === 'panel2'}
+                onChange={handlePannelChange('panel2')}
             >
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -352,8 +386,8 @@ export default function SirPlusHSliders({ onChange }) {
                 </ExpansionPanelDetails>
             </ExpansionPanel>
             <ExpansionPanel
-                expanded={expanded === 'panel2'}
-                onChange={handlePannelChange('panel2')}
+                expanded={expanded === 'panel3'}
+                onChange={handlePannelChange('panel3')}
             >
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -367,38 +401,6 @@ export default function SirPlusHSliders({ onChange }) {
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
                         {hospital_management_sliders.map((sl) => (
-                            <Grid item xs={4}>
-                                <SliderWithInput
-                                    name={sl.name}
-                                    value={sl.value}
-                                    min={sl.min}
-                                    max={sl.max}
-                                    step={sl.step}
-                                    onSliderChange={handleSliderChange}
-                                    onInputChange={handleInputChange}
-                                    onBlur={handleBlur}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <ExpansionPanel
-                expanded={expanded === 'panel3'}
-                onChange={handlePannelChange('panel3')}
-            >
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel3bh-content"
-                    id="panel3bh-header"
-                >
-                    <Typography className={classes.heading}>
-                        {t('pannel_title.evolution_rules_sliders')}
-                    </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <Grid container direction="row" alignItems="center">
-                        {evolution_rules_sliders.map((sl) => (
                             <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}

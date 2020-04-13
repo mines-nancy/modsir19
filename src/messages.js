@@ -105,7 +105,7 @@ const messages = {
         pannel_title: {
             disease_sliders: 'Paramêtres liés à ma maladie',
             hospital_management_sliders: 'Paramêtres liés à la gestion hospitalière',
-            evolution_rules_sliders: "Paramêtres d'évolution",
+            general_rules_sliders: 'Paramêtres généraux',
         },
         chart: {
             exposed: 'exposés',
