@@ -24,14 +24,14 @@ if __name__ == "__main__":
 
     delays = {'dm_incub': 3, 'dm_r': 9, 'dm_h': 6,
               'dm_sm': 6, 'dm_si': 6, 'dm_ss': 21}
-    coefficients = {'pc_ir': 0.8, 'pc_ih': 0.2, 'pc_sm': 0.8, 'pc_si': 0.2, 'pc_sm_si': 0.3,
-                    'pc_sm_out': 0.7, 'pc_si_dc': 0.1, 'pc_dc_out': 0.9, 'pc_h_ss': 0.5, 'pc_h_r': 0.5}
-    population = 10
+    coefficients = {'kpe': 0.6, 'r': 2.3, 'beta': 0.3, 'pc_ir': 0.8, 'pc_ih': 0.2, 'pc_sm': 0.8, 'pc_si': 0.2, 'pc_sm_si': 0.3,
+                    'pc_sm_out': 0.7, 'pc_si_dc': 0.1, 'pc_si_out': 0.9, 'pc_h_ss': 0.5, 'pc_h_r': 0.5}
+    population = 100
     initial_state = SirHState(
         delays=delays, coefficients=coefficients, time=0, population=population)
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
-    for i in range(300):
+    for i in range(200):
         simulator.step()
         print(simulator.get_state())
