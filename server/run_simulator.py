@@ -32,6 +32,8 @@ if __name__ == "__main__":
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
-    for i in range(200):
+    for i in range(10):
         simulator.step()
         print(simulator.get_state())
+
+    print(simulator.extract_series())

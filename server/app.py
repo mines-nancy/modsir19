@@ -124,11 +124,7 @@ def get_sir_h():
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
     lists = run_sir_h(delays, coefficients, population, lim_time)
-    print(lists)
-
-    data = {}
-
-    return jsonify(data)
+    return jsonify(lists)
 
 
 if __name__ == "__main__":

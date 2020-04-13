@@ -15,59 +15,57 @@ const useStyles = makeStyles((theme) =>
 );
 
 const data = ({ t, day0, values }) => {
-    const {
-        recovered,
-        exposed,
-        infected,
-        dead,
-        hospitalized,
-        intensive_care,
-        exit_intensive_care,
-    } = values;
+    const { SE, R, I, SM, SI, SS, DC } = values;
 
     return {
-        labels: generateDates(day0, exposed.length),
+        labels: generateDates(day0, SE.length),
         datasets: [
             {
-                label: [t('chart.intensive_care')],
-                data: intensive_care,
-                backgroundColor: 'rgba(54, 54, 255, 0.6)',
+                label: t('chart.exposed'),
+                data: SE,
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
                 borderWidth: 2,
             },
             {
-                label: t('chart.exit_intensive_care'),
-                data: exit_intensive_care,
+                label: t('chart.recovered'),
+                data: R,
+                backgroundColor: 'rgba(88, 235, 88, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: t('chart.intensive_care'),
+                data: SI,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
                 borderWidth: 2,
             },
             {
                 label: t('chart.hospitalized'),
-                data: hospitalized,
+                data: SM,
+                backgroundColor: 'rgba(255, 88, 132, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: t('chart.following_hospitalized'),
+                data: SS,
                 backgroundColor: 'rgba(255, 88, 132, 0.6)',
                 borderWidth: 2,
             },
             {
                 label: t('chart.dead'),
-                data: dead,
+                data: DC,
                 backgroundColor: 'rgba(88, 88, 88, 0.6)',
                 borderWidth: 2,
             },
             {
                 label: t('chart.infected'),
-                data: infected,
+                data: I,
                 backgroundColor: 'rgba(255, 158, 132, 0.6)',
                 borderWidth: 2,
             },
             {
-                label: t('chart.recovered'),
-                data: recovered,
-                backgroundColor: 'rgba(88, 235, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.exposed'),
-                data: exposed,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                label: [t('chart.exposed')],
+                data: SE,
+                backgroundColor: 'rgba(54, 54, 255, 0.6)',
                 borderWidth: 2,
             },
         ],
@@ -77,7 +75,7 @@ const data = ({ t, day0, values }) => {
 const options = {
     title: {
         display: false,
-        text: 'Modèle SIR Complexe',
+        text: 'Modèle SIR+H',
         fontSize: 25,
     },
     tooltips: {
