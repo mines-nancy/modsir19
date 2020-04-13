@@ -19,7 +19,7 @@ const messages = {
         home: {
             simpleSIR: 'Modèle SIR simple',
             complexSIR: 'Modèle SIR complexe',
-            sirHss: 'Modèle SIR-H-SS',
+            sirPlusH: 'Modèle SIR+H',
             testAPI: "Tester l'API",
         },
         error: {

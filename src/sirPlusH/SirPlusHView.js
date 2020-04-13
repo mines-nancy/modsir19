@@ -12,9 +12,9 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import { Chart } from './SirHssChartView';
+import { Chart } from './SirPlusHChartView';
 import api from '../utils/api';
-import SirHssSliders from './SirHssSliders';
+import SirPlusHSliders from './SirPlusHSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 const drawerWidth = 270;
@@ -63,7 +63,7 @@ const getModel = async (parameters) =>
     });
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
-export const SirHssView = () => {
+export const SirPlusHView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
     const [model, setModel] = React.useState('queue');
@@ -112,7 +112,7 @@ export const SirHssView = () => {
                             </RadioGroup>
                         </FormControl>
                         <Divider />
-                        <SirHssSliders onChange={handleSlidersChange} />
+                        <SirPlusHSliders onChange={handleSlidersChange} />
                     </Grid>
                 </Grid>
 

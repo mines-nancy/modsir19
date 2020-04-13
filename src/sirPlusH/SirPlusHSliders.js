@@ -149,7 +149,7 @@ const initialState = {
     lim_time: 250,
 };
 
-export default function SirHssSliders({ onChange }) {
+export default function SirPlusHSliders({ onChange }) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
     const [expanded, setExpanded] = React.useState("panel1");

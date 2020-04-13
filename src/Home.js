@@ -6,7 +6,7 @@ import { useTranslate } from 'react-polyglot';
 import { TestAPI } from './testApi/TestAPI';
 import { SIRView } from './simpleSir/SIRView';
 import { ComplexSIRView } from './complexSir/ComplexSIRView';
-import {SirHssView} from "./sirHss/SirHssView";
+import {SirPlusHView} from "./sirPlusH/SirPlusHView";
 
 const Home = ({ match }) => {
     const path = match ? (match.path === '/' ? '' : match.path) : '';
@@ -42,7 +42,7 @@ const Home = ({ match }) => {
                             to={`${path}/complexSIR`}
                         />
                         <Tab
-                            label={t('home.sirHss')}
+                            label={t('home.sirPlusH')}
                             component={RouterLink}
                             value={`${path}/sirHss`}
                             to={`${path}/sirHss`}
@@ -70,7 +70,7 @@ const Home = ({ match }) => {
                         path={`${path}/sirHss`}
                         render={(routeProps) => {
                             setValue(`${path}/sirHss`);
-                            return <SirHssView />;
+                            return <SirPlusHView />;
                         }}
                     />
                     <Route render={() => <NotFound />} />
