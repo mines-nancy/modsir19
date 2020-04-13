@@ -61,7 +61,6 @@ const getModel = async (parameters) =>
     await api.get('/get_complex_sir', {
         params: { parameters },
     });
-
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 export const ComplexSIRView = () => {
@@ -79,49 +78,44 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-            <div className={classes.content}>
-                <Grid container direction="column" alignItems="stretch">
-                    {values && (
-                        <Grid item>
-                            <Chart values={values} />
+                <Grid container direction="row">
+                    <Grid container direction="row" item xs={12} md={7}>
+                        <Grid item sm={1}>
                         </Grid>
-                    )}
+                        <Grid item sm={10}>
+                            {values ? <Chart values={values} /> : <p>No input values</p>}
+                        </Grid>
+                        <Grid item sm={1}>
+                        </Grid>
+                    </Grid>
+
+                    <Grid item xs={12} md={5}>
+                        <FormControl className={classes.radio} component="fieldset">
+                            <FormLabel component="legend">Modèle</FormLabel>
+                            <RadioGroup
+                                aria-label="model"
+                                name="model"
+                                value={model}
+                                onChange={(event) => setModel(event.target.value)}
+                                row
+                            >
+                                <FormControlLabel
+                                    value="past_input"
+                                    control={<Radio color="primary" />}
+                                    label="Delta t"
+                                />
+                                <FormControlLabel
+                                    value="queue"
+                                    control={<Radio color="primary" />}
+                                    label="File d'attente"
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                        <Divider />
+                        <ComplexSIRSliders onChange={handleSlidersChange} />
+                    </Grid>
                 </Grid>
-            </div>
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-                anchor="right"
-            >
-                <Toolbar />
-                <div className={classes.drawerContainer}>
-                    <FormControl className={classes.radio} component="fieldset">
-                        <FormLabel component="legend">Modèle</FormLabel>
-                        <RadioGroup
-                            aria-label="model"
-                            name="model"
-                            value={model}
-                            onChange={(event) => setModel(event.target.value)}
-                        >
-                            <FormControlLabel
-                                value="past_input"
-                                control={<Radio color="primary" />}
-                                label="Delta t"
-                            />
-                            <FormControlLabel
-                                value="queue"
-                                control={<Radio color="primary" />}
-                                label="File d'attente"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                    <Divider />
-                    <ComplexSIRSliders onChange={handleSlidersChange} />
-                </div>
-            </Drawer>
+
         </div>
     );
 };
