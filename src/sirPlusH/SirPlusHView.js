@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-    Divider,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    Grid,
-    Radio,
-    RadioGroup,
-} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './SirPlusHChartView';
@@ -59,20 +51,17 @@ const getModel = async (parameters) =>
     await api.get('/get_sir_h', {
         params: { parameters },
     });
+
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 export const SirPlusHView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
-    const [model, setModel] = React.useState('queue');
 
-    const handleSlidersChange = React.useCallback(
-        async (parameters) => {
-            const response = await getModelDebounced({ ...parameters, model });
-            setValues(response.data);
-        },
-        [model],
-    );
+    const handleSlidersChange = React.useCallback(async (parameters) => {
+        const response = await getModelDebounced(parameters);
+        setValues(response.data);
+    }, []);
 
     return (
         <div className={classes.root}>
@@ -86,28 +75,6 @@ export const SirPlusHView = () => {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                    <FormControl className={classes.radio} component="fieldset">
-                        <FormLabel component="legend">Modèle</FormLabel>
-                        <RadioGroup
-                            aria-label="model"
-                            name="model"
-                            value={model}
-                            onChange={(event) => setModel(event.target.value)}
-                            row
-                        >
-                            <FormControlLabel
-                                value="past_input"
-                                control={<Radio color="primary" />}
-                                label="Delta t"
-                            />
-                            <FormControlLabel
-                                value="queue"
-                                control={<Radio color="primary" />}
-                                label="File d'attente"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                    <Divider />
                     <SirPlusHSliders onChange={handleSlidersChange} />
                 </Grid>
             </Grid>

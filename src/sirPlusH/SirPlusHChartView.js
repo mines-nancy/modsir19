@@ -21,12 +21,6 @@ const data = ({ t, day0, values }) => {
         labels: generateDates(day0, SE.length),
         datasets: [
             {
-                label: t('chart.exposed'),
-                data: SE,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderWidth: 2,
-            },
-            {
                 label: t('chart.recovered'),
                 data: R,
                 backgroundColor: 'rgba(88, 235, 88, 0.6)',
@@ -39,7 +33,7 @@ const data = ({ t, day0, values }) => {
                 borderWidth: 2,
             },
             {
-                label: t('chart.hospitalized'),
+                label: t('chart.normal_care'),
                 data: SM,
                 backgroundColor: 'rgba(255, 88, 132, 0.6)',
                 borderWidth: 2,
@@ -47,7 +41,7 @@ const data = ({ t, day0, values }) => {
             {
                 label: t('chart.following_hospitalized'),
                 data: SS,
-                backgroundColor: 'rgba(255, 88, 132, 0.6)',
+                backgroundColor: 'rgba(54, 54, 255, 0.6)',
                 borderWidth: 2,
             },
             {
@@ -60,12 +54,6 @@ const data = ({ t, day0, values }) => {
                 label: t('chart.infected'),
                 data: I,
                 backgroundColor: 'rgba(255, 158, 132, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: [t('chart.exposed')],
-                data: SE,
-                backgroundColor: 'rgba(54, 54, 255, 0.6)',
                 borderWidth: 2,
             },
         ],
