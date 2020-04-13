@@ -9,7 +9,7 @@ const day0 = new Date(2020, 0, 23);
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            maxWidth: 640,
+            maxWidth: 700,
         },
     }),
 );
