@@ -10,7 +10,7 @@ import { useTranslate } from 'react-polyglot';
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            width: 250,
+            marginTop:40
         },
         input: {
             width: 75,
@@ -234,8 +234,7 @@ export default function SirHssSliders({ onChange }) {
 
 
     return (
-        <Grid container direction="row" alignItems="center">
-
+        <div className={classes.root}>
             <ExpansionPanel expanded={expanded === 'panel1'}  onChange={handlePannelChange('panel1')}>
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -249,7 +248,7 @@ export default function SirHssSliders({ onChange }) {
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
                         {disease_sliders.map( sl =>
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
                                     value={sl.value}
@@ -278,7 +277,7 @@ export default function SirHssSliders({ onChange }) {
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
                         {hospital_management_sliders.map( sl =>
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
                                     value={sl.value}
@@ -307,7 +306,7 @@ export default function SirHssSliders({ onChange }) {
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
                         {evolution_rules_sliders.map( sl =>
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
                                     value={sl.value}
@@ -323,6 +322,6 @@ export default function SirHssSliders({ onChange }) {
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
-        </Grid>
+        </div>
     );
 }

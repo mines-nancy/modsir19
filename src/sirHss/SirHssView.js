@@ -79,7 +79,7 @@ export const SirHssView = () => {
     return (
         <div className={classes.root}>
                 <Grid container direction="row">
-                    <Grid container direction="row" item xs={12} md={7}>
+                    <Grid container direction="row" item xs={12} md={6}>
                         <Grid item sm={1}>
                         </Grid>
                         <Grid item sm={10}>
@@ -89,7 +89,7 @@ export const SirHssView = () => {
                         </Grid>
                     </Grid>
 
-                    <Grid item xs={12} md={5}>
+                    <Grid item xs={12} md={6}>
                         <FormControl className={classes.radio} component="fieldset">
                             <FormLabel component="legend">Modèle</FormLabel>
                             <RadioGroup
