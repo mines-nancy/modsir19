@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 const getModel = async (parameters) =>
-    await api.get('/get_complex_sir', {
+    await api.get('/get_sir_h', {
         params: { parameters },
     });
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);

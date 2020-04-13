@@ -10,7 +10,7 @@ from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 
 from models.simple_sir import simple_sir
-from models.simulator import run_simulator
+from models.simulator import run_simulator, run_sir_h
 
 # Test master update to deploy 2
 
@@ -96,6 +96,37 @@ def get_complex_sir():
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
             "exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
+
+    return jsonify(data)
+
+# SIR+H model
+@app.route('/get_sir_h', methods=["GET"])
+def get_sir_h():
+    input = json.loads(request.args.get('parameters'))
+    print(input)
+
+    population = int(input["population"])
+    lim_time = int(input["lim_time"])
+
+    delays = {
+        'dm_incub': int(input['dm_incub']), 'dm_r': int(input['dm_r']), 'dm_h': int(input['dm_h']),
+        'dm_sm': int(input['dm_sm']), 'dm_si': int(input['dm_si']), 'dm_ss': int(input['dm_ss'])
+    }
+
+    coefficients = {
+        'kpe': input["kpe"],
+        'r': input["r"],
+        'beta': input["beta"],
+        'pc_ir': input["pc_ir"], 'pc_ih': input["pc_ih"],
+        'pc_sm': input["pc_sm"], 'pc_si': input["pc_si"],
+        'pc_sm_si': input["pc_sm_si"], 'pc_sm_out': input["pc_sm_out"],
+        'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
+        'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
+
+    lists = run_sir_h(delays, coefficients, population, lim_time)
+    print(lists)
+
+    data = {}
 
     return jsonify(data)
 
