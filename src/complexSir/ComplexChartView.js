@@ -67,7 +67,8 @@ const data = ({ t, values }) => {
     // eslint-disable-next-line no-console
     console.log(values);
 
-    const day0 = new Date(j_0);
+    //const day0 = new Date(j_0);
+    const day0 = new Date(2020, 0, 23);
 
     return {
         labels: generateDates(day0, exposed.length),
