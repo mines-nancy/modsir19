@@ -14,6 +14,9 @@ class Box:
     def size(self):
         return self._value + self._input - self._output
 
+    def full_size(self):
+        return self._value + self._input - self._output
+
     def reinit(self):
         self._value = self._value + self._input - self._output
         self._input = 0
