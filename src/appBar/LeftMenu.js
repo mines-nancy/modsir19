@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Menu, IconButton, Tooltip, MenuItem, Divider } from '@material-ui/core';
+import { IconButton, Menu, Tooltip } from '@material-ui/core';
 import AboutDialog from './AboutDialog';
 import { useTranslate } from 'react-polyglot';
 import { useLocaleContext } from '../utils/localeContext';

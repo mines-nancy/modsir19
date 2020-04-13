@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Grid, FormControl, Button } from '@material-ui/core';
-import { Formik, Form } from 'formik';
+import { Button, FormControl, Grid } from '@material-ui/core';
+import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslate } from 'react-polyglot';
 import FormikFormText from '../components/FormikFormText';

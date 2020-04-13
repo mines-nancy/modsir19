@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-    Grid,
-    Drawer,
-    Toolbar,
-    FormControl,
-    FormControlLabel,
-    FormLabel,
-    Radio,
-    RadioGroup,
-    Divider,
-} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './SirPlusHChartView';
@@ -58,64 +48,36 @@ const useStyles = makeStyles((theme) =>
 );
 
 const getModel = async (parameters) =>
-    await api.get('/get_complex_sir', {
+    await api.get('/get_sir_h', {
         params: { parameters },
     });
+
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 export const SirPlusHView = () => {
     const classes = useStyles();
     const [values, setValues] = React.useState();
-    const [model, setModel] = React.useState('queue');
 
-    const handleSlidersChange = React.useCallback(
-        async (parameters) => {
-            const response = await getModelDebounced({ ...parameters, model });
-            setValues(response.data);
-        },
-        [model],
-    );
+    const handleSlidersChange = React.useCallback(async (parameters) => {
+        const response = await getModelDebounced(parameters);
+        setValues(response.data);
+    }, []);
 
     return (
         <div className={classes.root}>
-                <Grid container direction="row">
-                    <Grid container direction="row" item xs={12} md={6}>
-                        <Grid item sm={1}>
-                        </Grid>
-                        <Grid item sm={10}>
-                            {values ? <Chart values={values} /> : <p>No input values</p>}
-                        </Grid>
-                        <Grid item sm={1}>
-                        </Grid>
+            <Grid container direction="row">
+                <Grid container direction="row" item xs={12} md={6}>
+                    <Grid item sm={1}></Grid>
+                    <Grid item sm={10}>
+                        {values ? <Chart values={values} /> : <p>No input values</p>}
                     </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <FormControl className={classes.radio} component="fieldset">
-                            <FormLabel component="legend">Modèle</FormLabel>
-                            <RadioGroup
-                                aria-label="model"
-                                name="model"
-                                value={model}
-                                onChange={(event) => setModel(event.target.value)}
-                                row
-                            >
-                                <FormControlLabel
-                                    value="past_input"
-                                    control={<Radio color="primary" />}
-                                    label="Delta t"
-                                />
-                                <FormControlLabel
-                                    value="queue"
-                                    control={<Radio color="primary" />}
-                                    label="File d'attente"
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                        <Divider />
-                        <SirPlusHSliders onChange={handleSlidersChange} />
-                    </Grid>
+                    <Grid item sm={1}></Grid>
                 </Grid>
 
+                <Grid item xs={12} md={6}>
+                    <SirPlusHSliders onChange={handleSlidersChange} />
+                </Grid>
+            </Grid>
         </div>
     );
 };

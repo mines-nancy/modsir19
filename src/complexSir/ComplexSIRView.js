@@ -1,14 +1,12 @@
 import React from 'react';
 import {
-    Grid,
-    Drawer,
-    Toolbar,
+    Divider,
     FormControl,
     FormControlLabel,
     FormLabel,
+    Grid,
     Radio,
     RadioGroup,
-    Divider,
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
@@ -72,7 +70,7 @@ export const ComplexSIRView = () => {
     const handleSlidersChange = React.useCallback(
         async (parameters) => {
             const response = await getModelDebounced({ ...parameters, model });
-            setValues(response.data);
+            setValues({ ...response.data, j_0: parameters.j_0 });
         },
         [model],
     );
@@ -89,6 +87,7 @@ export const ComplexSIRView = () => {
                     <Grid item sm={10}>
                         {values ? <DownloadButton values={values}/> : <p></p>}
                     </Grid>
+                    <Grid item sm={1}></Grid>
                 </Grid>
 
                 <Grid item xs={12} md={5}>

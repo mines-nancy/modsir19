@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, createStyles, FormControl, MenuItem } from '@material-ui/core';
+import { createStyles, FormControl, makeStyles, MenuItem } from '@material-ui/core';
 import FormikTextField from './FormikTextField';
 
 const useStyles = makeStyles((theme) =>

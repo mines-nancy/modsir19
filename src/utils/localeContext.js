@@ -1,6 +1,6 @@
 import React from 'react';
 
-const defaultLocaleContext = ['fr', () => { }];
+const defaultLocaleContext = ['fr', () => {}];
 
 const LocaleContext = React.createContext(defaultLocaleContext);
 

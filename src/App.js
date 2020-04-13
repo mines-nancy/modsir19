@@ -4,7 +4,7 @@ import { I18n } from 'react-polyglot';
 import LocaleContext from './utils/localeContext';
 import messages from './messages';
 import { MainAppBar } from './appBar/MainAppBar';
-import { Route, Switch, HashRouter } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 import NotFound from './NotFound';
 import Home from './Home';
 

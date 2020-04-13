@@ -1,11 +1,11 @@
 import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Grid, Tooltip } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
@@ -85,7 +85,7 @@ const SliderWithInput = ({
 };
 
 const stateReducer = (state, action) => {
-    console.log(state, action);
+    // console.log(state, action);
     switch (action.type) {
         case 'SET_POPULATION':
             return { ...state, population: action.payload };
@@ -95,10 +95,16 @@ const stateReducer = (state, action) => {
             return { ...state, krd: action.payload };
         case 'SET_R0':
             return { ...state, r0: action.payload };
-        case 'SET_TAUX_TGS':
-            return { ...state, taux_tgs: action.payload };
-        case 'SET_TAUX_THR':
-            return { ...state, taux_thr: action.payload };
+        case 'SET_TAUX_TGS': {
+            const taux_tgs = action.payload;
+            const taux_thr = taux_tgs + state.taux_thr <= 1 ? state.taux_thr : 1 - taux_tgs;
+            return { ...state, taux_tgs: action.payload, taux_thr };
+        }
+        case 'SET_TAUX_THR': {
+            const taux_thr = action.payload;
+            const taux_tgs = taux_thr + state.taux_tgs <= 1 ? state.taux_tgs : 1 - taux_thr;
+            return { ...state, taux_thr: action.payload, taux_tgs };
+        }
         case 'SET_TEM':
             return { ...state, tem: action.payload };
         case 'SET_TMG':
@@ -151,7 +157,7 @@ const initialState = {
     thr: 1,
     trsr: 8,
     lim_time: 250,
-    j_0: new Date(2020, 1, 3),
+    j_0: new Date(2020, 0, 23),
 };
 
 export default function ComplexSIRSliders({ onChange }) {
@@ -177,8 +183,6 @@ export default function ComplexSIRSliders({ onChange }) {
     } = values;
 
     React.useEffect(() => {
-        console.log('call on change');
-        console.log({ values });
         onChange(values);
     }, [onChange, values]);
 
@@ -212,25 +216,24 @@ export default function ComplexSIRSliders({ onChange }) {
     );
 
     const sliders = [
-        {name:"population", value:population, min:1, max:1000000, step:1},
-        {name:"kpe", value:kpe, min:0, max:1, step:0.01},
-        {name:"r0", value:r0, min:0, max:5, step:0.01},
-        {name:"taux_tgs", value:taux_tgs, min:0, max:1, step:0.01},
-        {name:"taux_thr", value:taux_thr, min:0, max:1, step:0.01},
-        {name:"krd", value:krd, min:0, max:1, step:0.01},
-        {name:"tem", value:tem, min:0, max:30, step:1},
-        {name:"tmg", value:tmg, min:0, max:30, step:1},
-        {name:"tmh", value:tmh, min:0, max:30, step:1},
-        {name:"thg", value:thg, min:0, max:30, step:1},
-        {name:"thr", value:thr, min:0, max:30, step:1},
-        {name:"trsr", value:trsr, min:0, max:20, step:1},
-        {name:"lim_time", value:lim_time, min:0, max:1000, step:1},
-
-    ]
+        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
+        { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
+        { name: 'r0', value: r0, min: 0, max: 5, step: 0.01 },
+        { name: 'taux_tgs', value: taux_tgs, min: 0, max: 1, step: 0.01 },
+        { name: 'taux_thr', value: taux_thr, min: 0, max: 1, step: 0.01 },
+        { name: 'krd', value: krd, min: 0, max: 1, step: 0.01 },
+        { name: 'tem', value: tem, min: 0, max: 30, step: 1 },
+        { name: 'tmg', value: tmg, min: 0, max: 30, step: 1 },
+        { name: 'tmh', value: tmh, min: 0, max: 30, step: 1 },
+        { name: 'thg', value: thg, min: 0, max: 30, step: 1 },
+        { name: 'thr', value: thr, min: 0, max: 30, step: 1 },
+        { name: 'trsr', value: trsr, min: 0, max: 20, step: 1 },
+        { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
+    ];
 
     return (
         <Grid container direction="row" alignItems="center">
-            {sliders.map( sl =>
+            {sliders.map((sl) => (
                 <Grid item xs={6}>
                     <SliderWithInput
                         name={sl.name}
@@ -243,7 +246,7 @@ export default function ComplexSIRSliders({ onChange }) {
                         onBlur={handleBlur}
                     />
                 </Grid>
-            )}
+            ))}
             <Grid
                 className={classes.grid}
                 container

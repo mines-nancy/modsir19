@@ -1,12 +1,11 @@
 import React from 'react';
-import { Route, Switch, Redirect, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect, Route, Switch } from 'react-router-dom';
 import NotFound from './NotFound';
-import { Paper, Tabs, Tab, Toolbar } from '@material-ui/core';
+import { Paper, Tab, Tabs, Toolbar } from '@material-ui/core';
 import { useTranslate } from 'react-polyglot';
-import { TestAPI } from './testApi/TestAPI';
 import { SIRView } from './simpleSir/SIRView';
 import { ComplexSIRView } from './complexSir/ComplexSIRView';
-import {SirPlusHView} from "./sirPlusH/SirPlusHView";
+import { SirPlusHView } from './sirPlusH/SirPlusHView';
 
 const Home = ({ match }) => {
     const path = match ? (match.path === '/' ? '' : match.path) : '';
@@ -66,7 +65,8 @@ const Home = ({ match }) => {
                             setValue(`${path}/complexSIR`);
                             return <ComplexSIRView />;
                         }}
-                    /><Route
+                    />
+                    <Route
                         path={`${path}/sirHss`}
                         render={(routeProps) => {
                             setValue(`${path}/sirHss`);

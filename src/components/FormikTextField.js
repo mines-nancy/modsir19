@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, makeStyles, createStyles, Tooltip } from '@material-ui/core';
+import { createStyles, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import { useTranslate } from 'react-polyglot';
 
 const useStyles = makeStyles((theme) =>
