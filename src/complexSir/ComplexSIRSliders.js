@@ -46,7 +46,7 @@ const SliderWithInput = ({
             </Tooltip>
 
             <Grid container spacing={2} alignItems="center">
-                <Grid item>
+                <Grid item={6}>
                     <Slider
                         name={name}
                         className={classes.slider}
@@ -60,7 +60,7 @@ const SliderWithInput = ({
                         aria-labelledby="input-slider"
                     />
                 </Grid>
-                <Grid item>
+                <Grid item xs={6}>
                     <Input
                         name={name}
                         className={classes.input}
@@ -201,157 +201,40 @@ export default function ComplexSIRSliders({ onChange }) {
         [dispatch],
     );
 
+    const sliders = [
+        {name:"population", value:population, min:1, max:1000000, step:1},
+        {name:"kpe", value:kpe, min:0, max:1, step:0.01},
+        {name:"r0", value:r0, min:0, max:5, step:0.01},
+        {name:"taux_tgs", value:taux_tgs, min:0, max:1, step:0.01},
+        {name:"taux_thr", value:taux_thr, min:0, max:1, step:0.01},
+        {name:"krd", value:krd, min:0, max:1, step:0.01},
+        {name:"tem", value:tem, min:0, max:30, step:1},
+        {name:"tmg", value:tmg, min:0, max:30, step:1},
+        {name:"tmh", value:tmh, min:0, max:30, step:1},
+        {name:"thg", value:thg, min:0, max:30, step:1},
+        {name:"thr", value:thr, min:0, max:30, step:1},
+        {name:"trsr", value:trsr, min:0, max:20, step:1},
+        {name:"lim_time", value:lim_time, min:0, max:1000, step:1},
+
+    ]
+
+
     return (
-        <Grid container direction="column" justify="right" alignItems="center">
-            <Grid
-                className={classes.grid}
-                container
-                direction="row"
-                justify="right"
-                alignItems="center"
-            >
-                <SliderWithInput
-                    name="population"
-                    value={population}
-                    min={1}
-                    max={1000000}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="kpe"
-                    value={kpe}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="r0"
-                    value={r0}
-                    min={0}
-                    max={5}
-                    step={0.01}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-
-                <SliderWithInput
-                    name="taux_tgs"
-                    value={taux_tgs}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="taux_thr"
-                    value={taux_thr}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="krd"
-                    value={krd}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-            </Grid>
-            <Grid
-                className={classes.grid}
-                container
-                direction="row"
-                justify="right"
-                alignItems="center"
-            >
-                <SliderWithInput
-                    name="tem"
-                    value={tem}
-                    min={0}
-                    max={30}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="tmg"
-                    value={tmg}
-                    min={0}
-                    max={30}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="tmh"
-                    value={tmh}
-                    min={0}
-                    max={30}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="thg"
-                    value={thg}
-                    min={0}
-                    max={30}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-                <SliderWithInput
-                    name="thr"
-                    value={thr}
-                    min={0}
-                    max={30}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-
-                <SliderWithInput
-                    name="trsr"
-                    value={trsr}
-                    min={0}
-                    max={20}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-
-                <SliderWithInput
-                    name="lim_time"
-                    value={lim_time}
-                    min={0}
-                    max={1000}
-                    step={1}
-                    onSliderChange={handleSliderChange}
-                    onInputChange={handleInputChange}
-                    onBlur={handleBlur}
-                />
-            </Grid>
+        <Grid container direction="row" alignItems="center">
+            {sliders.map( sl =>
+                <Grid item xs={6}>
+                    <SliderWithInput
+                        name={sl.name}
+                        value={sl.value}
+                        min={sl.min}
+                        max={sl.max}
+                        step={sl.step}
+                        onSliderChange={handleSliderChange}
+                        onInputChange={handleInputChange}
+                        onBlur={handleBlur}
+                    />
+                </Grid>
+            )}
         </Grid>
     );
 }
