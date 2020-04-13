@@ -4,68 +4,45 @@ from models.history import History
 
 class State:
     def __init__(self,
-                 kpe: float,
-                 kem: float,
-                 kmg: float,
-                 kmh: float,
-                 khr: float,
-                 khg: float,
-                 krd: float,
-                 krg: float,
-                 tem: int,
-                 tmg: int,
-                 tmh: int,
-                 thg: int,
-                 thr: int,
-                 trsr: int,
+                 delays,
+                 coefficients,
                  time,
                  population
                  ):
 
-        self._delays = {
-            'tem': tem,
-            'tmg': tmg,
-            'tmh': tmh,
-            'thg': thg,
-            'thr': thr
-        }
-
-        self._coefficients = {
-            'kpe': kpe,
-            'kem': kem,
-            'kmg': kmg,
-            'kmh': kmh,
-            'khr': khr,
-            'khg': khg,
-            'krd': krd,
-            'krg': krg,
-        }
+        self._delays = delays
+        self._coefficients = coefficients
 
         self._boxes = {
-            'S': Box('S', 0),
-            'MG': Box('MG', tmg),
-            'MH': Box('MH', tmh),
-            'G': Box('G'),
-            'HG': Box('HG', thg),
-            'HR': Box('HR', thr),
-            'R': Box('R', 8),
-            'D': Box('D')
+            'SE': Box('SE', 0),
+            'INCUB': Box('INCUB', delays.dm_imcub),
+            'IR': Box('IR', delays.dm_r),
+            'IH': Box('IH', delays.dm_h),
+            'SM': Box('SM', delays.dm_sm),
+            'SI': Box('SI', delays.dm_si),
+            'SS': Box('SS', delays.dm_ss),
+            'DC': Box('DC')
         }
 
         # src -> [targets]
         self._moves = {
-            'MG': [('G', 1)],
-            'MH': [('HG', khg), ('HR', khr)],
-            'HG': [('G', 1)],
-            'HR': [('R', 1)],
-            'R': [('G', krg), ('D', krd)],
+            'INCUB': [('IR', coefficients.pc_ir)],
+            'INCUB': [('IH', coefficients.pc_ih)],
+            'IR': [('R', 1)],
+            'IH': [('SM', coefficients.pc_sm), ('SI', coefficients.pc_si)],
+            'SM': [('SI', coefficients.pc_sm_si),
+                   ('SS', coefficients.pc_sm_out * coefficients.pc_h_ss),
+                   ('R', coefficients.pc_sm_out * coefficients.pc_h_r)],
+            'SI': [('DC', coefficients.pc_si_dc),
+                   ('SS', coefficients.pc_si_out * coefficients.pc_h_ss),
+                   ('R', coefficients.pc_si_out * coefficients.pc_h_r)],
         }
 
         self.time = time
 
-        self.e0 = kpe*population
-        self.box('E').add(self.e0)
-        self.box('MH').add(1)
+        self.e0 = delays.kpe * population
+        self.box('SE').add(self.e0-1)
+        self.box('INCUB').add(1)
 
     def boxes(self):
         return self._boxes.values()
@@ -111,20 +88,18 @@ class State:
                           self.output(src_name))
 
     def step_exposed(self, history):
+        n = self.box('SE').size() + self.box('INCUB').size() + \
+            self.box('IR').size() + self.box('IH').size() + \
+            self.box('R').size()
         previous_state = history.get_last_state(self.time - 1)
-        state_tem = history.get_last_state(self.time - (1+self.delay('tem')))
-        if state_tem == None or previous_state == None:
-            return
-
-        infected_size = state_tem.box('MG').size() + state_tem.box('MH').size()
-        delta = self.coefficient('kem') * \
-            (previous_state.box('E').output() * infected_size) / self.e0
-        self.move('E', 'MG', self.coefficient('kmg') * delta)
-        self.move('E', 'MH', self.coefficient('kmh') * delta)
+        delta = self._coefficients.r * self._coefficients.beta * \
+            self.box('SE').output() * \
+            (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
+        self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
-        series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
-                  'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R']}
+        series = {'SE': ['SE'], 'R': ['R'], 'I': ['INCUB', 'IR', 'IH'],
+                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
@@ -132,4 +107,4 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], []
+        return lists
