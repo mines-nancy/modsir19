@@ -103,7 +103,7 @@ def get_complex_sir():
 @app.route('/get_sir_h', methods=["GET"])
 def get_sir_h():
     input = json.loads(request.args.get('parameters'))
-    print(input)
+    # print(input)
 
     population = int(input["population"])
     lim_time = int(input["lim_time"])
@@ -129,4 +129,3 @@ def get_sir_h():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-    # app.run(debug=True)
