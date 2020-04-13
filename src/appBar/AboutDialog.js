@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslate } from 'react-polyglot';
-import { MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText } from '@material-ui/core';
+import { Dialog, DialogContent, DialogContentText, DialogTitle, MenuItem } from '@material-ui/core';
 import { VERSION } from '../utils/config';
 
 const AboutDialog = ({ onClose }) => {

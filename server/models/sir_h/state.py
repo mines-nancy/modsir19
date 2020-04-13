@@ -27,8 +27,7 @@ class State:
 
         # src -> [targets]
         self._moves = {
-            'INCUB': [('IR', coefficients['pc_ir'])],
-            'INCUB': [('IH', coefficients['pc_ih'])],
+            'INCUB': [('IR', coefficients['pc_ir']), ('IH', coefficients['pc_ih'])],
             'IR': [('R', 1)],
             'IH': [('SM', coefficients['pc_sm']), ('SI', coefficients['pc_si'])],
             'SM': [('SI', coefficients['pc_sm_si']),
@@ -46,6 +45,8 @@ class State:
         self.e0 = coefficients['kpe'] * population
         self.box('SE').add(self.e0-1)
         self.box('INCUB').add(1)
+        print(self._delays)
+        print(self._coefficients)
 
     def boxes(self):
         return self._boxes.values()
@@ -95,7 +96,7 @@ class State:
             self.box('IR').size() + self.box('IH').size() + \
             self.box('R').size()
         previous_state = history.get_last_state(self.time - 1)
-        delta = self.coefficient('r') * self.coefficient('beta') * self.box('SE').output(
+        delta = self.coefficient('r') * self.coefficient('beta') * previous_state.box('SE').output(
         ) * (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
         self.move('SE', 'INCUB', delta)
 

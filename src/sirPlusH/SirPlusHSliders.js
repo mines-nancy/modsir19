@@ -1,6 +1,12 @@
 import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Grid, Tooltip, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    Grid,
+    Tooltip,
+} from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
@@ -10,13 +16,13 @@ import { useTranslate } from 'react-polyglot';
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            marginTop:40
+            marginTop: 40,
         },
         input: {
-            width: 75,
+            width: 70,
         },
         slider: {
-            width: 100,
+            width: 60,
         },
         sliderWithInput: {
             margin: theme.spacing(2),
@@ -25,16 +31,16 @@ const useStyles = makeStyles((theme) =>
 );
 
 const SliderWithInput = ({
-                             name,
-                             value,
-                             min,
-                             max,
-                             step,
-                             onSliderChange,
-                             onInputChange,
-                             onBlur,
-                             tooltipTitle,
-                         }) => {
+    name,
+    value,
+    min,
+    max,
+    step,
+    onSliderChange,
+    onInputChange,
+    onBlur,
+    tooltipTitle,
+}) => {
     const classes = useStyles();
     const t = useTranslate();
 
@@ -46,7 +52,7 @@ const SliderWithInput = ({
                 </Typography>
             </Tooltip>
 
-            <Grid container spacing={2} alignItems="center">
+            <Grid container alignItems="center">
                 <Grid item={6}>
                     <Slider
                         name={name}
@@ -90,26 +96,77 @@ const stateReducer = (state, action) => {
             return { ...state, population: action.payload };
         case 'SET_KPE':
             return { ...state, kpe: action.payload };
-        case 'SET_KRD':
-            return { ...state, krd: action.payload };
-        case 'SET_R0':
-            return { ...state, r0: action.payload };
-        case 'SET_TAUX_TGS':
-            return { ...state, taux_tgs: action.payload };
-        case 'SET_TAUX_THR':
-            return { ...state, taux_thr: action.payload };
-        case 'SET_TEM':
-            return { ...state, tem: action.payload };
-        case 'SET_TMG':
-            return { ...state, tmg: action.payload };
-        case 'SET_TMH':
-            return { ...state, tmh: action.payload };
-        case 'SET_THG':
-            return { ...state, thg: action.payload };
-        case 'SET_THR':
-            return { ...state, thr: action.payload };
-        case 'SET_TRSR':
-            return { ...state, trsr: action.payload };
+        case 'SET_R':
+            return { ...state, r: action.payload };
+        case 'SET_DM_INCUB':
+            return { ...state, dm_incub: action.payload };
+        case 'SET_DM_R':
+            return { ...state, dm_r: action.payload };
+        case 'SET_DM_H':
+            return { ...state, dm_h: action.payload };
+        case 'SET_DM_SM':
+            return { ...state, dm_sm: action.payload };
+        case 'SET_DM_SI':
+            return { ...state, dm_si: action.payload };
+        case 'SET_DM_SS':
+            return { ...state, dm_ss: action.payload };
+        case 'SET_BETA':
+            return { ...state, beta: action.payload };
+
+        case 'SET_PC_IR': {
+            const pc_ir = action.payload;
+            const pc_ih = 1 - pc_ir;
+            return { ...state, pc_ir: action.payload, pc_ih };
+        }
+        case 'SET_PC_IH': {
+            const pc_ih = action.payload;
+            const pc_ir = 1 - pc_ih;
+            return { ...state, pc_ih: action.payload, pc_ir };
+        }
+
+        case 'SET_PC_SI': {
+            const pc_si = action.payload;
+            const pc_sm = 1 - pc_si;
+            return { ...state, pc_si: action.payload, pc_sm };
+        }
+        case 'SET_PC_SM': {
+            const pc_sm = action.payload;
+            const pc_si = 1 - pc_sm;
+            return { ...state, pc_sm: action.payload, pc_si };
+        }
+
+        case 'SET_PC_SM_SI': {
+            const pc_sm_si = action.payload;
+            const pc_sm_out = 1 - pc_sm_si;
+            return { ...state, pc_sm_si: action.payload, pc_sm_out };
+        }
+        case 'SET_PC_SM_OUT': {
+            const pc_sm_out = action.payload;
+            const pc_sm_si = 1 - pc_sm_out;
+            return { ...state, pc_sm_out: action.payload, pc_sm_si };
+        }
+
+        case 'SET_PC_SI_DC': {
+            const pc_si_dc = action.payload;
+            const pc_si_out = 1 - pc_si_dc;
+            return { ...state, pc_si_dc: action.payload, pc_si_out };
+        }
+        case 'SET_PC_SI_OUT': {
+            const pc_si_out = action.payload;
+            const pc_si_dc = 1 - pc_si_out;
+            return { ...state, pc_si_out: action.payload, pc_si_dc };
+        }
+
+        case 'SET_PC_H_SS': {
+            const pc_h_ss = action.payload;
+            const pc_h_r = 1 - pc_h_ss;
+            return { ...state, pc_h_ss: action.payload, pc_h_r };
+        }
+        case 'SET_PC_H_R': {
+            const pc_h_r = action.payload;
+            const pc_h_ss = 1 - pc_h_r;
+            return { ...state, pc_h_r: action.payload, pc_h_ss };
+        }
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
         default:
@@ -120,59 +177,82 @@ const stateReducer = (state, action) => {
 const setters = {
     population: 'SET_POPULATION',
     kpe: 'SET_KPE',
-    krd: 'SET_KRD',
-    r0: 'SET_R0',
-    taux_tgs: 'SET_TAUX_TGS',
-    taux_thr: 'SET_TAUX_THR',
-    tem: 'SET_TEM',
-    tmg: 'SET_TMG',
-    tmh: 'SET_TMH',
-    thg: 'SET_THG',
-    thr: 'SET_THR',
-    trsr: 'SET_TRSR',
+    r: 'SET_R',
+    dm_incub: 'SET_DM_INCUB',
+    dm_r: 'SET_DM_R',
+    dm_h: 'SET_DM_H',
+    dm_sm: 'SET_DM_SM',
+    dm_si: 'SET_DM_SI',
+    dm_ss: 'SET_DM_SS',
+    beta: 'SET_BETA',
+    pc_ir: 'SET_PC_IR',
+    pc_ih: 'SET_PC_IH',
+    pc_sm: 'SET_PC_SM',
+    pc_si: 'SET_PC_SI',
+    pc_sm_si: 'SET_PC_SM_SI',
+    pc_sm_out: 'SET_PC_SM_OUT',
+    pc_si_dc: 'SET_PC_SI_DC',
+    pc_si_out: 'SET_PC_SI_OUT',
+    pc_h_ss: 'SET_PC_H_SS',
+    pc_h_r: 'SET_PC_H_R',
     lim_time: 'SET_LIM_TIME',
 };
 
 const initialState = {
     population: 500000,
     kpe: 0.6,
-    krd: 0.5,
-    r0: 2.3,
-    taux_tgs: 0.81,
-    taux_thr: 0.05,
-    tem: 6,
-    tmg: 9,
-    tmh: 6,
-    thg: 6,
-    thr: 1,
-    trsr: 8,
-    lim_time: 250,
+    r: 2.3,
+    dm_incub: 3,
+    dm_r: 9,
+    dm_h: 6,
+    dm_sm: 6,
+    dm_si: 8,
+    dm_ss: 14,
+    beta: 0.15,
+    pc_ir: 0.84,
+    pc_ih: 1 - 0.84,
+    pc_sm: 0.8,
+    pc_si: 1 - 0.8,
+    pc_sm_si: 0.2,
+    pc_sm_out: 1 - 0.2,
+    pc_si_dc: 0.5,
+    pc_si_out: 0.5,
+    pc_h_ss: 0.2,
+    pc_h_r: 1 - 0.2,
+    lim_time: 90,
 };
 
 export default function SirPlusHSliders({ onChange }) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
-    const [expanded, setExpanded] = React.useState("panel1");
+    const [expanded, setExpanded] = React.useState('panel1');
     const handlePannelChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
 
     const t = useTranslate();
 
-
     const {
         population,
         kpe,
-        krd,
-        r0,
-        taux_tgs,
-        taux_thr,
-        tem,
-        tmg,
-        tmh,
-        thg,
-        thr,
-        trsr,
+        r,
+        dm_incub,
+        dm_r,
+        dm_h,
+        dm_sm,
+        dm_si,
+        dm_ss,
+        beta,
+        pc_ir,
+        pc_ih,
+        pc_sm,
+        pc_si,
+        pc_sm_si,
+        pc_sm_out,
+        pc_si_dc,
+        pc_si_out,
+        pc_h_ss,
+        pc_h_r,
         lim_time,
     } = values;
 
@@ -210,32 +290,73 @@ export default function SirPlusHSliders({ onChange }) {
     );
 
     const disease_sliders = [
-        {name:"population", value:population, min:1, max:1000000, step:1},
-        {name:"kpe", value:kpe, min:0, max:1, step:0.01},
-        {name:"r0", value:r0, min:0, max:5, step:0.01},
-        {name:"taux_tgs", value:taux_tgs, min:0, max:1, step:0.01}
-    ]
+        { name: 'r', value: r, min: 0, max: 5, step: 0.01 },
+        { name: 'beta', value: beta, min: 0, max: 1, step: 0.01 },
+        { name: 'dm_incub', value: dm_incub, min: 0, max: 30, step: 1 },
+        { name: 'dm_r', value: dm_r, min: 0, max: 30, step: 1 },
+        { name: 'dm_h', value: dm_h, min: 0, max: 30, step: 1 },
+        { name: 'pc_ir', value: pc_ir, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_ih', value: pc_ih, min: 0, max: 1, step: 0.01 },
+    ];
 
     const hospital_management_sliders = [
-        {name:"taux_thr", value:taux_thr, min:0, max:1, step:0.01},
-        {name:"krd", value:krd, min:0, max:1, step:0.01},
-        {name:"tem", value:tem, min:0, max:30, step:1},
-        {name:"tmg", value:tmg, min:0, max:30, step:1},
-        {name:"tmh", value:tmh, min:0, max:30, step:1},
-        {name:"thg", value:thg, min:0, max:30, step:1}
-    ]
+        { name: 'dm_sm', value: dm_sm, min: 0, max: 30, step: 1 },
+        { name: 'dm_si', value: dm_si, min: 0, max: 30, step: 1 },
+        { name: 'dm_ss', value: dm_ss, min: 0, max: 30, step: 1 },
+        { name: 'pc_sm', value: pc_sm, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_si', value: pc_si, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_sm_si', value: pc_sm_si, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_sm_out', value: pc_sm_out, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_si_dc', value: pc_si_dc, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_si_out', value: pc_si_out, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_h_ss', value: pc_h_ss, min: 0, max: 1, step: 0.01 },
+        { name: 'pc_h_r', value: pc_h_r, min: 0, max: 1, step: 0.01 },
+    ];
 
-    const evolution_rules_sliders = [
-        {name:"thr", value:thr, min:0, max:30, step:1},
-        {name:"trsr", value:trsr, min:0, max:20, step:1},
-        {name:"lim_time", value:lim_time, min:0, max:1000, step:1},
-    ]
-
-
+    const general_rules_sliders = [
+        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
+        { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
+        { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
+    ];
 
     return (
         <div className={classes.root}>
-            <ExpansionPanel expanded={expanded === 'panel1'}  onChange={handlePannelChange('panel1')}>
+            <ExpansionPanel
+                expanded={expanded === 'panel1'}
+                onChange={handlePannelChange('panel1')}
+            >
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel3bh-content"
+                    id="panel3bh-header"
+                >
+                    <Typography className={classes.heading}>
+                        {t('pannel_title.general_rules_sliders')}
+                    </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Grid container direction="row" alignItems="center">
+                        {general_rules_sliders.map((sl) => (
+                            <Grid item xs={4}>
+                                <SliderWithInput
+                                    name={sl.name}
+                                    value={sl.value}
+                                    min={sl.min}
+                                    max={sl.max}
+                                    step={sl.step}
+                                    onSliderChange={handleSliderChange}
+                                    onInputChange={handleInputChange}
+                                    onBlur={handleBlur}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel
+                expanded={expanded === 'panel2'}
+                onChange={handlePannelChange('panel2')}
+            >
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1bh-content"
@@ -247,7 +368,7 @@ export default function SirPlusHSliders({ onChange }) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
-                        {disease_sliders.map( sl =>
+                        {disease_sliders.map((sl) => (
                             <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
@@ -260,11 +381,14 @@ export default function SirPlusHSliders({ onChange }) {
                                     onBlur={handleBlur}
                                 />
                             </Grid>
-                        )}
+                        ))}
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
-            <ExpansionPanel expanded={expanded === 'panel2'} onChange={handlePannelChange('panel2')}>
+            <ExpansionPanel
+                expanded={expanded === 'panel3'}
+                onChange={handlePannelChange('panel3')}
+            >
                 <ExpansionPanelSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel2bh-content"
@@ -276,7 +400,7 @@ export default function SirPlusHSliders({ onChange }) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
-                        {hospital_management_sliders.map( sl =>
+                        {hospital_management_sliders.map((sl) => (
                             <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
@@ -289,36 +413,7 @@ export default function SirPlusHSliders({ onChange }) {
                                     onBlur={handleBlur}
                                 />
                             </Grid>
-                        )}
-                    </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <ExpansionPanel expanded={expanded === 'panel3'} onChange={handlePannelChange('panel3')}>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel3bh-content"
-                    id="panel3bh-header"
-                >
-                    <Typography className={classes.heading}>
-                        {t('pannel_title.evolution_rules_sliders')}
-                    </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-                    <Grid container direction="row" alignItems="center">
-                        {evolution_rules_sliders.map( sl =>
-                            <Grid item xs={4}>
-                                <SliderWithInput
-                                    name={sl.name}
-                                    value={sl.value}
-                                    min={sl.min}
-                                    max={sl.max}
-                                    step={sl.step}
-                                    onSliderChange={handleSliderChange}
-                                    onInputChange={handleInputChange}
-                                    onBlur={handleBlur}
-                                />
-                            </Grid>
-                        )}
+                        ))}
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
