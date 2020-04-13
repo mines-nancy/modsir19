@@ -1,11 +1,11 @@
 import React from 'react';
-import {Line} from 'react-chartjs-2';
-import {generateDates} from '../utils/dateGenerator';
+import { Line } from 'react-chartjs-2';
+import { generateDates } from '../utils/dateGenerator';
 
 const day0 = new Date(2020, 0, 23);
 
 export const Chart = (values) => {
-    const {healthy, infected, removed} = values;
+    const { healthy, infected, removed } = values;
 
     const lineData = {
         labels: generateDates(day0, healthy.length),

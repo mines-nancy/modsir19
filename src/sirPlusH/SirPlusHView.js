@@ -1,8 +1,16 @@
 import React from 'react';
-import {Divider, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup,} from '@material-ui/core';
-import {createStyles, makeStyles} from '@material-ui/core/styles';
+import {
+    Divider,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Grid,
+    Radio,
+    RadioGroup,
+} from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-import {Chart} from './SirPlusHChartView';
+import { Chart } from './SirPlusHChartView';
 import api from '../utils/api';
 import SirPlusHSliders from './SirPlusHSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
@@ -49,7 +57,7 @@ const useStyles = makeStyles((theme) =>
 
 const getModel = async (parameters) =>
     await api.get('/get_complex_sir', {
-        params: {parameters},
+        params: { parameters },
     });
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
@@ -60,7 +68,7 @@ export const SirPlusHView = () => {
 
     const handleSlidersChange = React.useCallback(
         async (parameters) => {
-            const response = await getModelDebounced({...parameters, model});
+            const response = await getModelDebounced({ ...parameters, model });
             setValues(response.data);
         },
         [model],
@@ -70,13 +78,11 @@ export const SirPlusHView = () => {
         <div className={classes.root}>
             <Grid container direction="row">
                 <Grid container direction="row" item xs={12} md={6}>
-                    <Grid item sm={1}>
-                    </Grid>
+                    <Grid item sm={1}></Grid>
                     <Grid item sm={10}>
-                        {values ? <Chart values={values}/> : <p>No input values</p>}
+                        {values ? <Chart values={values} /> : <p>No input values</p>}
                     </Grid>
-                    <Grid item sm={1}>
-                    </Grid>
+                    <Grid item sm={1}></Grid>
                 </Grid>
 
                 <Grid item xs={12} md={6}>
@@ -91,21 +97,20 @@ export const SirPlusHView = () => {
                         >
                             <FormControlLabel
                                 value="past_input"
-                                control={<Radio color="primary"/>}
+                                control={<Radio color="primary" />}
                                 label="Delta t"
                             />
                             <FormControlLabel
                                 value="queue"
-                                control={<Radio color="primary"/>}
+                                control={<Radio color="primary" />}
                                 label="File d'attente"
                             />
                         </RadioGroup>
                     </FormControl>
-                    <Divider/>
-                    <SirPlusHSliders onChange={handleSlidersChange}/>
+                    <Divider />
+                    <SirPlusHSliders onChange={handleSlidersChange} />
                 </Grid>
             </Grid>
-
         </div>
     );
 };

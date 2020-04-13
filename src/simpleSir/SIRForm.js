@@ -1,9 +1,9 @@
 import React from 'react';
-import {createStyles, makeStyles} from '@material-ui/core/styles';
-import {Button, FormControl, Grid} from '@material-ui/core';
-import {Form, Formik} from 'formik';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { Button, FormControl, Grid } from '@material-ui/core';
+import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import {useTranslate} from 'react-polyglot';
+import { useTranslate } from 'react-polyglot';
 import FormikFormText from '../components/FormikFormText';
 
 const useStyles = makeStyles((theme) =>
@@ -49,7 +49,7 @@ const validationSchema = (t) =>
             .required('Ce champs est obligatoire'),
     });
 
-export const SIRForm = ({onChange}) => {
+export const SIRForm = ({ onChange }) => {
     const classes = useStyles();
     const t = useTranslate();
     const initialValues = {
@@ -62,7 +62,7 @@ export const SIRForm = ({onChange}) => {
         <Formik
             enableReinitialize
             initialValues={initialValues}
-            onSubmit={(values, {setSubmitting}) => {
+            onSubmit={(values, { setSubmitting }) => {
                 onChange({
                     s0: parseFloat(values['s0']),
                     lambda: parseFloat(values['lambda']),
@@ -82,13 +82,13 @@ export const SIRForm = ({onChange}) => {
                     >
                         <FormControl className={classes.formControl}>
                             <Grid item>
-                                <FormikFormText name="s0" formikProps={props}/>
+                                <FormikFormText name="s0" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="lambda" formikProps={props}/>
+                                <FormikFormText name="lambda" formikProps={props} />
                             </Grid>
                             <Grid item>
-                                <FormikFormText name="beta" formikProps={props}/>
+                                <FormikFormText name="beta" formikProps={props} />
                             </Grid>
                         </FormControl>
                         <Grid item>

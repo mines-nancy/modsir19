@@ -1,5 +1,5 @@
 import React from 'react';
-import {createStyles, FormControl, makeStyles, MenuItem} from '@material-ui/core';
+import { createStyles, FormControl, makeStyles, MenuItem } from '@material-ui/core';
 import FormikTextField from './FormikTextField';
 
 const useStyles = makeStyles((theme) =>
@@ -13,14 +13,14 @@ const useStyles = makeStyles((theme) =>
 
 const toArrayString = (array) => array.map((value) => value.toString());
 
-const generateMenu = ({options}) =>
+const generateMenu = ({ options }) =>
     toArrayString(options).map((option) => (
         <MenuItem key={option} value={option}>
             {option}
         </MenuItem>
     ));
 
-const FormikFormSelect = ({name, options, withEmpty, required, formikProps, tooltipTitle}) => {
+const FormikFormSelect = ({ name, options, withEmpty, required, formikProps, tooltipTitle }) => {
     const classes = useStyles();
 
     return (
@@ -32,7 +32,7 @@ const FormikFormSelect = ({name, options, withEmpty, required, formikProps, tool
                 formikProps={formikProps}
                 tooltipTitle={tooltipTitle}
             >
-                {generateMenu({options})}
+                {generateMenu({ options })}
             </FormikTextField>
         </FormControl>
     );

@@ -1,16 +1,22 @@
 import React from 'react';
-import {createStyles, makeStyles} from '@material-ui/core/styles';
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Tooltip} from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    Grid,
+    Tooltip,
+} from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
-import {useTranslate} from 'react-polyglot';
+import { useTranslate } from 'react-polyglot';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            marginTop: 40
+            marginTop: 40,
         },
         input: {
             width: 75,
@@ -25,16 +31,16 @@ const useStyles = makeStyles((theme) =>
 );
 
 const SliderWithInput = ({
-                             name,
-                             value,
-                             min,
-                             max,
-                             step,
-                             onSliderChange,
-                             onInputChange,
-                             onBlur,
-                             tooltipTitle,
-                         }) => {
+    name,
+    value,
+    min,
+    max,
+    step,
+    onSliderChange,
+    onInputChange,
+    onBlur,
+    tooltipTitle,
+}) => {
     const classes = useStyles();
     const t = useTranslate();
 
@@ -87,31 +93,31 @@ const stateReducer = (state, action) => {
     // console.log(state, action);
     switch (action.type) {
         case 'SET_POPULATION':
-            return {...state, population: action.payload};
+            return { ...state, population: action.payload };
         case 'SET_KPE':
-            return {...state, kpe: action.payload};
+            return { ...state, kpe: action.payload };
         case 'SET_KRD':
-            return {...state, krd: action.payload};
+            return { ...state, krd: action.payload };
         case 'SET_R0':
-            return {...state, r0: action.payload};
+            return { ...state, r0: action.payload };
         case 'SET_TAUX_TGS':
-            return {...state, taux_tgs: action.payload};
+            return { ...state, taux_tgs: action.payload };
         case 'SET_TAUX_THR':
-            return {...state, taux_thr: action.payload};
+            return { ...state, taux_thr: action.payload };
         case 'SET_TEM':
-            return {...state, tem: action.payload};
+            return { ...state, tem: action.payload };
         case 'SET_TMG':
-            return {...state, tmg: action.payload};
+            return { ...state, tmg: action.payload };
         case 'SET_TMH':
-            return {...state, tmh: action.payload};
+            return { ...state, tmh: action.payload };
         case 'SET_THG':
-            return {...state, thg: action.payload};
+            return { ...state, thg: action.payload };
         case 'SET_THR':
-            return {...state, thr: action.payload};
+            return { ...state, thr: action.payload };
         case 'SET_TRSR':
-            return {...state, trsr: action.payload};
+            return { ...state, trsr: action.payload };
         case 'SET_LIM_TIME':
-            return {...state, lim_time: action.payload};
+            return { ...state, lim_time: action.payload };
         default:
             return state;
     }
@@ -149,16 +155,15 @@ const initialState = {
     lim_time: 250,
 };
 
-export default function SirPlusHSliders({onChange}) {
+export default function SirPlusHSliders({ onChange }) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
-    const [expanded, setExpanded] = React.useState("panel1");
+    const [expanded, setExpanded] = React.useState('panel1');
     const handlePannelChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
 
     const t = useTranslate();
-
 
     const {
         population,
@@ -181,17 +186,17 @@ export default function SirPlusHSliders({onChange}) {
     }, [onChange, values]);
 
     const handleSliderChange = React.useCallback(
-        (event, newValue, name) => dispatch({type: setters[name], payload: parseFloat(newValue)}),
+        (event, newValue, name) => dispatch({ type: setters[name], payload: parseFloat(newValue) }),
         [dispatch],
     );
 
     const handleInputChange = React.useCallback((event, name) => {
         if (event.target.value === '') {
             // setters[name](parseFloat(event.target.min));
-            dispatch({type: setters[name], payload: parseFloat(event.target.min)});
+            dispatch({ type: setters[name], payload: parseFloat(event.target.min) });
         } else {
             // setters[name](parseFloat(event.target.value));
-            dispatch({type: setters[name], payload: parseFloat(event.target.value)});
+            dispatch({ type: setters[name], payload: parseFloat(event.target.value) });
         }
     }, []);
 
@@ -199,44 +204,46 @@ export default function SirPlusHSliders({onChange}) {
         (event, name) => {
             if (event.target.value < event.target.min) {
                 // setters[name](parseFloat(event.target.min));
-                dispatch({type: setters[name], payload: parseFloat(event.target.min)});
+                dispatch({ type: setters[name], payload: parseFloat(event.target.min) });
             }
             if (event.target.value > event.target.max) {
                 // setters[name](parseFloat(event.target.max));
-                dispatch({type: setters[name], payload: parseFloat(event.target.max)});
+                dispatch({ type: setters[name], payload: parseFloat(event.target.max) });
             }
         },
         [dispatch],
     );
 
     const disease_sliders = [
-        {name: "population", value: population, min: 1, max: 1000000, step: 1},
-        {name: "kpe", value: kpe, min: 0, max: 1, step: 0.01},
-        {name: "r0", value: r0, min: 0, max: 5, step: 0.01},
-        {name: "taux_tgs", value: taux_tgs, min: 0, max: 1, step: 0.01}
-    ]
+        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
+        { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
+        { name: 'r0', value: r0, min: 0, max: 5, step: 0.01 },
+        { name: 'taux_tgs', value: taux_tgs, min: 0, max: 1, step: 0.01 },
+    ];
 
     const hospital_management_sliders = [
-        {name: "taux_thr", value: taux_thr, min: 0, max: 1, step: 0.01},
-        {name: "krd", value: krd, min: 0, max: 1, step: 0.01},
-        {name: "tem", value: tem, min: 0, max: 30, step: 1},
-        {name: "tmg", value: tmg, min: 0, max: 30, step: 1},
-        {name: "tmh", value: tmh, min: 0, max: 30, step: 1},
-        {name: "thg", value: thg, min: 0, max: 30, step: 1}
-    ]
+        { name: 'taux_thr', value: taux_thr, min: 0, max: 1, step: 0.01 },
+        { name: 'krd', value: krd, min: 0, max: 1, step: 0.01 },
+        { name: 'tem', value: tem, min: 0, max: 30, step: 1 },
+        { name: 'tmg', value: tmg, min: 0, max: 30, step: 1 },
+        { name: 'tmh', value: tmh, min: 0, max: 30, step: 1 },
+        { name: 'thg', value: thg, min: 0, max: 30, step: 1 },
+    ];
 
     const evolution_rules_sliders = [
-        {name: "thr", value: thr, min: 0, max: 30, step: 1},
-        {name: "trsr", value: trsr, min: 0, max: 20, step: 1},
-        {name: "lim_time", value: lim_time, min: 0, max: 1000, step: 1},
-    ]
-
+        { name: 'thr', value: thr, min: 0, max: 30, step: 1 },
+        { name: 'trsr', value: trsr, min: 0, max: 20, step: 1 },
+        { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
+    ];
 
     return (
         <div className={classes.root}>
-            <ExpansionPanel expanded={expanded === 'panel1'} onChange={handlePannelChange('panel1')}>
+            <ExpansionPanel
+                expanded={expanded === 'panel1'}
+                onChange={handlePannelChange('panel1')}
+            >
                 <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon/>}
+                    expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1bh-content"
                     id="panel1bh-header"
                 >
@@ -246,7 +253,7 @@ export default function SirPlusHSliders({onChange}) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
-                        {disease_sliders.map(sl =>
+                        {disease_sliders.map((sl) => (
                             <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
@@ -259,13 +266,16 @@ export default function SirPlusHSliders({onChange}) {
                                     onBlur={handleBlur}
                                 />
                             </Grid>
-                        )}
+                        ))}
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
-            <ExpansionPanel expanded={expanded === 'panel2'} onChange={handlePannelChange('panel2')}>
+            <ExpansionPanel
+                expanded={expanded === 'panel2'}
+                onChange={handlePannelChange('panel2')}
+            >
                 <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon/>}
+                    expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel2bh-content"
                     id="panel2bh-header"
                 >
@@ -275,7 +285,7 @@ export default function SirPlusHSliders({onChange}) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
-                        {hospital_management_sliders.map(sl =>
+                        {hospital_management_sliders.map((sl) => (
                             <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
@@ -288,13 +298,16 @@ export default function SirPlusHSliders({onChange}) {
                                     onBlur={handleBlur}
                                 />
                             </Grid>
-                        )}
+                        ))}
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
-            <ExpansionPanel expanded={expanded === 'panel3'} onChange={handlePannelChange('panel3')}>
+            <ExpansionPanel
+                expanded={expanded === 'panel3'}
+                onChange={handlePannelChange('panel3')}
+            >
                 <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon/>}
+                    expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel3bh-content"
                     id="panel3bh-header"
                 >
@@ -304,7 +317,7 @@ export default function SirPlusHSliders({onChange}) {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                     <Grid container direction="row" alignItems="center">
-                        {evolution_rules_sliders.map(sl =>
+                        {evolution_rules_sliders.map((sl) => (
                             <Grid item xs={4}>
                                 <SliderWithInput
                                     name={sl.name}
@@ -317,7 +330,7 @@ export default function SirPlusHSliders({onChange}) {
                                     onBlur={handleBlur}
                                 />
                             </Grid>
-                        )}
+                        ))}
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
