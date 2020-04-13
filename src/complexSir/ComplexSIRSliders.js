@@ -1,11 +1,11 @@
 import React from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Grid, Tooltip } from '@material-ui/core';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
+import {Grid, Tooltip} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
-import { useTranslate } from 'react-polyglot';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import {useTranslate} from 'react-polyglot';
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
@@ -26,16 +26,16 @@ const useStyles = makeStyles((theme) =>
 );
 
 const SliderWithInput = ({
-    name,
-    value,
-    min,
-    max,
-    step,
-    onSliderChange,
-    onInputChange,
-    onBlur,
-    tooltipTitle,
-}) => {
+                             name,
+                             value,
+                             min,
+                             max,
+                             step,
+                             onSliderChange,
+                             onInputChange,
+                             onBlur,
+                             tooltipTitle,
+                         }) => {
     const classes = useStyles();
     const t = useTranslate();
 
@@ -88,33 +88,33 @@ const stateReducer = (state, action) => {
     console.log(state, action);
     switch (action.type) {
         case 'SET_POPULATION':
-            return { ...state, population: action.payload };
+            return {...state, population: action.payload};
         case 'SET_KPE':
-            return { ...state, kpe: action.payload };
+            return {...state, kpe: action.payload};
         case 'SET_KRD':
-            return { ...state, krd: action.payload };
+            return {...state, krd: action.payload};
         case 'SET_R0':
-            return { ...state, r0: action.payload };
+            return {...state, r0: action.payload};
         case 'SET_TAUX_TGS':
-            return { ...state, taux_tgs: action.payload };
+            return {...state, taux_tgs: action.payload};
         case 'SET_TAUX_THR':
-            return { ...state, taux_thr: action.payload };
+            return {...state, taux_thr: action.payload};
         case 'SET_TEM':
-            return { ...state, tem: action.payload };
+            return {...state, tem: action.payload};
         case 'SET_TMG':
-            return { ...state, tmg: action.payload };
+            return {...state, tmg: action.payload};
         case 'SET_TMH':
-            return { ...state, tmh: action.payload };
+            return {...state, tmh: action.payload};
         case 'SET_THG':
-            return { ...state, thg: action.payload };
+            return {...state, thg: action.payload};
         case 'SET_THR':
-            return { ...state, thr: action.payload };
+            return {...state, thr: action.payload};
         case 'SET_TRSR':
-            return { ...state, trsr: action.payload };
+            return {...state, trsr: action.payload};
         case 'SET_LIM_TIME':
-            return { ...state, lim_time: action.payload };
+            return {...state, lim_time: action.payload};
         case 'SET_J_0':
-            return { ...state, j_0: action.payload };
+            return {...state, j_0: action.payload};
         default:
             return state;
     }
@@ -154,7 +154,7 @@ const initialState = {
     j_0: new Date(2020, 1, 3),
 };
 
-export default function ComplexSIRSliders({ onChange }) {
+export default function ComplexSIRSliders({onChange}) {
     const classes = useStyles();
     const [values, dispatch] = React.useReducer(stateReducer, initialState);
     const t = useTranslate();
@@ -178,22 +178,22 @@ export default function ComplexSIRSliders({ onChange }) {
 
     React.useEffect(() => {
         console.log('call on change');
-        console.log({ values });
+        console.log({values});
         onChange(values);
     }, [onChange, values]);
 
     const handleSliderChange = React.useCallback(
-        (event, newValue, name) => dispatch({ type: setters[name], payload: parseFloat(newValue) }),
+        (event, newValue, name) => dispatch({type: setters[name], payload: parseFloat(newValue)}),
         [dispatch],
     );
 
     const handleInputChange = React.useCallback((event, name) => {
         if (event.target.value === '') {
             // setters[name](parseFloat(event.target.min));
-            dispatch({ type: setters[name], payload: parseFloat(event.target.min) });
+            dispatch({type: setters[name], payload: parseFloat(event.target.min)});
         } else {
             // setters[name](parseFloat(event.target.value));
-            dispatch({ type: setters[name], payload: parseFloat(event.target.value) });
+            dispatch({type: setters[name], payload: parseFloat(event.target.value)});
         }
     }, []);
 
@@ -201,36 +201,36 @@ export default function ComplexSIRSliders({ onChange }) {
         (event, name) => {
             if (event.target.value < event.target.min) {
                 // setters[name](parseFloat(event.target.min));
-                dispatch({ type: setters[name], payload: parseFloat(event.target.min) });
+                dispatch({type: setters[name], payload: parseFloat(event.target.min)});
             }
             if (event.target.value > event.target.max) {
                 // setters[name](parseFloat(event.target.max));
-                dispatch({ type: setters[name], payload: parseFloat(event.target.max) });
+                dispatch({type: setters[name], payload: parseFloat(event.target.max)});
             }
         },
         [dispatch],
     );
 
     const sliders = [
-        {name:"population", value:population, min:1, max:1000000, step:1},
-        {name:"kpe", value:kpe, min:0, max:1, step:0.01},
-        {name:"r0", value:r0, min:0, max:5, step:0.01},
-        {name:"taux_tgs", value:taux_tgs, min:0, max:1, step:0.01},
-        {name:"taux_thr", value:taux_thr, min:0, max:1, step:0.01},
-        {name:"krd", value:krd, min:0, max:1, step:0.01},
-        {name:"tem", value:tem, min:0, max:30, step:1},
-        {name:"tmg", value:tmg, min:0, max:30, step:1},
-        {name:"tmh", value:tmh, min:0, max:30, step:1},
-        {name:"thg", value:thg, min:0, max:30, step:1},
-        {name:"thr", value:thr, min:0, max:30, step:1},
-        {name:"trsr", value:trsr, min:0, max:20, step:1},
-        {name:"lim_time", value:lim_time, min:0, max:1000, step:1},
+        {name: "population", value: population, min: 1, max: 1000000, step: 1},
+        {name: "kpe", value: kpe, min: 0, max: 1, step: 0.01},
+        {name: "r0", value: r0, min: 0, max: 5, step: 0.01},
+        {name: "taux_tgs", value: taux_tgs, min: 0, max: 1, step: 0.01},
+        {name: "taux_thr", value: taux_thr, min: 0, max: 1, step: 0.01},
+        {name: "krd", value: krd, min: 0, max: 1, step: 0.01},
+        {name: "tem", value: tem, min: 0, max: 30, step: 1},
+        {name: "tmg", value: tmg, min: 0, max: 30, step: 1},
+        {name: "tmh", value: tmh, min: 0, max: 30, step: 1},
+        {name: "thg", value: thg, min: 0, max: 30, step: 1},
+        {name: "thr", value: thr, min: 0, max: 30, step: 1},
+        {name: "trsr", value: trsr, min: 0, max: 20, step: 1},
+        {name: "lim_time", value: lim_time, min: 0, max: 1000, step: 1},
 
     ]
 
     return (
         <Grid container direction="row" alignItems="center">
-            {sliders.map( sl =>
+            {sliders.map(sl =>
                 <Grid item xs={6}>
                     <SliderWithInput
                         name={sl.name}
@@ -261,7 +261,7 @@ export default function ComplexSIRSliders({ onChange }) {
                             id="date-picker-inline"
                             label={t('form.j_0')}
                             value={j_0}
-                            onChange={(date) => dispatch({ type: setters['j_0'], payload: date })}
+                            onChange={(date) => dispatch({type: setters['j_0'], payload: date})}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
                             }}

@@ -1,6 +1,6 @@
 import React from 'react';
-import { TextField, makeStyles, createStyles, Tooltip } from '@material-ui/core';
-import { useTranslate } from 'react-polyglot';
+import {createStyles, makeStyles, TextField, Tooltip} from '@material-ui/core';
+import {useTranslate} from 'react-polyglot';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -12,10 +12,10 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const FormikTextField = ({ name, required, select, children, formikProps, tooltipTitle }) => {
+const FormikTextField = ({name, required, select, children, formikProps, tooltipTitle}) => {
     const classes = useStyles();
     const t = useTranslate();
-    const { values, touched, errors, handleChange, handleBlur } = formikProps;
+    const {values, touched, errors, handleChange, handleBlur} = formikProps;
     const [open, setOpen] = React.useState(false);
 
     return (

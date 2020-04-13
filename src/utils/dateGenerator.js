@@ -1,4 +1,4 @@
-import { eachDayOfInterval, addDays, format } from 'date-fns';
+import {addDays, eachDayOfInterval, format} from 'date-fns';
 
 export const generateDates = (startDate, numberOfDays) =>
     eachDayOfInterval({

@@ -1,10 +1,10 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Menu, IconButton, Tooltip, MenuItem, Divider } from '@material-ui/core';
+import {IconButton, Menu, Tooltip} from '@material-ui/core';
 import AboutDialog from './AboutDialog';
-import { useTranslate } from 'react-polyglot';
-import { useLocaleContext } from '../utils/localeContext';
+import {useTranslate} from 'react-polyglot';
+import {useLocaleContext} from '../utils/localeContext';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -18,7 +18,7 @@ const LeftMenu = () => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const t = useTranslate();
-    const { locale, setLocale } = useLocaleContext();
+    const {locale, setLocale} = useLocaleContext();
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -47,7 +47,7 @@ const LeftMenu = () => {
                     aria-label="menu"
                     onClick={handleMenu}
                 >
-                    <MenuIcon />
+                    <MenuIcon/>
                 </IconButton>
             </Tooltip>
             <Menu
@@ -57,7 +57,7 @@ const LeftMenu = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleCloseMenu}
             >
-                <AboutDialog onClose={handleCloseMenu} />
+                <AboutDialog onClose={handleCloseMenu}/>
             </Menu>
         </div>
     );

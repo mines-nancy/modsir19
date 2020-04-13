@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import React, {useEffect, useState} from 'react';
+import {Box, Button, Typography} from '@material-ui/core';
 import api from '../utils/api';
 
 export const TestAPI = () => {
-    const [placeholderData, setPlaceholderData] = useState({ a: 0, b: 0 });
-    const [placeholderDataPOST, setPlaceholderDataPOST] = useState({ result: 0 });
-    const [placeholderDataGET, setPlaceholderDataGET] = useState({ result: 0 });
+    const [placeholderData, setPlaceholderData] = useState({a: 0, b: 0});
+    const [placeholderDataPOST, setPlaceholderDataPOST] = useState({result: 0});
+    const [placeholderDataGET, setPlaceholderDataGET] = useState({result: 0});
 
     useEffect(() => {
         const f = async () => {
@@ -17,10 +17,10 @@ export const TestAPI = () => {
 
     const handleClick = async () => {
         // Example pour envoyer un appel POST a l'API
-        const inputFunction = { x: 2, y: 3 };
+        const inputFunction = {x: 2, y: 3};
 
         const responseGET = await api.get('/get_add_data', {
-            params: { inputFunction },
+            params: {inputFunction},
         });
         setPlaceholderDataGET(responseGET.data);
 

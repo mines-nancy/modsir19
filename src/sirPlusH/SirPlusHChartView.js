@@ -1,8 +1,8 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
-import { useTranslate } from 'react-polyglot';
-import { generateDates } from '../utils/dateGenerator';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import {Line} from 'react-chartjs-2';
+import {useTranslate} from 'react-polyglot';
+import {generateDates} from '../utils/dateGenerator';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
 
 const day0 = new Date(2020, 0, 23);
 
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const data = ({ t, day0, values }) => {
+const data = ({t, day0, values}) => {
     const {
         recovered,
         exposed,
@@ -114,15 +114,15 @@ const options = {
     },
 };
 
-export const Chart = ({ values }) => {
+export const Chart = ({values}) => {
     const classes = useStyles();
     const t = useTranslate();
 
-    const lineData = data({ t, day0, values });
+    const lineData = data({t, day0, values});
 
     return (
         <div className={classes.root}>
-            <Line data={lineData} width="300" height="300" options={options} />
+            <Line data={lineData} width="300" height="300" options={options}/>
         </div>
     );
 };

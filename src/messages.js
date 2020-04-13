@@ -67,7 +67,7 @@ const messages = {
                 lim_time: 'Nombre de jours simulés',
             },
         },
-        pannel_title:{
+        pannel_title: {
             disease_sliders: 'Paramêtres liés à ma maladie',
             hospital_management_sliders: 'Paramêtres liés à la gestion hospitalière',
             evolution_rules_sliders: 'Paramêtres d\'évolution',

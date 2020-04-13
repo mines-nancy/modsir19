@@ -1,9 +1,9 @@
 import React from 'react';
-import { useTranslate } from 'react-polyglot';
-import { MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText } from '@material-ui/core';
-import { VERSION } from '../utils/config';
+import {useTranslate} from 'react-polyglot';
+import {Dialog, DialogContent, DialogContentText, DialogTitle, MenuItem} from '@material-ui/core';
+import {VERSION} from '../utils/config';
 
-const AboutDialog = ({ onClose }) => {
+const AboutDialog = ({onClose}) => {
     const [open, setOpen] = React.useState(false);
     const t = useTranslate();
 
@@ -31,7 +31,7 @@ const AboutDialog = ({ onClose }) => {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         {t('appBar.developpedBy')} Mines-Nancy. © 2020.
-                        <br />
+                        <br/>
                         {t('appBar.version')} {VERSION} -- {t('appBar.wip')}
                     </DialogContentText>
                 </DialogContent>

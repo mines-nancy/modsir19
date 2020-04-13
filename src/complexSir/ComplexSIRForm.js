@@ -1,9 +1,9 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Grid, FormControl, Button } from '@material-ui/core';
-import { Formik, Form } from 'formik';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
+import {Button, Grid} from '@material-ui/core';
+import {Form, Formik} from 'formik';
 import * as Yup from 'yup';
-import { useTranslate } from 'react-polyglot';
+import {useTranslate} from 'react-polyglot';
 import FormikFormText from '../components/FormikFormText';
 
 const useStyles = makeStyles((theme) =>
@@ -101,7 +101,7 @@ const validationSchema = (t) =>
             .required('Ce champs est obligatoire'),
     });
 
-export const SIRForm = ({ onChange }) => {
+export const SIRForm = ({onChange}) => {
     const classes = useStyles();
     const t = useTranslate();
     const initialValues = {
@@ -124,7 +124,7 @@ export const SIRForm = ({ onChange }) => {
         <Formik
             enableReinitialize
             initialValues={initialValues}
-            onSubmit={(values, { setSubmitting }) => {
+            onSubmit={(values, {setSubmitting}) => {
                 onChange({
                     population: parseFloat(values['population']),
                     kpe: parseFloat(values['kpe']),
@@ -152,12 +152,12 @@ export const SIRForm = ({ onChange }) => {
                         justify="flex-start"
                         alignItems="center"
                     >
-                        <FormikFormText name="population" formikProps={props} />
-                        <FormikFormText name="kpe" formikProps={props} />
-                        <FormikFormText name="r0" formikProps={props} />
-                        <FormikFormText name="taux_tgs" formikProps={props} />
-                        <FormikFormText name="taux_thr" formikProps={props} />
-                        <FormikFormText name="krd" formikProps={props} />
+                        <FormikFormText name="population" formikProps={props}/>
+                        <FormikFormText name="kpe" formikProps={props}/>
+                        <FormikFormText name="r0" formikProps={props}/>
+                        <FormikFormText name="taux_tgs" formikProps={props}/>
+                        <FormikFormText name="taux_thr" formikProps={props}/>
+                        <FormikFormText name="krd" formikProps={props}/>
                     </Grid>
                     <Grid
                         className={classes.grid}
@@ -166,12 +166,12 @@ export const SIRForm = ({ onChange }) => {
                         justify="flex-start"
                         alignItems="center"
                     >
-                        <FormikFormText name="tem" formikProps={props} />
-                        <FormikFormText name="tmg" formikProps={props} />
-                        <FormikFormText name="tmh" formikProps={props} />
-                        <FormikFormText name="thg" formikProps={props} />
-                        <FormikFormText name="thr" formikProps={props} />
-                        <FormikFormText name="lim_time" formikProps={props} />
+                        <FormikFormText name="tem" formikProps={props}/>
+                        <FormikFormText name="tmg" formikProps={props}/>
+                        <FormikFormText name="tmh" formikProps={props}/>
+                        <FormikFormText name="thg" formikProps={props}/>
+                        <FormikFormText name="thr" formikProps={props}/>
+                        <FormikFormText name="lim_time" formikProps={props}/>
                     </Grid>
                     <Button
                         className={classes.actions}

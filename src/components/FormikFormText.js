@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, createStyles, FormControl } from '@material-ui/core';
+import {createStyles, FormControl, makeStyles} from '@material-ui/core';
 import FormikTextField from './FormikTextField';
 
 const useStyles = makeStyles((theme) =>
@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const FormikFormText = ({ name, required, formikProps, tooltipTitle }) => {
+const FormikFormText = ({name, required, formikProps, tooltipTitle}) => {
     const classes = useStyles();
 
     return (

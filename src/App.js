@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import { I18n } from 'react-polyglot';
+import {I18n} from 'react-polyglot';
 import LocaleContext from './utils/localeContext';
 import messages from './messages';
-import { MainAppBar } from './appBar/MainAppBar';
-import { Route, Switch, HashRouter } from 'react-router-dom';
+import {MainAppBar} from './appBar/MainAppBar';
+import {HashRouter, Route, Switch} from 'react-router-dom';
 import NotFound from './NotFound';
 import Home from './Home';
 
@@ -18,11 +18,11 @@ const App = () => {
             <I18n locale={locale} messages={locale === 'fr' ? messages.fr : messages.en}>
                 <div className="App">
                     <HashRouter basename="/">
-                        <MainAppBar />
+                        <MainAppBar/>
                         <Switch>
-                            <Route path="/" render={(routeProps) => <Home {...routeProps} />} />
+                            <Route path="/" render={(routeProps) => <Home {...routeProps} />}/>
 
-                            <Route render={() => <NotFound />} />
+                            <Route render={() => <NotFound/>}/>
                         </Switch>
                     </HashRouter>
                 </div>
