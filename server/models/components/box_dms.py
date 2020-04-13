@@ -1,7 +1,7 @@
 import math
 
 
-class Box:
+class BoxDms:
     def __init__(self, name, duration=math.inf, capacity=math.inf):
         self._name = name
         self._duration = duration

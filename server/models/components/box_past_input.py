@@ -1,4 +1,4 @@
-class Box:
+class BoxPastInput:
     def __init__(self, name):
         self._name = name
         self._value = 0  # value without input nor output

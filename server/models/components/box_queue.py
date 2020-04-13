@@ -2,7 +2,7 @@ import math
 from collections import deque
 
 
-class Box:
+class BoxQueue:
     def __init__(self, name, duration=math.inf, capacity=math.inf):
         self._name = name
         self._duration = duration

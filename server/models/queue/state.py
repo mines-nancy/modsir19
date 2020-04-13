@@ -1,5 +1,5 @@
-from models.queue.box import Box
-from models.history import History
+from models.components.box_queue import BoxQueue
+from models.components.history import History
 
 
 class State:
@@ -42,14 +42,14 @@ class State:
         }
 
         self._boxes = {
-            'E': Box('E', 0),
-            'MG': Box('MG', tmg),
-            'MH': Box('MH', tmh),
-            'G': Box('G'),
-            'HG': Box('HG', thg),
-            'HR': Box('HR', thr),
-            'R': Box('R', 8),
-            'D': Box('D')
+            'E': BoxQueue('E', 0),
+            'MG': BoxQueue('MG', tmg),
+            'MH': BoxQueue('MH', tmh),
+            'G': BoxQueue('G'),
+            'HG': BoxQueue('HG', thg),
+            'HR': BoxQueue('HR', thr),
+            'R': BoxQueue('R', 8),
+            'D': BoxQueue('D')
         }
 
         # src -> [targets]

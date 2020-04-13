@@ -1,5 +1,5 @@
-from models.past_input.box import Box
-from models.history import History
+from models.components.box_past_input import BoxPastInput
+from models.components.history import History
 
 
 class State:
@@ -36,13 +36,13 @@ class State:
         self.thr = thr
         self.trsr = trsr
 
-        self.exposed = Box('E')
-        self.infected = Box('M')
-        self.recovered = Box('G')
-        self.hospitalized = Box('H')
-        self.intensive_care = Box('R')
-        self.exit_intensive_care = Box('SR')
-        self.dead = Box('D')
+        self.exposed = BoxPastInput('E')
+        self.infected = BoxPastInput('M')
+        self.recovered = BoxPastInput('G')
+        self.hospitalized = BoxPastInput('H')
+        self.intensive_care = BoxPastInput('R')
+        self.exit_intensive_care = BoxPastInput('SR')
+        self.dead = BoxPastInput('D')
 
         self.time = time
         self.e0 = kpe * population

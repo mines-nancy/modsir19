@@ -1,5 +1,5 @@
-from models.sir_h.box import Box
-from models.history import History
+from models.components.box_dms import BoxDms
+from models.components.history import History
 
 
 class State:
@@ -14,14 +14,14 @@ class State:
         self._coefficients = coefficients
 
         self._boxes = {
-            'SE': Box('SE', 0),
-            'INCUB': Box('INCUB', delays.dm_imcub),
-            'IR': Box('IR', delays.dm_r),
-            'IH': Box('IH', delays.dm_h),
-            'SM': Box('SM', delays.dm_sm),
-            'SI': Box('SI', delays.dm_si),
-            'SS': Box('SS', delays.dm_ss),
-            'DC': Box('DC')
+            'SE': BoxDms('SE', 0),
+            'INCUB': BoxDms('INCUB', delays.dm_imcub),
+            'IR': BoxDms('IR', delays.dm_r),
+            'IH': BoxDms('IH', delays.dm_h),
+            'SM': BoxDms('SM', delays.dm_sm),
+            'SI': BoxDms('SI', delays.dm_si),
+            'SS': BoxDms('SS', delays.dm_ss),
+            'DC': BoxDms('DC')
         }
 
         # src -> [targets]
