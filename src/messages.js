@@ -19,6 +19,7 @@ const messages = {
         home: {
             simpleSIR: 'Modèle SIR simple',
             complexSIR: 'Modèle SIR complexe',
+            sirPlusH: 'Modèle SIR+H',
             testAPI: "Tester l'API",
         },
         error: {
@@ -65,6 +66,11 @@ const messages = {
                 trsr: 'Temps Réanimation - Sortie de Réanimation',
                 lim_time: 'Nombre de jours simulés',
             },
+        },
+        pannel_title:{
+            disease_sliders: 'Paramêtres liés à ma maladie',
+            hospital_management_sliders: 'Paramêtres liés à la gestion hospitalière',
+            evolution_rules_sliders: 'Paramêtres d\'évolution',
         },
         chart: {
             exposed: 'exposés',

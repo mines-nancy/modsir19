@@ -2,7 +2,7 @@ import math
 from collections import deque
 
 
-class Box:
+class BoxQueue:
     def __init__(self, name, duration=math.inf, capacity=math.inf):
         self._name = name
         self._duration = duration
@@ -39,6 +39,7 @@ class Box:
         self._queue.appendleft(input)
 
     def size(self):
+        # return sum([x for x in self._queue])
         return self._size
 
     def full_size(self):
