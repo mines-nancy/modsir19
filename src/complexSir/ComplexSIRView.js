@@ -88,8 +88,8 @@ export const ComplexSIRView = () => {
                         <Grid item sm={1}>
                         </Grid>
                     </Grid>
+
                     <Grid item xs={12} md={5}>
-                        <ComplexSIRSliders onChange={handleChange} />
                         <FormControl className={classes.radio} component="fieldset">
                             <FormLabel component="legend">Modèle</FormLabel>
                             <RadioGroup
@@ -97,6 +97,7 @@ export const ComplexSIRView = () => {
                                 name="model"
                                 value={model}
                                 onChange={(event) => setModel(event.target.value)}
+                                row
                             >
                                 <FormControlLabel
                                     value="past_input"
@@ -110,6 +111,8 @@ export const ComplexSIRView = () => {
                                 />
                             </RadioGroup>
                         </FormControl>
+                        <Divider />
+                        <ComplexSIRSliders onChange={handleSlidersChange} />
                     </Grid>
                 </Grid>
 
