@@ -96,7 +96,7 @@ class State:
             self.box('IR').size() + self.box('IH').size() + \
             self.box('R').size()
         previous_state = history.get_last_state(self.time - 1)
-        delta = self.coefficient('r') * self.coefficient('beta') * self.box('SE').output(
+        delta = self.coefficient('r') * self.coefficient('beta') * previous_state.box('SE').output(
         ) * (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
         self.move('SE', 'INCUB', delta)
 

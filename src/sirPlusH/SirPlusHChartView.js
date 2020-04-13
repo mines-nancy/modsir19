@@ -33,7 +33,7 @@ const data = ({ t, day0, values }) => {
                 borderWidth: 2,
             },
             {
-                label: t('chart.hospitalized'),
+                label: t('chart.normal_care'),
                 data: SM,
                 backgroundColor: 'rgba(255, 88, 132, 0.6)',
                 borderWidth: 2,

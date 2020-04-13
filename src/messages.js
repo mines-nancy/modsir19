@@ -112,6 +112,7 @@ const messages = {
             infected: 'infectés',
             recovered: 'guéris',
             hospitalized: 'hospitalisés',
+            normal_care: 'soins medicaux',
             following_hospitalized: 'soins de suite',
             intensive_care: 'soins intensifs',
             exit_intensive_care: 'sortie soins intensifs',
