@@ -6,6 +6,7 @@ import { useTranslate } from 'react-polyglot';
 import { TestAPI } from './testApi/TestAPI';
 import { SIRView } from './simpleSir/SIRView';
 import { ComplexSIRView } from './complexSir/ComplexSIRView';
+import {SirHssView} from "./sirHss/SirHssView";
 
 const Home = ({ match }) => {
     const path = match ? (match.path === '/' ? '' : match.path) : '';
@@ -41,10 +42,10 @@ const Home = ({ match }) => {
                             to={`${path}/complexSIR`}
                         />
                         <Tab
-                            label={t('home.testAPI')}
+                            label={t('home.sirHss')}
                             component={RouterLink}
-                            value={`${path}/testAPI`}
-                            to={`${path}/testAPI`}
+                            value={`${path}/sirHss`}
+                            to={`${path}/sirHss`}
                         />
                     </Tabs>
                 </Paper>
@@ -65,12 +66,11 @@ const Home = ({ match }) => {
                             setValue(`${path}/complexSIR`);
                             return <ComplexSIRView />;
                         }}
-                    />
-                    <Route
-                        path={`${path}/testAPI`}
+                    /><Route
+                        path={`${path}/sirHss`}
                         render={(routeProps) => {
-                            setValue(`${path}/testAPI`);
-                            return <TestAPI />;
+                            setValue(`${path}/sirHss`);
+                            return <SirHssView />;
                         }}
                     />
                     <Route render={() => <NotFound />} />
