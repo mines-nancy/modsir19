@@ -103,9 +103,9 @@ const messages = {
             },
         },
         pannel_title: {
-            disease_sliders: 'Paramêtres liés à ma maladie',
-            hospital_management_sliders: 'Paramêtres liés à la gestion hospitalière',
-            general_rules_sliders: 'Paramêtres généraux',
+            disease_sliders: 'Paramètres liés à la maladie',
+            hospital_management_sliders: 'Paramètres liés à la gestion hospitalière',
+            general_rules_sliders: 'Paramètres généraux',
         },
         chart: {
             exposed: 'exposés',
