@@ -46,6 +46,7 @@ const messages = {
             thr: 'Thr',
             trsr: 'Trsr',
             lim_time: 'Nombre de jours',
+            j_0: 'Début de la simulation',
             tip: {
                 population: 'Effectif de la population',
                 s0: "Proportion initiale d'individus sains",
