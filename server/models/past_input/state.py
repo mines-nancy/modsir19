@@ -43,8 +43,8 @@ class State:
         self.intensive_care = BoxPastInput('R')
         self.exit_intensive_care = BoxPastInput('SR')
         self.dead = BoxPastInput('D')
-        self.cumulated_hospitalized('HC')
-        self.cumulated_intensive_care('RC')
+        self.cumulated_hospitalized = BoxPastInput('HC')
+        self.cumulated_intensive_care = BoxPastInput('RC')
 
         self.time = time
         self.e0 = kpe * population
@@ -59,6 +59,8 @@ class State:
         self.intensive_care.reinit()
         self.exit_intensive_care.reinit()
         self.dead.reinit()
+        self.cumulated_hospitalized.reinit()
+        self.cumulated_intensive_care.reinit()
 
     def __str__(self):
         pop = self.exposed.size() + self.infected.size() + \
