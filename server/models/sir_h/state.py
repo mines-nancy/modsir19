@@ -43,10 +43,8 @@ class State:
         self.time = time
 
         self.e0 = coefficients['kpe'] * population
-        self.box('SE').add(self.e0-1)
+        self.box('SE').add(self.e0 - 1)
         self.box('INCUB').add(1)
-        print(self._delays)
-        print(self._coefficients)
 
     def boxes(self):
         return self._boxes.values()
@@ -81,23 +79,24 @@ class State:
         self.time += 1
         for box in self.boxes():
             box.step()
-
+        # print('***', self)
         self.step_exposed(history)
         self.generic_steps(self._moves)
 
     def generic_steps(self, moves):
         for src_name in moves.keys():
+            output = self.output(src_name)
             for dest_name, coefficient in moves[src_name]:
-                self.move(src_name, dest_name, coefficient *
-                          self.output(src_name))
+                self.move(src_name, dest_name, coefficient * output)
 
     def step_exposed(self, history):
+        previous_state = history.get_last_state(self.time - 1)
         n = self.box('SE').size() + self.box('INCUB').size() + \
             self.box('IR').size() + self.box('IH').size() + \
             self.box('R').size()
-        previous_state = history.get_last_state(self.time - 1)
-        delta = self.coefficient('r') * self.coefficient('beta') * previous_state.box('SE').output(
-        ) * (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
+        delta = self.coefficient('r') * self.coefficient('beta') * \
+            previous_state.box('SE').output() * \
+            (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
@@ -110,5 +109,4 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        print(lists)
         return lists

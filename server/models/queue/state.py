@@ -106,9 +106,9 @@ class State:
 
     def generic_steps(self, moves):
         for src_name in moves.keys():
+            output = self.output(src_name)
             for dest_name, coefficient in moves[src_name]:
-                self.move(src_name, dest_name, coefficient *
-                          self.output(src_name))
+                self.move(src_name, dest_name, coefficient * output)
 
     def step_exposed(self, history):
         previous_state = history.get_last_state(self.time - 1)
