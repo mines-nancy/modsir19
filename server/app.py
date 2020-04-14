@@ -103,7 +103,7 @@ def get_complex_sir():
 @app.route('/get_sir_h', methods=["GET"])
 def get_sir_h():
     input = json.loads(request.args.get('parameters'))
-    # print(input)
+    print('get_sir_h', input)
 
     population = int(input["population"])
     lim_time = int(input["lim_time"])
