@@ -109,6 +109,7 @@ const messages = {
         },
         chart: {
             exposed: 'exposés',
+            incub: 'incubation',
             infected: 'infectés',
             recovered: 'guéris',
             hospitalized: 'hospitalisés',

@@ -18,8 +18,11 @@ const useStyles = makeStyles((theme) =>
         root: {
             marginTop: 40,
         },
+        longinput: {
+            width: 80,
+        },
         input: {
-            width: 70,
+            width: 50,
         },
         slider: {
             width: 60,
@@ -43,7 +46,6 @@ const SliderWithInput = ({
 }) => {
     const classes = useStyles();
     const t = useTranslate();
-
     return (
         <div className={classes.sliderWithInput}>
             <Tooltip title={tooltipTitle ? tooltipTitle : t(`form.tip.${name}`)}>
@@ -70,7 +72,7 @@ const SliderWithInput = ({
                 <Grid item xs={6}>
                     <Input
                         name={name}
-                        className={classes.input}
+                        className={String(value).length > 5 ? classes.longinput : classes.input}
                         value={value}
                         margin="dense"
                         onChange={(event) => onInputChange(event, name)}
@@ -88,6 +90,8 @@ const SliderWithInput = ({
         </div>
     );
 };
+
+const round2digits = (x) => Math.round(x * 100) / 100;
 
 const stateReducer = (state, action) => {
     // console.log(state, action);
@@ -115,23 +119,23 @@ const stateReducer = (state, action) => {
 
         case 'SET_PC_IR': {
             const pc_ir = action.payload;
-            const pc_ih = 1 - pc_ir;
+            const pc_ih = round2digits(1 - pc_ir);
             return { ...state, pc_ir: action.payload, pc_ih };
         }
         case 'SET_PC_IH': {
             const pc_ih = action.payload;
-            const pc_ir = 1 - pc_ih;
+            const pc_ir = round2digits(1 - pc_ih);
             return { ...state, pc_ih: action.payload, pc_ir };
         }
 
         case 'SET_PC_SI': {
             const pc_si = action.payload;
-            const pc_sm = 1 - pc_si;
+            const pc_sm = round2digits(1 - pc_si);
             return { ...state, pc_si: action.payload, pc_sm };
         }
         case 'SET_PC_SM': {
             const pc_sm = action.payload;
-            const pc_si = 1 - pc_sm;
+            const pc_si = round2digits(1 - pc_sm);
             return { ...state, pc_sm: action.payload, pc_si };
         }
 
@@ -142,29 +146,29 @@ const stateReducer = (state, action) => {
         }
         case 'SET_PC_SM_OUT': {
             const pc_sm_out = action.payload;
-            const pc_sm_si = 1 - pc_sm_out;
+            const pc_sm_si = round2digits(1 - pc_sm_out);
             return { ...state, pc_sm_out: action.payload, pc_sm_si };
         }
 
         case 'SET_PC_SI_DC': {
             const pc_si_dc = action.payload;
-            const pc_si_out = 1 - pc_si_dc;
+            const pc_si_out = round2digits(1 - pc_si_dc);
             return { ...state, pc_si_dc: action.payload, pc_si_out };
         }
         case 'SET_PC_SI_OUT': {
             const pc_si_out = action.payload;
-            const pc_si_dc = 1 - pc_si_out;
+            const pc_si_dc = round2digits(1 - pc_si_out);
             return { ...state, pc_si_out: action.payload, pc_si_dc };
         }
 
         case 'SET_PC_H_SS': {
             const pc_h_ss = action.payload;
-            const pc_h_r = 1 - pc_h_ss;
+            const pc_h_r = round2digits(1 - pc_h_ss);
             return { ...state, pc_h_ss: action.payload, pc_h_r };
         }
         case 'SET_PC_H_R': {
             const pc_h_r = action.payload;
-            const pc_h_ss = 1 - pc_h_r;
+            const pc_h_ss = round2digits(1 - pc_h_r);
             return { ...state, pc_h_r: action.payload, pc_h_ss };
         }
         case 'SET_LIM_TIME':
@@ -210,15 +214,15 @@ const initialState = {
     dm_ss: 14,
     beta: 0.15,
     pc_ir: 0.84,
-    pc_ih: 1 - 0.84,
+    pc_ih: round2digits(1 - 0.84),
     pc_sm: 0.8,
-    pc_si: 1 - 0.8,
+    pc_si: round2digits(1 - 0.8),
     pc_sm_si: 0.2,
-    pc_sm_out: 1 - 0.2,
+    pc_sm_out: round2digits(1 - 0.2),
     pc_si_dc: 0.5,
     pc_si_out: 0.5,
     pc_h_ss: 0.2,
-    pc_h_r: 1 - 0.2,
+    pc_h_r: round2digits(1 - 0.2),
     lim_time: 90,
 };
 

@@ -101,7 +101,7 @@ class State:
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
-        series = {'SE': ['SE'], 'R': ['R'], 'I': ['INCUB', 'IR', 'IH'],
+        series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
@@ -110,4 +110,5 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
+        print(lists)
         return lists
