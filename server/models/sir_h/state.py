@@ -22,15 +22,19 @@ class State:
             'SI': BoxDms('SI', delays['dm_si']),
             'SS': BoxDms('SS', delays['dm_ss']),
             'R': BoxDms('R'),
-            'DC': BoxDms('DC')
+            'DC': BoxDms('DC'),
+            'SMC': BoxDms('SMC'),
+            'SIC': BoxDms('SIC')
         }
 
         # src -> [targets]
         self._moves = {
             'INCUB': [('IR', coefficients['pc_ir']), ('IH', coefficients['pc_ih'])],
             'IR': [('R', 1)],
-            'IH': [('SM', coefficients['pc_sm']), ('SI', coefficients['pc_si'])],
+            'IH': [('SM', coefficients['pc_sm']), ('SI', coefficients['pc_si']),
+                   ('SIC', coefficients['pc_si'])],
             'SM': [('SI', coefficients['pc_sm_si']),
+                   ('SIC', coefficients['pc_sm_si']),
                    ('SS', coefficients['pc_sm_out'] * coefficients['pc_h_ss']),
                    ('R', coefficients['pc_sm_out'] * coefficients['pc_h_r'])],
             'SI': [('DC', coefficients['pc_si_dc']),
@@ -101,7 +105,8 @@ class State:
 
     def extract_series(self, history):
         series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
-                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
+                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'],
+                  'SMC': ['SMC'], 'SIC': ['SIC']}
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():

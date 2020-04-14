@@ -45,10 +45,12 @@ class State:
             'E': BoxQueue('E', 0),
             'MG': BoxQueue('MG', tmg),
             'MH': BoxQueue('MH', tmh),
+            'MHC': BoxQueue('MHC', tmh),
             'G': BoxQueue('G'),
             'HG': BoxQueue('HG', thg),
             'HR': BoxQueue('HR', thr),
             'R': BoxQueue('R', 8),
+            'RC': BoxQueue('RC'),
             'D': BoxQueue('D')
         }
 
@@ -121,10 +123,11 @@ class State:
             (previous_state.box('E').output() * infected_size) / self.e0
         self.move('E', 'MG', self.coefficient('kmg') * delta)
         self.move('E', 'MH', self.coefficient('kmh') * delta)
+        self.move('E', 'MHC', self.coefficient('kmh') * delta)
 
     def extract_series(self, history):
         series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
-                  'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R']}
+                  'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R'], 'MHC': ['MHC'], 'RC': ['RC']}
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
@@ -132,4 +135,4 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], []
+        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], lists['MHC'], lists['RC']

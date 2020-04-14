@@ -43,6 +43,8 @@ class State:
         self.intensive_care = BoxPastInput('R')
         self.exit_intensive_care = BoxPastInput('SR')
         self.dead = BoxPastInput('D')
+        self.cumulated_hospitalized('HC')
+        self.cumulated_intensive_care('SIC')
 
         self.time = time
         self.e0 = kpe * population
@@ -140,6 +142,7 @@ class State:
         # print(f'infected_to_hospitalized: {delta}')
         self.infected.remove(delta)
         self.hospitalized.add(delta)
+        self.cumulated_hospitalized.add(delta)
 
     def hospitalized_to_recovered(self, history):
         delta = self.khg * \
@@ -152,6 +155,7 @@ class State:
             self.get_past_input(history, 'hospitalized', 1+self.thr)
         self.hospitalized.remove(delta)
         self.intensive_care.add(delta)
+        self.cumulated_intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history):
         delta = 1 * \
