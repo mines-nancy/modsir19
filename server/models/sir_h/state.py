@@ -91,12 +91,14 @@ class State:
 
     def step_exposed(self, history):
         previous_state = history.get_last_state(self.time - 1)
-        n = self.box('SE').size() + self.box('INCUB').size() + \
+        n = self.box('SE').output() + self.box('INCUB').size() + \
             self.box('IR').size() + self.box('IH').size() + \
             self.box('R').size()
+        ir = previous_state.box('IR').size()
+        ih = previous_state.box('IH').size()
         delta = self.coefficient('r') * self.coefficient('beta') * \
-            previous_state.box('SE').output() * \
-            (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
+            previous_state.box('SE').output() * (ir+ih) / n
+        # print(f'IR={ir} IH={ih} n={n} delta={delta}')
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
