@@ -87,7 +87,7 @@ class State:
                 state.exit_intensive_care.full_size())
             cumulated_hospitalized.append(state.cumulated_hospitalized.full_size())
             cumulated_intensive_care.append(state.cumulated_intensive_care.full_size())
-        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized[-1], cumulated_intensive_care[-1]
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized.pop(), cumulated_intensive_care.pop()
 
     def increment_time(self):
         self.time += 1

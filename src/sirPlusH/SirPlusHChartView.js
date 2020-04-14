@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 const data = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, HC, SIC } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC, SMC, SIC } = values;
 
     return {
         labels: generateDates(day0, SE.length),
@@ -117,10 +117,13 @@ export const Chart = ({ values }) => {
     const t = useTranslate();
 
     const lineData = data({ t, day0, values });
+    const { SE, INCUB, R, I, SM, SI, SS, DC, SMC, SIC } = values;
 
     return (
         <div className={classes.root}>
             <Line data={lineData} width="300" height="300" options={options} />
+            Hospitalisés cumulés : {SMC} <br />
+            Soins intensifs cumulés : {SIC}
         </div>
     );
 };

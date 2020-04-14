@@ -76,8 +76,6 @@ export const ComplexSIRView = () => {
 
     return (
         <div className={classes.root}>
-            Hospitalisés cumulés : {values['cumulated_hospitalized']}
-            Soins intensifs cumulés : {values['cumulated_intensive_care']}
             <Grid container direction="row">
                 <Grid container direction="row" item xs={12} md={7}>
                     <Grid item sm={1}></Grid>

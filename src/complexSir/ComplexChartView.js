@@ -120,10 +120,25 @@ export const Chart = ({ values }) => {
     const classes = useStyles();
     const t = useTranslate();
 
+    const {
+        recovered,
+        exposed,
+        infected,
+        dead,
+        hospitalized,
+        intensive_care,
+        exit_intensive_care,
+        cumulated_hospitalized,
+        cumulated_intensive_care,
+        j_0,
+    } = values;
+
     const lineData = data({ t, values });
 
     return (
         <div className={classes.root}>
+            Hospitalisés cumulés : {cumulated_hospitalized}
+            Soins intensifs cumulés : {cumulated_intensive_care}
             <Line data={lineData} width="300" height="300" options={options} />
         </div>
     );

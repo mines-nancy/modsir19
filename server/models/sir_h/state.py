@@ -31,7 +31,7 @@ class State:
         self._moves = {
             'INCUB': [('IR', coefficients['pc_ir']), ('IH', coefficients['pc_ih'])],
             'IR': [('R', 1)],
-            'IH': [('SM', coefficients['pc_sm']), ('SI', coefficients['pc_si']),
+            'IH': [('SM', coefficients['pc_sm']), ('SMC', coefficients['pc_sm']), ('SI', coefficients['pc_si']),
                    ('SIC', coefficients['pc_si'])],
             'SM': [('SI', coefficients['pc_sm_si']),
                    ('SIC', coefficients['pc_sm_si']),
@@ -70,7 +70,7 @@ class State:
 
     def __str__(self):
         pop = sum([box.full_size() for box in self.boxes()])
-        return f'{self.box("SE")} {self.box("INCUB")} {self.box("IR")} {self.box("IH")} {self.box("SM")} {self.box("SI")} {self.box("SS")} {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
+        return f'{self.box("SE")} {self.box("INCUB")} {self.box("IR")} {self.box("IH")} {self.box("SM")} {self.box("SI")} {self.box("SS")} {self.box("R")} {self.box("DC")} {self.box("SMC")} {self.box("SIC")} POP={round(pop,2)}'
 
     def get_time0(self):
         return 0
@@ -114,6 +114,6 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        lists[-2] = lists[-2][-1]
-        lists[-1] = lists[-1][-1]
+        lists['SMC'] = int(lists['SMC'].pop())
+        lists['SIC'] = int(lists['SIC'].pop())
         return lists
