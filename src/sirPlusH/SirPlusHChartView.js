@@ -15,11 +15,23 @@ const useStyles = makeStyles((theme) =>
 );
 
 const data = ({ t, day0, values }) => {
-    const { SE, R, I, SM, SI, SS, DC } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
 
     return {
         labels: generateDates(day0, SE.length),
         datasets: [
+            {
+                label: t('chart.exposed'),
+                data: SE,
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                borderWidth: 2,
+            },
+            {
+                label: t('chart.incub'),
+                data: INCUB,
+                backgroundColor: 'rgba(164, 18, 179, 0.6)',
+                borderWidth: 2,
+            },
             {
                 label: t('chart.recovered'),
                 data: R,
