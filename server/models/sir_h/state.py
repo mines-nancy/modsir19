@@ -114,4 +114,6 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
+        lists[-2] = lists[-2][-1]
+        lists[-1] = lists[-1][-1]
         return lists

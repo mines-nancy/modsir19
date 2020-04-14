@@ -49,15 +49,15 @@ class State:
             'G': BoxQueue('G'),
             'HG': BoxQueue('HG', thg),
             'HR': BoxQueue('HR', thr),
+            'HRC': BoxQueue('HRC', thr),
             'R': BoxQueue('R', 8),
-            'RC': BoxQueue('RC'),
             'D': BoxQueue('D')
         }
 
         # src -> [targets]
         self._moves = {
             'MG': [('G', 1)],
-            'MH': [('HG', khg), ('HR', khr)],
+            'MH': [('HG', khg), ('HR', khr), ('HRC', khr)],
             'HG': [('G', 1)],
             'HR': [('R', 1)],
             'R': [('G', krg), ('D', krd)],
@@ -127,7 +127,7 @@ class State:
 
     def extract_series(self, history):
         series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
-                  'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R'], 'MHC': ['MHC'], 'RC': ['RC']}
+                  'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R'], 'MHC': ['MHC'], 'HRC': ['HRC']}
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
@@ -135,4 +135,4 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], lists['MHC'], lists['RC']
+        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], lists['MHC'][-1], lists['HRC'][-1]

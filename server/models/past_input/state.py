@@ -44,7 +44,7 @@ class State:
         self.exit_intensive_care = BoxPastInput('SR')
         self.dead = BoxPastInput('D')
         self.cumulated_hospitalized('HC')
-        self.cumulated_intensive_care('SIC')
+        self.cumulated_intensive_care('RC')
 
         self.time = time
         self.e0 = kpe * population
@@ -74,6 +74,8 @@ class State:
         intensive_care = []
         exit_intensive_care = []
         dead = []
+        cumulated_hospitalized = []
+        cumulated_intensive_care = []
         for state in history.sorted_list():
             exposed.append(state.exposed.full_size())
             recovered.append(state.recovered.full_size())
@@ -83,7 +85,9 @@ class State:
             intensive_care.append(state.intensive_care.full_size())
             exit_intensive_care.append(
                 state.exit_intensive_care.full_size())
-        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care
+            cumulated_hospitalized.append(state.cumulated_hospitalized.full_size())
+            cumulated_intensive_care.append(state.cumulated_intensive_care.full_size())
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized[-1], cumulated_intensive_care[-1]
 
     def increment_time(self):
         self.time += 1

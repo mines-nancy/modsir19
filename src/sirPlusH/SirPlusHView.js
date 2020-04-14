@@ -65,6 +65,8 @@ export const SirPlusHView = () => {
 
     return (
         <div className={classes.root}>
+            Hospitalisés cumulés :
+            Soins intensifs cumulés :
             <Grid container direction="row">
                 <Grid container direction="row" item xs={12} md={6}>
                     <Grid item sm={1}></Grid>

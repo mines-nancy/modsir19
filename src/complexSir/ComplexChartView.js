@@ -61,6 +61,8 @@ const data = ({ t, values }) => {
         hospitalized,
         intensive_care,
         exit_intensive_care,
+        cumulated_hospitalized,
+        cumulated_intensive_care,
         j_0,
     } = values;
 

@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 const data = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC, HC, SIC } = values;
 
     return {
         labels: generateDates(day0, SE.length),
