@@ -135,4 +135,4 @@ class State:
                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], lists['MHC'][-1], lists['HRC'][-1]
+        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], [], int(lists['MHC'].pop()), int(lists['HRC'].pop())

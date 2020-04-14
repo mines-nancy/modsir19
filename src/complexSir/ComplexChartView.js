@@ -137,9 +137,9 @@ export const Chart = ({ values }) => {
 
     return (
         <div className={classes.root}>
-            Hospitalisés cumulés : {cumulated_hospitalized}
-            Soins intensifs cumulés : {cumulated_intensive_care}
             <Line data={lineData} width="300" height="300" options={options} />
+            Hospitalisés cumulés : {cumulated_hospitalized} <br />
+            Soins intensifs cumulés : {cumulated_intensive_care}
         </div>
     );
 };
