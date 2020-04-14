@@ -223,7 +223,7 @@ const initialState = {
     pc_si_out: 0.5,
     pc_h_ss: 0.2,
     pc_h_r: round2digits(1 - 0.2),
-    lim_time: 90,
+    lim_time: 250,
 };
 
 export default function SirPlusHSliders({ onChange }) {
