@@ -98,6 +98,8 @@ const stateReducer = (state, action) => {
     switch (action.type) {
         case 'SET_POPULATION':
             return { ...state, population: action.payload };
+        case 'SET_PATIENT0':
+            return { ...state, patient0: action.payload };
         case 'SET_KPE':
             return { ...state, kpe: action.payload };
         case 'SET_R':
@@ -180,6 +182,7 @@ const stateReducer = (state, action) => {
 
 const setters = {
     population: 'SET_POPULATION',
+    patient0: 'SET_PATIENT0',
     kpe: 'SET_KPE',
     r: 'SET_R',
     dm_incub: 'SET_DM_INCUB',
@@ -204,6 +207,7 @@ const setters = {
 
 const initialState = {
     population: 500000,
+    patient0: 1,
     kpe: 0.6,
     r: 2.3,
     dm_incub: 3,
@@ -238,6 +242,7 @@ export default function SirPlusHSliders({ onChange }) {
 
     const {
         population,
+        patient0,
         kpe,
         r,
         dm_incub,
@@ -318,7 +323,8 @@ export default function SirPlusHSliders({ onChange }) {
     ];
 
     const general_rules_sliders = [
-        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
+        { name: 'population', value: population, min: 100000, max: 10000000, step: 100000 },
+        { name: 'patient0', value: patient0, min: 1, max: 10000, step: 1 },
         { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
         { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
     ];
