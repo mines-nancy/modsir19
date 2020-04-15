@@ -4,8 +4,6 @@ import { useTranslate } from 'react-polyglot';
 import { generateDates } from '../utils/dateGenerator';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
-const day0 = new Date(2020, 0, 23);
-
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
@@ -14,9 +12,10 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const data = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
+const data = ({ t, values }) => {
+    const { SE, INCUB, R, I, SM, SI, SS, DC, j_0 } = values;
 
+    const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
         labels: generateDates(day0, SE.length),
         datasets: [
@@ -116,7 +115,7 @@ export const Chart = ({ values }) => {
     const classes = useStyles();
     const t = useTranslate();
 
-    const lineData = data({ t, day0, values });
+    const lineData = data({ t, values });
 
     return (
         <div className={classes.root}>

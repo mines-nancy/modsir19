@@ -124,7 +124,8 @@ def get_sir_h():
         'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
-    lists = run_sir_h(delays, coefficients, population, patient0, lim_time)
+    lists = run_sir_h(delays, coefficients, population,
+                      patient0, lim_time)
     return jsonify(lists)
 
 
