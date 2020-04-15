@@ -27,8 +27,7 @@ def run_simulator(model, population,
 
 
 def run_sir_h(delays, coefficients, population, patient0, lim_time):
-    initial_state = SirHState(delays, coefficients,
-                              time=0, population=population, patient0=patient0)
+    initial_state = SirHState(delays, coefficients, 0, population, patient0)
 
     simulator = Simulator(initial_state)
     # print(simulator.get_state())
