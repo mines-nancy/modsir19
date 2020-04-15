@@ -43,8 +43,6 @@ class State:
         self.intensive_care = BoxPastInput('R')
         self.exit_intensive_care = BoxPastInput('SR')
         self.dead = BoxPastInput('D')
-        self.cumulated_hospitalized = BoxPastInput('HC')
-        self.cumulated_intensive_care = BoxPastInput('RC')
 
         self.time = time
         self.e0 = kpe * population
@@ -59,8 +57,6 @@ class State:
         self.intensive_care.reinit()
         self.exit_intensive_care.reinit()
         self.dead.reinit()
-        self.cumulated_hospitalized.reinit()
-        self.cumulated_intensive_care.reinit()
 
     def __str__(self):
         pop = self.exposed.size() + self.infected.size() + \
@@ -76,8 +72,8 @@ class State:
         intensive_care = []
         exit_intensive_care = []
         dead = []
-        cumulated_hospitalized = []
-        cumulated_intensive_care = []
+        input_hospitalized = []
+        input_intensive_care = []
         for state in history.sorted_list():
             exposed.append(state.exposed.full_size())
             recovered.append(state.recovered.full_size())
@@ -87,9 +83,11 @@ class State:
             intensive_care.append(state.intensive_care.full_size())
             exit_intensive_care.append(
                 state.exit_intensive_care.full_size())
-            cumulated_hospitalized.append(state.cumulated_hospitalized.full_size())
-            cumulated_intensive_care.append(state.cumulated_intensive_care.full_size())
-        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, int(cumulated_hospitalized.pop()), int(cumulated_intensive_care.pop())
+            input_hospitalized.append(state.hospitalized.input())
+            input_intensive_care.append(state.intensive_care.input())
+        cumulated_hospitalized = round(sum(input_hospitalized), 2)
+        cumulated_intensive_care = round(sum(input_intensive_care), 2)
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized, cumulated_intensive_care
 
     def increment_time(self):
         self.time += 1
@@ -148,7 +146,6 @@ class State:
         # print(f'infected_to_hospitalized: {delta}')
         self.infected.remove(delta)
         self.hospitalized.add(delta)
-        self.cumulated_hospitalized.add(delta)
 
     def hospitalized_to_recovered(self, history):
         delta = self.khg * \
@@ -161,7 +158,6 @@ class State:
             self.get_past_input(history, 'hospitalized', 1+self.thr)
         self.hospitalized.remove(delta)
         self.intensive_care.add(delta)
-        self.cumulated_intensive_care.add(delta)
 
     def intensive_care_to_exit_intensive_care(self, history):
         delta = 1 * \

@@ -117,13 +117,13 @@ export const Chart = ({ values }) => {
     const t = useTranslate();
 
     const lineData = data({ t, day0, values });
-    const { SE, INCUB, R, I, SM, SI, SS, DC, SMC, SIC } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC, cumulated_hospitalized, cumulated_intensive_care } = values;
 
     return (
         <div className={classes.root}>
             <Line data={lineData} width="300" height="300" options={options} />
-            Hospitalisés cumulés : {SMC} <br />
-            Soins intensifs cumulés : {SIC}
+            Hospitalisés cumulés : {cumulated_hospitalized} <br />
+            Soins intensifs cumulés : {cumulated_intensive_care}
         </div>
     );
 };
