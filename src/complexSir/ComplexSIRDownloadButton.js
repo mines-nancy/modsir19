@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslate } from 'react-polyglot';
 import Button from '@material-ui/core/Button';
+import { zip } from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,7 +24,6 @@ const generateCSV = function (values) {
         j_0,
     } = values;
 
-    const csvRows = [];
     const headers = [
         'exposed',
         'infected',
@@ -32,22 +32,19 @@ const generateCSV = function (values) {
         'exit_intensive_care',
         'recovered',
         'dead',
-    ].join(',');
-    csvRows.push(headers);
+    ];
 
-    for (let itr = 0; itr < exposed.length; itr++) {
-        const csvRow = [
-            exposed[itr],
-            infected[itr],
-            hospitalized[itr],
-            intensive_care[itr],
-            exit_intensive_care[itr],
-            recovered[itr],
-            dead[itr],
-        ].join(',');
-        csvRows.push(csvRow);
-    }
-
+    const series = [
+        exposed,
+        infected,
+        hospitalized,
+        intensive_care,
+        exit_intensive_care,
+        recovered,
+        dead,
+    ];
+    const rows = zip(...series);
+    const csvRows = [headers.join(','), ...rows.map((r) => r.join(','))];
     return csvRows.join('\n');
 };
 
