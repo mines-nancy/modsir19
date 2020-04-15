@@ -15,7 +15,9 @@ const useStyles = makeStyles((theme) =>
 );
 
 const data = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, SMC, SIC } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
+        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
+        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
 
     return {
         labels: generateDates(day0, SE.length),
@@ -117,7 +119,13 @@ export const Chart = ({ values }) => {
     const t = useTranslate();
 
     const lineData = data({ t, day0, values });
-    const { SE, INCUB, R, I, SM, SI, SS, DC, cumulated_hospitalized, cumulated_intensive_care } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
+        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
+        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
+
+    const cumulated_hospitalized =
+        input_SM.reduce((a, b) => a + b, 0) + input_SI.reduce((a, b) => a + b, 0);
+    const cumulated_intensive_care = input_SI.reduce((a, b) => a + b, 0);
 
     return (
         <div className={classes.root}>
