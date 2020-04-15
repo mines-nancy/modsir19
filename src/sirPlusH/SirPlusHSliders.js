@@ -6,12 +6,14 @@ import {
     ExpansionPanelSummary,
     Grid,
     Tooltip,
+    Typography,
+    Slider,
+    Input,
+    Button,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
+import { SelectFieldWithDate } from './SelectFieldWithDate';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -29,6 +31,10 @@ const useStyles = makeStyles((theme) =>
         },
         sliderWithInput: {
             margin: theme.spacing(2),
+        },
+        actions: {
+            float: 'left',
+            margin: theme.spacing(1),
         },
     }),
 );
@@ -173,6 +179,8 @@ const stateReducer = (state, action) => {
         }
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
+        case 'SET_RULES':
+            return { ...state, rules: action.payload };
         default:
             return state;
     }
@@ -200,6 +208,7 @@ const setters = {
     pc_h_ss: 'SET_PC_H_SS',
     pc_h_r: 'SET_PC_H_R',
     lim_time: 'SET_LIM_TIME',
+    rules: 'SET_RULES',
 };
 
 const initialState = {
@@ -224,6 +233,7 @@ const initialState = {
     pc_h_ss: 0.2,
     pc_h_r: round2digits(1 - 0.2),
     lim_time: 250,
+    rules: [{ name: 'rule-1', field: 'beta', value: 2.0, date: new Date(2020, 2, 16) }],
 };
 
 export default function SirPlusHSliders({ onChange }) {
@@ -258,7 +268,12 @@ export default function SirPlusHSliders({ onChange }) {
         pc_h_ss,
         pc_h_r,
         lim_time,
+        rules,
     } = values;
+
+    React.useEffect(() => {
+        console.log({ rules });
+    }, [rules]);
 
     React.useEffect(() => {
         onChange(values);
@@ -293,6 +308,32 @@ export default function SirPlusHSliders({ onChange }) {
         [dispatch],
     );
 
+    const handleChangeRule = React.useCallback(
+        (rule) => {
+            const newRules = rules.map((entry) => (entry.name === rule.name ? rule : entry));
+            // dispatch({ type: 'SET_RULES', payload: newRules });
+        },
+        [rules],
+    );
+
+    const handleAddRule = React.useCallback(
+        ({ name }) => {
+            const newRules = rules.concat([
+                { name, value: undefined, field: undefined, date: new Date() },
+            ]);
+            dispatch({ type: 'SET_RULES', payload: newRules });
+        },
+        [rules],
+    );
+
+    const handleDeleteRule = React.useCallback(
+        ({ name }) => {
+            const newRules = rules.filter((rule) => rule && rule.name !== name);
+            dispatch({ type: 'SET_RULES', payload: newRules });
+        },
+        [rules],
+    );
+
     const disease_sliders = [
         { name: 'r', value: r, min: 0, max: 5, step: 0.01 },
         { name: 'beta', value: beta, min: 0, max: 1, step: 0.01 },
@@ -323,6 +364,8 @@ export default function SirPlusHSliders({ onChange }) {
         { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
     ];
 
+    const newRuleName = '_' + Math.random().toString(36).substr(2, 9);
+
     return (
         <div className={classes.root}>
             <ExpansionPanel
@@ -335,7 +378,7 @@ export default function SirPlusHSliders({ onChange }) {
                     id="panel3bh-header"
                 >
                     <Typography className={classes.heading}>
-                        {t('pannel_title.general_rules_sliders')}
+                        {t('panel_title.general_rules_sliders')}
                     </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
@@ -367,7 +410,7 @@ export default function SirPlusHSliders({ onChange }) {
                     id="panel1bh-header"
                 >
                     <Typography className={classes.heading}>
-                        {t('pannel_title.disease_sliders')}
+                        {t('panel_title.disease_sliders')}
                     </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
@@ -399,7 +442,7 @@ export default function SirPlusHSliders({ onChange }) {
                     id="panel2bh-header"
                 >
                     <Typography className={classes.heading}>
-                        {t('pannel_title.hospital_management_sliders')}
+                        {t('panel_title.hospital_management_sliders')}
                     </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
@@ -418,6 +461,46 @@ export default function SirPlusHSliders({ onChange }) {
                                 />
                             </Grid>
                         ))}
+                    </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel
+                expanded={expanded === 'panel4'}
+                onChange={handlePannelChange('panel4')}
+            >
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2bh-content"
+                    id="panel2bh-header"
+                >
+                    <Typography className={classes.heading}>
+                        {t('panel_title.quarantine_sliders')}
+                    </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <Grid container direction="column" alignItems="flex-start">
+                        {rules.map((rule) => {
+                            return (
+                                <Grid container direction="row" alignItems="center">
+                                    <SelectFieldWithDate
+                                        options={Object.keys(values)}
+                                        rule={rule}
+                                        onDelete={() => handleDeleteRule(rule)}
+                                        onChange={() => handleChangeRule(rule)}
+                                    />
+                                </Grid>
+                            );
+                        })}
+                        <Grid item>
+                            <Button
+                                className={classes.actions}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleAddRule({ name: newRuleName })}
+                            >
+                                {t('form.addRule')}
+                            </Button>
+                        </Grid>
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
