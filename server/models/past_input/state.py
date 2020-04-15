@@ -72,8 +72,20 @@ class State:
         intensive_care = []
         exit_intensive_care = []
         dead = []
+        input_exposed = []
+        input_recovered = []
+        input_infected = []
         input_hospitalized = []
         input_intensive_care = []
+        input_exit_intensive_care = []
+        input_dead = []
+        output_exposed = []
+        output_recovered = []
+        output_infected = []
+        output_hospitalized = []
+        output_intensive_care = []
+        output_exit_intensive_care = []
+        output_dead = []
         for state in history.sorted_list():
             exposed.append(state.exposed.full_size())
             recovered.append(state.recovered.full_size())
@@ -83,11 +95,14 @@ class State:
             intensive_care.append(state.intensive_care.full_size())
             exit_intensive_care.append(
                 state.exit_intensive_care.full_size())
+            input_exposed.append(state.exposed.input())
+            input_recovered.append(state.recovered.input())
+            input_infected.append(state.infected.input())
             input_hospitalized.append(state.hospitalized.input())
             input_intensive_care.append(state.intensive_care.input())
-        cumulated_hospitalized = round(sum(input_hospitalized), 2)
-        cumulated_intensive_care = round(sum(input_intensive_care), 2)
-        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, cumulated_hospitalized, cumulated_intensive_care
+            input_exit_intensive_care.append(state.exit_intensive_care.input())
+            input_dead.append(state.dead.input())
+        return recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, input_recovered, input_exposed, input_infected, input_dead, input_hospitalized, input_intensive_care, input_exit_intensive_care, output_recovered, output_exposed, output_infected, output_dead, output_hospitalized, output_intensive_care, output_exit_intensive_care
 
     def increment_time(self):
         self.time += 1

@@ -141,6 +141,10 @@ class State:
                 lists[name].append(sum([sizes[n] for n in series[name]]))
                 input_lists[name].append(sum([inputs[n] for n in series[name]]))
                 output_lists[name].append(sum([outputs[n] for n in series[name]]))
+        for name in series.keys():
+            lists['input_' + name] = input_lists[name]
+            lists['output_' + name] = output_lists[name]
+        
         cumulated_hospitalized = round(sum(input_lists['H']), 2)
         cumulated_intensive_care = round(sum(input_lists['R']), 2)
-        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], [], cumulated_hospitalized, cumulated_intensive_care
+        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], [], lists['input_G'], lists['input_E'], lists['input_M'], lists['input_D'], lists['input_H'], lists['input_R'], [], lists['output_G'], lists['output_E'], lists['output_M'], lists['output_D'], lists['output_H'], lists['output_R'], []
