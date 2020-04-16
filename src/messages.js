@@ -66,6 +66,10 @@ const messages = {
             pc_si_out: 'pc_si_out',
             pc_h_ss: 'pc_h_ss',
             pc_h_r: 'pc_h_r',
+            afterDate: 'À partir de',
+            addRule: 'Ajouter',
+            deleteRule: 'Supprimer',
+            rules: 'Règles',
             tip: {
                 population: 'Effectif de la population',
                 patient0: 'Nombre de patients intialement infectés',
@@ -102,12 +106,17 @@ const messages = {
                 pc_si_out: 'Pourcentage de patients qui passent de Soins Intensifs à la sortie',
                 pc_h_ss: "Pourcentage de patients quittant l'hôpital pour les Soins de Suite",
                 pc_h_r: "Pourcentage de patients quittant l'hôpital pour Rétablissement",
+                afterDate: 'À partir de',
+                addRule: 'Ajouter une règle',
+                deleteRule: 'Supprimer une règle',
+                rules: 'Règles',
             },
         },
-        pannel_title: {
+        panel_title: {
             disease_sliders: 'Paramètres liés à la maladie',
             hospital_management_sliders: 'Paramètres liés à la gestion hospitalière',
             general_rules_sliders: 'Paramètres généraux',
+            quarantine_sliders: 'Paramètres de confinement',
         },
         chart: {
             exposed: 'exposés',

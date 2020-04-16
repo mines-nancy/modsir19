@@ -41,6 +41,11 @@ class State:
         self.box('SE').add(self.e0 - patient0)
         self.box('INCUB').add(patient0)
 
+    def change_coefficient(self, name, value):
+        self._coefficients[name] = value
+        print(
+            f'time = {self.time} new coeff {name} = {value} type={type(value)}')
+
     def boxes(self):
         return self._boxes.values()
 
