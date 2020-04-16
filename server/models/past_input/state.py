@@ -145,8 +145,9 @@ class State:
         state0_exposed_size = state0.exposed.size()
         previous_exposed_size = self.get_past_size(history, 'exposed', 1)
         infected_tem_size = self.get_past_size(history, 'infected', 1+self.tem)
-        delta = self.kem * previous_exposed_size * \
-            infected_tem_size / state0_exposed_size
+        delta = self.kem * (previous_exposed_size *
+                            infected_tem_size) / state0_exposed_size
+        # print(f'previous infected={infected_tem_size} delta={delta}')
         self.exposed.remove(delta)
         self.infected.add(delta)
 

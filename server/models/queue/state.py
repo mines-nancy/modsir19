@@ -27,7 +27,8 @@ class State:
             'tmg': tmg,
             'tmh': tmh,
             'thg': thg,
-            'thr': thr
+            'thr': thr,
+            'trsr': trsr
         }
 
         self._coefficients = {
@@ -48,7 +49,7 @@ class State:
             'G': BoxQueue('G'),
             'HG': BoxQueue('HG', thg),
             'HR': BoxQueue('HR', thr),
-            'R': BoxQueue('R', 8),
+            'R': BoxQueue('R', trsr),
             'D': BoxQueue('D')
         }
 
@@ -114,11 +115,16 @@ class State:
         previous_state = history.get_last_state(self.time - 1)
         state_tem = history.get_last_state(self.time - (1+self.delay('tem')))
         if state_tem == None or previous_state == None:
+            # print(f'previous infected={0} delta={0}')
             return
 
-        infected_size = state_tem.box('MG').size() + state_tem.box('MH').size()
-        delta = self.coefficient('kem') * \
-            (previous_state.box('E').output() * infected_size) / self.e0
+        previous_exposed_size = previous_state.box('E').output()
+        infected_tem_size = state_tem.box(
+            'MG').full_size() + state_tem.box('MH').full_size()
+        delta = self.coefficient(
+            'kem') * (previous_exposed_size * infected_tem_size) / self.e0
+        # print(self)
+        # print(f'previous infected={infected_tem_size} delta={delta}')
         self.move('E', 'MG', self.coefficient('kmg') * delta)
         self.move('E', 'MH', self.coefficient('kmh') * delta)
 

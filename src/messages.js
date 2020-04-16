@@ -31,6 +31,7 @@ const messages = {
         },
         form: {
             population: 'Population',
+            patient0: 'Patients infectés à J0',
             r0: 'R0',
             s0: 'S0',
             lambda: 'Paramètre lambda',
@@ -67,6 +68,7 @@ const messages = {
             pc_h_r: 'pc_h_r',
             tip: {
                 population: 'Effectif de la population',
+                patient0: 'Nombre de patients intialement infectés',
                 s0: "Proportion initiale d'individus sains",
                 lambda: 'Temps moyen avant guérison',
                 beta: "Taux d'infection en individus par unité de temps",

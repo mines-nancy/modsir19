@@ -112,6 +112,7 @@ def get_sir_h():
     print('get_sir_h', input)
 
     population = int(input["population"])
+    patient0 = int(input["patient0"])
     lim_time = int(input["lim_time"])
 
     delays = {
@@ -129,7 +130,8 @@ def get_sir_h():
         'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
-    lists = run_sir_h(delays, coefficients, population, lim_time)
+    lists = run_sir_h(delays, coefficients, population,
+                      patient0, lim_time)
     return jsonify(lists)
 
 
