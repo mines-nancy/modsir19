@@ -11,7 +11,6 @@ from flask_cors import CORS, cross_origin
 
 from models.simple_sir import simple_sir
 from models.simulator import run_simulator, run_sir_h
-import datetime
 
 # Test master update to deploy 2
 
