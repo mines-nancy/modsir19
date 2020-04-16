@@ -90,12 +90,18 @@ def get_complex_sir():
     krg = 1 - krd
 
     # model v2
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = run_simulator(
-        model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, input_recovered, input_exposed, input_infected, input_dead, input_hospitalized, input_intensive_care, input_exit_intensive_care, output_recovered, output_exposed, output_infected, output_dead, output_hospitalized, output_intensive_care, output_exit_intensive_care, = run_simulator(model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
-            "exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
+            "exit_intensive_care": exit_intensive_care, "input_recovered": input_recovered,
+            "input_exposed": input_exposed, "input_infected": input_infected, "input_dead": input_dead,
+            "input_hospitalized": input_hospitalized, "input_intensive_care": input_intensive_care,
+            "input_exit_intensive_care": input_exit_intensive_care,
+            "output_recovered": output_recovered, "output_exposed": output_exposed,
+            "output_infected": output_infected, "output_dead": output_dead,
+            "output_hospitalized": hospitalized, "output_intensive_care": intensive_care,
+            "output_exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
 
     return jsonify(data)
 
