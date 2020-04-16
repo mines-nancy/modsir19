@@ -90,12 +90,18 @@ def get_complex_sir():
     krg = 1 - krd
 
     # model v2
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = run_simulator(
-        model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, input_recovered, input_exposed, input_infected, input_dead, input_hospitalized, input_intensive_care, input_exit_intensive_care, output_recovered, output_exposed, output_infected, output_dead, output_hospitalized, output_intensive_care, output_exit_intensive_care, = run_simulator(model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
-            "exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
+            "exit_intensive_care": exit_intensive_care, "input_recovered": input_recovered,
+            "input_exposed": input_exposed, "input_infected": input_infected, "input_dead": input_dead,
+            "input_hospitalized": input_hospitalized, "input_intensive_care": input_intensive_care,
+            "input_exit_intensive_care": input_exit_intensive_care,
+            "output_recovered": output_recovered, "output_exposed": output_exposed,
+            "output_infected": output_infected, "output_dead": output_dead,
+            "output_hospitalized": hospitalized, "output_intensive_care": intensive_care,
+            "output_exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
 
     return jsonify(data)
 
@@ -103,9 +109,10 @@ def get_complex_sir():
 @app.route('/get_sir_h', methods=["GET"])
 def get_sir_h():
     input = json.loads(request.args.get('parameters'))
-    # print(input)
+    print('get_sir_h', input)
 
     population = int(input["population"])
+    patient0 = int(input["patient0"])
     lim_time = int(input["lim_time"])
 
     delays = {
@@ -123,7 +130,8 @@ def get_sir_h():
         'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
-    lists = run_sir_h(delays, coefficients, population, lim_time)
+    lists = run_sir_h(delays, coefficients, population,
+                      patient0, lim_time)
     return jsonify(lists)
 
 

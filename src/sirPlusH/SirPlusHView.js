@@ -60,7 +60,7 @@ export const SirPlusHView = () => {
 
     const handleSlidersChange = React.useCallback(async (parameters) => {
         const response = await getModelDebounced(parameters);
-        setValues(response.data);
+        setValues({ ...response.data, j_0: parameters.j_0 });
     }, []);
 
     return (

@@ -27,7 +27,8 @@ class State:
             'tmg': tmg,
             'tmh': tmh,
             'thg': thg,
-            'thr': thr
+            'thr': thr,
+            'trsr': trsr
         }
 
         self._coefficients = {
@@ -48,7 +49,7 @@ class State:
             'G': BoxQueue('G'),
             'HG': BoxQueue('HG', thg),
             'HR': BoxQueue('HR', thr),
-            'R': BoxQueue('R', 8),
+            'R': BoxQueue('R', trsr),
             'D': BoxQueue('D')
         }
 
@@ -106,30 +107,50 @@ class State:
 
     def generic_steps(self, moves):
         for src_name in moves.keys():
+            output = self.output(src_name)
             for dest_name, coefficient in moves[src_name]:
-                self.move(src_name, dest_name, coefficient *
-                          self.output(src_name))
+                self.move(src_name, dest_name, coefficient * output)
 
     def step_exposed(self, history):
         previous_state = history.get_last_state(self.time - 1)
         state_tem = history.get_last_state(self.time - (1+self.delay('tem')))
         if state_tem == None or previous_state == None:
+            # print(f'previous infected={0} delta={0}')
             return
 
-        infected_size = state_tem.box('MG').size() + state_tem.box('MH').size()
-        delta = self.coefficient('kem') * \
-            (previous_state.box('E').output() * infected_size) / self.e0
+        previous_exposed_size = previous_state.box('E').output()
+        infected_tem_size = state_tem.box(
+            'MG').full_size() + state_tem.box('MH').full_size()
+        delta = self.coefficient(
+            'kem') * (previous_exposed_size * infected_tem_size) / self.e0
+        # print(self)
+        # print(f'previous infected={infected_tem_size} delta={delta}')
         self.move('E', 'MG', self.coefficient('kmg') * delta)
         self.move('E', 'MH', self.coefficient('kmh') * delta)
 
     def extract_series(self, history):
         series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
                   'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R']}
+        
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
+        input_lists = {name: [] for name in series.keys()}
+        output_lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
             sizes = {name: state.box(name).full_size()
                      for name in self.boxnames()}
+            inputs = {name: state.box(name).input()
+                      for name in self.boxnames()}
+            outputs = {name: state.box(name).output()
+                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], []
+                input_lists[name].append(sum([inputs[n] for n in series[name]]))
+                output_lists[name].append(sum([outputs[n] for n in series[name]]))
+        for name in series.keys():
+            lists['input_' + name] = input_lists[name]
+            lists['output_' + name] = output_lists[name]
+        
+        cumulated_hospitalized = round(sum(input_lists['H']), 2)
+        cumulated_intensive_care = round(sum(input_lists['R']), 2)
+        return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], [], lists['input_G'], lists['input_E'], lists['input_M'], lists['input_D'], lists['input_H'], lists['input_R'], [], lists['output_G'], lists['output_E'], lists['output_M'], lists['output_D'], lists['output_H'], lists['output_R'], []

@@ -3,12 +3,7 @@ from models.components.history import History
 
 
 class State:
-    def __init__(self,
-                 delays,
-                 coefficients,
-                 time,
-                 population
-                 ):
+    def __init__(self, delays, coefficients, time, population, patient0):
 
         self._delays = delays
         self._coefficients = coefficients
@@ -22,7 +17,7 @@ class State:
             'SI': BoxDms('SI', delays['dm_si']),
             'SS': BoxDms('SS', delays['dm_ss']),
             'R': BoxDms('R'),
-            'DC': BoxDms('DC')
+            'DC': BoxDms('DC'),
         }
 
         # src -> [targets]
@@ -43,10 +38,8 @@ class State:
         self.time = time
 
         self.e0 = coefficients['kpe'] * population
-        self.box('SE').add(self.e0-1)
-        self.box('INCUB').add(1)
-        print(self._delays)
-        print(self._coefficients)
+        self.box('SE').add(self.e0 - patient0)
+        self.box('INCUB').add(patient0)
 
     def boxes(self):
         return self._boxes.values()
@@ -81,33 +74,49 @@ class State:
         self.time += 1
         for box in self.boxes():
             box.step()
-
+        # print('***', self)
         self.step_exposed(history)
         self.generic_steps(self._moves)
 
     def generic_steps(self, moves):
         for src_name in moves.keys():
+            output = self.output(src_name)
             for dest_name, coefficient in moves[src_name]:
-                self.move(src_name, dest_name, coefficient *
-                          self.output(src_name))
+                self.move(src_name, dest_name, coefficient * output)
 
     def step_exposed(self, history):
-        n = self.box('SE').size() + self.box('INCUB').size() + \
+        previous_state = history.get_last_state(self.time - 1)
+        n = self.box('SE').output() + self.box('INCUB').size() + \
             self.box('IR').size() + self.box('IH').size() + \
             self.box('R').size()
-        previous_state = history.get_last_state(self.time - 1)
-        delta = self.coefficient('r') * self.coefficient('beta') * previous_state.box('SE').output(
-        ) * (previous_state.box('IR').size() + previous_state.box('IH').size()) / n
+        ir = previous_state.box('IR').size()
+        ih = previous_state.box('IH').size()
+        delta = self.coefficient('r') * self.coefficient('beta') * \
+            previous_state.box('SE').output() * (ir+ih) / n
+        # print(f'IR={ir} IH={ih} n={n} delta={delta}')
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
-        series = {'SE': ['SE'], 'R': ['R'], 'I': ['INCUB', 'IR', 'IH'],
-                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
+        series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
+                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC']}
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
+        input_lists = {name: [] for name in series.keys()}
+        output_lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
             sizes = {name: state.box(name).full_size()
                      for name in self.boxnames()}
+            inputs = {name: state.box(name).input()
+                      for name in self.boxnames()}
+            outputs = {name: state.box(name).output()
+                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
+                input_lists[name].append(sum([inputs[n] for n in series[name]]))
+                output_lists[name].append(sum([outputs[n] for n in series[name]]))
+        for name in series.keys():
+            lists['input_' + name] = input_lists[name]
+            lists['output_' + name] = output_lists[name]
+                
+        
         return lists
