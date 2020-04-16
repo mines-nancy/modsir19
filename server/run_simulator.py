@@ -29,7 +29,7 @@ if __name__ == "__main__":
                     'pc_sm_out': 0.8, 'pc_si_dc': 0.5, 'pc_si_out': 0.5, 'pc_h_ss': 0.2, 'pc_h_r': 0.8}
     population = 100
     initial_state = SirHState(
-        delays=delays, coefficients=coefficients, time=0, population=population)
+        delays=delays, coefficients=coefficients, time=0, population=population, patient0=1)
     simulator = Simulator(initial_state)
     print(simulator.get_state())
 
