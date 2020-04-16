@@ -106,9 +106,20 @@ class State:
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
+        input_lists = {name: [] for name in series.keys()}
+        output_lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
             sizes = {name: state.box(name).full_size()
                      for name in self.boxnames()}
+            inputs = {name: state.box(name).input()
+                      for name in self.boxnames()}
+            outputs = {name: state.box(name).output()
+                      for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
+                input_lists[name].append(sum([inputs[n] for n in series[name]]))
+                output_lists[name].append(sum([outputs[n] for n in series[name]]))
+        for name in series.keys():
+            lists['input_' + name] = input_lists[name]
+            lists['output_' + name] = output_lists[name]
         return lists
