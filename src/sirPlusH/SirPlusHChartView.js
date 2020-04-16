@@ -12,10 +12,8 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const data = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
+const data = ({ t, values }) => {
+    const { SE, INCUB, R, I, SM, SI, SS, DC, j_0 } = values;
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
@@ -73,126 +71,6 @@ const data = ({ t, day0, values }) => {
     };
 };
 
-const inputData = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
-
-    return {
-        labels: generateDates(day0, SE.length),
-        datasets: [
-            {
-                label: t('chart.exposed'),
-                data: input_SE,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.incub'),
-                data: input_INCUB,
-                backgroundColor: 'rgba(164, 18, 179, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.recovered'),
-                data: input_R,
-                backgroundColor: 'rgba(88, 235, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.intensive_care'),
-                data: input_SI,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.normal_care'),
-                data: input_SM,
-                backgroundColor: 'rgba(255, 88, 132, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.following_hospitalized'),
-                data: input_SS,
-                backgroundColor: 'rgba(54, 54, 255, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.dead'),
-                data: input_DC,
-                backgroundColor: 'rgba(88, 88, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.infected'),
-                data: input_I,
-                backgroundColor: 'rgba(255, 158, 132, 0.6)',
-                borderWidth: 2,
-            },
-        ],
-    };
-};
-
-const outputData = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
-
-    return {
-        labels: generateDates(day0, SE.length),
-        datasets: [
-            {
-                label: t('chart.exposed'),
-                data: output_SE,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.incub'),
-                data: output_INCUB,
-                backgroundColor: 'rgba(164, 18, 179, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.recovered'),
-                data: output_R,
-                backgroundColor: 'rgba(88, 235, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.intensive_care'),
-                data: output_SI,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.normal_care'),
-                data: output_SM,
-                backgroundColor: 'rgba(255, 88, 132, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.following_hospitalized'),
-                data: output_SS,
-                backgroundColor: 'rgba(54, 54, 255, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.dead'),
-                data: output_DC,
-                backgroundColor: 'rgba(88, 88, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.infected'),
-                data: output_I,
-                backgroundColor: 'rgba(255, 158, 132, 0.6)',
-                borderWidth: 2,
-            },
-        ],
-    };
-};
-
 const options = {
     title: {
         display: false,
@@ -237,29 +115,11 @@ export const Chart = ({ values }) => {
     const classes = useStyles();
     const t = useTranslate();
 
-    const lineData = data({ t, day0, values });
-    const lineInputData = inputData({ t, day0, values });
-    const lineOutputData = outputData({ t, day0, values });
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
-
-    const cumulated_hospitalized =
-        input_SM.reduce((a, b) => a + b, 0) + input_SI.reduce((a, b) => a + b, 0);
-    const cumulated_intensive_care = input_SI.reduce((a, b) => a + b, 0);
+    const lineData = data({ t, values });
 
     return (
         <div className={classes.root}>
             <Line data={lineData} width="300" height="300" options={options} />
-            <br />
-            Hospitalisés cumulés : {cumulated_hospitalized} <br />
-            Soins intensifs cumulés : {cumulated_intensive_care} <br />
-            <br />
-            Flux entrants
-            <Line data={lineInputData} width="300" height="300" options={options} />
-            <br />
-            Flux sortants
-            <Line data={lineOutputData} width="300" height="300" options={options} />
         </div>
     );
 };
