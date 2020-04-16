@@ -85,7 +85,7 @@ export const ComplexSIRView = () => {
                     </Grid>
                     <Grid item sm={1}></Grid>
                     <Grid item sm={10}>
-                        {values ? <DownloadButton values={values}/> : <p></p>}
+                        {values ? <DownloadButton values={values} /> : <p></p>}
                     </Grid>
                     <Grid item sm={1}></Grid>
                 </Grid>

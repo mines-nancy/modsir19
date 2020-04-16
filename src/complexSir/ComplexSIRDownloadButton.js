@@ -14,6 +14,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const generateCSV = function (values) {
+    const {
+        recovered,
+        exposed,
+        infected,
+        dead,
+        hospitalized,
+        intensive_care,
+        exit_intensive_care,
+        input_recovered,
+        input_exposed,
+        input_infected,
+        input_dead,
+        input_hospitalized,
+        input_intensive_care,
+        input_exit_intensive_care,
+        output_recovered,
+        output_exposed,
+        output_infected,
+        output_dead,
+        output_hospitalized,
+        output_intensive_care,
+        output_exit_intensive_care,
+        j_0,
+    } = values;
+
     const headers = [
         'jour',
         'date',
@@ -24,27 +49,36 @@ const generateCSV = function (values) {
         'exit_intensive_care',
         'recovered',
         'dead',
+        'input_recovered',
+        'input_exposed',
+        'input_infected',
+        'input_dead',
+        'input_hospitalized',
+        'input_intensive_care',
+        'input_exit_intensive_care',
     ];
-    const d = new Date(2020, 11, 12).getDate();
-    // eslint-disable-next-line no-console
-    console.log(d);
-    // eslint-disable-next-line no-console
-    // console.log(headers);
     const csvRows = ['model_name;SIR+H', 'model_version;1.0', headers.join(';')];
-    const j_0 = new Date(2020, 2, 3);
-    const dateRange = generateDates(j_0, values.exposed.length);
-    for (let itr = 0; itr < values.exposed.length; itr++) {
+    const j_init = new Date(j_0);
+    const dateRange = generateDates(j_init, exposed.length);
+    for (let itr = 0; itr < exposed.length; itr++) {
         csvRows.push(
             [
                 itr,
                 dateRange[itr],
-                values.exposed[itr],
-                values.infected[itr],
-                values.hospitalized[itr],
-                values.intensive_care[itr],
-                values.exit_intensive_care[itr],
-                values.recovered[itr],
-                values.dead[itr],
+                exposed[itr],
+                infected[itr],
+                hospitalized[itr],
+                intensive_care[itr],
+                exit_intensive_care[itr],
+                recovered[itr],
+                dead[itr],
+                input_recovered[itr],
+                input_exposed[itr],
+                input_infected[itr],
+                input_dead[itr],
+                input_hospitalized[itr],
+                input_intensive_care[itr],
+                input_exit_intensive_care[itr],
             ]
                 .join(';')
                 .replace(/\./g, ','),
