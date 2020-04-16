@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslate } from 'react-polyglot';
 import Button from '@material-ui/core/Button';
-import { zip, pick } from 'lodash';
 import { generateDates } from '../utils/dateGenerator';
 
 const useStyles = makeStyles((theme) => ({
@@ -57,7 +56,7 @@ const generateCSV = function (values) {
         'input_intensive_care',
         'input_exit_intensive_care',
     ];
-    const csvRows = ['model_name;SIR+H', 'model_version;1.0', headers.join(';')];
+    const csvRows = ['model_name;ComplexSIR', 'model_version;1.0', headers.join(';')];
     const j_init = new Date(j_0);
     const dateRange = generateDates(j_init, exposed.length);
     for (let itr = 0; itr < exposed.length; itr++) {
