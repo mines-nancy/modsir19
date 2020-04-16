@@ -8,3 +8,6 @@ install:
 
 start:
 	python3 app.py
+
+unit:
+	python3 -m unittest discover -v
