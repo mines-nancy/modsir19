@@ -78,6 +78,7 @@ const data = ({ t, values }) => {
         j_0,
     } = values;
 
+
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
         labels: generateDates(day0, exposed.length),
@@ -154,6 +155,7 @@ const inputData = ({ t, values }) => {
         j_0,
     } = values;
 
+
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
         labels: generateDates(day0, exposed.length),
@@ -229,6 +231,7 @@ const outputData = ({ t, values }) => {
         output_exit_intensive_care,
         j_0,
     } = values;
+
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {

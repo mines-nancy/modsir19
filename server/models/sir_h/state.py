@@ -17,7 +17,7 @@ class State:
             'SI': BoxDms('SI', delays['dm_si']),
             'SS': BoxDms('SS', delays['dm_ss']),
             'R': BoxDms('R'),
-            'DC': BoxDms('DC'),
+            'DC': BoxDms('DC')
         }
 
         # src -> [targets]
@@ -40,6 +40,11 @@ class State:
         self.e0 = coefficients['kpe'] * population
         self.box('SE').add(self.e0 - patient0)
         self.box('INCUB').add(patient0)
+
+    def change_coefficient(self, name, value):
+        self._coefficients[name] = value
+        print(
+            f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 
     def boxes(self):
         return self._boxes.values()
@@ -98,7 +103,7 @@ class State:
 
     def extract_series(self, history):
         series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
-                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC']}
+                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
         input_lists = {name: [] for name in series.keys()}
@@ -117,6 +122,4 @@ class State:
         for name in series.keys():
             lists['input_' + name] = input_lists[name]
             lists['output_' + name] = output_lists[name]
-                
-        
         return lists

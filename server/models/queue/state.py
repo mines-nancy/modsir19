@@ -131,7 +131,6 @@ class State:
     def extract_series(self, history):
         series = {'E': ['E'], 'G': ['G'], 'M': ['MG', 'MH'],
                   'H': ['HG', 'HR'], 'D': ['D'], 'R': ['R']}
-        
         # sum the sizes of boxes
         lists = {name: [] for name in series.keys()}
         input_lists = {name: [] for name in series.keys()}

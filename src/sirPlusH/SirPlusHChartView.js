@@ -12,10 +12,11 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-const data = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
+const data = ({ t, values }) => {
+    const { SE, INCUB, R, I, SM, SI, SS, DC,
+        input_SE, input_INCUB, input_R, input_I, input_SM, input_SI, input_SS, input_DC,
+        output_SE, output_INCUB, output_R, output_I, output_SM, output_SI, output_SS, output_DC,
+        j_0 } = values;
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
@@ -73,11 +74,13 @@ const data = ({ t, day0, values }) => {
     };
 };
 
-const inputData = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
+const inputData = ({ t, values }) => {
+    const { SE, INCUB, R, I, SM, SI, SS, DC,
+        input_SE, input_INCUB, input_R, input_I, input_SM, input_SI, input_SS, input_DC,
+        output_SE, output_INCUB, output_R, output_I, output_SM, output_SI, output_SS, output_DC,
+        j_0 } = values;
 
+    const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
         labels: generateDates(day0, SE.length),
         datasets: [
@@ -133,11 +136,13 @@ const inputData = ({ t, day0, values }) => {
     };
 };
 
-const outputData = ({ t, day0, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
+const outputData = ({ t, values }) => {
+    const { SE, INCUB, R, I, SM, SI, SS, DC,
+        input_SE, input_INCUB, input_R, input_I, input_SM, input_SI, input_SS, input_DC,
+        output_SE, output_INCUB, output_R, output_I, output_SM, output_SI, output_SS, output_DC,
+        j_0 } = values;
 
+    const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
         labels: generateDates(day0, SE.length),
         datasets: [
@@ -237,9 +242,9 @@ export const Chart = ({ values }) => {
     const classes = useStyles();
     const t = useTranslate();
 
-    const lineData = data({ t, day0, values });
-    const lineInputData = inputData({ t, day0, values });
-    const lineOutputData = outputData({ t, day0, values });
+    const lineData = data({ t, values });
+    const lineInputData = inputData({ t, values });
+    const lineOutputData = outputData({ t, values });
     const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
         input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
         output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;

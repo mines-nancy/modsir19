@@ -130,8 +130,10 @@ def get_sir_h():
         'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
+    rules = sorted(input["rules"], key=lambda rule: rule['date'])
+
     lists = run_sir_h(delays, coefficients, population,
-                      patient0, lim_time)
+                      patient0, lim_time, rules)
     return jsonify(lists)
 
 
