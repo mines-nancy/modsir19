@@ -12,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import Input from '@material-ui/core/Input';
 import { useTranslate } from 'react-polyglot';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -98,6 +100,8 @@ const stateReducer = (state, action) => {
     switch (action.type) {
         case 'SET_POPULATION':
             return { ...state, population: action.payload };
+        case 'SET_PATIENT0':
+            return { ...state, patient0: action.payload };
         case 'SET_KPE':
             return { ...state, kpe: action.payload };
         case 'SET_R':
@@ -173,6 +177,8 @@ const stateReducer = (state, action) => {
         }
         case 'SET_LIM_TIME':
             return { ...state, lim_time: action.payload };
+        case 'SET_J_0':
+            return { ...state, j_0: action.payload };
         default:
             return state;
     }
@@ -180,6 +186,7 @@ const stateReducer = (state, action) => {
 
 const setters = {
     population: 'SET_POPULATION',
+    patient0: 'SET_PATIENT0',
     kpe: 'SET_KPE',
     r: 'SET_R',
     dm_incub: 'SET_DM_INCUB',
@@ -200,10 +207,12 @@ const setters = {
     pc_h_ss: 'SET_PC_H_SS',
     pc_h_r: 'SET_PC_H_R',
     lim_time: 'SET_LIM_TIME',
+    j_0: 'SET_J_0',
 };
 
 const initialState = {
     population: 500000,
+    patient0: 1,
     kpe: 0.6,
     r: 2.3,
     dm_incub: 3,
@@ -224,6 +233,7 @@ const initialState = {
     pc_h_ss: 0.2,
     pc_h_r: round2digits(1 - 0.2),
     lim_time: 250,
+    j_0: new Date(2020, 0, 23),
 };
 
 export default function SirPlusHSliders({ onChange }) {
@@ -238,6 +248,7 @@ export default function SirPlusHSliders({ onChange }) {
 
     const {
         population,
+        patient0,
         kpe,
         r,
         dm_incub,
@@ -258,6 +269,7 @@ export default function SirPlusHSliders({ onChange }) {
         pc_h_ss,
         pc_h_r,
         lim_time,
+        j_0,
     } = values;
 
     React.useEffect(() => {
@@ -318,7 +330,8 @@ export default function SirPlusHSliders({ onChange }) {
     ];
 
     const general_rules_sliders = [
-        { name: 'population', value: population, min: 1, max: 1000000, step: 1 },
+        { name: 'population', value: population, min: 100000, max: 10000000, step: 100000 },
+        { name: 'patient0', value: patient0, min: 1, max: 10000, step: 1 },
         { name: 'kpe', value: kpe, min: 0, max: 1, step: 0.01 },
         { name: 'lim_time', value: lim_time, min: 0, max: 1000, step: 1 },
     ];
@@ -354,6 +367,25 @@ export default function SirPlusHSliders({ onChange }) {
                                 />
                             </Grid>
                         ))}
+                        <Grid item xs={4}>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardDatePicker
+                                    disableToolbar
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    label={t('form.j_0')}
+                                    value={j_0}
+                                    onChange={(date) =>
+                                        dispatch({ type: setters['j_0'], payload: date })
+                                    }
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Grid>
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>

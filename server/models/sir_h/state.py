@@ -3,12 +3,7 @@ from models.components.history import History
 
 
 class State:
-    def __init__(self,
-                 delays,
-                 coefficients,
-                 time,
-                 population
-                 ):
+    def __init__(self, delays, coefficients, time, population, patient0):
 
         self._delays = delays
         self._coefficients = coefficients
@@ -43,8 +38,8 @@ class State:
         self.time = time
 
         self.e0 = coefficients['kpe'] * population
-        self.box('SE').add(self.e0 - 1)
-        self.box('INCUB').add(1)
+        self.box('SE').add(self.e0 - patient0)
+        self.box('INCUB').add(patient0)
 
     def boxes(self):
         return self._boxes.values()
