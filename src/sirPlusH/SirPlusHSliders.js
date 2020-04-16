@@ -244,7 +244,7 @@ const initialState = {
     pc_h_ss: 0.2,
     pc_h_r: round2digits(1 - 0.2),
     lim_time: 250,
-    rules: [{ name: 'rule-1', field: 'beta', value: 2.0, date: new Date(2020, 2, 16) }],
+    rules: [{ name: 'rule-1', field: 'r', value: 2.0, date: new Date(2020, 3, 16) }],
     j_0: new Date(2020, 0, 23),
 };
 
@@ -284,6 +284,10 @@ export default function SirPlusHSliders({ onChange }) {
         rules,
         j_0,
     } = values;
+
+    React.useEffect(() => {
+        onChange(values);
+    }, [onChange, values]);
 
     const handleSliderChange = React.useCallback(
         (event, newValue, name) => dispatch({ type: setters[name], payload: parseFloat(newValue) }),

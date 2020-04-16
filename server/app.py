@@ -11,6 +11,7 @@ from flask_cors import CORS, cross_origin
 
 from models.simple_sir import simple_sir
 from models.simulator import run_simulator, run_sir_h
+import datetime
 
 # Test master update to deploy 2
 
@@ -90,19 +91,12 @@ def get_complex_sir():
     krg = 1 - krd
 
     # model v2
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, input_recovered, input_exposed, input_infected, input_dead, input_hospitalized, input_intensive_care, input_exit_intensive_care, output_recovered, output_exposed, output_infected, output_dead, output_hospitalized, output_intensive_care, output_exit_intensive_care, = run_simulator(
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care = run_simulator(
         model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
-            "exit_intensive_care": exit_intensive_care, "input_recovered": input_recovered,
-            "input_exposed": input_exposed, "input_infected": input_infected, "input_dead": input_dead,
-            "input_hospitalized": input_hospitalized, "input_intensive_care": input_intensive_care,
-            "input_exit_intensive_care": input_exit_intensive_care,
-            "output_recovered": output_recovered, "output_exposed": output_exposed,
-            "output_infected": output_infected, "output_dead": output_dead,
-            "output_hospitalized": hospitalized, "output_intensive_care": intensive_care,
-            "output_exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
+            "exit_intensive_care": exit_intensive_care, "j_0": input["j_0"]}
 
     return jsonify(data)
 
@@ -131,9 +125,10 @@ def get_sir_h():
         'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
-    rules: input["rules"]
+    rules = sorted(input["rules"], key=lambda rule: rule['date'])
 
-    lists = run_sir_h(delays, coefficients, population, patient0, lim_time)
+    lists = run_sir_h(delays, coefficients, population,
+                      patient0, lim_time, rules)
     return jsonify(lists)
 
 

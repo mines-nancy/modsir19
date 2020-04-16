@@ -26,13 +26,14 @@ def run_simulator(model, population,
     return simulator.extract_series()
 
 
-def run_sir_h(delays, coefficients, population, patient0, lim_time):
+def run_sir_h(delays, coefficients, population, patient0, lim_time, rules):
     initial_state = SirHState(delays, coefficients, 0, population, patient0)
 
     simulator = Simulator(initial_state)
     # print(simulator.get_state())
 
     for i in range(lim_time):
+        simulator.apply_rules(i, rules)
         simulator.step()
         # print(simulator.get_state())
 
