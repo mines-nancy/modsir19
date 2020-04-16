@@ -20,13 +20,13 @@ class BoxDms:
         if self._duration == 0:
             input = self._input
             self._input = 0
-            self._output = input
+            self._output += input
             return
 
         output = self._size / self._duration
         # print(f'pop: {output}')
         self._size -= output
-        self._output = output
+        self._output += output
         # print(f'output: {self._output}')
 
         input = self._input

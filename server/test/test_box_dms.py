@@ -28,6 +28,7 @@ class TestBasicFunction(unittest.TestCase):
             box.step()
             self.assertAlmostEqual(box.size(), r[i], 2)
             self.assertAlmostEqual(box.output(), outputs[i], 2)
+            box.remove(box.output())
 
 
 if __name__ == '__main__':
