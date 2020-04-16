@@ -63,26 +63,52 @@ const DeleteRuleButton = ({ onClick }) => {
     );
 };
 
-export const SelectFieldWithDate = ({ options, onDelete, onChange, rule }) => {
+export const SelectFieldWithDate = ({ options, rule, onDelete, onChange }) => {
     const classes = useStyles();
     const t = useTranslate();
+
+    // console.log('SelectFieldWithDate', rule);
     const [field, setField] = React.useState(rule && rule.field);
     const [value, setValue] = React.useState(rule && rule.value);
     const [date, setDate] = React.useState(rule && rule.date);
 
-    React.useEffect(() => {
-        if (field && value && date) {
-            onChange({ name: rule.name, field, value, date });
-        }
-    }, [field, value, date, onChange, rule]);
+    const handleChangeField = React.useCallback(
+        (field) => {
+            setField(field);
+            if (field && value && date) {
+                onChange({ name: rule.name, field, value, date });
+            }
+        },
+        [date, onChange, rule.name, value],
+    );
+
+    const handleChangeValue = React.useCallback(
+        (value) => {
+            setValue(value);
+            if (field && value && date) {
+                onChange({ name: rule.name, field, value, date });
+            }
+        },
+        [date, field, onChange, rule.name],
+    );
+
+    const handleChangeDate = React.useCallback(
+        (date) => {
+            setDate(date);
+            if (field && value && date) {
+                onChange({ name: rule.name, field, value, date });
+            }
+        },
+        [field, onChange, rule.name, value],
+    );
 
     return (
         <Grid container direction="row" alignItems="center">
-            <SelectField options={options} onChange={setField} value={field} />
+            <SelectField options={options} onChange={handleChangeField} value={field} />
             <TextField
                 id="standard-basic"
                 label="Valeur"
-                onChange={(event) => setValue(event.target.value)}
+                onChange={(event) => handleChangeValue(event.target.value)}
                 value={value}
             />
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -94,7 +120,7 @@ export const SelectFieldWithDate = ({ options, onDelete, onChange, rule }) => {
                     id="date-picker-inline"
                     label={t('form.afterDate')}
                     value={date}
-                    onChange={setDate}
+                    onChange={handleChangeDate}
                 />
             </MuiPickersUtilsProvider>
             <DeleteRuleButton onClick={onDelete} />

@@ -123,6 +123,8 @@ def get_sir_h():
         'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
         'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
 
+    rules: input["rules"]
+
     lists = run_sir_h(delays, coefficients, population, lim_time)
     return jsonify(lists)
 

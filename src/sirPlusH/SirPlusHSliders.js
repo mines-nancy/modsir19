@@ -271,14 +271,6 @@ export default function SirPlusHSliders({ onChange }) {
         rules,
     } = values;
 
-    React.useEffect(() => {
-        console.log({ rules });
-    }, [rules]);
-
-    React.useEffect(() => {
-        onChange(values);
-    }, [onChange, values]);
-
     const handleSliderChange = React.useCallback(
         (event, newValue, name) => dispatch({ type: setters[name], payload: parseFloat(newValue) }),
         [dispatch],
@@ -311,7 +303,7 @@ export default function SirPlusHSliders({ onChange }) {
     const handleChangeRule = React.useCallback(
         (rule) => {
             const newRules = rules.map((entry) => (entry.name === rule.name ? rule : entry));
-            // dispatch({ type: 'SET_RULES', payload: newRules });
+            dispatch({ type: 'SET_RULES', payload: newRules });
         },
         [rules],
     );
@@ -481,12 +473,12 @@ export default function SirPlusHSliders({ onChange }) {
                     <Grid container direction="column" alignItems="flex-start">
                         {rules.map((rule) => {
                             return (
-                                <Grid container direction="row" alignItems="center">
+                                <Grid container direction="row" alignItems="center" key={rule.name}>
                                     <SelectFieldWithDate
                                         options={Object.keys(values)}
                                         rule={rule}
                                         onDelete={() => handleDeleteRule(rule)}
-                                        onChange={() => handleChangeRule(rule)}
+                                        onChange={handleChangeRule}
                                     />
                                 </Grid>
                             );
