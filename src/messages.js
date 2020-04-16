@@ -31,7 +31,7 @@ const messages = {
         },
         form: {
             population: 'Population',
-            patient0: 'Patients infectés',
+            patient0: 'Patients infectés à J0',
             r0: 'R0',
             s0: 'S0',
             lambda: 'Paramètre lambda',
