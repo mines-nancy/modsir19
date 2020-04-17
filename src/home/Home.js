@@ -1,3 +1,4 @@
 import React from 'react';
+import Simulation from '../simulation/Simulation';
 
-export default () => <h1>Homepage</h1>;
+export default () => <Simulation />;
