@@ -63,6 +63,12 @@ class BoxDmsSource(BoxDms):
     def __init__(self, name):
         BoxDms.__init__(self, name, 0)
 
+    def step(self):
+        self._removed = 0
+        input = self._input
+        self._input = 0
+        self._output += input
+
     def size(self):
         return self.output()
 
@@ -71,9 +77,8 @@ class BoxDmsTarget(BoxDms):
     def __init__(self, name):
         BoxDms.__init__(self, name)
 
-    def size(self):
-        return self.input()
-
     def step(self):
-        # do nothing: let value as input
-        pass
+        self._removed = 0
+        input = self._input
+        self._input = 0
+        self._size += input

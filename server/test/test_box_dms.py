@@ -48,6 +48,12 @@ class TestBasicFunction(unittest.TestCase):
         self.assertEqual(box.size(), 100)
         self.assertEqual(box.output(), 100)
 
+        box.add(10)
+        box.step()
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 110)
+        self.assertEqual(box.output(), 110)
+
     def test_box_dms_target(self):
         box = BoxDmsTarget('DMS-TARGET')
         self.assertEqual(box.input(), 0)
@@ -56,11 +62,17 @@ class TestBasicFunction(unittest.TestCase):
 
         box.add(100)
         self.assertEqual(box.input(), 100)
-        self.assertEqual(box.size(), 100)
+        self.assertEqual(box.size(), 0)
         self.assertEqual(box.output(), 0)
         box.step()
-        self.assertEqual(box.input(), 100)
+        self.assertEqual(box.input(), 0)
         self.assertEqual(box.size(), 100)
+        self.assertEqual(box.output(), 0)
+
+        box.add(10)
+        box.step()
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 110)
         self.assertEqual(box.output(), 0)
 
 
