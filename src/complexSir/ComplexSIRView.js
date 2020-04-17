@@ -11,6 +11,7 @@ import {
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './ComplexChartView';
+import { DownloadButton } from './ComplexSIRDownloadButton';
 import api from '../utils/api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
@@ -81,6 +82,10 @@ export const ComplexSIRView = () => {
                     <Grid item sm={1}></Grid>
                     <Grid item sm={10}>
                         {values ? <Chart values={values} /> : <p>No input values</p>}
+                    </Grid>
+                    <Grid item sm={1}></Grid>
+                    <Grid item sm={10}>
+                        {values ? <DownloadButton values={values} /> : <p></p>}
                     </Grid>
                     <Grid item sm={1}></Grid>
                 </Grid>

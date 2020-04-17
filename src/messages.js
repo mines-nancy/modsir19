@@ -5,6 +5,7 @@ const messages = {
         returnToHomepage: 'Retourner à la page principale',
         cancel: 'Annuler',
         save: 'Enregistrer',
+        download: 'Télécharger',
         appBar: {
             about: 'A propos de',
             developpedBy: 'Application développée par',

@@ -13,10 +13,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 const data = ({ t, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC,
-        input_SE, input_INCUB, input_R, input_I, input_SM, input_SI, input_SS, input_DC,
-        output_SE, output_INCUB, output_R, output_I, output_SM, output_SI, output_SS, output_DC,
-        j_0 } = values;
+    const { SE, INCUB, R, I, SM, SI, SS, DC, j_0 } = values;
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
@@ -75,10 +72,18 @@ const data = ({ t, values }) => {
 };
 
 const inputData = ({ t, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC,
-        input_SE, input_INCUB, input_R, input_I, input_SM, input_SI, input_SS, input_DC,
-        output_SE, output_INCUB, output_R, output_I, output_SM, output_SI, output_SS, output_DC,
-        j_0 } = values;
+    const {
+        SE,
+        input_SE,
+        input_INCUB,
+        input_R,
+        input_I,
+        input_SM,
+        input_SI,
+        input_SS,
+        input_DC,
+        j_0,
+    } = values;
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
@@ -137,10 +142,18 @@ const inputData = ({ t, values }) => {
 };
 
 const outputData = ({ t, values }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC,
-        input_SE, input_INCUB, input_R, input_I, input_SM, input_SI, input_SS, input_DC,
-        output_SE, output_INCUB, output_R, output_I, output_SM, output_SI, output_SS, output_DC,
-        j_0 } = values;
+    const {
+        SE,
+        output_SE,
+        output_INCUB,
+        output_R,
+        output_I,
+        output_SM,
+        output_SI,
+        output_SS,
+        output_DC,
+        j_0,
+    } = values;
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
@@ -245,9 +258,7 @@ export const Chart = ({ values }) => {
     const lineData = data({ t, values });
     const lineInputData = inputData({ t, values });
     const lineOutputData = outputData({ t, values });
-    const { SE, INCUB, R, I, SM, SI, SS, DC, input_SE, input_INCUB, input_R,
-        input_I, input_SM, input_SI, input_SS, input_DC, output_SE, output_INCUB,
-        output_R, output_I, output_SM, output_SI, output_SS, output_DC  } = values;
+    const { input_SM, input_SI } = values;
 
     const cumulated_hospitalized =
         input_SM.reduce((a, b) => a + b, 0) + input_SI.reduce((a, b) => a + b, 0);

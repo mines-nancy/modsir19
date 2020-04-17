@@ -7,6 +7,7 @@ import api from '../utils/api';
 import SirPlusHSliders from './SirPlusHSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { differenceInDays } from 'date-fns';
+import { DownloadButton } from './SirPlusHDownloadButton';
 
 const drawerWidth = 270;
 
@@ -76,6 +77,10 @@ export const SirPlusHView = () => {
                     <Grid item sm={1}></Grid>
                     <Grid item sm={10}>
                         {values ? <Chart values={values} /> : <p>No input values</p>}
+                    </Grid>
+                    <Grid item sm={1}></Grid>
+                    <Grid item sm={10}>
+                        {values ? <DownloadButton values={values} /> : <p></p>}
                     </Grid>
                     <Grid item sm={1}></Grid>
                 </Grid>
