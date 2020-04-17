@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Form, Field } from 'react-final-form';
 import { CircularProgress, Grid, makeStyles } from '@material-ui/core';
+
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
@@ -7,6 +9,9 @@ import { Edges } from '../../components/Graph/Edges';
 import api from '../../api';
 import Chart from './Chart';
 import Layout from '../../components/Layout';
+import NumberField from '../../components/fields/NumberField';
+import DurationField from '../../components/fields/DurationField';
+import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -73,41 +78,92 @@ const Simulation = () => {
                     )}
                 </Grid>
                 <Grid item xs={7}>
-                    <div className={classes.configuration}>
-                        <GraphProvider>
-                            <Node name="ref1" targets={['ref2']} top={0} left="50%">
-                                POPULATION TOTALE
-                            </Node>
-                            <Node name="ref2" targets={['ref3']} top={150} left="50%">
-                                POPULATION SAINE EXPOSÉE
-                            </Node>
-                            <Node name="ref3" targets={['ref4', 'ref5']} top={300} left="50%">
-                                INCUBATION
-                            </Node>
-                            <Node name="ref4" targets={['ref9']} top={500} left="25%">
-                                RETABLISSEMENT SPONTANNÉ
-                            </Node>
-                            <Node name="ref5" targets={['ref6', 'ref7']} top={500} left="75%">
-                                HOSPITALISATION
-                            </Node>
-                            <Node name="ref6" targets={['ref8', 'ref9']} top={700} left="45%">
-                                SOINS MÉDICAUX
-                            </Node>
-                            <Node name="ref7" targets={['ref8', 'ref10']} top={700} left="85%">
-                                SOINS INTENSIFS
-                            </Node>
-                            <Node name="ref8" targets={['ref9']} top={900} left="50%">
-                                SOINS DE SUITE
-                            </Node>
-                            <Node name="ref9" targets={['ref8']} top={1100} left="25%">
-                                GUERISON
-                            </Node>
-                            <Node name="ref10" top={1100} left="75%">
-                                DECES
-                            </Node>
-                            <Edges />
-                        </GraphProvider>
-                    </div>
+                    <Form
+                        onSubmit={console.log}
+                        initialValues={parameters}
+                        render={() => (
+                            <div className={classes.configuration}>
+                                <GraphProvider>
+                                    <Node name="ref1" targets={['ref2']} top={0} left="50%">
+                                        <Field
+                                            name="population"
+                                            label="Population totale"
+                                            component={ExpandableNumberField}
+                                        >
+                                            <Field
+                                                name="patient0"
+                                                label="Nombre de patient infectés"
+                                                component={NumberField}
+                                                cardless
+                                            />
+                                        </Field>
+                                    </Node>
+                                    <Node name="ref2" targets={['ref3']} top={150} left="50%">
+                                        POPULATION SAINE EXPOSÉE
+                                    </Node>
+                                    <Node
+                                        name="ref3"
+                                        targets={['ref4', 'ref5']}
+                                        top={300}
+                                        left="50%"
+                                    >
+                                        <Field
+                                            name="dm_incub"
+                                            label="Incubation"
+                                            component={DurationField}
+                                            color="rgba(164, 18, 179, 0.6)"
+                                        />
+                                    </Node>
+                                    <Node name="ref4" targets={['ref9']} top={500} left="25%">
+                                        <Field
+                                            name="dm_r"
+                                            label="Rétablissement spontané"
+                                            component={DurationField}
+                                            color="rgba(88, 235, 88, 0.6)"
+                                        />
+                                    </Node>
+                                    <Node
+                                        name="ref5"
+                                        targets={['ref6', 'ref7']}
+                                        top={500}
+                                        left="75%"
+                                    >
+                                        <Field
+                                            name="dm_h"
+                                            label="Hospitalisation"
+                                            component={DurationField}
+                                        />
+                                    </Node>
+                                    <Node
+                                        name="ref6"
+                                        targets={['ref8', 'ref9']}
+                                        top={700}
+                                        left="45%"
+                                    >
+                                        SOINS MÉDICAUX
+                                    </Node>
+                                    <Node
+                                        name="ref7"
+                                        targets={['ref8', 'ref10']}
+                                        top={700}
+                                        left="85%"
+                                    >
+                                        SOINS INTENSIFS
+                                    </Node>
+                                    <Node name="ref8" targets={['ref9']} top={900} left="50%">
+                                        SOINS DE SUITE
+                                    </Node>
+                                    <Node name="ref9" targets={['ref8']} top={1100} left="25%">
+                                        GUERISON
+                                    </Node>
+                                    <Node name="ref10" top={1100} left="75%">
+                                        DECES
+                                    </Node>
+                                    <Edges />
+                                </GraphProvider>
+                            </div>
+                        )}
+                    />
                 </Grid>
             </Grid>
         </Layout>
