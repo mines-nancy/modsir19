@@ -1,4 +1,4 @@
-from models.components.box_dms import BoxDms
+from models.components.box_dms import BoxDms, BoxDmsSource, BoxDmsTarget
 from models.components.history import History
 
 
@@ -9,15 +9,15 @@ class State:
         self._coefficients = coefficients
 
         self._boxes = {
-            'SE': BoxDms('SE', 0),
+            'SE': BoxDmsSource('SE'),
             'INCUB': BoxDms('INCUB', delays['dm_incub']),
             'IR': BoxDms('IR', delays['dm_r']),
             'IH': BoxDms('IH', delays['dm_h']),
             'SM': BoxDms('SM', delays['dm_sm']),
             'SI': BoxDms('SI', delays['dm_si']),
             'SS': BoxDms('SS', delays['dm_ss']),
-            'R': BoxDms('R'),
-            'DC': BoxDms('DC')
+            'R': BoxDmsTarget('R'),
+            'DC': BoxDmsTarget('DC')
         }
 
         # src -> [targets]
@@ -91,11 +91,13 @@ class State:
 
     def step_exposed(self, history):
         previous_state = history.get_last_state(self.time - 1)
-        n = self.box('SE').output() + self.box('INCUB').size() + \
-            self.box('IR').size() + self.box('IH').size() + \
-            self.box('R').size()
-        ir = previous_state.box('IR').size()
-        ih = previous_state.box('IH').size()
+        # do state = self to implement the initial formulae
+        state = history.get_last_state(self.time - 1)
+        n = state.box('SE').output() + state.box('INCUB').full_size() + \
+            state.box('IR').full_size() + state.box('IH').full_size() + \
+            state.box('R').full_size()
+        ir = previous_state.box('IR').full_size()
+        ih = previous_state.box('IH').full_size()
         delta = self.coefficient('r') * self.coefficient('beta') * \
             previous_state.box('SE').output() * (ir+ih) / n
         # print(f'IR={ir} IH={ih} n={n} delta={delta}')
@@ -109,16 +111,18 @@ class State:
         input_lists = {name: [] for name in series.keys()}
         output_lists = {name: [] for name in series.keys()}
         for state in history.sorted_list():
-            sizes = {name: state.box(name).full_size()
+            sizes = {name: state.box(name).size()
                      for name in self.boxnames()}
             inputs = {name: state.box(name).input()
                       for name in self.boxnames()}
-            outputs = {name: state.box(name).output()
-                      for name in self.boxnames()}
+            outputs = {name: state.box(name).removed()
+                       for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-                input_lists[name].append(sum([inputs[n] for n in series[name]]))
-                output_lists[name].append(sum([outputs[n] for n in series[name]]))
+                input_lists[name].append(
+                    sum([inputs[n] for n in series[name]]))
+                output_lists[name].append(
+                    sum([outputs[n] for n in series[name]]))
         for name in series.keys():
             lists['input_' + name] = input_lists[name]
             lists['output_' + name] = output_lists[name]
