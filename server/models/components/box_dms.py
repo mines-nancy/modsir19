@@ -40,7 +40,7 @@ class BoxDms:
         return self._size
 
     def full_size(self):
-        return self.size() + self.input() + self.output()
+        return self.size() + self.input()
 
     def input(self):
         return self._input
