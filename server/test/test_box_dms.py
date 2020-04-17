@@ -1,20 +1,23 @@
 import unittest
-from models.components.box_dms import BoxDms
+from models.components.box_dms import BoxDms, BoxDmsSource, BoxDmsTarget
 
 
 class TestBasicFunction(unittest.TestCase):
-    def setUp(self):
-        self.box = BoxDms('DMS-10', 10)
+    # def setUp(self):
+    # self.box = BoxDms('DMS-10', 10)
 
-    def test_1(self):
+    def test_box_dms1(self):
         box = BoxDms('DMS-10', 10)
         box.add(1)
         self.assertEqual(box.input(), 1)
+        self.assertEqual(box.size(), 0)
+        self.assertEqual(box.output(), 0)
         box.step()
+        self.assertEqual(box.input(), 0)
         self.assertEqual(box.size(), 1)
         self.assertEqual(box.output(), 0)
 
-    def test_2(self):
+    def test_box_dms2(self):
         box = BoxDms('DMS-10', 10)
         inputs = [1, 2, 4, 8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -29,6 +32,36 @@ class TestBasicFunction(unittest.TestCase):
             self.assertAlmostEqual(box.size(), r[i], 2)
             self.assertAlmostEqual(box.output(), outputs[i], 2)
             box.remove(box.output())
+
+    def test_box_dms_source(self):
+        box = BoxDmsSource('DMS-SOURCE')
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 0)
+        self.assertEqual(box.output(), 0)
+
+        box.add(100)
+        self.assertEqual(box.input(), 100)
+        self.assertEqual(box.size(), 0)
+        self.assertEqual(box.output(), 0)
+        box.step()
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 100)
+        self.assertEqual(box.output(), 100)
+
+    def test_box_dms_target(self):
+        box = BoxDmsTarget('DMS-TARGET')
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 0)
+        self.assertEqual(box.output(), 0)
+
+        box.add(100)
+        self.assertEqual(box.input(), 100)
+        self.assertEqual(box.size(), 100)
+        self.assertEqual(box.output(), 0)
+        box.step()
+        self.assertEqual(box.input(), 100)
+        self.assertEqual(box.size(), 100)
+        self.assertEqual(box.output(), 0)
 
 
 if __name__ == '__main__':

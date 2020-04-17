@@ -50,3 +50,23 @@ class BoxDms:
 
     def remove(self, size):
         self._output -= size
+
+
+class BoxDmsSource(BoxDms):
+    def __init__(self, name):
+        BoxDms.__init__(self, name, 0)
+
+    def size(self):
+        return self.output()
+
+
+class BoxDmsTarget(BoxDms):
+    def __init__(self, name):
+        BoxDms.__init__(self, name)
+
+    def size(self):
+        return self.input()
+
+    def step(self):
+        # do nothing: let value as input
+        pass
