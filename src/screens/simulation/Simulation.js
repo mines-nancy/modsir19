@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Grid } from '@material-ui/core';
 
 import api from '../../api';
 import Chart from './Chart';
@@ -51,7 +51,18 @@ const Simulation = () => {
 
     return (
         <Layout>
-            {values ? <Chart values={values} startDate={startDate} /> : <CircularProgress />}
+            <Grid container>
+                <Grid item xs={7}>
+                    {values ? (
+                        <Chart values={values} startDate={startDate} />
+                    ) : (
+                        <CircularProgress />
+                    )}
+                </Grid>
+                <Grid item xs={5}>
+                    {/* Configuration */}
+                </Grid>
+            </Grid>
         </Layout>
     );
 };

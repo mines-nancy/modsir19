@@ -13,7 +13,13 @@ const generateDateInterval = (startDate, numberOfDays) =>
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            maxWidth: 700,
+            padding: 32,
+        },
+        container: {
+            maxWidth: 650,
+            [theme.breakpoints.up('xl')]: {
+                maxWidth: 750,
+            },
         },
     }),
 );
@@ -126,7 +132,9 @@ const Chart = ({ values, startDate }) => {
 
     return (
         <div className={classes.root}>
-            <Line data={lineData} width="300" height="300" options={getOptions(t)} />
+            <div className={classes.container}>
+                <Line data={lineData} width="300" height="300" options={getOptions(t)} />
+            </div>
         </div>
     );
 };
