@@ -4,7 +4,7 @@ import { Button, FormControl, Grid } from '@material-ui/core';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { useTranslate } from 'react-polyglot';
-import FormikFormText from '../components/FormikFormText';
+import FormikFormText from '../FormikFormText';
 
 const useStyles = makeStyles((theme) =>
     createStyles({

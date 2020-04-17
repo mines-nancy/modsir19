@@ -21,7 +21,6 @@ const messages = {
             simpleSIR: 'Modèle SIR simple',
             complexSIR: 'Modèle SIR complexe',
             sirPlusH: 'Modèle SIR+H',
-            testAPI: "Tester l'API",
         },
         error: {
             shouldBeNumber: 'Doit être un nombre',

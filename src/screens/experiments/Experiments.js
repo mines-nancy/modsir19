@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link as RouterLink, Redirect, Route, Switch } from 'react-router-dom';
 import { I18n } from 'react-polyglot';
-import LocaleContext from '../utils/localeContext';
-import messages from '../messages';
+import LocaleContext from '../../utils/localeContext';
+import messages from '../../i18n/messages';
 import { Paper, Tab, Tabs, Toolbar } from '@material-ui/core';
 import { useTranslate } from 'react-polyglot';
-import { SIRView } from '../simpleSir/SIRView';
-import { ComplexSIRView } from '../complexSir/ComplexSIRView';
-import { SirPlusHView } from '../sirPlusH/SirPlusHView';
+import { SIRView } from '../../components/simpleSir/SIRView';
+import { ComplexSIRView } from '../../components/complexSir/ComplexSIRView';
+import { SirPlusHView } from '../../components/sirPlusH/SirPlusHView';
 import NotFound from '../NotFound';
-import { MainAppBar } from '../appBar/MainAppBar';
+import { MainAppBar } from '../../components/appBar/MainAppBar';
 
 const ExperimentsHome = ({ match }) => {
     const path = '/experiments';
