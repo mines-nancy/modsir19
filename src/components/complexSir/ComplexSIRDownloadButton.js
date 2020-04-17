@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslate } from 'react-polyglot';
 import Button from '@material-ui/core/Button';
-import { generateDates } from '../utils/dateGenerator';
+import { generateDates } from '../../utils/dateGenerator';
 
 const useStyles = makeStyles((theme) => ({
     root: {

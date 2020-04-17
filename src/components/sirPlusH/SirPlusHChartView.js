@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
-import { generateDates } from '../utils/dateGenerator';
+import { generateDates } from '../../utils/dateGenerator';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) =>

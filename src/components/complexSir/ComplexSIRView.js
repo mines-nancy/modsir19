@@ -12,7 +12,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './ComplexChartView';
 import { DownloadButton } from './ComplexSIRDownloadButton';
-import api from '../api';
+import api from '../../api';
 import ComplexSIRSliders from './ComplexSIRSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 

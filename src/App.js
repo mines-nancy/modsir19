@@ -2,10 +2,10 @@ import React from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 import { I18n } from 'react-polyglot';
 
-import messages from './messages';
-import Home from './home/Home';
-import NotFound from './NotFound';
-import Experiments from './experiments/Experiments';
+import messages from './i18n/messages';
+import Home from './screens/home/Home';
+import NotFound from './screens/NotFound';
+import Experiments from './screens/experiments/Experiments';
 
 const App = () => {
     return (

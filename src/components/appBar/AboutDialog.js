@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslate } from 'react-polyglot';
 import { Dialog, DialogContent, DialogContentText, DialogTitle, MenuItem } from '@material-ui/core';
-import { VERSION } from '../config';
+import { VERSION } from '../../config';
 
 const AboutDialog = ({ onClose }) => {
     const [open, setOpen] = React.useState(false);

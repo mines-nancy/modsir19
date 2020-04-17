@@ -3,7 +3,7 @@ import { SIRForm } from './SIRForm';
 import { Grid, Typography } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Chart } from './ChartView';
-import api from '../api';
+import api from '../../api';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
