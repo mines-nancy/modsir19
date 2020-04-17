@@ -43,7 +43,7 @@ const useStyles = makeStyles(() => ({
     configuration: {
         marginTop: 30,
         position: 'relative',
-        width: 500,
+        width: '100%',
         height: 800,
     },
 }));
@@ -65,30 +65,45 @@ const Simulation = () => {
     return (
         <Layout>
             <Grid container>
-                <Grid item xs={7}>
+                <Grid item xs={5}>
                     {values ? (
                         <Chart values={values} startDate={startDate} />
                     ) : (
                         <CircularProgress />
                     )}
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={7}>
                     <div className={classes.configuration}>
                         <GraphProvider>
                             <Node name="ref1" targets={['ref2']} top={0} left="50%">
-                                FOOBAR
+                                POPULATION TOTALE
                             </Node>
                             <Node name="ref2" targets={['ref3']} top={150} left="50%">
-                                FOOBAZ
+                                POPULATION SAINE EXPOSÉE
                             </Node>
                             <Node name="ref3" targets={['ref4', 'ref5']} top={300} left="50%">
-                                FOOBAZ
+                                INCUBATION
                             </Node>
-                            <Node name="ref4" top={500} left="25%">
-                                FOOBAZ
+                            <Node name="ref4" targets={['ref9']} top={500} left="25%">
+                                RETABLISSEMENT SPONTANNÉ
                             </Node>
-                            <Node name="ref5" top={500} left="75%">
-                                FOOBAZ
+                            <Node name="ref5" targets={['ref6', 'ref7']} top={500} left="75%">
+                                HOSPITALISATION
+                            </Node>
+                            <Node name="ref6" targets={['ref8', 'ref9']} top={700} left="45%">
+                                SOINS MÉDICAUX
+                            </Node>
+                            <Node name="ref7" targets={['ref8', 'ref10']} top={700} left="85%">
+                                SOINS INTENSIFS
+                            </Node>
+                            <Node name="ref8" targets={['ref9']} top={900} left="50%">
+                                SOINS DE SUITE
+                            </Node>
+                            <Node name="ref9" targets={['ref8']} top={1100} left="25%">
+                                GUERISON
+                            </Node>
+                            <Node name="ref10" top={1100} left="75%">
+                                DECES
                             </Node>
                             <Edges />
                         </GraphProvider>
