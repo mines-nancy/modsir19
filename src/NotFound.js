@@ -1,14 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslate } from 'react-polyglot';
 
 const NotFound = () => {
-    const t = useTranslate();
     return (
         <div>
             <img
                 src={`${process.env.PUBLIC_URL}/404.png`}
-                alt={t('pageNotFound')}
+                alt="Page not found"
                 style={{
                     display: 'block',
                     margin: 'auto',
@@ -16,8 +14,9 @@ const NotFound = () => {
                     position: 'relative',
                 }}
             />
-            <Link to="/">{t('returnToHomepage')}</Link>
+            <Link to="/">Home</Link>
         </div>
     );
 };
+
 export default NotFound;

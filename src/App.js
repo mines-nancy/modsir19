@@ -1,33 +1,19 @@
 import React from 'react';
-import './App.css';
-import { I18n } from 'react-polyglot';
-import LocaleContext from './utils/localeContext';
-import messages from './messages';
-import { MainAppBar } from './appBar/MainAppBar';
 import { HashRouter, Route, Switch } from 'react-router-dom';
+
+import Home from './home/Home';
 import NotFound from './NotFound';
-import Home from './Home';
+import Experiments from './experiments/Experiments';
 
 const App = () => {
-    const initialLocale = 'fr';
-    const localeStateHook = React.useState(initialLocale);
-    const [locale, setLocale] = localeStateHook;
-
     return (
-        <LocaleContext.Provider value={localeStateHook}>
-            <I18n locale={locale} messages={locale === 'fr' ? messages.fr : messages.en}>
-                <div className="App">
-                    <HashRouter basename="/">
-                        <MainAppBar />
-                        <Switch>
-                            <Route path="/" render={(routeProps) => <Home {...routeProps} />} />
-
-                            <Route render={() => <NotFound />} />
-                        </Switch>
-                    </HashRouter>
-                </div>
-            </I18n>
-        </LocaleContext.Provider>
+        <HashRouter>
+            <Switch>
+                <Route path="/" exact component={Home} />
+                <Route path="/experiments" component={Experiments} />
+                <Route component={NotFound} />
+            </Switch>
+        </HashRouter>
     );
 };
 

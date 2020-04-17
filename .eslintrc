@@ -3,7 +3,11 @@
         "react-app"
     ],
     "plugins": [
-        "prettier"
+        "prettier",
+        "react",
+        "react-hooks",
+        "jsx-a11y",
+        "import"
     ],
     "rules": {
         "prettier/prettier": [

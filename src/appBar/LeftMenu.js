@@ -1,10 +1,9 @@
 import React from 'react';
+import { useTranslate } from 'react-polyglot';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { IconButton, Menu, Tooltip } from '@material-ui/core';
 import AboutDialog from './AboutDialog';
-import { useTranslate } from 'react-polyglot';
-import { useLocaleContext } from '../utils/localeContext';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -18,7 +17,6 @@ const LeftMenu = () => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const t = useTranslate();
-    const { locale, setLocale } = useLocaleContext();
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -26,15 +24,6 @@ const LeftMenu = () => {
 
     const handleCloseMenu = () => {
         setAnchorEl(null);
-    };
-
-    const handleSwitchLanguage = () => {
-        if (locale === 'fr') {
-            setLocale('en');
-        } else {
-            setLocale('fr');
-        }
-        handleCloseMenu();
     };
 
     return (
