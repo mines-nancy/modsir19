@@ -113,7 +113,7 @@ class State:
                      for name in self.boxnames()}
             inputs = {name: state.box(name).input()
                       for name in self.boxnames()}
-            outputs = {name: state.box(name).output()
+            outputs = {name: state.box(name).removed()
                        for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))

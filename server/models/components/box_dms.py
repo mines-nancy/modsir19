@@ -9,14 +9,17 @@ class BoxDms:
         self._size = 0  # dms model
         self._input = 0  # number of inputs
         self._output = 0  # number of outputs
+        self._removed = 0
 
     def __str__(self):
         input = round(self._input, 2)
         output = round(self._output, 2)
         size = round(self._size, 2)
-        return f'{self._name}[{input}]\{size}/[{output}]'
+        removed = round(self._removed, 2)
+        return f'{self._name}[{input}]\{size}/[{removed}]'
 
     def step(self):
+        self._removed = 0
         if self._duration == 0:
             input = self._input
             self._input = 0
@@ -45,11 +48,15 @@ class BoxDms:
     def output(self):
         return self._output
 
+    def removed(self):
+        return self._removed
+
     def add(self, size):
         self._input += size
 
     def remove(self, size):
         self._output -= size
+        self._removed += size
 
 
 class BoxDmsSource(BoxDms):
