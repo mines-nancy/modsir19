@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { CircularProgress, Grid } from '@material-ui/core';
+import { CircularProgress, Grid, makeStyles } from '@material-ui/core';
+import { GraphProvider } from '../../components/Graph/GraphProvider';
+import { Node } from '../../components/Graph/Node';
+import { Edges } from '../../components/Graph/Edges';
 
 import api from '../../api';
 import Chart from './Chart';
@@ -36,7 +39,17 @@ const parameters = {
     rules: [],
 };
 
+const useStyles = makeStyles(() => ({
+    configuration: {
+        marginTop: 30,
+        position: 'relative',
+        width: 500,
+        height: 800,
+    },
+}));
+
 const Simulation = () => {
+    const classes = useStyles();
     const [values, setValues] = useState();
 
     useEffect(() => {
@@ -60,7 +73,26 @@ const Simulation = () => {
                     )}
                 </Grid>
                 <Grid item xs={5}>
-                    {/* Configuration */}
+                    <div className={classes.configuration}>
+                        <GraphProvider>
+                            <Node name="ref1" targets={['ref2']} top={0} left="50%">
+                                FOOBAR
+                            </Node>
+                            <Node name="ref2" targets={['ref3']} top={150} left="50%">
+                                FOOBAZ
+                            </Node>
+                            <Node name="ref3" targets={['ref4', 'ref5']} top={300} left="50%">
+                                FOOBAZ
+                            </Node>
+                            <Node name="ref4" top={500} left="25%">
+                                FOOBAZ
+                            </Node>
+                            <Node name="ref5" top={500} left="75%">
+                                FOOBAZ
+                            </Node>
+                            <Edges />
+                        </GraphProvider>
+                    </div>
                 </Grid>
             </Grid>
         </Layout>
