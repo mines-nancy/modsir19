@@ -103,7 +103,7 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="ref3"
-                                        targets={['ref4', 'ref5']}
+                                        targets={['percent_incubation']}
                                         top={300}
                                         left="50%"
                                     >
@@ -113,6 +113,14 @@ const Simulation = () => {
                                             component={DurationField}
                                             color="rgba(164, 18, 179, 0.6)"
                                         />
+                                    </Node>
+                                    <Node
+                                        name="percent_incubation"
+                                        targets={['ref4', 'ref5']}
+                                        top={350}
+                                        left="50%"
+                                    >
+                                        POURCENT INCUBATION
                                     </Node>
                                     <Node name="ref4" targets={['ref9']} top={500} left="25%">
                                         <Field
@@ -124,7 +132,7 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="ref5"
-                                        targets={['ref6', 'ref7']}
+                                        targets={['percent_hospital']}
                                         top={500}
                                         left="75%"
                                     >
@@ -135,28 +143,50 @@ const Simulation = () => {
                                         />
                                     </Node>
                                     <Node
-                                        name="ref6"
-                                        targets={['ref8', 'ref9']}
-                                        top={700}
-                                        left="45%"
+                                        name="percent_hospital"
+                                        targets={['ref6', 'ref7']}
+                                        top={550}
+                                        left="75%"
                                     >
+                                        POURCENT HOSPITALISATION
+                                    </Node>
+                                    <Node name="ref6" targets={['percent_sm']} top={700} left="45%">
                                         SOINS MÉDICAUX
                                     </Node>
                                     <Node
-                                        name="ref7"
-                                        targets={['ref8', 'ref10']}
-                                        top={700}
-                                        left="85%"
+                                        name="percent_sm"
+                                        targets={['ref8', 'ref9']}
+                                        top={750}
+                                        left="45%"
                                     >
+                                        POURCENT SOINS MÉDICAUX
+                                    </Node>
+                                    <Node name="ref7" targets={['percent_si']} top={700} left="85%">
                                         SOINS INTENSIFS
                                     </Node>
-                                    <Node name="ref8" targets={['ref9']} top={900} left="50%">
+                                    <Node
+                                        name="percent_si"
+                                        targets={['percent_je_sais_pas_quoi', 'ref10']}
+                                        top={750}
+                                        left="85%"
+                                    >
+                                        POURCENT SOINS INTENSIFS
+                                    </Node>
+                                    <Node
+                                        name="percent_je_sais_pas_quoi"
+                                        targets={['ref8', 'ref9']}
+                                        top={900}
+                                        left="65%"
+                                    >
+                                        POURCENT JE SAIS PAS QUOI
+                                    </Node>
+                                    <Node name="ref8" targets={['ref9']} top={1100} left="50%">
                                         SOINS DE SUITE
                                     </Node>
-                                    <Node name="ref9" targets={['ref8']} top={1100} left="25%">
+                                    <Node name="ref9" targets={['ref8']} top={1300} left="25%">
                                         GUERISON
                                     </Node>
-                                    <Node name="ref10" top={1100} left="75%">
+                                    <Node name="ref10" top={1300} left="75%">
                                         DECES
                                     </Node>
                                     <Edges />
