@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const generateCSV = function (values) {
-    const {SE,
+    const {
+        SE,
         INCUB,
         R,
         I,
