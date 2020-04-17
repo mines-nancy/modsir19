@@ -120,6 +120,9 @@ const messages = {
             quarantine_sliders: 'Paramètres de confinement',
         },
         chart: {
+            title: 'Modèle SIR+H',
+            y_scale_label: 'Nombre de personne',
+            x_scale_label: 'Temps',
             exposed: 'exposés',
             incub: 'incubation',
             infected: 'infectés',

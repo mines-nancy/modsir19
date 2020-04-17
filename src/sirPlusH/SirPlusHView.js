@@ -3,7 +3,7 @@ import { Grid } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import { Chart } from './SirPlusHChartView';
-import api from '../utils/api';
+import api from '../api';
 import SirPlusHSliders from './SirPlusHSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { differenceInDays } from 'date-fns';

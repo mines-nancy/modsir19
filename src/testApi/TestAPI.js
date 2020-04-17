@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@material-ui/core';
-import api from '../utils/api';
+import api from '../api';
 
 export const TestAPI = () => {
     const [placeholderData, setPlaceholderData] = useState({ a: 0, b: 0 });
