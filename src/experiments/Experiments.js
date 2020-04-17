@@ -1,14 +1,18 @@
 import React from 'react';
 import { Link as RouterLink, Redirect, Route, Switch } from 'react-router-dom';
-import NotFound from './NotFound';
+import { I18n } from 'react-polyglot';
+import LocaleContext from '../utils/localeContext';
+import messages from '../messages';
 import { Paper, Tab, Tabs, Toolbar } from '@material-ui/core';
 import { useTranslate } from 'react-polyglot';
-import { SIRView } from './simpleSir/SIRView';
-import { ComplexSIRView } from './complexSir/ComplexSIRView';
-import { SirPlusHView } from './sirPlusH/SirPlusHView';
+import { SIRView } from '../simpleSir/SIRView';
+import { ComplexSIRView } from '../complexSir/ComplexSIRView';
+import { SirPlusHView } from '../sirPlusH/SirPlusHView';
+import NotFound from '../NotFound';
+import { MainAppBar } from '../appBar/MainAppBar';
 
-const Home = ({ match }) => {
-    const path = match ? (match.path === '/' ? '' : match.path) : '';
+const ExperimentsHome = ({ match }) => {
+    const path = '/experiments';
     const [value, setValue] = React.useState(`${path}/simpleSIR`);
     const t = useTranslate();
 
@@ -51,7 +55,7 @@ const Home = ({ match }) => {
             </header>
             <main>
                 <Switch>
-                    <Route path={`/`} exact render={() => <Redirect to={`${path}/simpleSIR`} />} />
+                    <Route path={path} exact render={() => <Redirect to={`${path}/simpleSIR`} />} />
                     <Route
                         path={`${path}/simpleSIR`}
                         render={(routeProps) => {
@@ -79,4 +83,22 @@ const Home = ({ match }) => {
         </>
     );
 };
-export default Home;
+
+const ExperimentsApp = (props) => {
+    const initialLocale = 'fr';
+    const localeStateHook = React.useState(initialLocale);
+    const [locale] = localeStateHook;
+
+    return (
+        <LocaleContext.Provider value={localeStateHook}>
+            <I18n locale={locale} messages={locale === 'fr' ? messages.fr : messages.en}>
+                <div className="App">
+                    <MainAppBar />
+                    <ExperimentsHome {...props} />
+                </div>
+            </I18n>
+        </LocaleContext.Provider>
+    );
+};
+
+export default ExperimentsApp;
