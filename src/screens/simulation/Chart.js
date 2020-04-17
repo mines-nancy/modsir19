@@ -110,7 +110,7 @@ const getOptions = (t) => ({
             {
                 scaleLabel: {
                     display: true,
-                    labelString: t('chart.y_scale_label'),
+                    labelString: t('chart.x_scale_label'),
                     fontSize: 18,
                 },
             },

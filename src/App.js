@@ -5,6 +5,7 @@ import { I18n } from 'react-polyglot';
 import messages from './i18n/messages';
 import Home from './screens/home/Home';
 import NotFound from './screens/NotFound';
+import Simulation from './screens/simulation/Simulation';
 import Experiments from './screens/experiments/Experiments';
 
 const App = () => {
@@ -13,6 +14,7 @@ const App = () => {
             <HashRouter>
                 <Switch>
                     <Route path="/" exact component={Home} />
+                    <Route path="/simulation" exact component={Simulation} />
                     <Route path="/experiments" component={Experiments} />
                     <Route component={NotFound} />
                 </Switch>
