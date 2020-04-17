@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { CircularProgress } from '@material-ui/core';
 
 import api from '../../api';
 import Chart from './Chart';
+import Layout from '../../components/Layout';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -47,11 +49,11 @@ const Simulation = () => {
         })();
     }, []);
 
-    if (!values) {
-        return null;
-    }
-
-    return <Chart values={values} startDate={startDate} />;
+    return (
+        <Layout>
+            {values ? <Chart values={values} startDate={startDate} /> : <CircularProgress />}
+        </Layout>
+    );
 };
 
 export default Simulation;
