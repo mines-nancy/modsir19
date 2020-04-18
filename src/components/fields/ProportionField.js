@@ -7,13 +7,14 @@ const useStyles = makeStyles({
         justifyContent: 'space-between',
     },
     slider: {
-        flex: '1 0 0',
+        flex: 'O 0 auto',
     },
     numberContainer: {
-        flex: '0 0 auto',
+        marginLeft: 24,
+        flex: '0 0 65px',
     },
     number: {
-        maxWidth: 100,
+        width: 65,
     },
 });
 
@@ -22,6 +23,10 @@ const ProportionField = ({
     input: { name, onChange, value, ...restInput },
     inputProps = {},
     numberInputLabel = '',
+    unit = '%',
+    min = '0',
+    max = '100',
+    step = '1',
     ...props
 }) => {
     const classes = useStyles();
@@ -30,33 +35,43 @@ const ProportionField = ({
         onChange(value);
     };
 
+    const handleTextFieldChange = (evt) => {
+        onChange(parseFloat(evt.target.value));
+    };
+
     return (
-        <div>
-            <div className={classes.formControl}>
-                <div lassName={classes.slider}>
-                    <Typography gutterBottom>{label}</Typography>
-                    <Slider
-                        {...props}
-                        inputProps={{ ...restInput, ...inputProps }}
-                        value={value}
-                        onChange={handleSliderChange}
-                    />
-                </div>
-                <div className={classes.numberContainer}>
-                    <TextField
-                        {...props}
-                        inputProps={{ ...restInput, min: '0', step: '100' }}
-                        name={name}
-                        value={value}
-                        onChange={onChange}
-                        type="number"
-                        label={numberInputLabel}
-                        className={classes.number}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                        }}
-                    />
-                </div>
+        <div className={classes.formControl}>
+            <div lassName={classes.slider}>
+                <Typography gutterBottom>{label}</Typography>
+                <Slider
+                    {...props}
+                    inputProps={{ ...restInput, ...inputProps }}
+                    value={value}
+                    min={parseInt(min, 10)}
+                    max={parseInt(max, 10)}
+                    onChange={handleSliderChange}
+                />
+            </div>
+            <div className={classes.numberContainer}>
+                <TextField
+                    {...props}
+                    inputProps={{ ...restInput, min, max, step }}
+                    name={name}
+                    value={value}
+                    onChange={handleTextFieldChange}
+                    type="number"
+                    label={numberInputLabel}
+                    className={classes.number}
+                    InputProps={
+                        unit
+                            ? {
+                                  endAdornment: (
+                                      <InputAdornment position="end">{unit}</InputAdornment>
+                                  ),
+                              }
+                            : {}
+                    }
+                />
             </div>
         </div>
     );
