@@ -17,10 +17,10 @@ class TestBoxQueue(unittest.TestCase):
         self.assertEqual(box.output(), 0)
 
         box.step()
-        # when BoxQueue implements Box
-        # self.assertEqual(box.input(1), 0)
-        # self.assertEqual(box.size(1), 1)
-        # self.assertEqual(box.output(1), 0)
+
+        self.assertEqual(box.input(1), 0)
+        self.assertEqual(box.size(1), 1)
+        self.assertEqual(box.output(1), 0)
 
         self.assertEqual(box.input(), 0)
         self.assertEqual(box.size(), 0)
