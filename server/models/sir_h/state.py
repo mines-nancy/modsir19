@@ -3,8 +3,9 @@ from models.components.history import History
 
 
 class State:
-    def __init__(self, delays, coefficients, time, population, patient0):
+    def __init__(self, constants, delays, coefficients, time):
 
+        self._constants = constants
         self._delays = delays
         self._coefficients = coefficients
 
@@ -37,12 +38,23 @@ class State:
 
         self.time = time
 
-        self.e0 = coefficients['kpe'] * population
-        self.box('SE').add(self.e0 - patient0)
-        self.box('INCUB').add(patient0)
+        self.e0 = coefficients['kpe'] * constants['population']
+        self.box('SE').add(self.e0 - constants['patient0'])
+        self.box('INCUB').add(constants['patient0'])
 
-    def change_coefficient(self, name, value):
-        self._coefficients[name] = value
+    def change_value(self, name, value):
+        constants_name = ["population", "patient0", "lim_time"]
+        delays_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
+
+        coefficients_name = ['kpe', 'r', 'beta', 'pc_ir', 'pc_ih', 'pc_sm',
+                             'pc_si', 'pc_sm_si', 'pc_sm_out', 'pc_si_dc', 'pc_si_out', 'pc_h_ss', 'pc_h_r']
+
+        if name in constants_name:
+            self._constants[name] = value
+        if name in delays_name:
+            self._delays[name] = value
+        if name in coefficients_name:
+            self._coefficients[name] = value
         print(
             f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 

@@ -90,7 +90,8 @@ def get_complex_sir():
     krg = 1 - krd
 
     # model v2
-    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, input_recovered, input_exposed, input_infected, input_dead, input_hospitalized, input_intensive_care, input_exit_intensive_care, output_recovered, output_exposed, output_infected, output_dead, output_hospitalized, output_intensive_care, output_exit_intensive_care, = run_simulator(model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
+    recovered, exposed, infected, dead, hospitalized, intensive_care, exit_intensive_care, input_recovered, input_exposed, input_infected, input_dead, input_hospitalized, input_intensive_care, input_exit_intensive_care, output_recovered, output_exposed, output_infected, output_dead, output_hospitalized, output_intensive_care, output_exit_intensive_care, = run_simulator(
+        model, population, kpe, kem, kmg, kmh, khr, khg, krd, krg, tem, tmg, tmh, thg, thr, trsr, lim_time)
 
     data = {"recovered": recovered, "exposed": exposed, "infected": infected, "dead": dead,
             "hospitalized": hospitalized, "intensive_care": intensive_care,
@@ -105,35 +106,60 @@ def get_complex_sir():
 
     return jsonify(data)
 
+
+def extract_from_parameters(parameters):
+    start_time = int(parameters['start_time'])
+
+    constants_name = ["population", "patient0", "lim_time"]
+    delays_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
+
+    coefficients_name = ['kpe', 'r', 'beta', 'pc_ir', 'pc_ih', 'pc_sm',
+                         'pc_si', 'pc_sm_si', 'pc_sm_out', 'pc_si_dc', 'pc_si_out', 'pc_h_ss', 'pc_h_r']
+
+    constants = {key: int(parameters[key]) for key in constants_name}
+    delays = {key: int(parameters[key]) for key in delays_name}
+    coefficients = {key: parameters[key] for key in coefficients_name}
+    return start_time, constants, delays, coefficients
+
 # SIR+H model
+# used by 'experiments'
+# parameters = {start_time:0, population:xxx, patient0:xxx, ...}
 @app.route('/get_sir_h', methods=["GET"])
 def get_sir_h():
-    input = json.loads(request.args.get('parameters'))
-    print('get_sir_h', input)
+    parameters = json.loads(request.args.get('parameters'))
+    print('get_sir_h', parameters)
 
-    population = int(input["population"])
-    patient0 = int(input["patient0"])
-    lim_time = int(input["lim_time"])
+    start_time, constants, delays, coefficients = extract_from_parameters(
+        parameters)
 
-    delays = {
-        'dm_incub': int(input['dm_incub']), 'dm_r': int(input['dm_r']), 'dm_h': int(input['dm_h']),
-        'dm_sm': int(input['dm_sm']), 'dm_si': int(input['dm_si']), 'dm_ss': int(input['dm_ss'])
-    }
+    rules = sorted(parameters["rules"], key=lambda rule: rule['date'])
 
-    coefficients = {
-        'kpe': input["kpe"],
-        'r': input["r"],
-        'beta': input["beta"],
-        'pc_ir': input["pc_ir"], 'pc_ih': input["pc_ih"],
-        'pc_sm': input["pc_sm"], 'pc_si': input["pc_si"],
-        'pc_sm_si': input["pc_sm_si"], 'pc_sm_out': input["pc_sm_out"],
-        'pc_si_dc': input["pc_si_dc"], 'pc_si_out': input["pc_si_out"],
-        'pc_h_ss': input["pc_h_ss"], 'pc_h_r': input["pc_h_r"]}
+    lists = run_sir_h(constants, delays, coefficients, rules)
+    return jsonify(lists)
 
-    rules = sorted(input["rules"], key=lambda rule: rule['date'])
 
-    lists = run_sir_h(delays, coefficients, population,
-                      patient0, lim_time, rules)
+# SIR+H model with timeframe
+# parameters= {list:[{start_time:xxx, population:xxx, patient0:xxx, ...}]}
+# start_time in (0, 1, 2, 3, ...)
+@app.route('/get_sir_h_timeframe', methods=["GET"])
+def get_sir_h_timeframe():
+    parameters = json.loads(request.args.get('parameters'))
+    # print('get_sir_h_timeframe parameters', parameters)
+    parameters_list = parameters['list']
+
+    rules = []
+    for index, parameters in enumerate(parameters_list):
+        if index > 0:
+            start_time, constants, delays, coefficients = extract_from_parameters(
+                parameters)
+            d = {**constants, **delays, **coefficients}
+            for key in d:
+                rules.append(
+                    {'field': key, 'value': d[key], 'date': start_time})
+
+    start_time, constants, delays, coefficients = extract_from_parameters(
+        parameters_list[0])
+    lists = run_sir_h(constants, delays, coefficients, rules)
     return jsonify(lists)
 
 
