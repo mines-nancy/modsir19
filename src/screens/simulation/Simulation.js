@@ -217,8 +217,8 @@ const Simulation = () => {
                                         left="50%"
                                     >
                                         <SwitchPercentField
-                                            leftName="pc_ih"
-                                            rightName="pc_ir"
+                                            leftName="pc_ir"
+                                            rightName="pc_ih"
                                             leftLabel="Rétablissements"
                                             rightLabel="Hospitalisations"
                                         />
