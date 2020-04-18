@@ -17,9 +17,15 @@ import ExpandableNumberField from '../../components/fields/ExpandableNumberField
 import ProportionField from '../../components/fields/ProportionField';
 import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
-// import { PercentField } from '../../components/fields/PercentField';
+import { PercentField } from '../../components/fields/PercentField';
 
 const round = (x) => Math.round(x * 100) / 100;
+
+const mapObject = (obj, keys, fn) =>
+    keys.reduce((acc, key) => {
+        acc[key] = fn(obj[key]);
+        return acc;
+    }, {});
 
 const startDate = new Date(2020, 0, 23);
 
@@ -34,30 +40,45 @@ const defaultParameters = {
     dm_sm: 6,
     dm_si: 8,
     dm_ss: 14,
-    beta: 0.15,
-    pc_ir: 0.84,
-    pc_ih: round(1 - 0.84),
-    pc_sm: 0.8,
-    pc_si: round(1 - 0.8),
-    pc_sm_si: 0.2,
-    pc_sm_out: round(1 - 0.2),
-    pc_si_dc: 0.5,
-    pc_si_out: 0.5,
-    pc_h_ss: 0.2,
-    pc_h_r: round(1 - 0.2),
+    beta: 15,
+    pc_ir: 84,
+    pc_ih: round(100 - 84),
+    pc_sm: 80,
+    pc_si: round(100 - 80),
+    pc_sm_si: 20,
+    pc_sm_out: round(100 - 20),
+    pc_si_dc: 50,
+    pc_si_out: 50,
+    pc_h_ss: 20,
+    pc_h_r: round(1 - 20),
     lim_time: 250,
     j_0: startDate,
     rules: [],
 };
 
+const percentFields = [
+    'kpe',
+    'beta',
+    'pc_ir',
+    'pc_ih',
+    'pc_sm',
+    'pc_si',
+    'pc_sm_si',
+    'pc_sm_out',
+    'pc_si_dc',
+    'pc_si_out',
+    'pc_h_ss',
+    'pc_h_r',
+];
+
 const formatParametersForModel = (parameters) => ({
     ...parameters,
-    kpe: parameters.kpe / 100,
+    ...mapObject(parameters, percentFields, (x) => x / 100),
 });
 
 const parseParametersFromModel = (parameters) => ({
     ...parameters,
-    kpe: parameters.kpe * 100,
+    ...mapObject(parameters, percentFields, (x) => x * 100),
 });
 
 const useStyles = makeStyles(() => ({
@@ -169,8 +190,7 @@ const Simulation = () => {
                                         top={350}
                                         left="50%"
                                     >
-                                        <Percent percent={12} />
-                                        {/* <Field name="pc_ih" component={PercentField} /> */}
+                                        <Field name="pc_ih" component={PercentField} />
                                     </Node>
                                     <Node
                                         name="retablissement_spontane"
@@ -219,8 +239,7 @@ const Simulation = () => {
                                         top={900}
                                         left="45%"
                                     >
-                                        <Percent percent={40} />
-                                        {/* <Field name="pc_sm" component={PercentField} /> */}
+                                        <Field name="pc_sm" component={PercentField} />
                                     </Node>
                                     <Node
                                         name="soins_intensifs"

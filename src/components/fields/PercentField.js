@@ -20,7 +20,7 @@ export const PercentField = ({ input: { name, onChange, value } }) => {
 
     return (
         <>
-            <div onClick={handleClick}>
+            <div onClick={handleClick} style={{ cursor: 'pointer' }}>
                 <Percent percent={value} />
             </div>
             <Popover
@@ -44,7 +44,7 @@ export const PercentField = ({ input: { name, onChange, value } }) => {
                         step={5}
                         min={0}
                         max={100}
-                        onChangeCommitted={handleChangeCommited}
+                        onChangeCommitted={handleChangeCommitted}
                         onChange={handleChange}
                     />
                 </div>
