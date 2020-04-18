@@ -16,9 +16,10 @@ const useStyles = makeStyles((theme) =>
             padding: 32,
         },
         container: {
-            maxWidth: 650,
+            position: 'fixed',
+            width: 600,
             [theme.breakpoints.up('xl')]: {
-                maxWidth: 750,
+                width: 800,
             },
         },
     }),
@@ -133,7 +134,7 @@ const Chart = ({ values, startDate }) => {
     return (
         <div className={classes.root}>
             <div className={classes.container}>
-                <Line data={lineData} width="300" height="300" options={getOptions(t)} />
+                <Line data={lineData} width="600" height="600" options={getOptions(t)} />
             </div>
         </div>
     );

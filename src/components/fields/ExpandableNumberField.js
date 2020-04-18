@@ -5,12 +5,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import NumberField from './NumberField';
 import { GraphContext } from '../Graph/GraphProvider';
 
-const ExpandableNumberField = ({ children, label, input, expanded }) => {
+const ExpandableNumberField = ({ children, label, input, ...props }) => {
     const { refresh } = useContext(GraphContext);
 
     return (
         <ExpansionPanel
-            expanded={expanded}
+            {...props}
             TransitionProps={{
                 addEndListener: (node, done) => {
                     node.addEventListener('transitionend', refresh, false);
