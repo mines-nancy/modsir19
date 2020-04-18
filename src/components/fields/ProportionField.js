@@ -49,6 +49,7 @@ const ProportionField = ({
                     value={value}
                     min={parseInt(min, 10)}
                     max={parseInt(max, 10)}
+                    step={step}
                     onChange={handleSliderChange}
                 />
             </div>
