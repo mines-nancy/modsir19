@@ -12,6 +12,7 @@ import Layout from '../../components/Layout';
 import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
+import { Percent } from '../../components/fields/Percent';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -84,7 +85,12 @@ const Simulation = () => {
                         render={() => (
                             <div className={classes.configuration}>
                                 <GraphProvider>
-                                    <Node name="ref1" targets={['ref2']} top={0} left="50%">
+                                    <Node
+                                        name="population_totale"
+                                        targets={['population_saine_exposee']}
+                                        top={0}
+                                        left="50%"
+                                    >
                                         <Field
                                             name="population"
                                             label="Population totale"
@@ -98,13 +104,18 @@ const Simulation = () => {
                                             />
                                         </Field>
                                     </Node>
-                                    <Node name="ref2" targets={['ref3']} top={150} left="50%">
+                                    <Node
+                                        name="population_saine_exposee"
+                                        targets={['incubation']}
+                                        top={150}
+                                        left="50%"
+                                    >
                                         POPULATION SAINE EXPOSÉE
                                     </Node>
                                     <Node
-                                        name="ref3"
+                                        name="incubation"
                                         targets={['percent_incubation']}
-                                        top={300}
+                                        top={250}
                                         left="50%"
                                     >
                                         <Field
@@ -116,13 +127,18 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="percent_incubation"
-                                        targets={['ref4', 'ref5']}
+                                        targets={['retablissement_spontane', 'hospitalisation']}
                                         top={350}
                                         left="50%"
                                     >
-                                        POURCENT INCUBATION
+                                        <Percent percent={20} />
                                     </Node>
-                                    <Node name="ref4" targets={['ref9']} top={500} left="25%">
+                                    <Node
+                                        name="retablissement_spontane"
+                                        targets={['guerison']}
+                                        top={500}
+                                        left="25%"
+                                    >
                                         <Field
                                             name="dm_r"
                                             label="Rétablissement spontané"
@@ -131,7 +147,7 @@ const Simulation = () => {
                                         />
                                     </Node>
                                     <Node
-                                        name="ref5"
+                                        name="hospitalisation"
                                         targets={['percent_hospital']}
                                         top={500}
                                         left="75%"
@@ -144,49 +160,64 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="percent_hospital"
-                                        targets={['ref6', 'ref7']}
-                                        top={550}
-                                        left="75%"
+                                        targets={['soins_medicaux', 'soins_intensifs']}
+                                        top={700}
+                                        left="60%"
                                     >
-                                        POURCENT HOSPITALISATION
+                                        <Percent percent={14} />
                                     </Node>
-                                    <Node name="ref6" targets={['percent_sm']} top={700} left="45%">
+                                    <Node
+                                        name="soins_medicaux"
+                                        targets={['percent_soins_medicaux']}
+                                        top={850}
+                                        left="45%"
+                                    >
                                         SOINS MÉDICAUX
                                     </Node>
                                     <Node
-                                        name="percent_sm"
-                                        targets={['ref8', 'ref9']}
-                                        top={750}
+                                        name="percent_soins_medicaux"
+                                        targets={['soins_suite', 'guerison']}
+                                        top={900}
                                         left="45%"
                                     >
-                                        POURCENT SOINS MÉDICAUX
+                                        <Percent percent={80} />
                                     </Node>
-                                    <Node name="ref7" targets={['percent_si']} top={700} left="85%">
+                                    <Node
+                                        name="soins_intensifs"
+                                        targets={['percent_si']}
+                                        top={850}
+                                        left="85%"
+                                    >
                                         SOINS INTENSIFS
                                     </Node>
                                     <Node
                                         name="percent_si"
-                                        targets={['percent_je_sais_pas_quoi', 'ref10']}
-                                        top={750}
+                                        targets={['percent_je_sais_pas_quoi', 'deces']}
+                                        top={900}
                                         left="85%"
                                     >
-                                        POURCENT SOINS INTENSIFS
+                                        <Percent percent={60} />
                                     </Node>
                                     <Node
                                         name="percent_je_sais_pas_quoi"
-                                        targets={['ref8', 'ref9']}
-                                        top={900}
-                                        left="65%"
+                                        targets={['soins_suite', 'guerison']}
+                                        top={1100}
+                                        left="60%"
                                     >
-                                        POURCENT JE SAIS PAS QUOI
+                                        <Percent percent={35} />
                                     </Node>
-                                    <Node name="ref8" targets={['ref9']} top={1100} left="50%">
+                                    <Node
+                                        name="soins_suite"
+                                        targets={['guerison']}
+                                        top={1100}
+                                        left="50%"
+                                    >
                                         SOINS DE SUITE
                                     </Node>
-                                    <Node name="ref9" targets={['ref8']} top={1300} left="25%">
+                                    <Node name="guerison" top={1400} left="25%">
                                         GUERISON
                                     </Node>
-                                    <Node name="ref10" top={1300} left="75%">
+                                    <Node name="deces" top={1400} left="85%">
                                         DECES
                                     </Node>
                                     <Edges />
