@@ -18,6 +18,7 @@ import api from '../../api';
 import Chart from './Chart';
 import ExposedPopulation from './ExposedPopulation';
 import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
+import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -98,42 +99,104 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const getModel = async (parameters) => {
-    const { data } = await api.get('/get_sir_h', {
-        params: { parameters: { ...parameters, rules: [], start_time: 0 } },
+const getModel = async (parameterList) => {
+    const { data } = await api.get('/get_sir_h_timeframe', {
+        params: { parameters: { list: parameterList } },
     });
 
     return data;
 };
+
+const checkHasSameDate = (date) => ({ j_0 }) => isSameDay(j_0, date);
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 const Simulation = () => {
     const classes = useStyles();
     const [values, setValues] = useState();
-    const [parameters, setParameters] = useState(defaultParameters);
+    const [parameterIndex, setParameterIndex] = useState(0);
+    const [parametersList, setParametersList] = useState([{ ...defaultParameters, start_time: 0 }]);
+
     const [expanded, setExpanded] = useState(false);
     const topShift = expanded ? 220 : 0;
 
-    const handleSubmit = useCallback((values) => {
-        setParameters(values);
+    const handleSubmit = useCallback(
+        (values) => {
+            const parametersListWithoutCurrent = [...parametersList];
+            parametersListWithoutCurrent.splice(parameterIndex, 1);
+            if (parametersListWithoutCurrent.some(checkHasSameDate(values.j_0))) {
+                alert("Vous ne pouvez pas choisir la même date qu'une autre période");
+                return;
+            }
+
+            setParametersList((list) => {
+                const newList = [...list];
+                newList[parameterIndex] = values;
+                return newList;
+            });
+        },
+        [parameterIndex],
+    );
+
+    const handleAddSimulation = useCallback(() => {
+        setParametersList((list) => {
+            const lastItem = list[list.length - 1];
+            return [...list, { ...lastItem, j_0: addDays(lastItem.j_0, 1) }];
+        });
     }, []);
 
-    const handleExpansionChange = (evt, value) => {
-        setExpanded(value);
+    const handleRemoveParameter = (index) => () => {
+        setParametersList((list) => {
+            // Can't remove if there's only 1 parameter
+            if (list.length === 1) {
+                return;
+            }
+
+            const newList = [...list];
+            newList.splice(index, 1);
+            return newList;
+        });
+
+        // Reset index if current index is deleted
+        if (parameterIndex === index) {
+            setParameterIndex(0);
+        }
     };
+
+    const handleExpansionChange = (evt, value) => setExpanded(value);
 
     useEffect(() => {
         (async () => {
-            const data = await getModelDebounced(formatParametersForModel(parameters));
+            const data = await getModelDebounced(
+                parametersList.map((parameters) => formatParametersForModel(parameters)),
+            );
             setValues(data);
         })();
-    }, [parameters]);
+    }, [JSON.stringify(parametersList)]);
 
     return (
         <Layout>
             <Grid container>
                 <Grid item xs={6}>
+                    <div style={{ display: /*'flex'*/ 'none' }}>
+                        {parametersList.map((p, index) => (
+                            <div style={{ paddingRight: 10 }}>
+                                <button
+                                    style={{
+                                        color: index === parameterIndex ? 'blue' : 'black',
+                                    }}
+                                    onClick={() => setParameterIndex(index)}
+                                >
+                                    Période {`j${differenceInDays(p.j_0, startDate)}`} (
+                                    {format(p.j_0, 'dd/MM/yyyy')})
+                                </button>
+                                {parametersList.length > 1 && (
+                                    <button onClick={handleRemoveParameter(index)}>X</button>
+                                )}
+                            </div>
+                        ))}
+                        <button onClick={handleAddSimulation}>Ajouter plus de périodes</button>
+                    </div>
                     {values ? (
                         <Chart values={values} startDate={startDate} />
                     ) : (
@@ -146,7 +209,7 @@ const Simulation = () => {
                         onSubmit={() => {
                             /* Useless since we use a listener on autosave */
                         }}
-                        initialValues={parameters}
+                        initialValues={parametersList[parameterIndex]}
                         render={() => (
                             <div className={classes.configuration}>
                                 <AutoSave save={handleSubmit} debounce={200} />

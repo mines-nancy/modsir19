@@ -41,7 +41,7 @@ const ProportionField = ({
 
     return (
         <div className={classes.formControl}>
-            <div lassName={classes.slider}>
+            <div className={classes.slider}>
                 <Typography gutterBottom>{label}</Typography>
                 <Slider
                     {...props}
