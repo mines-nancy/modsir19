@@ -49,3 +49,24 @@ class Box:
 
     def remove(self, size):
         self._output[self._t] -= size
+
+
+class BoxSource(Box):
+    def __init__(self, name):
+        Box.__init__(self, name)
+
+    def step(self):
+        super().step()
+        self.set_output(self.output(1) + self.input(1))
+
+    def size(self):
+        return self.output()
+
+
+class BoxTarget(Box):
+    def __init__(self, name):
+        Box.__init__(self, name)
+
+    def step(self):
+        super().step()
+        self.set_size(self.size(1) + self.input(1))

@@ -1,5 +1,5 @@
 import math
-from models.components.box import Box
+from models.components.box import Box, BoxSource, BoxTarget
 
 
 class BoxDms(Box):
@@ -43,24 +43,19 @@ class BoxDms(Box):
         self._removed += size
 
 
-class BoxDmsSource(BoxDms):
+class BoxDmsSource(BoxSource):
     def __init__(self, name):
-        BoxDms.__init__(self, name, 0)
+        BoxSource.__init__(self, name)
 
     def step(self):
         super().step()
         self._removed = 0
-        self.set_output(self.output(1) + self.input(1))
-
-    def size(self):
-        return self.output()
 
 
-class BoxDmsTarget(BoxDms):
+class BoxDmsTarget(BoxTarget):
     def __init__(self, name):
-        BoxDms.__init__(self, name)
+        BoxTarget.__init__(self, name)
 
     def step(self):
         super().step()
         self._removed = 0
-        self.set_size(self.size(1) + self.input(1))
