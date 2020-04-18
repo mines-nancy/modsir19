@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 
 export const GraphProvider = ({ children }) => {
     const [nodes, setNodes] = React.useState(null);
+    const [version, setVersion] = React.useState(0);
 
     const registerNode = useCallback((name, ref, targets) => {
         setNodes((n) => {
@@ -17,11 +18,17 @@ export const GraphProvider = ({ children }) => {
         });
     }, []);
 
+    const refresh = useCallback(() => {
+        setVersion((version) => version + 1);
+    }, []);
+
     return (
         <GraphContext.Provider
             value={{
                 nodes,
                 registerNode,
+                refresh,
+                version,
             }}
         >
             {children}
@@ -29,4 +36,9 @@ export const GraphProvider = ({ children }) => {
     );
 };
 
-export const GraphContext = React.createContext({ nodes: null, registerNode: () => {} });
+export const GraphContext = React.createContext({
+    nodes: null,
+    registerNode: () => {},
+    refresh: () => {},
+    version: 0,
+});
