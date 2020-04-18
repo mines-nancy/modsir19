@@ -107,7 +107,7 @@ const getModel = async (parameterList) => {
     return data;
 };
 
-const checkDateExists = (date) => ({ j_0 }) => isSameDay(j_0, date);
+const checkHasSameDate = (date) => ({ j_0 }) => isSameDay(j_0, date);
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
@@ -124,7 +124,7 @@ const Simulation = () => {
         (values) => {
             const parametersListWithoutCurrent = [...parametersList];
             parametersListWithoutCurrent.splice(parameterIndex, 1);
-            if (parametersListWithoutCurrent.some(checkDateExists(values.j_0))) {
+            if (parametersListWithoutCurrent.some(checkHasSameDate(values.j_0))) {
                 alert("Vous ne pouvez pas choisir la même date qu'une autre période");
                 return;
             }
@@ -178,7 +178,7 @@ const Simulation = () => {
         <Layout>
             <Grid container>
                 <Grid item xs={6}>
-                    <div style={{ display: 'flex' }}>
+                    <div style={{ display: /*'flex'*/ 'none' }}>
                         {parametersList.map((p, index) => (
                             <div style={{ paddingRight: 10 }}>
                                 <button
