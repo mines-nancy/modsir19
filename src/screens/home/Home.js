@@ -5,7 +5,6 @@ import { makeStyles, Grid, Typography, Button } from '@material-ui/core';
 
 import Layout from '../../components/Layout';
 import exampleImage from './visualisation-example.png';
-import diagram from './SIRH-diagram.jpg';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -64,56 +63,76 @@ const Home = () => {
                                 </Button>
                             </Grid>
                         </Grid>
+                        <p>Cette simulation se propose de modéliser :</p>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque
-                            vitae mattis nibh. Nullam eget leo arcu. Cras tempor justo vitae magna
-                            porta finibus. Maecenas in ex ut libero accumsan lobortis ut nec massa.
-                            Aliquam vestibulum pharetra nunc, ut euismod odio. Pellentesque orci
-                            turpis, molestie in venenatis sit amet, efficitur et enim. Curabitur
-                            euismod magna vel tortor faucibus pulvinar. Nunc posuere metus id
-                            elementum feugiat. Morbi eu feugiat massa. Aliquam lobortis enim a est
-                            vulputate, eget facilisis risus fermentum. Sed condimentum dui vel arcu
-                            venenatis imperdiet. Nulla hendrerit lacus eu rutrum interdum. Aenean
-                            vitae ullamcorper ex. Vivamus pharetra ex vel libero fringilla
-                            sollicitudin.
+                            <strong>
+                                1. L'évolution générale de l'épidémie sur un territoire selon un
+                                modèle compartimental S.I.R classique:
+                            </strong>
+
+                            <ul>
+                                <li>SE : population saine exposée</li>
+                                <li>INCUB : population en incubation</li>
+                                <li>I : population infectée</li>
+                                <li>R population : Rétablie (guérie) et supposée immunisée</li>
+                            </ul>
+
+                            <p>Les principaux paramètres modifiables sont :</p>
+
+                            <ul>
+                                <li>La Population globale du territoire</li>
+                                <li>
+                                    Le facteur R quantifiant l’intensité de l’épidémie qui dépend
+                                    classiquement de 3 facteurs : (R=r*beta*DMG). Si R&le;1
+                                    l’épidémie est contenue ; si 1&lt;R&lt;1,2 l’épidemie est en
+                                    évolution lente, si R&gt;1,3 l’épidémie est en évolution rapide
+                                    <ul>
+                                        <li>
+                                            r : nombre moyen de contacts par unité de temps entre
+                                            Exposés et Infectés (fortement dépendant des mesures de
+                                            « distanciation sociale »)
+                                        </li>
+                                        <li>
+                                            Beta : probabilité qu’un contact soit infectant
+                                            (fortement dépendant des « mesures barrières » de
+                                            protection individuelles)
+                                        </li>
+                                        <li>
+                                            DMG : durée moyenne de guérison (intrinsèque à la
+                                            maladie)
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
                         </p>
 
                         <p>
-                            Vivamus quis lacus id quam egestas pulvinar. Vivamus finibus eros
-                            consequat quam varius luctus. Vivamus vehicula non diam sit amet porta.
-                            Cras et erat viverra erat pharetra bibendum. Nunc id lacinia lacus.
-                            Mauris tincidunt dui non pulvinar eleifend. Morbi scelerisque ante
-                            justo, eu mattis nibh pretium eget. Suspendisse nec metus a nisl
-                            malesuada tincidunt. Vestibulum rutrum velit sed volutpat volutpat.
-                            Etiam lectus nisl, fringilla at nibh et, dictum faucibus nunc.
+                            <strong>Les « trajectoires de soins hospitaliers » simplifiées:</strong>
+
+                            <ul>
+                                <li>SI : soins intensifs</li>
+                                <li>SM : soins médicaux</li>
+                                <li>SS : soins de suite</li>
+                                <li>DC : Décès intra hospitaliers</li>
+                            </ul>
+
+                            <p>Le paramétrage des trajectoires hospitalières consiste à définir</p>
+
+                            <ul>
+                                <li>
+                                    Les Durées Moyennes de Séjours estimées dans chaque compartiment
+                                </li>
+                                <li>Les proportions du flux de patients à chaque embranchement</li>
+                            </ul>
                         </p>
 
                         <p>
-                            <img
-                                src={diagram}
-                                className={classes.img}
-                                alt={t('home.model_diagram')}
-                                title={t('home.model_diagram')}
-                            />
-                        </p>
-
-                        <p>
-                            Sed sit amet pharetra magna. Praesent quis diam nibh. Nam velit felis,
-                            sodales ac placerat eu, porta nec lorem. In tempus sapien nec orci
-                            vehicula posuere. Sed mollis cursus mi hendrerit aliquet. Proin eget
-                            ultricies libero, et maximus mi. Donec gravida posuere malesuada.
-                            Quisque semper est purus, et tristique turpis lacinia sed. Ut
-                            ullamcorper magna lacinia urna vulputate, id cursus quam convallis.
-                            Donec faucibus a massa non lobortis.
-                        </p>
-
-                        <p>
-                            Cras in pharetra leo. Vivamus interdum urna id libero suscipit rutrum.
-                            Morbi tincidunt sapien sit amet imperdiet porta. Ut feugiat vitae neque
-                            vitae venenatis. Curabitur tristique tincidunt nunc, sit amet vehicula
-                            magna hendrerit nec. Cras suscipit nulla vel varius sagittis. Quisque
-                            quis faucibus augue, eget dapibus nulla. Aenean tristique lectus a
-                            maximus viverra.
+                            Les paramètres du modèle peuvent être modifiés par l’utilisateur sur
+                            l’interface graphique interactive. Il est également possible de modifier
+                            certains paramètres au cours du temps pour simuler les effets des
+                            mesures de confinement / déconfinement (en fonction de leur intensité et
+                            de leur date d’application) ou des modification de « stratégie de soins
+                            »
                         </p>
                     </Grid>
                 </Grid>
