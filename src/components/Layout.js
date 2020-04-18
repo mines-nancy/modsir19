@@ -4,7 +4,7 @@ import { MainAppBar } from './appBar/MainAppBar';
 const Layout = ({ children }) => (
     <>
         <MainAppBar />
-        {children}
+        <div style={{ paddingTop: 80 }}>{children}</div>
     </>
 );
 
