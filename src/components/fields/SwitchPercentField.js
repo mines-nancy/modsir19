@@ -19,7 +19,7 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
     const { input: input2 } = useField(rightName);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [innerValue, setInnerValue] = React.useState(input1.value);
+    const [innerValue, setInnerValue] = React.useState(input2.value);
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -27,8 +27,8 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
     const handleChange = (_, value) => setInnerValue(value);
 
     const handleChangeCommitted = (_, value) => {
-        input1.onChange(value);
-        input2.onChange(100 - value);
+        input1.onChange(100 - value);
+        input2.onChange(value);
         handleClose();
     };
 
@@ -60,21 +60,20 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
                 <div className={classes.sliderLabels}>
                     <div>
                         <span style={{ float: 'left' }}>
-                            {leftLabel}: {innerValue}%
+                            {leftLabel}: {100 - innerValue}%
                         </span>
                         <span style={{ float: 'right' }}>
-                            {rightLabel}: {100 - innerValue}%
+                            {rightLabel}: {innerValue}%
                         </span>
                     </div>
                     <Slider
                         value={innerValue}
-                        aria-labelledby="discrete-slider"
-                        valueLabelDisplay="auto"
-                        step={5}
+                        step={1}
                         min={0}
                         max={100}
                         onChangeCommitted={handleChangeCommitted}
                         onChange={handleChange}
+                        track={false}
                     />
                 </div>
             </Popover>

@@ -12,7 +12,6 @@ import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
 import ProportionField from '../../components/fields/ProportionField';
-import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
 
 import api from '../../api';
@@ -49,11 +48,13 @@ const defaultParameters = {
     pc_sm: 80,
     pc_si: round(100 - 80),
     pc_sm_si: 20,
+    pc_sm_other: round(100 - 20), // This field is not sent to the API
+    pc_sm_dc: 20,
     pc_sm_out: round(100 - 20),
     pc_si_dc: 50,
     pc_si_out: 50,
     pc_h_ss: 20,
-    pc_h_r: round(1 - 20),
+    pc_h_r: round(100 - 20),
     lim_time: 250,
     j_0: startDate,
     rules: [],
@@ -68,21 +69,25 @@ const percentFields = [
     'pc_si',
     'pc_sm_si',
     'pc_sm_out',
+    'pc_sm_dc',
+    'pc_sm_other',
     'pc_si_dc',
     'pc_si_out',
     'pc_h_ss',
     'pc_h_r',
 ];
 
-const formatParametersForModel = (parameters) => ({
+const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     ...parameters,
-    ...mapObject(parameters, percentFields, (x) => x / 100),
+    pc_sm_dc: parameters.pc_sm_dc * pc_sm_other,
+    pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
-const parseParametersFromModel = (parameters) => ({
-    ...parameters,
-    ...mapObject(parameters, percentFields, (x) => x * 100),
-});
+const formatParametersForModel = (parameters) =>
+    removeMedicalCareSplit({
+        ...parameters,
+        ...mapObject(parameters, percentFields, (x) => x / 100),
+    });
 
 const useStyles = makeStyles(() => ({
     configuration: {
@@ -121,7 +126,7 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             const data = await getModelDebounced(formatParametersForModel(parameters));
-            setValues(parseParametersFromModel(data));
+            setValues(data);
         })();
     }, [parameters]);
 
@@ -217,8 +222,8 @@ const Simulation = () => {
                                         left="50%"
                                     >
                                         <SwitchPercentField
-                                            leftName="pc_ih"
-                                            rightName="pc_ir"
+                                            leftName="pc_ir"
+                                            rightName="pc_ih"
                                             leftLabel="Rétablissements"
                                             rightLabel="Hospitalisations"
                                         />
@@ -266,7 +271,12 @@ const Simulation = () => {
                                         top={topShift + 620}
                                         left="75%"
                                     >
-                                        <Percent percent={14} />
+                                        <SwitchPercentField
+                                            leftName="pc_sm"
+                                            rightName="pc_si"
+                                            leftLabel="Soins médicaux"
+                                            rightLabel="Soins intensifs"
+                                        />
                                     </Node>
                                     <Node
                                         name="soins_medicaux"
@@ -300,7 +310,12 @@ const Simulation = () => {
                                         top={topShift + 875}
                                         left="35%"
                                     >
-                                        <Percent percent={13} />
+                                        <SwitchPercentField
+                                            leftName="pc_sm_other"
+                                            rightName="pc_sm_si"
+                                            leftLabel="Sortie ou Décès"
+                                            rightLabel="Soins intensifs"
+                                        />
                                     </Node>
                                     <Node
                                         name="percent_si"
@@ -308,7 +323,12 @@ const Simulation = () => {
                                         top={topShift + 875}
                                         left="75%"
                                     >
-                                        <Percent percent={60} />
+                                        <SwitchPercentField
+                                            leftName="pc_si_dc"
+                                            rightName="pc_si_out"
+                                            leftLabel="Décès"
+                                            rightLabel="Sortie"
+                                        />
                                     </Node>
                                     <Node name="deces" top={topShift + 1000} left="55%">
                                         <Card
@@ -325,7 +345,12 @@ const Simulation = () => {
                                         top={topShift + 1000}
                                         left="35%"
                                     >
-                                        <Percent percent={60} />
+                                        <SwitchPercentField
+                                            leftName="pc_sm_out"
+                                            rightName="pc_sm_dc"
+                                            leftLabel="Sortie"
+                                            rightLabel="Décès"
+                                        />
                                     </Node>
                                     <Node
                                         name="gueris_ou_soins_suite"
@@ -333,7 +358,12 @@ const Simulation = () => {
                                         top={topShift + 1200}
                                         left="50%"
                                     >
-                                        <Percent percent={35} />
+                                        <SwitchPercentField
+                                            leftName="pc_h_r"
+                                            rightName="pc_h_ss"
+                                            leftLabel="Guérison"
+                                            rightLabel="Soins de suite"
+                                        />
                                     </Node>
                                     <Node
                                         name="soins_suite"
