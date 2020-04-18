@@ -6,9 +6,6 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
-
-import api from '../../api';
-import Chart from './Chart';
 import Layout from '../../components/Layout';
 import DateField from '../../components/fields/DateField';
 import NumberField from '../../components/fields/NumberField';
@@ -19,13 +16,19 @@ import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
 import { PercentField } from '../../components/fields/PercentField';
 
+import api from '../../api';
+import Chart from './Chart';
+import ExposedPopulation from './ExposedPopulation';
+
 const round = (x) => Math.round(x * 100) / 100;
 
 const mapObject = (obj, keys, fn) =>
-    keys.reduce((acc, key) => {
-        acc[key] = fn(obj[key]);
-        return acc;
-    }, {});
+    obj
+        ? keys.reduce((acc, key) => {
+              acc[key] = fn(obj[key]);
+              return acc;
+          }, {})
+        : {};
 
 const startDate = new Date(2020, 0, 23);
 
@@ -104,10 +107,16 @@ const Simulation = () => {
     const classes = useStyles();
     const [values, setValues] = useState();
     const [parameters, setParameters] = useState(defaultParameters);
+    const [expanded, setExpanded] = useState(false);
+    const topShift = expanded ? 220 : 0;
 
     const handleSubmit = useCallback((values) => {
         setParameters(values);
     }, []);
+
+    const handleExpansionChange = (evt, value) => {
+        setExpanded(value);
+    };
 
     useEffect(() => {
         (async () => {
@@ -121,14 +130,12 @@ const Simulation = () => {
             <Grid container>
                 <Grid item xs={5}>
                     {values ? (
-                        <div style={{ position: 'fixed', width: 800 }}>
-                            <Chart values={values} startDate={startDate} />
-                        </div>
+                        <Chart values={values} startDate={startDate} />
                     ) : (
                         <CircularProgress />
                     )}
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={7} style={{ paddingRight: 16 }}>
                     <Form
                         subscription={{}}
                         onSubmit={() => {
@@ -142,16 +149,24 @@ const Simulation = () => {
                                     <Node
                                         name="population_totale"
                                         targets={['population_saine_exposee']}
-                                        top={0}
+                                        top={-10}
                                         left="50%"
                                     >
                                         <Field
                                             name="population"
                                             label="Population totale"
                                             component={ExpandableNumberField}
+                                            expanded={expanded}
+                                            onChange={handleExpansionChange}
                                         >
-                                            <Field name="j_0" label="Début" component={DateField} />
                                             <Field
+                                                className="small-margin-bottom"
+                                                name="j_0"
+                                                label="Début"
+                                                component={DateField}
+                                            />
+                                            <Field
+                                                className="small-margin-bottom"
                                                 name="patient0"
                                                 label="Patients infectés à J-0"
                                                 component={NumberField}
@@ -168,15 +183,15 @@ const Simulation = () => {
                                     <Node
                                         name="population_saine_exposee"
                                         targets={['incubation']}
-                                        top={150}
+                                        top={topShift + 100}
                                         left="50%"
                                     >
-                                        POPULATION SAINE EXPOSÉE
+                                        <ExposedPopulation />
                                     </Node>
                                     <Node
                                         name="incubation"
-                                        targets={['percent_incubation']}
-                                        top={250}
+                                        targets={[]}
+                                        top={topShift + 380}
                                         left="50%"
                                     >
                                         <Field
@@ -189,7 +204,7 @@ const Simulation = () => {
                                     <Node
                                         name="percent_incubation"
                                         targets={['retablissement_spontane', 'hospitalisation']}
-                                        top={350}
+                                        top={topShift + 450}
                                         left="50%"
                                     >
                                         <Field name="pc_ih" component={PercentField} />
@@ -197,8 +212,8 @@ const Simulation = () => {
                                     <Node
                                         name="retablissement_spontane"
                                         targets={['guerison']}
-                                        top={500}
-                                        left="25%"
+                                        top={topShift + 550}
+                                        left="30%"
                                     >
                                         <Field
                                             name="dm_r"
@@ -209,9 +224,9 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="hospitalisation"
-                                        targets={['percent_hospital']}
-                                        top={500}
-                                        left="75%"
+                                        targets={[]}
+                                        top={topShift + 550}
+                                        left="70%"
                                     >
                                         <Field
                                             name="dm_h"
@@ -222,39 +237,39 @@ const Simulation = () => {
                                     <Node
                                         name="percent_hospital"
                                         targets={['soins_medicaux', 'soins_intensifs']}
-                                        top={700}
-                                        left="60%"
+                                        top={topShift + 620}
+                                        left="70%"
                                     >
                                         <Percent percent={14} />
                                     </Node>
                                     <Node
                                         name="soins_medicaux"
-                                        targets={['percent_soins_medicaux']}
-                                        top={850}
+                                        targets={[]}
+                                        top={topShift + 800}
                                         left="45%"
                                     >
                                         SOINS MÉDICAUX
                                     </Node>
                                     <Node
-                                        name="percent_soins_medicaux"
-                                        targets={['soins_suite', 'guerison']}
-                                        top={900}
-                                        left="45%"
-                                    >
-                                        <Field name="pc_sm" component={PercentField} />
-                                    </Node>
-                                    <Node
                                         name="soins_intensifs"
-                                        targets={['percent_si']}
-                                        top={850}
+                                        targets={[]}
+                                        top={topShift + 800}
                                         left="85%"
                                     >
                                         SOINS INTENSIFS
                                     </Node>
                                     <Node
+                                        name="percent_soins_medicaux"
+                                        targets={['soins_suite', 'guerison']}
+                                        top={topShift + 830}
+                                        left="45%"
+                                    >
+                                        <Field name="pc_sm" component={PercentField} />
+                                    </Node>
+                                    <Node
                                         name="percent_si"
                                         targets={['percent_je_sais_pas_quoi', 'deces']}
-                                        top={900}
+                                        top={topShift + 830}
                                         left="85%"
                                     >
                                         <Percent percent={60} />
@@ -262,7 +277,7 @@ const Simulation = () => {
                                     <Node
                                         name="percent_je_sais_pas_quoi"
                                         targets={['soins_suite', 'guerison']}
-                                        top={1100}
+                                        top={topShift + 1000}
                                         left="60%"
                                     >
                                         <Percent percent={35} />
@@ -270,15 +285,15 @@ const Simulation = () => {
                                     <Node
                                         name="soins_suite"
                                         targets={['guerison']}
-                                        top={1100}
+                                        top={topShift + 1200}
                                         left="50%"
                                     >
                                         SOINS DE SUITE
                                     </Node>
-                                    <Node name="guerison" top={1400} left="25%">
+                                    <Node name="guerison" top={topShift + 1200} left="25%">
                                         GUERISON
                                     </Node>
-                                    <Node name="deces" top={1400} left="85%">
+                                    <Node name="deces" top={topShift + 1200} left="85%">
                                         DECES
                                     </Node>
                                     <Edges />
