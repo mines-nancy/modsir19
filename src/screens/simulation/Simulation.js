@@ -10,9 +10,11 @@ import { Edges } from '../../components/Graph/Edges';
 import api from '../../api';
 import Chart from './Chart';
 import Layout from '../../components/Layout';
+import DateField from '../../components/fields/DateField';
 import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
+import ProportionField from '../../components/fields/ProportionField';
 import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
 // import { PercentField } from '../../components/fields/PercentField';
@@ -24,7 +26,7 @@ const startDate = new Date(2020, 0, 23);
 const defaultParameters = {
     population: 500000,
     patient0: 1,
-    kpe: 0.6,
+    kpe: 60,
     r: 2.3,
     dm_incub: 3,
     dm_r: 9,
@@ -47,6 +49,16 @@ const defaultParameters = {
     j_0: startDate,
     rules: [],
 };
+
+const formatParametersForModel = (parameters) => ({
+    ...parameters,
+    kpe: parameters.kpe / 100,
+});
+
+const parseParametersFromModel = (parameters) => ({
+    ...parameters,
+    kpe: parameters.kpe * 100,
+});
 
 const useStyles = makeStyles(() => ({
     configuration: {
@@ -78,8 +90,8 @@ const Simulation = () => {
 
     useEffect(() => {
         (async () => {
-            const data = await getModelDebounced(parameters);
-            setValues(data);
+            const data = await getModelDebounced(formatParametersForModel(parameters));
+            setValues(parseParametersFromModel(data));
         })();
     }, [parameters]);
 
@@ -115,11 +127,18 @@ const Simulation = () => {
                                             label="Population totale"
                                             component={ExpandableNumberField}
                                         >
+                                            <Field name="j_0" label="Début" component={DateField} />
                                             <Field
                                                 name="patient0"
-                                                label="Nombre de patient infectés"
+                                                label="Patients infectés à J-0"
                                                 component={NumberField}
                                                 cardless
+                                            />
+                                            <Field
+                                                name="kpe"
+                                                label="Taux de population exposée"
+                                                numberInputLabel="Kpe"
+                                                component={ProportionField}
                                             />
                                         </Field>
                                     </Node>
