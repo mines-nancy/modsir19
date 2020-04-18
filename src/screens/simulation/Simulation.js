@@ -203,7 +203,16 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="percent_incubation"
-                                        targets={['retablissement_spontane', 'hospitalisation']}
+                                        targets={[
+                                            {
+                                                name: 'retablissement_spontane',
+                                                options: { path: 'straight' },
+                                            },
+                                            {
+                                                name: 'hospitalisation',
+                                                options: { path: 'straight' },
+                                            },
+                                        ]}
                                         top={topShift + 450}
                                         left="50%"
                                     >
