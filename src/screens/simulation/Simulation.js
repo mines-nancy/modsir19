@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
 import { CircularProgress, Grid, makeStyles } from '@material-ui/core';
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
@@ -13,12 +14,13 @@ import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
 import { Percent } from '../../components/fields/Percent';
+import AutoSave from '../../components/fields/AutoSave';
 
 const round = (x) => Math.round(x * 100) / 100;
 
 const startDate = new Date(2020, 0, 23);
 
-const parameters = {
+const defaultParameters = {
     population: 500000,
     patient0: 1,
     kpe: 0.6,
@@ -54,19 +56,31 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+const getModel = async (parameters) => {
+    const { data } = await api.get('/get_sir_h', {
+        params: { parameters },
+    });
+
+    return data;
+};
+
+const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
+
 const Simulation = () => {
     const classes = useStyles();
     const [values, setValues] = useState();
+    const [parameters, setParameters] = useState(defaultParameters);
+
+    const handleSubmit = useCallback((values) => {
+        setParameters(values);
+    }, []);
 
     useEffect(() => {
         (async () => {
-            const { data } = await api.get('/get_sir_h', {
-                params: { parameters },
-            });
-
+            const data = await getModelDebounced(parameters);
             setValues(data);
         })();
-    }, []);
+    }, [parameters]);
 
     return (
         <Layout>
@@ -80,10 +94,14 @@ const Simulation = () => {
                 </Grid>
                 <Grid item xs={7}>
                     <Form
-                        onSubmit={console.log}
+                        subscription={{}}
+                        onSubmit={() => {
+                            /* Useless since we use a listener on autosave */
+                        }}
                         initialValues={parameters}
                         render={() => (
                             <div className={classes.configuration}>
+                                <AutoSave save={handleSubmit} debounce={200} />
                                 <GraphProvider>
                                     <Node
                                         name="population_totale"
