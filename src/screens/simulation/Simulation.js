@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { CircularProgress, Grid, makeStyles } from '@material-ui/core';
+import { CircularProgress, Grid, makeStyles, Card, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
@@ -128,14 +128,14 @@ const Simulation = () => {
     return (
         <Layout>
             <Grid container>
-                <Grid item xs={5}>
+                <Grid item xs={6}>
                     {values ? (
                         <Chart values={values} startDate={startDate} />
                     ) : (
                         <CircularProgress />
                     )}
                 </Grid>
-                <Grid item xs={7} style={{ paddingRight: 16 }}>
+                <Grid item xs={6} style={{ paddingRight: 16 }}>
                     <Form
                         subscription={{}}
                         onSubmit={() => {
@@ -225,22 +225,34 @@ const Simulation = () => {
                                     </Node>
                                     <Node
                                         name="retablissement_spontane"
-                                        targets={['guerison']}
+                                        targets={[
+                                            {
+                                                name: 'guerison',
+                                                options: {
+                                                    anchorStart: { x: '10%' },
+                                                },
+                                            },
+                                        ]}
                                         top={topShift + 550}
                                         left="30%"
                                     >
                                         <Field
                                             name="dm_r"
-                                            label="Rétablissement spontané"
+                                            label={
+                                                <>
+                                                    Rétablissement
+                                                    <br />
+                                                    spontané
+                                                </>
+                                            }
                                             component={DurationField}
-                                            color="rgba(88, 235, 88, 0.6)"
                                         />
                                     </Node>
                                     <Node
                                         name="hospitalisation"
                                         targets={[]}
                                         top={topShift + 550}
-                                        left="70%"
+                                        left="75%"
                                     >
                                         <Field
                                             name="dm_h"
@@ -252,7 +264,7 @@ const Simulation = () => {
                                         name="percent_hospital"
                                         targets={['soins_medicaux', 'soins_intensifs']}
                                         top={topShift + 620}
-                                        left="70%"
+                                        left="75%"
                                     >
                                         <Percent percent={14} />
                                     </Node>
@@ -260,55 +272,90 @@ const Simulation = () => {
                                         name="soins_medicaux"
                                         targets={[]}
                                         top={topShift + 800}
-                                        left="45%"
+                                        left="35%"
                                     >
-                                        SOINS MÉDICAUX
+                                        <Field
+                                            name="dm_sm"
+                                            label="Soins médicaux"
+                                            component={DurationField}
+                                            color="rgba(255, 88, 132, 0.6)"
+                                        />
                                     </Node>
                                     <Node
                                         name="soins_intensifs"
                                         targets={[]}
                                         top={topShift + 800}
-                                        left="85%"
+                                        left="75%"
                                     >
-                                        SOINS INTENSIFS
+                                        <Field
+                                            name="dm_si"
+                                            label="Soins intensifs"
+                                            component={DurationField}
+                                            color="rgba(54, 162, 235, 0.6)"
+                                        />
                                     </Node>
                                     <Node
                                         name="percent_soins_medicaux"
-                                        targets={['soins_suite', 'guerison']}
-                                        top={topShift + 830}
-                                        left="45%"
+                                        targets={['post_soins_medicaux', 'soins_intensifs']}
+                                        top={topShift + 875}
+                                        left="35%"
                                     >
                                         <Percent percent={13} />
                                     </Node>
                                     <Node
                                         name="percent_si"
-                                        targets={['percent_je_sais_pas_quoi', 'deces']}
-                                        top={topShift + 830}
-                                        left="85%"
+                                        targets={['gueris_ou_soins_suite', 'deces']}
+                                        top={topShift + 875}
+                                        left="75%"
+                                    >
+                                        <Percent percent={60} />
+                                    </Node>
+                                    <Node name="deces" top={topShift + 1000} left="55%">
+                                        <Card
+                                            className={classes.card}
+                                            elevation={3}
+                                            style={{ backgroundColor: 'rgba(88, 88, 88, 0.6)' }}
+                                        >
+                                            <CardContent>Décès</CardContent>
+                                        </Card>
+                                    </Node>
+                                    <Node
+                                        name="post_soins_medicaux"
+                                        targets={['deces', 'gueris_ou_soins_suite']}
+                                        top={topShift + 1000}
+                                        left="35%"
                                     >
                                         <Percent percent={60} />
                                     </Node>
                                     <Node
-                                        name="percent_je_sais_pas_quoi"
+                                        name="gueris_ou_soins_suite"
                                         targets={['soins_suite', 'guerison']}
-                                        top={topShift + 1000}
-                                        left="60%"
+                                        top={topShift + 1200}
+                                        left="50%"
                                     >
                                         <Percent percent={35} />
                                     </Node>
                                     <Node
                                         name="soins_suite"
                                         targets={['guerison']}
-                                        top={topShift + 1200}
-                                        left="50%"
+                                        top={topShift + 1300}
+                                        left="75%"
                                     >
-                                        SOINS DE SUITE
+                                        <Field
+                                            name="dm_ss"
+                                            label="Soins de suite"
+                                            component={DurationField}
+                                            color="rgba(54, 54, 255, 0.6)"
+                                        />
                                     </Node>
-                                    <Node name="guerison" top={topShift + 1200} left="25%">
-                                        GUERISON
-                                    </Node>
-                                    <Node name="deces" top={topShift + 1200} left="85%">
-                                        DECES
+                                    <Node name="guerison" top={topShift + 1350} left="25%">
+                                        <Card
+                                            className={classes.card}
+                                            elevation={3}
+                                            style={{ backgroundColor: 'rgba(88, 235, 88, 0.6)' }}
+                                        >
+                                            <CardContent>Guérison</CardContent>
+                                        </Card>
                                     </Node>
                                     <Edges />
                                 </GraphProvider>

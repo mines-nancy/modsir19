@@ -19,6 +19,8 @@ export const Edges = () => {
                     ref1={nodes[name].ref.current}
                     ref2={nodes[targetName].ref.current}
                     options={options}
+                    anchorStartOptions={options.anchorStart}
+                    anchorEndOptions={options.anchorEnd}
                 />
             );
         }),

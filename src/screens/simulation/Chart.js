@@ -126,7 +126,7 @@ const Chart = ({ values, startDate }) => {
     const theme = useTheme();
     const medium = useMediaQuery(theme.breakpoints.up('md'));
     const large = useMediaQuery(theme.breakpoints.up('lg'));
-    const chartSize = medium ? (large ? 750 : 500) : 300;
+    const chartSize = medium ? (large ? 700 : 500) : 300;
 
     const lineData = data({ t, values, startDate });
 
