@@ -12,7 +12,6 @@ import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
 import ProportionField from '../../components/fields/ProportionField';
-import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
 
 import api from '../../api';
@@ -49,7 +48,7 @@ const defaultParameters = {
     pc_sm: 80,
     pc_si: round(100 - 80),
     pc_sm_si: 20,
-    pc_sm_other: round(100 - 20),
+    pc_sm_other: round(100 - 20), // This field is not sent to the API
     pc_sm_dc: 20,
     pc_sm_out: round(100 - 20),
     pc_si_dc: 50,
@@ -70,21 +69,25 @@ const percentFields = [
     'pc_si',
     'pc_sm_si',
     'pc_sm_out',
+    'pc_sm_dc',
+    'pc_sm_other',
     'pc_si_dc',
     'pc_si_out',
     'pc_h_ss',
     'pc_h_r',
 ];
 
-const formatParametersForModel = (parameters) => ({
+const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     ...parameters,
-    ...mapObject(parameters, percentFields, (x) => x / 100),
+    pc_sm_dc: parameters.pc_sm_dc * pc_sm_other,
+    pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
-const parseParametersFromModel = (parameters) => ({
-    ...parameters,
-    ...mapObject(parameters, percentFields, (x) => x * 100),
-});
+const formatParametersForModel = (parameters) =>
+    removeMedicalCareSplit({
+        ...parameters,
+        ...mapObject(parameters, percentFields, (x) => x / 100),
+    });
 
 const useStyles = makeStyles(() => ({
     configuration: {
@@ -123,7 +126,7 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             const data = await getModelDebounced(formatParametersForModel(parameters));
-            setValues(parseParametersFromModel(data));
+            setValues(data);
         })();
     }, [parameters]);
 
