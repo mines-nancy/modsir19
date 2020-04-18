@@ -135,7 +135,7 @@ const Simulation = () => {
                         <CircularProgress />
                     )}
                 </Grid>
-                <Grid item xs={7} style={{ paddingRight: 64 }}>
+                <Grid item xs={7} style={{ paddingRight: 16 }}>
                     <Form
                         subscription={{}}
                         onSubmit={() => {
