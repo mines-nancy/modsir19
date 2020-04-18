@@ -24,7 +24,9 @@ const ExpandableNumberField = ({ children, label, input, expanded }) => {
             >
                 <NumberField cardless label={label} input={input} width="100%" />
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
+            <ExpansionPanelDetails>
+                <div>{children}</div>
+            </ExpansionPanelDetails>
         </ExpansionPanel>
     );
 };
