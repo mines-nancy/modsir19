@@ -121,7 +121,9 @@ const Simulation = () => {
             <Grid container>
                 <Grid item xs={5}>
                     {values ? (
-                        <Chart values={values} startDate={startDate} />
+                        <div style={{ position: 'fixed', width: 800 }}>
+                            <Chart values={values} startDate={startDate} />
+                        </div>
                     ) : (
                         <CircularProgress />
                     )}
