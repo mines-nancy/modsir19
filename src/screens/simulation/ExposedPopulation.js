@@ -28,8 +28,8 @@ const ExposedPopulation = () => {
                     numberInputLabel="r"
                     component={ProportionField}
                     unit={null}
-                    max="10"
-                    step="0.1"
+                    max="5"
+                    step={0.1}
                 />
                 <Field
                     name="beta"
@@ -37,6 +37,8 @@ const ExposedPopulation = () => {
                     numberInputLabel="beta"
                     component={ProportionField}
                     unit={null}
+                    max="1"
+                    step={0.01}
                 />
             </CardContent>
         </Card>

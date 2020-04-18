@@ -43,7 +43,7 @@ const defaultParameters = {
     dm_sm: 6,
     dm_si: 8,
     dm_ss: 14,
-    beta: 15,
+    beta: 0.15,
     pc_ir: 84,
     pc_ih: round(100 - 84),
     pc_sm: 80,
@@ -63,7 +63,6 @@ const defaultParameters = {
 
 const percentFields = [
     'kpe',
-    'beta',
     'pc_ir',
     'pc_ih',
     'pc_sm',
