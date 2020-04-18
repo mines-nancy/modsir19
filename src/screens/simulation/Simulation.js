@@ -15,6 +15,7 @@ import DurationField from '../../components/fields/DurationField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
 import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
+// import { PercentField } from '../../components/fields/PercentField';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -149,7 +150,8 @@ const Simulation = () => {
                                         top={350}
                                         left="50%"
                                     >
-                                        <Percent percent={20} />
+                                        <Percent percent={12} />
+                                        {/* <Field name="pc_ih" component={PercentField} /> */}
                                     </Node>
                                     <Node
                                         name="retablissement_spontane"
@@ -198,7 +200,8 @@ const Simulation = () => {
                                         top={900}
                                         left="45%"
                                     >
-                                        <Percent percent={80} />
+                                        <Percent percent={40} />
+                                        {/* <Field name="pc_sm" component={PercentField} /> */}
                                     </Node>
                                     <Node
                                         name="soins_intensifs"
