@@ -14,11 +14,11 @@ import ExpandableNumberField from '../../components/fields/ExpandableNumberField
 import ProportionField from '../../components/fields/ProportionField';
 import { Percent } from '../../components/fields/Percent';
 import AutoSave from '../../components/fields/AutoSave';
-import { PercentField } from '../../components/fields/PercentField';
 
 import api from '../../api';
 import Chart from './Chart';
 import ExposedPopulation from './ExposedPopulation';
+import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -95,7 +95,7 @@ const useStyles = makeStyles(() => ({
 
 const getModel = async (parameters) => {
     const { data } = await api.get('/get_sir_h', {
-        params: { parameters },
+        params: { parameters: { ...parameters, rules: [], start_time: 0 } },
     });
 
     return data;
@@ -207,7 +207,12 @@ const Simulation = () => {
                                         top={topShift + 450}
                                         left="50%"
                                     >
-                                        <Field name="pc_ih" component={PercentField} />
+                                        <SwitchPercentField
+                                            leftName="pc_ih"
+                                            rightName="pc_ir"
+                                            leftLabel="Rétablissements"
+                                            rightLabel="Hospitalisations"
+                                        />
                                     </Node>
                                     <Node
                                         name="retablissement_spontane"
@@ -264,7 +269,7 @@ const Simulation = () => {
                                         top={topShift + 830}
                                         left="45%"
                                     >
-                                        <Field name="pc_sm" component={PercentField} />
+                                        <Percent percent={13} />
                                     </Node>
                                     <Node
                                         name="percent_si"
