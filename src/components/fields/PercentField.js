@@ -11,7 +11,7 @@ export const PercentField = ({ input: { name, onChange, value } }) => {
 
     const handleChange = (_, value) => setInnerValue(value);
 
-    const handleChangeCommited = (_, value) => {
+    const handleChangeCommitted = (_, value) => {
         onChange(value);
         handleClose();
     };
