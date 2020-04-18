@@ -54,8 +54,18 @@ const convertRules = (rules, j_0) =>
 
 const getModel = async (parameters) => {
     const newRules = convertRules(parameters.rules, parameters.j_0);
-    return await api.get('/get_sir_h', {
-        params: { parameters: { ...parameters, rules: newRules } },
+    const timeframes = newRules.map(({ field, value, date }) => {
+        const modifiedParamaters = { ...parameters, rules: [], start_time: date };
+        modifiedParamaters[field] = value;
+        return modifiedParamaters;
+    });
+    const initialParameters = { ...parameters, rules: [], start_time: 0 };
+    return await api.get('/get_sir_h_timeframe', {
+        params: {
+            parameters: {
+                list: [initialParameters, ...timeframes],
+            },
+        },
     });
 };
 
