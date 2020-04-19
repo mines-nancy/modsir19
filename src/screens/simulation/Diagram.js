@@ -414,7 +414,7 @@ export default ({
             <Grid container xs={1} />
             <Grid container xs={11} justify="flex-start">
                 <Node name="guerison">
-                    <BlockContainer color="rgba(255, 206, 86, 0.6)">{recovery}</BlockContainer>
+                    <BlockContainer color={colors.recovered.bg}>{recovery}</BlockContainer>
                 </Node>
             </Grid>
             <Grid container xs={6} justify="center" />
