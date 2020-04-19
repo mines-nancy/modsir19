@@ -87,7 +87,7 @@ class State:
         self.box(src_name).remove(delta)
         self.box(dest_name).add(delta)
 
-    def step(self, history):
+    def step(self):
         self.time += 1
         for box in self.boxes():
             box.step()
