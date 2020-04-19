@@ -130,12 +130,13 @@ const Chart = ({ values, startDate }) => {
     const midlarge = useMediaQuery('@media (min-width:1400px)');
     const xlarge = useMediaQuery(theme.breakpoints.up('xl'));
 
-    let chartSize = 350;
-    if (medium) chartSize = 450;
-    if (xmedium) chartSize = 500;
-    if (large) chartSize = 600;
-    if (midlarge) chartSize = 675;
+    let chartSize;
     if (xlarge) chartSize = 750;
+    else if (midlarge) chartSize = 675;
+    else if (large) chartSize = 600;
+    else if (xmedium) chartSize = 500;
+    else if (medium) chartSize = 450;
+    else chartSize = 350;
 
     const lineData = data({ t, values, startDate });
 
