@@ -1,5 +1,6 @@
 from models.components.box_queue import BoxQueue
 from models.components.history import History
+from models.components.box import BoxSource, BoxTarget
 
 
 class State:
@@ -43,14 +44,14 @@ class State:
         }
 
         self._boxes = {
-            'E': BoxQueue('E', 0),
+            'E': BoxSource('E'),
             'MG': BoxQueue('MG', tmg),
             'MH': BoxQueue('MH', tmh),
-            'G': BoxQueue('G'),
+            'G': BoxTarget('G'),
             'HG': BoxQueue('HG', thg),
             'HR': BoxQueue('HR', thr),
             'R': BoxQueue('R', trsr),
-            'D': BoxQueue('D')
+            'D': BoxTarget('D')
         }
 
         # src -> [targets]
@@ -141,15 +142,17 @@ class State:
             inputs = {name: state.box(name).input()
                       for name in self.boxnames()}
             outputs = {name: state.box(name).output()
-                      for name in self.boxnames()}
+                       for name in self.boxnames()}
             for name in lists.keys():
                 lists[name].append(sum([sizes[n] for n in series[name]]))
-                input_lists[name].append(sum([inputs[n] for n in series[name]]))
-                output_lists[name].append(sum([outputs[n] for n in series[name]]))
+                input_lists[name].append(
+                    sum([inputs[n] for n in series[name]]))
+                output_lists[name].append(
+                    sum([outputs[n] for n in series[name]]))
         for name in series.keys():
             lists['input_' + name] = input_lists[name]
             lists['output_' + name] = output_lists[name]
-        
+
         cumulated_hospitalized = round(sum(input_lists['H']), 2)
         cumulated_intensive_care = round(sum(input_lists['R']), 2)
         return lists['G'], lists['E'], lists['M'], lists['D'], lists['H'], lists['R'], [], lists['input_G'], lists['input_E'], lists['input_M'], lists['input_D'], lists['input_H'], lists['input_R'], [], lists['output_G'], lists['output_E'], lists['output_M'], lists['output_D'], lists['output_H'], lists['output_R'], []
