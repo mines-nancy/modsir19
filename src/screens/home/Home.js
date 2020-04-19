@@ -107,7 +107,9 @@ const Home = () => {
                         </p>
 
                         <p>
-                            <strong>Les « trajectoires de soins hospitaliers » simplifiées:</strong>
+                            <strong>
+                                2. Les « trajectoires de soins hospitaliers » simplifiées:
+                            </strong>
 
                             <ul>
                                 <li>SI : soins intensifs</li>

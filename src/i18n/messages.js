@@ -21,7 +21,7 @@ const messages = {
             simpleSIR: 'Modèle SIR simple',
             complexSIR: 'Modèle SIR complexe',
             sirPlusH: 'Modèle SIR+H',
-            visualisation_example_desc: 'Example de visualisation du modèle',
+            visualisation_example_desc: 'Exemple de visualisation du modèle',
             model_diagram: 'Explication du diagrame',
             start_button: 'Commencer',
         },
