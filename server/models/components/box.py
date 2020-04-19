@@ -31,19 +31,29 @@ class Box:
         self._t += 1
 
     def size(self, past=0):
-        return self._size[self._t-past]
+        if self._t-past >= 0:
+            return self._size[self._t-past]
+        return 0
 
     def input(self, past=0):
-        return self._input[self._t-past]
+        if self._t-past >= 0:
+            return self._input[self._t-past]
+        return 0
 
     def output(self, past=0):
-        return self._output[self._t-past]
+        if self._t-past >= 0:
+            return self._output[self._t-past]
+        return 0
 
     def removed(self, past=0):
-        return self._removed[self._t-past]
+        if self._t-past >= 0:
+            return self._removed[self._t-past]
+        return 0
 
     def full_size(self, past=0):
-        return self.size(past) + self.input(past)
+        if self._t-past >= 0:
+            return self.size(past) + self.input(past)
+        return 0
 
     def set_size(self, value):
         self._size[self._t] = value
