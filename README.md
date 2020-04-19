@@ -59,7 +59,7 @@ Pour appliquer une mise à jour du schéma de la base de données il faut donc f
 
 ```bash
 python server d_manege.py db migrate
-python server d_manege.py db upgrade
+python server db_manage.py db upgrade
 ```
 
 **Attention:** Comme le précise Alembic certains changements ne sont pas détectés par la migration automatique:
