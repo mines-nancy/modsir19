@@ -162,7 +162,9 @@ const Simulation = () => {
         }
     };
 
-    const handleExpansionChange = (evt, value) => setExpanded(value);
+    const handleExpansionChange = (evt, value) => {
+        setExpanded(value);
+    };
 
     useEffect(() => {
         (async () => {
@@ -225,6 +227,7 @@ const Simulation = () => {
                                             component={ExpandableNumberField}
                                             expanded={expanded}
                                             onChange={handleExpansionChange}
+                                            step="100000"
                                         >
                                             <Field
                                                 className="small-margin-bottom"

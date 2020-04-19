@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 
 const NumberField = ({
     label,
+    step = '1',
     input: { name, onChange, value, ...restInput },
     cardless = false,
     className,
@@ -40,7 +41,7 @@ const NumberField = ({
             <div className={classes.label}>{label}</div>
             <div className={classes.fieldContainer}>
                 <TextField
-                    inputProps={{ ...restInput, min: '0', step: '1' }}
+                    inputProps={{ ...restInput, min: '0', step }}
                     {...props}
                     className={classes.field}
                     name={name}

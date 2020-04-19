@@ -8,9 +8,8 @@ export const Edge = ({
     anchorStartOptions = {},
     anchorEndOptions = {},
 }) => {
-    let line;
-
     useEffect(() => {
+        let line;
         let timeout;
 
         if (ref1 && ref2) {
@@ -34,6 +33,7 @@ export const Edge = ({
             timeout && clearTimeout(timeout);
             line && line.remove();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref1, ref2]);
 
     return null;

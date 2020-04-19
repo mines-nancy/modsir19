@@ -1,10 +1,16 @@
 import React from 'react';
+import { useField } from 'react-final-form';
 import { Popover, Slider, makeStyles } from '@material-ui/core';
 import { Percent } from './Percent';
-import { useField } from 'react-final-form';
 
 const useStyles = makeStyles(() => ({
-    pie: { display: 'flex', padding: '15px 0', fontSize: 13, alignItems: 'center' },
+    pie: {
+        display: 'flex',
+        padding: '15px 0',
+        fontSize: 13,
+        alignItems: 'center',
+        cursor: 'pointer',
+    },
     sliderLabels: {
         width: 350,
         padding: '20px 20px 20px 20px',
@@ -20,6 +26,7 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [innerValue, setInnerValue] = React.useState(input2.value);
+    const [hover, setHover] = React.useState(false);
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -32,19 +39,27 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
         handleClose();
     };
 
+    const handleHoverChange = (value) => () => {
+        setHover(value);
+    };
+
     const open = Boolean(anchorEl);
 
     return (
         <>
-            <div className={classes.pie}>
+            <div
+                className={classes.pie}
+                onClick={handleClick}
+                onMouseEnter={handleHoverChange(true)}
+                onMouseLeave={handleHoverChange(false)}
+            >
                 <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
-                <div onClick={handleClick} style={{ cursor: 'pointer' }}>
-                    <Percent percent={innerValue} />
+                <div>
+                    <Percent percent={innerValue} size={hover ? '23' : '20'} />
                 </div>
                 <div style={{ paddingLeft: 5, paddingBottom: 2 }}>{input2.value}%</div>
             </div>
             <Popover
-                PaperProps={{ style: { marginTop: 50 } }}
                 open={open}
                 anchorEl={anchorEl}
                 onClose={handleClose}
