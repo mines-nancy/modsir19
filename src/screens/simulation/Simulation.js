@@ -7,15 +7,12 @@ import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import Layout from '../../components/Layout';
-import DateField from '../../components/fields/DateField';
-import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
-import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
-import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
 
 import api from '../../api';
 import Chart from './Chart';
+import TotalPopulation from './TotalPopulation';
 import ExposedPopulation from './ExposedPopulation';
 import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
 import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
@@ -62,37 +59,6 @@ const GridWithLeftGutter = ({ children, ...props }) => (
         </Grid>
     </Grid>
 );
-
-const TotalPopulationBlock = () => {
-    const [expanded, setExpanded] = useState(false);
-    const handleExpansionChange = (evt, value) => setExpanded(value);
-
-    return (
-        <Field
-            name="population"
-            label="Population totale"
-            component={ExpandableNumberField}
-            expanded={expanded}
-            onChange={handleExpansionChange}
-            step="100000"
-        >
-            <Field className="small-margin-bottom" name="j_0" label="Début" component={DateField} />
-            <Field
-                className="small-margin-bottom"
-                name="patient0"
-                label="Patients infectés à J-0"
-                component={NumberField}
-                cardless
-            />
-            <Field
-                name="kpe"
-                label="Taux de population exposée"
-                numberInputLabel="Kpe"
-                component={ProportionField}
-            />
-        </Field>
-    );
-};
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -202,6 +168,7 @@ const Simulation = () => {
                 return newList;
             });
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [parameterIndex],
     );
 
@@ -237,6 +204,7 @@ const Simulation = () => {
             );
             setValues(data);
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(parametersList)]);
 
     return (
@@ -297,7 +265,7 @@ const Simulation = () => {
                                                 },
                                             ]}
                                         >
-                                            <TotalPopulationBlock />
+                                            <TotalPopulation />
                                         </Node>
                                     </Grid>
                                     <Grid
