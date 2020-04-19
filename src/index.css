@@ -12,10 +12,6 @@ code {
     monospace;
 }
 
-.leader-line {
-  z-index: -1;
-}
-
 .small-margin-bottom {
   margin-bottom: 16px;
 }

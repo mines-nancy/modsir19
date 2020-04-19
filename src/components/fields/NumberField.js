@@ -6,7 +6,6 @@ const useStyles = makeStyles({
     card: {
         maxWidth: (props) => props.width || 350,
         backgroundColor: (props) => props.color,
-        zIndex: 2,
     },
     container: {
         display: 'flex',

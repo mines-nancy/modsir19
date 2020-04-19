@@ -139,7 +139,6 @@ const formatParametersForModel = (parameters) =>
 
 const useStyles = makeStyles(() => ({
     configuration: {
-        marginTop: 30,
         width: '100%',
     },
 }));
@@ -243,7 +242,7 @@ const Simulation = () => {
                         <CircularProgress />
                     )}
                 </Grid>
-                <Grid item xs={6} style={{ paddingRight: 16 }}>
+                <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
                     <Form
                         subscription={{}}
                         onSubmit={() => {
