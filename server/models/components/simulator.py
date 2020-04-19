@@ -5,6 +5,25 @@ import copy
 class Simulator:
     def __init__(self, state):
         self._state = state
+
+    def step(self):
+        self._state.step()
+
+    def get_state(self):
+        return self._state
+
+    def extract_series(self):
+        return self._state.extract_series(None)
+
+    def apply_rules(self, date, rules):
+        applicable_rules = [rule for rule in rules if date == rule['date']]
+        for rule in applicable_rules:
+            self._state.change_value(rule['field'], float(rule['value']))
+
+
+class SimulatorWithHistory:
+    def __init__(self, state):
+        self._state = state
         self._history = History()
 
     def step(self):
@@ -12,7 +31,7 @@ class Simulator:
         self._history.store(current_state)
 
         next_state = copy.deepcopy(current_state)
-        next_state.step(self._history)
+        next_state.step()
 
         self._state = next_state
 
