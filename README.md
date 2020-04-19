@@ -28,11 +28,15 @@ export APP_SETTINGS="config.DevelopmentConfig"
 export PG_COVID_USER="covid"
 export PG_COVID_PASSWORD="dummy"
 export PG_COVID_HOST="localhost"
-export PG_COVID_PORT="5555"
+export PG_COVID_PORT="5433"
 export PG_COVID_DB_NAME="commando_db"
 ```
 
 Then run
+
+```shell script
+source .env
+```
 
 ```shell script
 source server/.env
@@ -58,7 +62,7 @@ On utilise alembic https://alembic.sqlalchemy.org/en/latest/autogenerate.html po
 Pour appliquer une mise à jour du schéma de la base de données il faut donc faire:
 
 ```bash
-python server d_manege.py db migrate
+python server db_manage.py db migrate
 python server db_manage.py db upgrade
 ```
 
@@ -71,3 +75,4 @@ python server db_manage.py db upgrade
 
 
 Dans ce cas il faudra effectuer une migration manuelle (cf. lien ci-dessus)
+

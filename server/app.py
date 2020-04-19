@@ -23,7 +23,6 @@ db = SQLAlchemy(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-
 def add(x, y):
     return x + y
 
@@ -166,6 +165,49 @@ def get_sir_h_timeframe():
         parameters_list[0])
     lists = run_sir_h(constants, delays, coefficients, rules)
     return jsonify(lists)
+
+
+# save_params
+@app.route('/save_params', methods=["POST"])
+def save_params():
+    errors = []
+    args = request.args
+    print(args['model'])
+    model_params={}
+    try:
+        from db_models.models import ModelParams
+        model_params = ModelParams(
+            args['model'],
+            args['population'],
+            args['kpe'],
+            args['kem'],
+            args['kmg'],
+            args['kmh'],
+            args['khr'],
+            args['khg'],
+            args['krd'],
+            args['krg'],
+            args['tem'],
+            args['tmg'],
+            args['tmh'],
+            args['thg'],
+            args['thr'],
+            args['trsr'],
+            args['lim_time'],
+            args['user_id']
+        )
+    except:
+        errors.append(
+            "Unable to create params object."
+        )
+
+    try:
+        db.session.add(model_params)
+        db.session.commit()
+    except:
+        errors.append("Unable to add item to database.")
+
+    return jsonify(errors)
 
 
 if __name__ == "__main__":
