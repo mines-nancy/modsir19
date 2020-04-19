@@ -4,6 +4,7 @@ import { I18n } from 'react-polyglot';
 
 import messages from './i18n/messages';
 import Home from './screens/home/Home';
+import Legals from './screens/Legals';
 import NotFound from './screens/NotFound';
 import Simulation from './screens/simulation/Simulation';
 
@@ -19,6 +20,7 @@ const App = () => {
                     <Switch>
                         <Route path="/" exact component={Home} />
                         <Route path="/simulation" exact component={Simulation} />
+                        <Route path="/mentions-legales" exact component={Legals} />
                         <Route path="/experiments" component={Experiments} />
                         <Route component={NotFound} />
                     </Switch>
