@@ -10,6 +10,7 @@ const useStyles = makeStyles({
     container: {
         display: 'flex',
         justifyContent: 'space-between',
+        flexWrap: 'wrap',
     },
     label: {
         flex: '1 0 0',
@@ -36,7 +37,7 @@ const NumberField = ({
     const classes = useStyles(props);
 
     const cardContent = (
-        <div className={clsx(classes.container, className)}>
+        <label className={clsx(classes.container, className)}>
             <div className={classes.label}>{label}</div>
             <div className={classes.fieldContainer}>
                 <TextField
@@ -49,7 +50,7 @@ const NumberField = ({
                     type="number"
                 />
             </div>
-        </div>
+        </label>
     );
 
     if (cardless) {
