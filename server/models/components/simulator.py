@@ -25,4 +25,4 @@ class Simulator:
     def apply_rules(self, date, rules):
         applicable_rules = [rule for rule in rules if date == rule['date']]
         for rule in applicable_rules:
-            self._state.change_coefficient(rule['field'], float(rule['value']))
+            self._state.change_value(rule['field'], float(rule['value']))

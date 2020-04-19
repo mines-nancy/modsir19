@@ -5,6 +5,7 @@ import { GraphContext } from './GraphProvider';
 const useStyles = makeStyles(() => ({
     root: {
         position: 'absolute',
+        transition: 'top .5s ease-in-out',
     },
 }));
 

@@ -1,23 +1,26 @@
-from models.components.box_dms import BoxDms, BoxDmsSource, BoxDmsTarget
-from models.components.history import History
+from models.components.box import BoxSource, BoxTarget
+from models.components.box_dms import BoxDms
+from models.components.box_queue import BoxQueue
+from operator import add
 
 
 class State:
-    def __init__(self, delays, coefficients, time, population, patient0):
+    def __init__(self, constants, delays, coefficients, time):
 
+        self._constants = constants
         self._delays = delays
         self._coefficients = coefficients
 
         self._boxes = {
-            'SE': BoxDmsSource('SE'),
-            'INCUB': BoxDms('INCUB', delays['dm_incub']),
+            'SE': BoxSource('SE'),
+            'INCUB': BoxQueue('INCUB', delays['dm_incub']),
             'IR': BoxDms('IR', delays['dm_r']),
             'IH': BoxDms('IH', delays['dm_h']),
             'SM': BoxDms('SM', delays['dm_sm']),
             'SI': BoxDms('SI', delays['dm_si']),
             'SS': BoxDms('SS', delays['dm_ss']),
-            'R': BoxDmsTarget('R'),
-            'DC': BoxDmsTarget('DC')
+            'R': BoxTarget('R'),
+            'DC': BoxTarget('DC')
         }
 
         # src -> [targets]
@@ -37,29 +40,34 @@ class State:
 
         self.time = time
 
-        self.e0 = coefficients['kpe'] * population
-        self.box('SE').add(self.e0 - patient0)
-        self.box('INCUB').add(patient0)
+        self.e0 = coefficients['kpe'] * constants['population']
+        self.box('SE').add(self.e0 - constants['patient0'])
+        self.box('INCUB').add(constants['patient0'])
 
-    def change_coefficient(self, name, value):
-        self._coefficients[name] = value
+    def change_value(self, name, value):
+        constants_name = ["population", "patient0", "lim_time"]
+        delays_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
+
+        coefficients_name = ['kpe', 'r', 'beta', 'pc_ir', 'pc_ih', 'pc_sm',
+                             'pc_si', 'pc_sm_si', 'pc_sm_out', 'pc_si_dc', 'pc_si_out', 'pc_h_ss', 'pc_h_r']
+
+        if name in constants_name:
+            self._constants[name] = value
+        elif name in delays_name:
+            self._delays[name] = value
+        elif name in coefficients_name:
+            self._coefficients[name] = value
         print(
             f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 
     def boxes(self):
         return self._boxes.values()
 
-    def boxnames(self):
-        return self._boxes.keys()
-
     def box(self, name):
         return self._boxes[name]
 
-    def output(self, name):
-        return self.box(name).output()
-
-    def delay(self, name):
-        return self._delays[name]
+    def output(self, name, past=0):
+        return self.box(name).output(past)
 
     def coefficient(self, name):
         return self._coefficients[name]
@@ -80,7 +88,7 @@ class State:
         for box in self.boxes():
             box.step()
         # print('***', self)
-        self.step_exposed(history)
+        self.step_exposed()
         self.generic_steps(self._moves)
 
     def generic_steps(self, moves):
@@ -89,41 +97,33 @@ class State:
             for dest_name, coefficient in moves[src_name]:
                 self.move(src_name, dest_name, coefficient * output)
 
-    def step_exposed(self, history):
-        previous_state = history.get_last_state(self.time - 1)
-        # do state = self to implement the initial formulae
-        state = history.get_last_state(self.time - 1)
-        n = state.box('SE').output() + state.box('INCUB').full_size() + \
-            state.box('IR').full_size() + state.box('IH').full_size() + \
-            state.box('R').full_size()
-        ir = previous_state.box('IR').full_size()
-        ih = previous_state.box('IH').full_size()
-        delta = self.coefficient('r') * self.coefficient('beta') * \
-            previous_state.box('SE').output() * (ir+ih) / n
-        # print(f'IR={ir} IH={ih} n={n} delta={delta}')
+    def step_exposed(self):
+        se = self.box('SE').output(1)
+        incub = self.box('INCUB').full_size(1)
+        ir = self.box('IR').full_size(1)
+        ih = self.box('IH').full_size(1)
+        r = self.box('R').full_size(1)
+        n = se + incub + ir + ih + r
+        delta = self.coefficient(
+            'r') * self.coefficient('beta') * se * (ir+ih) / n
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
         series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
-        # sum the sizes of boxes
-        lists = {name: [] for name in series.keys()}
-        input_lists = {name: [] for name in series.keys()}
-        output_lists = {name: [] for name in series.keys()}
-        for state in history.sorted_list():
-            sizes = {name: state.box(name).size()
-                     for name in self.boxnames()}
-            inputs = {name: state.box(name).input()
-                      for name in self.boxnames()}
-            outputs = {name: state.box(name).removed()
-                       for name in self.boxnames()}
-            for name in lists.keys():
-                lists[name].append(sum([sizes[n] for n in series[name]]))
-                input_lists[name].append(
-                    sum([inputs[n] for n in series[name]]))
-                output_lists[name].append(
-                    sum([outputs[n] for n in series[name]]))
-        for name in series.keys():
-            lists['input_' + name] = input_lists[name]
-            lists['output_' + name] = output_lists[name]
+
+        def sum_lists(lists):
+            res = [0] * len(lists[0])
+            for serie in lists:
+                res = list(map(add, serie, res))
+            return res
+
+        lists = dict()
+        for key in series.keys():
+            lists[key] = sum_lists(
+                [self.box(name).get_size_history() for name in series[key]])
+            lists['input_' + key] = sum_lists(
+                [self.box(name).get_input_history() for name in series[key]])
+            lists['output_' + key] = sum_lists(
+                [self.box(name).get_output_history() for name in series[key]])
         return lists

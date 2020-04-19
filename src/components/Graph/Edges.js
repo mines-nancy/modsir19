@@ -9,12 +9,20 @@ export const Edges = () => {
     }
 
     return Object.keys(nodes).map((name) =>
-        nodes[name].targets.map((target) => (
-            <Edge
-                key={`${name}-${target}-${version}`}
-                ref1={nodes[name].ref.current}
-                ref2={nodes[target].ref.current}
-            />
-        )),
+        nodes[name].targets.map((target) => {
+            const targetName = typeof target === 'string' ? target : target.name;
+            const options = typeof target === 'string' ? {} : target.options;
+
+            return (
+                <Edge
+                    key={`${name}-${targetName}-${version}`}
+                    ref1={nodes[name].ref.current}
+                    ref2={nodes[targetName].ref.current}
+                    options={options}
+                    anchorStartOptions={options.anchorStart}
+                    anchorEndOptions={options.anchorEnd}
+                />
+            );
+        }),
     );
 };

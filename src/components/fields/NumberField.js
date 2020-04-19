@@ -1,15 +1,28 @@
+import clsx from 'clsx';
 import React from 'react';
-import { Card, CardContent, Grid, TextField, makeStyles } from '@material-ui/core';
+import { Card, CardContent, TextField, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
     card: {
         maxWidth: (props) => props.width || 350,
         backgroundColor: (props) => props.color,
+        zIndex: 2,
+    },
+    container: {
+        display: 'flex',
+        justifyContent: 'space-between',
     },
     label: {
-        width: 'auto',
+        flex: '1 0 0',
         display: 'flex',
         alignItems: 'center',
+        paddingRight: 24,
+    },
+    fieldContainer: {
+        flex: (props) => (props.numberWidth ? `0 0 ${props.numberWidth}px` : '0 0 80px'),
+    },
+    field: {
+        width: (props) => props.numberWidth || 80,
     },
 });
 
@@ -17,26 +30,26 @@ const NumberField = ({
     label,
     input: { name, onChange, value, ...restInput },
     cardless = false,
+    className,
     ...props
 }) => {
     const classes = useStyles(props);
 
     const cardContent = (
-        <Grid container>
-            <Grid item xs={8} className={classes.label}>
-                {label}
-            </Grid>
-            <Grid item xs={4}>
+        <div className={clsx(classes.container, className)}>
+            <div className={classes.label}>{label}</div>
+            <div className={classes.fieldContainer}>
                 <TextField
                     inputProps={{ ...restInput, min: '0', step: '1' }}
                     {...props}
+                    className={classes.field}
                     name={name}
                     value={value}
                     onChange={onChange}
                     type="number"
                 />
-            </Grid>
-        </Grid>
+            </div>
+        </div>
     );
 
     if (cardless) {

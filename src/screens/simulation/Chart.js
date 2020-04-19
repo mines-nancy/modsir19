@@ -1,8 +1,9 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { useTranslate } from 'react-polyglot';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { addDays, eachDayOfInterval, format } from 'date-fns';
+import { useMediaQuery } from '@material-ui/core';
 
 const generateDateInterval = (startDate, numberOfDays) =>
     eachDayOfInterval({
@@ -10,19 +11,14 @@ const generateDateInterval = (startDate, numberOfDays) =>
         end: addDays(startDate, numberOfDays),
     }).map((date) => format(date, 'dd/MM/yyyy'));
 
-const useStyles = makeStyles((theme) =>
-    createStyles({
-        root: {
-            padding: 32,
-        },
-        container: {
-            maxWidth: 650,
-            [theme.breakpoints.up('xl')]: {
-                maxWidth: 750,
-            },
-        },
-    }),
-);
+const useStyles = makeStyles({
+    root: {
+        padding: 32,
+    },
+    container: {
+        position: 'fixed',
+    },
+});
 
 const data = ({ t, values, startDate }) => {
     const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
@@ -127,13 +123,22 @@ const getOptions = (t) => ({
 const Chart = ({ values, startDate }) => {
     const classes = useStyles();
     const t = useTranslate();
+    const theme = useTheme();
+    const medium = useMediaQuery(theme.breakpoints.up('md'));
+    const large = useMediaQuery(theme.breakpoints.up('lg'));
+    const chartSize = medium ? (large ? 700 : 500) : 300;
 
     const lineData = data({ t, values, startDate });
 
     return (
         <div className={classes.root}>
-            <div className={classes.container}>
-                <Line data={lineData} width="300" height="300" options={getOptions(t)} />
+            <div className={classes.container} style={{ width: chartSize, height: chartSize }}>
+                <Line
+                    data={lineData}
+                    width={chartSize}
+                    height={chartSize}
+                    options={getOptions(t)}
+                />
             </div>
         </div>
     );

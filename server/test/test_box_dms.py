@@ -2,9 +2,7 @@ import unittest
 from models.components.box_dms import BoxDms, BoxDmsSource, BoxDmsTarget
 
 
-class TestBasicFunction(unittest.TestCase):
-    # def setUp(self):
-    # self.box = BoxDms('DMS-10', 10)
+class TestBoxDms(unittest.TestCase):
 
     def test_box_dms1(self):
         box = BoxDms('DMS-10', 10)

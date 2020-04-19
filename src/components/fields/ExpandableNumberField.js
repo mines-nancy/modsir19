@@ -1,16 +1,16 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import NumberField from './NumberField';
 import { GraphContext } from '../Graph/GraphProvider';
 
-const ExpandableNumberField = ({ children, label, input, expanded }) => {
+const ExpandableNumberField = ({ children, label, input, ...props }) => {
     const { refresh } = useContext(GraphContext);
 
     return (
         <ExpansionPanel
-            expanded={expanded}
+            {...props}
             TransitionProps={{
                 addEndListener: (node, done) => {
                     node.addEventListener('transitionend', refresh, false);
@@ -24,7 +24,9 @@ const ExpandableNumberField = ({ children, label, input, expanded }) => {
             >
                 <NumberField cardless label={label} input={input} width="100%" />
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
+            <ExpansionPanelDetails>
+                <div>{children}</div>
+            </ExpansionPanelDetails>
         </ExpansionPanel>
     );
 };

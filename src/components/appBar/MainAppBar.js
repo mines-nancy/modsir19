@@ -30,7 +30,7 @@ export const MainAppBar = () => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="root" className={classes.appBar}>
+            <AppBar position="fixed" className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h6" className={classes.title}>
                         <Link component={RouterLink} color="inherit" to="/">
