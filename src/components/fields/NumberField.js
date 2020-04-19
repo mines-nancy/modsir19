@@ -7,6 +7,9 @@ const useStyles = makeStyles({
         maxWidth: (props) => props.width || 350,
         backgroundColor: (props) => props.color,
     },
+    root: {
+        paddingBottom: '16px !important',
+    },
     container: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -59,7 +62,7 @@ const NumberField = ({
 
     return (
         <Card className={classes.card} elevation={3}>
-            <CardContent>{cardContent}</CardContent>
+            <CardContent classes={classes}>{cardContent}</CardContent>
         </Card>
     );
 };
