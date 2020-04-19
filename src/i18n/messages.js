@@ -38,7 +38,7 @@ const messages = {
             r0: 'R0',
             s0: 'S0',
             lambda: 'Paramètre lambda',
-            beta: 'Paramètre beta',
+            beta: 'beta',
             compute: 'Calculer',
             kpe: 'Kpe',
             krd: 'Krd',
