@@ -5,9 +5,11 @@ Created on 04/04/2020
 
 @author: Paul Festor
 """
+import os
 
 from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
+from flask_sqlalchemy import SQLAlchemy
 
 from models.simple_sir import simple_sir
 from models.simulator import run_simulator, run_sir_h
@@ -15,6 +17,9 @@ from models.simulator import run_simulator, run_sir_h
 # Test master update to deploy 2
 
 app = Flask(__name__)
+app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
