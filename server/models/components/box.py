@@ -35,6 +35,9 @@ class Box:
     def output(self, past=0):
         return self._output[self._t-past]
 
+    def full_size(self, past=0):
+        return self.size(past) + self.input(past)
+
     def set_size(self, value):
         self._size[self._t] = value
 
@@ -43,9 +46,6 @@ class Box:
 
     def set_output(self, value):
         self._output[self._t] = value
-
-    def full_size(self):
-        return self.size() + self.input()
 
     def add(self, size):
         self._input[self._t] += size

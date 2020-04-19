@@ -1,5 +1,6 @@
 from models.components.box_past_input import BoxPastInput
 from models.components.history import History
+from models.components.box import BoxSource, BoxTarget
 
 
 class State:
@@ -36,13 +37,13 @@ class State:
         self.thr = thr
         self.trsr = trsr
 
-        self.exposed = BoxPastInput('E')
+        self.exposed = BoxSource('E')
         self.infected = BoxPastInput('M')
-        self.recovered = BoxPastInput('G')
+        self.recovered = BoxTarget('G')
         self.hospitalized = BoxPastInput('H')
         self.intensive_care = BoxPastInput('R')
         self.exit_intensive_care = BoxPastInput('SR')
-        self.dead = BoxPastInput('D')
+        self.dead = BoxTarget('D')
 
         self.time = time
         self.e0 = kpe * population
@@ -50,13 +51,13 @@ class State:
         self.infected.add(1)
 
     def reinit_boxes(self):
-        self.recovered.reinit()
-        self.exposed.reinit()
-        self.infected.reinit()
-        self.hospitalized.reinit()
-        self.intensive_care.reinit()
-        self.exit_intensive_care.reinit()
-        self.dead.reinit()
+        self.recovered.step()
+        self.exposed.step()
+        self.infected.step()
+        self.hospitalized.step()
+        self.intensive_care.step()
+        self.exit_intensive_care.step()
+        self.dead.step()
 
     def __str__(self):
         pop = self.exposed.size() + self.infected.size() + \

@@ -1,6 +1,6 @@
 from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
-from models.components.history import History
+from models.components.box_queue import BoxQueue
 from operator import add
 
 
@@ -13,7 +13,7 @@ class State:
 
         self._boxes = {
             'SE': BoxSource('SE'),
-            'INCUB': BoxDms('INCUB', delays['dm_incub']),
+            'INCUB': BoxQueue('INCUB', delays['dm_incub']),
             'IR': BoxDms('IR', delays['dm_r']),
             'IH': BoxDms('IH', delays['dm_h']),
             'SM': BoxDms('SM', delays['dm_sm']),
@@ -53,9 +53,9 @@ class State:
 
         if name in constants_name:
             self._constants[name] = value
-        if name in delays_name:
+        elif name in delays_name:
             self._delays[name] = value
-        if name in coefficients_name:
+        elif name in coefficients_name:
             self._coefficients[name] = value
         print(
             f'time = {self.time} new coeff {name} = {value} type={type(value)}')
@@ -63,17 +63,11 @@ class State:
     def boxes(self):
         return self._boxes.values()
 
-    def boxnames(self):
-        return self._boxes.keys()
-
     def box(self, name):
         return self._boxes[name]
 
-    def output(self, name):
-        return self.box(name).output()
-
-    def delay(self, name):
-        return self._delays[name]
+    def output(self, name, past=0):
+        return self.box(name).output(past)
 
     def coefficient(self, name):
         return self._coefficients[name]
@@ -94,7 +88,7 @@ class State:
         for box in self.boxes():
             box.step()
         # print('***', self)
-        self.step_exposed(history)
+        self.step_exposed()
         self.generic_steps(self._moves)
 
     def generic_steps(self, moves):
@@ -103,18 +97,15 @@ class State:
             for dest_name, coefficient in moves[src_name]:
                 self.move(src_name, dest_name, coefficient * output)
 
-    def step_exposed(self, history):
-        previous_state = history.get_last_state(self.time - 1)
-        # do state = self to implement the initial formulae
-        state = history.get_last_state(self.time - 1)
-        n = state.box('SE').output() + state.box('INCUB').full_size() + \
-            state.box('IR').full_size() + state.box('IH').full_size() + \
-            state.box('R').full_size()
-        ir = previous_state.box('IR').full_size()
-        ih = previous_state.box('IH').full_size()
-        delta = self.coefficient('r') * self.coefficient('beta') * \
-            previous_state.box('SE').output() * (ir+ih) / n
-        # print(f'IR={ir} IH={ih} n={n} delta={delta}')
+    def step_exposed(self):
+        se = self.box('SE').output(1)
+        incub = self.box('INCUB').full_size(1)
+        ir = self.box('IR').full_size(1)
+        ih = self.box('IH').full_size(1)
+        r = self.box('R').full_size(1)
+        n = se + incub + ir + ih + r
+        delta = self.coefficient(
+            'r') * self.coefficient('beta') * se * (ir+ih) / n
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
