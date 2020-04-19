@@ -7,23 +7,27 @@ class Box:
 
         self._t = 0
         self._size = [0]
-        self._input = [0]  # number of inputs
-        self._output = [0]  # number of outputs
+        self._input = [0]  # number of inputs before step
+        self._output = [0]  # number of possible outputs
+        self._removed = [0]  # number of removed elements
 
         self._input_history = [0]
         self._output_history = [0]
         self._size_history = [0]
+        self._removed_history = [0]
 
     def __str__(self):
         input = round(self.input(), 2)
         output = round(self.output(), 2)
+        removed = round(self.removed(), 2)
         size = round(self.size(), 2)
-        return f'Box {self._name} t={self._t} [{input}]\{size}/[{output}]'
+        return f'Box {self._name} t={self._t} [{input}]\{size}/[{output}->{removed}]'
 
     def step(self):
         self._input.append(0)
         self._output.append(0)
         self._size.append(0)
+        self._removed.append(0)
         self._t += 1
 
     def size(self, past=0):
@@ -34,6 +38,9 @@ class Box:
 
     def output(self, past=0):
         return self._output[self._t-past]
+
+    def removed(self, past=0):
+        return self._removed[self._t-past]
 
     def full_size(self, past=0):
         return self.size(past) + self.input(past)
@@ -52,6 +59,7 @@ class Box:
 
     def remove(self, size):
         self._output[self._t] -= size
+        self._removed[self._t] += size
 
     def get_input_history(self):
         return list(self._input)
@@ -62,6 +70,9 @@ class Box:
     def get_output_history(self):
         return list(self._output)
 
+    def get_removed_history(self):
+        return list(self._removed)
+
 
 class BoxSource(Box):
     def __init__(self, name):
@@ -71,9 +82,6 @@ class BoxSource(Box):
         super().step()
         self.set_output(self.output(1) + self.input(1))
         self.set_size(self.output(1) + self.input(1))
-
-    def size(self):
-        return self.output()
 
 
 class BoxTarget(Box):

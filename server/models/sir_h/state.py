@@ -129,5 +129,5 @@ class State:
             lists['input_' + key] = sum_lists(
                 [self.box(name).get_input_history() for name in series[key]])
             lists['output_' + key] = sum_lists(
-                [self.box(name).get_output_history() for name in series[key]])
+                [self.box(name).get_removed_history() for name in series[key]])
         return lists

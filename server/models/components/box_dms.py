@@ -6,7 +6,6 @@ class BoxDms(Box):
     def __init__(self, name, duration=math.inf):
         Box.__init__(self, name)
         self._duration = duration
-        self._removed = 0
 
     def __str__(self):
         input = round(self.input(), 2)
@@ -21,7 +20,6 @@ class BoxDms(Box):
 
         super().step()
 
-        self._removed = 0
         if self._duration == 0:
             self.set_output(previous_output + previous_input)
             return
@@ -31,28 +29,3 @@ class BoxDms(Box):
         self.set_size(previous_size + previous_input - new_output)
         self.set_output(previous_output + new_output)
         # print(f'output: {self._output}')
-
-    def removed(self):
-        return self._removed
-
-    def remove(self, size):
-        super().remove(size)
-        self._removed += size
-
-
-class BoxDmsSource(BoxSource):
-    def __init__(self, name):
-        BoxSource.__init__(self, name)
-
-    def step(self):
-        super().step()
-        self._removed = 0
-
-
-class BoxDmsTarget(BoxTarget):
-    def __init__(self, name):
-        BoxTarget.__init__(self, name)
-
-    def step(self):
-        super().step()
-        self._removed = 0
