@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
 import { CircularProgress, Grid, makeStyles, Card, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import LeaderLine from 'leader-line';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
@@ -19,6 +20,53 @@ import Chart from './Chart';
 import ExposedPopulation from './ExposedPopulation';
 import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
 import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
+
+const sirEdgesColorCode = '#00688B';
+const hEdgesColorCode = 'red';
+
+const NodeWithPercentContainer = ({ children }) => (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>{children}</div>
+);
+
+const GridWithLeftGutter = ({ children, ...props }) => (
+    <Grid container xs={12}>
+        <Grid container xs={2} />
+        <Grid container xs={10}>
+            <Grid {...props}>{children}</Grid>
+        </Grid>
+    </Grid>
+);
+
+const TotalPopulationBlock = () => {
+    const [expanded, setExpanded] = useState(false);
+    const handleExpansionChange = (evt, value) => setExpanded(value);
+
+    return (
+        <Field
+            name="population"
+            label="Population totale"
+            component={ExpandableNumberField}
+            expanded={expanded}
+            onChange={handleExpansionChange}
+            step="100000"
+        >
+            <Field className="small-margin-bottom" name="j_0" label="Début" component={DateField} />
+            <Field
+                className="small-margin-bottom"
+                name="patient0"
+                label="Patients infectés à J-0"
+                component={NumberField}
+                cardless
+            />
+            <Field
+                name="kpe"
+                label="Taux de population exposée"
+                numberInputLabel="Kpe"
+                component={ProportionField}
+            />
+        </Field>
+    );
+};
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -91,10 +139,7 @@ const formatParametersForModel = (parameters) =>
 
 const useStyles = makeStyles(() => ({
     configuration: {
-        marginTop: 30,
-        position: 'relative',
         width: '100%',
-        height: 800,
     },
 }));
 
@@ -115,9 +160,6 @@ const Simulation = () => {
     const [values, setValues] = useState();
     const [parameterIndex, setParameterIndex] = useState(0);
     const [parametersList, setParametersList] = useState([{ ...defaultParameters, start_time: 0 }]);
-
-    const [expanded, setExpanded] = useState(false);
-    const topShift = expanded ? 220 : 0;
 
     const handleSubmit = useCallback(
         (values) => {
@@ -162,8 +204,6 @@ const Simulation = () => {
         }
     };
 
-    const handleExpansionChange = (evt, value) => setExpanded(value);
-
     useEffect(() => {
         (async () => {
             const data = await getModelDebounced(
@@ -202,7 +242,7 @@ const Simulation = () => {
                         <CircularProgress />
                     )}
                 </Grid>
-                <Grid item xs={6} style={{ paddingRight: 16 }}>
+                <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
                     <Form
                         subscription={{}}
                         onSubmit={() => {
@@ -213,242 +253,417 @@ const Simulation = () => {
                             <div className={classes.configuration}>
                                 <AutoSave save={handleSubmit} debounce={200} />
                                 <GraphProvider>
-                                    <Node
-                                        name="population_totale"
-                                        targets={['population_saine_exposee']}
-                                        top={-10}
-                                        left="50%"
+                                    <Grid
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
                                     >
-                                        <Field
-                                            name="population"
-                                            label="Population totale"
-                                            component={ExpandableNumberField}
-                                            expanded={expanded}
-                                            onChange={handleExpansionChange}
-                                        >
-                                            <Field
-                                                className="small-margin-bottom"
-                                                name="j_0"
-                                                label="Début"
-                                                component={DateField}
-                                            />
-                                            <Field
-                                                className="small-margin-bottom"
-                                                name="patient0"
-                                                label="Patients infectés à J-0"
-                                                component={NumberField}
-                                                cardless
-                                            />
-                                            <Field
-                                                name="kpe"
-                                                label="Taux de population exposée"
-                                                numberInputLabel="Kpe"
-                                                component={ProportionField}
-                                            />
-                                        </Field>
-                                    </Node>
-                                    <Node
-                                        name="population_saine_exposee"
-                                        targets={['incubation']}
-                                        top={topShift + 100}
-                                        left="50%"
-                                    >
-                                        <ExposedPopulation />
-                                    </Node>
-                                    <Node
-                                        name="incubation"
-                                        targets={[]}
-                                        top={topShift + 380}
-                                        left="50%"
-                                    >
-                                        <Field
-                                            name="dm_incub"
-                                            label="Incubation"
-                                            component={DurationField}
-                                            color="rgba(164, 18, 179, 0.6)"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="percent_incubation"
-                                        targets={[
-                                            {
-                                                name: 'retablissement_spontane',
-                                                options: { path: 'straight' },
-                                            },
-                                            {
-                                                name: 'hospitalisation',
-                                                options: { path: 'straight' },
-                                            },
-                                        ]}
-                                        top={topShift + 450}
-                                        left="50%"
-                                    >
-                                        <SwitchPercentField
-                                            leftName="pc_ir"
-                                            rightName="pc_ih"
-                                            leftLabel="Rétablissements"
-                                            rightLabel="Hospitalisations"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="retablissement_spontane"
-                                        targets={[
-                                            {
-                                                name: 'guerison',
-                                                options: {
-                                                    anchorStart: { x: '10%' },
+                                        <Node
+                                            name="population_totale"
+                                            targets={[
+                                                {
+                                                    name: 'population_saine_exposee',
+                                                    options: {
+                                                        color: sirEdgesColorCode,
+                                                        path: 'straight',
+                                                    },
                                                 },
-                                            },
-                                        ]}
-                                        top={topShift + 550}
-                                        left="30%"
-                                    >
-                                        <Field
-                                            name="dm_r"
-                                            label={
-                                                <>
-                                                    Rétablissement
-                                                    <br />
-                                                    spontané
-                                                </>
-                                            }
-                                            component={DurationField}
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="hospitalisation"
-                                        targets={[]}
-                                        top={topShift + 550}
-                                        left="75%"
-                                    >
-                                        <Field
-                                            name="dm_h"
-                                            label="Hospitalisation"
-                                            component={DurationField}
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="percent_hospital"
-                                        targets={['soins_medicaux', 'soins_intensifs']}
-                                        top={topShift + 620}
-                                        left="75%"
-                                    >
-                                        <SwitchPercentField
-                                            leftName="pc_sm"
-                                            rightName="pc_si"
-                                            leftLabel="Soins médicaux"
-                                            rightLabel="Soins intensifs"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="soins_medicaux"
-                                        targets={[]}
-                                        top={topShift + 800}
-                                        left="35%"
-                                    >
-                                        <Field
-                                            name="dm_sm"
-                                            label="Soins médicaux"
-                                            component={DurationField}
-                                            color="rgba(255, 88, 132, 0.6)"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="soins_intensifs"
-                                        targets={[]}
-                                        top={topShift + 800}
-                                        left="75%"
-                                    >
-                                        <Field
-                                            name="dm_si"
-                                            label="Soins intensifs"
-                                            component={DurationField}
-                                            color="rgba(54, 162, 235, 0.6)"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="percent_soins_medicaux"
-                                        targets={['post_soins_medicaux', 'soins_intensifs']}
-                                        top={topShift + 875}
-                                        left="35%"
-                                    >
-                                        <SwitchPercentField
-                                            leftName="pc_sm_other"
-                                            rightName="pc_sm_si"
-                                            leftLabel="Sortie ou Décès"
-                                            rightLabel="Soins intensifs"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="percent_si"
-                                        targets={['gueris_ou_soins_suite', 'deces']}
-                                        top={topShift + 875}
-                                        left="75%"
-                                    >
-                                        <SwitchPercentField
-                                            leftName="pc_si_dc"
-                                            rightName="pc_si_out"
-                                            leftLabel="Décès"
-                                            rightLabel="Sortie"
-                                        />
-                                    </Node>
-                                    <Node name="deces" top={topShift + 1000} left="55%">
-                                        <Card
-                                            className={classes.card}
-                                            elevation={3}
-                                            style={{ backgroundColor: 'rgba(88, 88, 88, 0.6)' }}
+                                            ]}
                                         >
-                                            <CardContent>Décès</CardContent>
-                                        </Card>
-                                    </Node>
-                                    <Node
-                                        name="post_soins_medicaux"
-                                        targets={['deces', 'gueris_ou_soins_suite']}
-                                        top={topShift + 1000}
-                                        left="35%"
+                                            <TotalPopulationBlock />
+                                        </Node>
+                                    </Grid>
+                                    <Grid
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
                                     >
-                                        <SwitchPercentField
-                                            leftName="pc_sm_out"
-                                            rightName="pc_sm_dc"
-                                            leftLabel="Sortie"
-                                            rightLabel="Décès"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="gueris_ou_soins_suite"
-                                        targets={['soins_suite', 'guerison']}
-                                        top={topShift + 1200}
-                                        left="50%"
-                                    >
-                                        <SwitchPercentField
-                                            leftName="pc_h_r"
-                                            rightName="pc_h_ss"
-                                            leftLabel="Guérison"
-                                            rightLabel="Soins de suite"
-                                        />
-                                    </Node>
-                                    <Node
-                                        name="soins_suite"
-                                        targets={['guerison']}
-                                        top={topShift + 1300}
-                                        left="75%"
-                                    >
-                                        <Field
-                                            name="dm_ss"
-                                            label="Soins de suite"
-                                            component={DurationField}
-                                            color="rgba(54, 54, 255, 0.6)"
-                                        />
-                                    </Node>
-                                    <Node name="guerison" top={topShift + 1350} left="25%">
-                                        <Card
-                                            className={classes.card}
-                                            elevation={3}
-                                            style={{ backgroundColor: 'rgba(88, 235, 88, 0.6)' }}
+                                        <Node
+                                            name="population_saine_exposee"
+                                            targets={[
+                                                {
+                                                    name: 'incubation',
+                                                    options: {
+                                                        color: sirEdgesColorCode,
+                                                        path: 'straight',
+                                                    },
+                                                },
+                                            ]}
                                         >
-                                            <CardContent>Guérison</CardContent>
-                                        </Card>
-                                    </Node>
+                                            <ExposedPopulation />
+                                        </Node>
+                                    </Grid>
+                                    <Grid
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <NodeWithPercentContainer>
+                                            <Node name="incubation" targets={[]}>
+                                                <Field
+                                                    name="dm_incub"
+                                                    label="Incubation"
+                                                    component={DurationField}
+                                                    color="rgba(164, 18, 179, 0.6)"
+                                                />
+                                            </Node>
+                                            <Node
+                                                name="percent_incubation"
+                                                targets={[
+                                                    {
+                                                        name: 'retablissement_spontane',
+                                                        options: {
+                                                            color: sirEdgesColorCode,
+                                                            path: 'grid',
+                                                        },
+                                                    },
+                                                    {
+                                                        name: 'hospitalisation',
+                                                        options: {
+                                                            color: sirEdgesColorCode,
+                                                            path: 'grid',
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <SwitchPercentField
+                                                    leftName="pc_ir"
+                                                    rightName="pc_ih"
+                                                    leftLabel="Rétablissements"
+                                                    rightLabel="Hospitalisations"
+                                                />
+                                            </Node>
+                                        </NodeWithPercentContainer>
+                                    </Grid>
+                                    <Grid
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <Grid container xs={1} />
+                                        <Grid container xs={5} justify="flex-start">
+                                            <Node
+                                                name="retablissement_spontane"
+                                                alignmentBase="left"
+                                                targets={[
+                                                    {
+                                                        name: 'guerison',
+                                                        options: {
+                                                            color: sirEdgesColorCode,
+                                                            path: 'straight',
+                                                            anchorStart: { x: 25 },
+                                                            anchorEnd: { x: 25 },
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <Field
+                                                    name="dm_r"
+                                                    label={
+                                                        <>
+                                                            Rétablissement
+                                                            <br />
+                                                            spontané
+                                                        </>
+                                                    }
+                                                    component={DurationField}
+                                                />
+                                            </Node>
+                                        </Grid>
+
+                                        <Grid container xs={5} justify="flex-end">
+                                            <NodeWithPercentContainer>
+                                                <Node name="hospitalisation" targets={[]}>
+                                                    <Field
+                                                        name="dm_h"
+                                                        label="Hospitalisation"
+                                                        component={DurationField}
+                                                    />
+                                                </Node>
+                                                <Node
+                                                    name="percent_hospital"
+                                                    targets={[
+                                                        {
+                                                            name: 'soins_medicaux',
+                                                            options: {
+                                                                color: hEdgesColorCode,
+                                                                path: 'grid',
+                                                            },
+                                                        },
+                                                        {
+                                                            name: 'soins_intensifs',
+                                                            options: {
+                                                                color: hEdgesColorCode,
+                                                                path: 'grid',
+                                                            },
+                                                        },
+                                                    ]}
+                                                >
+                                                    <SwitchPercentField
+                                                        leftName="pc_sm"
+                                                        rightName="pc_si"
+                                                        leftLabel="Soins médicaux"
+                                                        rightLabel="Soins intensifs"
+                                                    />
+                                                </Node>
+                                            </NodeWithPercentContainer>
+                                        </Grid>
+                                        <Grid container xs={1} />
+                                    </Grid>
+
+                                    <GridWithLeftGutter
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <Grid container xs={5} justify="center">
+                                            <NodeWithPercentContainer>
+                                                <Node name="soins_medicaux" targets={[]}>
+                                                    <Field
+                                                        name="dm_sm"
+                                                        label="Soins médicaux"
+                                                        component={DurationField}
+                                                        color="rgba(255, 88, 132, 0.6)"
+                                                    />
+                                                </Node>
+                                                <Node
+                                                    name="percent_soins_medicaux"
+                                                    targets={[
+                                                        {
+                                                            name: 'post_soins_medicaux',
+                                                            options: {
+                                                                color: hEdgesColorCode,
+                                                                path: 'straight',
+                                                            },
+                                                        },
+                                                        {
+                                                            name: 'soins_intensifs',
+                                                            options: {
+                                                                color: hEdgesColorCode,
+                                                            },
+                                                        },
+                                                    ]}
+                                                >
+                                                    <SwitchPercentField
+                                                        leftName="pc_sm_other"
+                                                        rightName="pc_sm_si"
+                                                        leftLabel="Sortie ou Décès"
+                                                        rightLabel="Soins intensifs"
+                                                    />
+                                                </Node>
+                                            </NodeWithPercentContainer>
+                                        </Grid>
+                                        <Grid container xs={2} />
+                                        <Grid container xs={5} justify="center">
+                                            <Node
+                                                name="soins_intensifs"
+                                                targets={[
+                                                    {
+                                                        name: 'percent_si',
+                                                        options: {
+                                                            color: hEdgesColorCode,
+                                                            path: 'straight',
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <Field
+                                                    name="dm_si"
+                                                    label="Soins intensifs"
+                                                    component={DurationField}
+                                                    color="rgba(54, 162, 235, 0.6)"
+                                                />
+                                            </Node>
+                                        </Grid>
+                                    </GridWithLeftGutter>
+
+                                    <GridWithLeftGutter
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <Grid container xs={5} justify="center">
+                                            <Node
+                                                name="post_soins_medicaux"
+                                                targets={[
+                                                    {
+                                                        name: 'deces',
+                                                        options: {
+                                                            path: 'straight',
+                                                            color: hEdgesColorCode,
+                                                            anchorStart: { x: '100%', y: '50%' },
+                                                            anchorEnd: { x: '0%', y: '50%' },
+                                                        },
+                                                    },
+                                                    {
+                                                        name: 'gueris_ou_soins_suite',
+                                                        options: {
+                                                            color: hEdgesColorCode,
+                                                            path: 'grid',
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <SwitchPercentField
+                                                    leftName="pc_sm_out"
+                                                    rightName="pc_sm_dc"
+                                                    leftLabel="Sortie"
+                                                    rightLabel="Décès"
+                                                />
+                                            </Node>
+                                        </Grid>
+                                        <Grid container xs={2} justify="center">
+                                            <Node name="deces">
+                                                <Card
+                                                    className={classes.card}
+                                                    elevation={3}
+                                                    style={{
+                                                        backgroundColor: 'rgba(88, 88, 88, 0.6)',
+                                                    }}
+                                                >
+                                                    <CardContent>Décès</CardContent>
+                                                </Card>
+                                            </Node>
+                                        </Grid>
+                                        <Grid container xs={5} justify="center">
+                                            <Node
+                                                name="percent_si"
+                                                targets={[
+                                                    {
+                                                        name: 'gueris_ou_soins_suite',
+                                                        options: {
+                                                            color: hEdgesColorCode,
+                                                            path: 'grid',
+                                                        },
+                                                    },
+                                                    {
+                                                        name: 'deces',
+                                                        options: {
+                                                            path: 'straight',
+                                                            color: hEdgesColorCode,
+                                                            anchorStart: { x: '0%', y: '50%' },
+                                                            anchorEnd: { x: '100%', y: '50%' },
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <SwitchPercentField
+                                                    leftName="pc_si_dc"
+                                                    rightName="pc_si_out"
+                                                    leftLabel="Décès"
+                                                    rightLabel="Sortie"
+                                                />
+                                            </Node>
+                                        </Grid>
+                                    </GridWithLeftGutter>
+
+                                    <GridWithLeftGutter
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <Node
+                                            name="gueris_ou_soins_suite"
+                                            targets={[
+                                                {
+                                                    name: 'soins_suite',
+                                                    options: {
+                                                        color: hEdgesColorCode,
+                                                        path: 'grid',
+                                                    },
+                                                },
+                                                {
+                                                    name: 'after_soins_suite',
+                                                    options: {
+                                                        color: hEdgesColorCode,
+                                                        path: 'grid',
+                                                    },
+                                                },
+                                            ]}
+                                        >
+                                            <SwitchPercentField
+                                                leftName="pc_h_r"
+                                                rightName="pc_h_ss"
+                                                leftLabel="Guérison"
+                                                rightLabel="Soins de suite"
+                                            />
+                                        </Node>
+                                    </GridWithLeftGutter>
+
+                                    <GridWithLeftGutter container xs={12} justify="center">
+                                        <Grid container xs={7} />
+                                        <Grid container xs={5}>
+                                            <Node
+                                                name="soins_suite"
+                                                targets={[
+                                                    {
+                                                        name: 'after_soins_suite',
+                                                        options: {
+                                                            color: hEdgesColorCode,
+                                                            path: 'grid',
+                                                        },
+                                                    },
+                                                ]}
+                                            >
+                                                <Field
+                                                    name="dm_ss"
+                                                    label="Soins de suite"
+                                                    component={DurationField}
+                                                    color="rgba(54, 54, 255, 0.6)"
+                                                />
+                                            </Node>
+                                        </Grid>
+                                    </GridWithLeftGutter>
+
+                                    <GridWithLeftGutter
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <Node
+                                            name="after_soins_suite"
+                                            targets={[
+                                                {
+                                                    name: 'guerison',
+                                                    options: {
+                                                        color: hEdgesColorCode,
+                                                        path: 'grid',
+                                                    },
+                                                },
+                                            ]}
+                                        ></Node>
+                                    </GridWithLeftGutter>
+
+                                    <Grid
+                                        container
+                                        xs={12}
+                                        justify="center"
+                                        style={{ margin: '4rem 0' }}
+                                    >
+                                        <Grid container xs={1} />
+                                        <Grid container xs={11} justify="flex-start">
+                                            <Node name="guerison">
+                                                <Card
+                                                    className={classes.card}
+                                                    elevation={3}
+                                                    style={{
+                                                        backgroundColor: 'rgba(88, 235, 88, 0.6)',
+                                                    }}
+                                                >
+                                                    <CardContent>Guérison</CardContent>
+                                                </Card>
+                                            </Node>
+                                        </Grid>
+                                        <Grid container xs={6} justify="center" />
+                                    </Grid>
                                     <Edges />
                                 </GraphProvider>
                             </div>

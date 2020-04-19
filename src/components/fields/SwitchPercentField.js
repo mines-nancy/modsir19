@@ -1,10 +1,29 @@
 import React from 'react';
+import { useField } from 'react-final-form';
 import { Popover, Slider, makeStyles } from '@material-ui/core';
 import { Percent } from './Percent';
-import { useField } from 'react-final-form';
 
 const useStyles = makeStyles(() => ({
-    pie: { display: 'flex', padding: '15px 0', fontSize: 13, alignItems: 'center' },
+    pie: {
+        position: 'relative',
+        padding: '15px 0',
+        fontSize: 13,
+        cursor: 'pointer',
+        transition: 'transform .3s ease-in-out',
+        zIndex: 2,
+        '&:hover, &.open': {
+            transform: 'scale(1.3)',
+        },
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerPie: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: '#eee',
+    },
     sliderLabels: {
         width: 350,
         padding: '20px 20px 20px 20px',
@@ -36,15 +55,16 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
 
     return (
         <>
-            <div className={classes.pie}>
-                <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
-                <div onClick={handleClick} style={{ cursor: 'pointer' }}>
-                    <Percent percent={innerValue} />
+            <div className={`${classes.pie} ${open ? 'open' : ''}`} onClick={handleClick}>
+                <div className={classes.innerPie}>
+                    <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
+                    <div>
+                        <Percent percent={innerValue} />
+                    </div>
+                    <div style={{ paddingLeft: 5, paddingBottom: 2 }}>{input2.value}%</div>
                 </div>
-                <div style={{ paddingLeft: 5, paddingBottom: 2 }}>{input2.value}%</div>
             </div>
             <Popover
-                PaperProps={{ style: { marginTop: 50 } }}
                 open={open}
                 anchorEl={anchorEl}
                 onClose={handleClose}

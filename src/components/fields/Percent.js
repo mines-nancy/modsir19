@@ -1,11 +1,11 @@
 import React from 'react';
 
-export const Percent = ({ percent }) => {
+export const Percent = ({ percent, size = '20' }) => {
     const circumference = 31.42;
     const strokeDash = Math.round((percent * circumference) / 100);
 
     return (
-        <svg height="20" width="20" viewBox="0 0 20 20">
+        <svg height={size} width={size} viewBox="0 0 20 20">
             <circle r="8" cx="10" cy="10" stroke-width="1" stroke="black" fill="white" />
             <circle
                 r="4"

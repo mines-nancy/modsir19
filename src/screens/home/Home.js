@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { makeStyles, Grid, Typography, Button } from '@material-ui/core';
 
 import Layout from '../../components/Layout';
-import exampleImage from './visualisation-example.png';
+import exampleImage from './visualisation-example.webp';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -107,7 +107,9 @@ const Home = () => {
                         </p>
 
                         <p>
-                            <strong>Les « trajectoires de soins hospitaliers » simplifiées:</strong>
+                            <strong>
+                                2. Les « trajectoires de soins hospitaliers » simplifiées:
+                            </strong>
 
                             <ul>
                                 <li>SI : soins intensifs</li>
