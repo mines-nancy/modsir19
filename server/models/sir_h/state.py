@@ -25,22 +25,24 @@ class State:
 
         # src -> [targets]
         self._moves = {
-            'INCUB': [('IR', coefficients['pc_ir']), ('IH', coefficients['pc_ih'])],
+            'INCUB': [('IR', self.coefficient('pc_ir')), ('IH', self.coefficient('pc_ih'))],
             'IR': [('R', 1)],
-            'IH': [('SM', coefficients['pc_sm']), ('SI', coefficients['pc_si'])],
-            'SM': [('SI', coefficients['pc_sm_si']),
-                   ('SS', coefficients['pc_sm_out'] * coefficients['pc_h_ss']),
-                   ('R', coefficients['pc_sm_out'] * coefficients['pc_h_r'])],
-            'SI': [('DC', coefficients['pc_si_dc']),
-                   ('SS', coefficients['pc_si_out']
-                    * coefficients['pc_h_ss']),
-                   ('R', coefficients['pc_si_out'] * coefficients['pc_h_r'])],
+            'IH': [('SM', self.coefficient('pc_sm')), ('SI', self.coefficient('pc_si'))],
+            'SM': [('SI', self.coefficient('pc_sm_si')),
+                   ('DC', self.coefficient('pc_sm_dc')),
+                   ('SS', self.coefficient('pc_sm_out')
+                    * self.coefficient('pc_h_ss')),
+                   ('R', self.coefficient('pc_sm_out') * self.coefficient('pc_h_r'))],
+            'SI': [('DC', self.coefficient('pc_si_dc')),
+                   ('SS', self.coefficient('pc_si_out')
+                    * self.coefficient('pc_h_ss')),
+                   ('R', self.coefficient('pc_si_out') * self.coefficient('pc_h_r'))],
             'SS': [('R', 1)],
         }
 
         self.time = time
 
-        self.e0 = coefficients['kpe'] * constants['population']
+        self.e0 = self.coefficient('kpe') * constants['population']
         self.box('SE').add(self.e0 - constants['patient0'])
         self.box('INCUB').add(constants['patient0'])
 
@@ -70,7 +72,9 @@ class State:
         return self.box(name).output(past)
 
     def coefficient(self, name):
-        return self._coefficients[name]
+        if name in self._coefficients:
+            return self._coefficients[name]
+        return 0
 
     def __str__(self):
         pop = sum([box.full_size() for box in self.boxes()])
