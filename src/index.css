@@ -12,10 +12,6 @@ code {
     monospace;
 }
 
-svg.leader-line(
-  z-index: 1;
-)
-
 .small-margin-bottom {
-  margin-bottom: 16px;
+  margin-bottom: 16px !important;
 }

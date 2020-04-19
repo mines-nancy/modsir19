@@ -12,10 +12,11 @@ import AutoSave from '../../components/fields/AutoSave';
 
 import api from '../../api';
 import Chart from './Chart';
+import PeriodStepper from './PeriodStepper';
 import TotalPopulation from './TotalPopulation';
 import ExposedPopulation from './ExposedPopulation';
 import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
-import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
+import { addDays, differenceInDays, isSameDay } from 'date-fns';
 
 const sirEdgesColorCode = '#00688B';
 const hEdgesColorCode = 'red';
@@ -70,8 +71,6 @@ const mapObject = (obj, keys, fn) =>
           }, {})
         : {};
 
-const startDate = new Date(2020, 0, 23);
-
 const defaultParameters = {
     population: 500000,
     patient0: 1,
@@ -97,8 +96,7 @@ const defaultParameters = {
     pc_h_ss: 20,
     pc_h_r: round(100 - 20),
     lim_time: 250,
-    j_0: startDate,
-    rules: [],
+    start_date: new Date(2020, 0, 23),
 };
 
 const percentFields = [
@@ -123,10 +121,11 @@ const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
-const formatParametersForModel = ({ rules, j_0, ...parameters }) =>
+const formatParametersForModel = ({ rules, start_date, ...parameters }, firstPeriodStartDate) =>
     removeMedicalCareSplit({
         ...parameters,
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
+        start_time: differenceInDays(start_date, firstPeriodStartDate),
     });
 
 const useStyles = makeStyles(() => ({
@@ -143,44 +142,75 @@ const getModel = async (parameterList) => {
     return data;
 };
 
-const checkHasSameDate = (date) => ({ j_0 }) => isSameDay(j_0, date);
+const checkHasSameDate = (date) => ({ start_date }) => isSameDay(start_date, date);
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 const Simulation = () => {
     const classes = useStyles();
     const [values, setValues] = useState();
-    const [parameterIndex, setParameterIndex] = useState(0);
-    const [parametersList, setParametersList] = useState([{ ...defaultParameters, start_time: 0 }]);
+    const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(0);
+    const [periods, setPeriods] = useState([
+        { ...defaultParameters, start_time: 0, name: 'Période initiale' },
+    ]);
+    const [expanded, setExpanded] = useState(false);
+    const handleExpansionChange = (evt, value) => setExpanded(value);
 
     const handleSubmit = useCallback(
         (values) => {
-            const parametersListWithoutCurrent = [...parametersList];
-            parametersListWithoutCurrent.splice(parameterIndex, 1);
-            if (parametersListWithoutCurrent.some(checkHasSameDate(values.j_0))) {
-                alert("Vous ne pouvez pas choisir la même date qu'une autre période");
+            const periodsWithoutCurrent = [...periods];
+            periodsWithoutCurrent.splice(selectedPeriodIndex, 1);
+
+            if (periodsWithoutCurrent.some(checkHasSameDate(values.start_date))) {
                 return;
             }
 
-            setParametersList((list) => {
+            setPeriods((list) => {
                 const newList = [...list];
-                newList[parameterIndex] = values;
+                newList[selectedPeriodIndex] = values;
+                newList.sort((a, b) => a.start_date - b.start_date);
+                setSelectedPeriodIndex(
+                    newList.findIndex((period) => period.start_date === values.start_date),
+                );
                 return newList;
             });
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [parameterIndex],
+        [selectedPeriodIndex],
     );
 
-    const handleAddSimulation = useCallback(() => {
-        setParametersList((list) => {
-            const lastItem = list[list.length - 1];
-            return [...list, { ...lastItem, j_0: addDays(lastItem.j_0, 1) }];
-        });
-    }, []);
+    const refreshLines = () => {
+        window.dispatchEvent(new CustomEvent('graph:refresh:start'));
 
-    const handleRemoveParameter = (index) => () => {
-        setParametersList((list) => {
+        setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+        }, 16);
+    };
+
+    const handleAddPeriod = () => {
+        setPeriods((list) => {
+            const lastItem = list[list.length - 1];
+            const startDate = addDays(lastItem.start_date, 1);
+
+            return [
+                ...list,
+                {
+                    ...lastItem,
+                    start_date: startDate,
+                    name: 'Nouvelle période',
+                },
+            ];
+        });
+
+        if (expanded) {
+            refreshLines();
+        } else {
+            setExpanded(true);
+        }
+    };
+
+    const handleRemovePeriod = (index) => {
+        setPeriods((list) => {
             // Can't remove if there's only 1 parameter
             if (list.length === 1) {
                 return;
@@ -191,58 +221,50 @@ const Simulation = () => {
             return newList;
         });
 
+        refreshLines();
+
         // Reset index if current index is deleted
-        if (parameterIndex === index) {
-            setParameterIndex(0);
+        if (selectedPeriodIndex === index) {
+            setSelectedPeriodIndex(0);
         }
     };
 
     useEffect(() => {
         (async () => {
             const data = await getModelDebounced(
-                parametersList.map((parameters) => formatParametersForModel(parameters)),
+                periods.map((parameters) =>
+                    formatParametersForModel(parameters, periods[0].start_date),
+                ),
             );
             setValues(data);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [JSON.stringify(parametersList)]);
+    }, [JSON.stringify(periods)]);
 
     return (
         <Layout>
             <Grid container>
                 <Grid item xs={6}>
-                    <div style={{ display: /*'flex'*/ 'none' }}>
-                        {parametersList.map((p, index) => (
-                            <div style={{ paddingRight: 10 }}>
-                                <button
-                                    style={{
-                                        color: index === parameterIndex ? 'blue' : 'black',
-                                    }}
-                                    onClick={() => setParameterIndex(index)}
-                                >
-                                    Période {`j${differenceInDays(p.j_0, startDate)}`} (
-                                    {format(p.j_0, 'dd/MM/yyyy')})
-                                </button>
-                                {parametersList.length > 1 && (
-                                    <button onClick={handleRemoveParameter(index)}>X</button>
-                                )}
-                            </div>
-                        ))}
-                        <button onClick={handleAddSimulation}>Ajouter plus de périodes</button>
-                    </div>
                     {values ? (
-                        <Chart values={values} startDate={startDate} />
+                        <Chart values={values} startDate={periods[0].start_date} />
                     ) : (
                         <CircularProgress />
                     )}
                 </Grid>
                 <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
+                    <PeriodStepper
+                        periods={periods}
+                        selectedPeriodIndex={selectedPeriodIndex}
+                        setSelectedPeriodIndex={setSelectedPeriodIndex}
+                        onAddPeriod={handleAddPeriod}
+                        onRemovePeriod={handleRemovePeriod}
+                    />
                     <Form
                         subscription={{}}
                         onSubmit={() => {
                             /* Useless since we use a listener on autosave */
                         }}
-                        initialValues={parametersList[parameterIndex]}
+                        initialValues={periods[selectedPeriodIndex]}
                         render={() => (
                             <div className={classes.configuration}>
                                 <AutoSave save={handleSubmit} debounce={200} />
@@ -265,7 +287,10 @@ const Simulation = () => {
                                                 },
                                             ]}
                                         >
-                                            <TotalPopulation />
+                                            <TotalPopulation
+                                                expanded={expanded}
+                                                handleExpansionChange={handleExpansionChange}
+                                            />
                                         </Node>
                                     </Grid>
                                     <Grid

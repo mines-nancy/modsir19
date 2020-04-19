@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Field } from 'react-final-form';
 
+import TextField from '../../components/fields/TextField';
 import DateField from '../../components/fields/DateField';
 import NumberField from '../../components/fields/NumberField';
 import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
 import ProportionField from '../../components/fields/ProportionField';
 
-const TotalPopulation = () => {
-    const [expanded, setExpanded] = useState(false);
-    const handleExpansionChange = (evt, value) => setExpanded(value);
-
+const TotalPopulation = ({ expanded, handleExpansionChange }) => {
     return (
         <Field
             name="population"
@@ -19,7 +17,18 @@ const TotalPopulation = () => {
             onChange={handleExpansionChange}
             step="100000"
         >
-            <Field className="small-margin-bottom" name="j_0" label="Début" component={DateField} />
+            <Field
+                classes={{ root: 'small-margin-bottom' }}
+                name="name"
+                label="Nom de la période"
+                component={TextField}
+            />
+            <Field
+                className="small-margin-bottom"
+                name="start_date"
+                label="Début"
+                component={DateField}
+            />
             <Field
                 className="small-margin-bottom"
                 name="patient0"
