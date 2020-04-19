@@ -25,7 +25,31 @@ export const Edge = ({
                     }),
                 );
 
-                line.setOptions({ startSocket: 'bottom', endSocket: 'top', size: 3, ...options });
+                let isTransitionFinished = true;
+                const start = () =>
+                    window.requestAnimationFrame(() => {
+                        line.position();
+
+                        if (!isTransitionFinished) {
+                            start();
+                        }
+                    });
+
+                window.addEventListener('graph:refresh:start', () => {
+                    isTransitionFinished = false;
+                    start();
+                });
+
+                window.addEventListener('graph:refresh:stop', () => {
+                    isTransitionFinished = true;
+                });
+
+                line.setOptions({
+                    startSocket: 'bottom',
+                    endSocket: 'top',
+                    size: 3,
+                    ...options,
+                });
             }, 500);
         }
 
