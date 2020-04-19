@@ -23,8 +23,8 @@ export const Node = ({ name, targets = [], alignmentBase = 'center', children, s
     }, [name, ref]);
 
     return (
-        <div className={classes.root} style={{ ...style }} ref={ref}>
-            {children}
+        <div className={classes.root} style={{ ...style }}>
+            <div ref={ref}>{children}</div>
         </div>
     );
 };
