@@ -51,7 +51,7 @@ source server/.env
 
 ## Base de données:
 
-Les modèles de bases de données sont situès dans le répertoire server/db_model/models
+Les modèles de bases de données sont situés dans le répertoire server/db_model/models
 
 On utilise alembic https://alembic.sqlalchemy.org/en/latest/autogenerate.html pour les migrations/évolutions de la base de données  
 
