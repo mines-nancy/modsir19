@@ -6,6 +6,7 @@ const useStyles = makeStyles(() => ({
     root: {
         display: 'block',
         transition: 'top .5s ease-in-out',
+        zIndex: 2,
     },
 }));
 

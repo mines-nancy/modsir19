@@ -5,12 +5,24 @@ import { Percent } from './Percent';
 
 const useStyles = makeStyles(() => ({
     pie: {
-        display: 'flex',
+        position: 'relative',
         padding: '15px 0',
         fontSize: 13,
-        alignItems: 'center',
         cursor: 'pointer',
+        transition: 'transform .3s ease-in-out',
+        zIndex: 2,
+        '&:hover': {
+            transform: 'scale(1.3)',
+        },
+        display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerPie: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: '#eee',
     },
     sliderLabels: {
         width: 350,
@@ -27,7 +39,6 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [innerValue, setInnerValue] = React.useState(input2.value);
-    const [hover, setHover] = React.useState(false);
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -40,25 +51,18 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
         handleClose();
     };
 
-    const handleHoverChange = (value) => () => {
-        setHover(value);
-    };
-
     const open = Boolean(anchorEl);
 
     return (
         <>
-            <div
-                className={classes.pie}
-                onClick={handleClick}
-                onMouseEnter={handleHoverChange(true)}
-                onMouseLeave={handleHoverChange(false)}
-            >
-                <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
-                <div>
-                    <Percent percent={innerValue} size={hover ? '23' : '20'} />
+            <div className={classes.pie} onClick={handleClick}>
+                <div className={classes.innerPie}>
+                    <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
+                    <div>
+                        <Percent percent={innerValue} />
+                    </div>
+                    <div style={{ paddingLeft: 5, paddingBottom: 2 }}>{input2.value}%</div>
                 </div>
-                <div style={{ paddingLeft: 5, paddingBottom: 2 }}>{input2.value}%</div>
             </div>
             <Popover
                 open={open}
