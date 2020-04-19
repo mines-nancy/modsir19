@@ -32,9 +32,6 @@ class BoxDms(Box):
         self.set_output(previous_output + new_output)
         # print(f'output: {self._output}')
 
-    def full_size(self):
-        return self.size() + self.input()
-
     def removed(self):
         return self._removed
 

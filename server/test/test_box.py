@@ -53,6 +53,12 @@ class TestBox(unittest.TestCase):
         self.assertEqual(box.input(), 100)
         self.assertEqual(box.size(), 0)
         self.assertEqual(box.output(), 0)
+
+        box.step()
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 100)
+        self.assertEqual(box.output(), 100)
+
         box.step()
         self.assertEqual(box.input(), 0)
         self.assertEqual(box.size(), 100)
@@ -63,6 +69,12 @@ class TestBox(unittest.TestCase):
         self.assertEqual(box.input(), 0)
         self.assertEqual(box.size(), 110)
         self.assertEqual(box.output(), 110)
+
+        box.remove(10)
+        box.step()
+        self.assertEqual(box.input(), 0)
+        self.assertEqual(box.size(), 100)
+        self.assertEqual(box.output(), 100)
 
     def test_box_target(self):
         box = BoxTarget('TARGET')

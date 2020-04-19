@@ -1,5 +1,7 @@
-from models.components.box_dms import BoxDms, BoxDmsSource, BoxDmsTarget
+from models.components.box import BoxSource, BoxTarget
+from models.components.box_dms import BoxDms
 from models.components.history import History
+from operator import add
 
 
 class State:
@@ -10,15 +12,15 @@ class State:
         self._coefficients = coefficients
 
         self._boxes = {
-            'SE': BoxDmsSource('SE'),
+            'SE': BoxSource('SE'),
             'INCUB': BoxDms('INCUB', delays['dm_incub']),
             'IR': BoxDms('IR', delays['dm_r']),
             'IH': BoxDms('IH', delays['dm_h']),
             'SM': BoxDms('SM', delays['dm_sm']),
             'SI': BoxDms('SI', delays['dm_si']),
             'SS': BoxDms('SS', delays['dm_ss']),
-            'R': BoxDmsTarget('R'),
-            'DC': BoxDmsTarget('DC')
+            'R': BoxTarget('R'),
+            'DC': BoxTarget('DC')
         }
 
         # src -> [targets]
@@ -118,24 +120,19 @@ class State:
     def extract_series(self, history):
         series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
-        # sum the sizes of boxes
-        lists = {name: [] for name in series.keys()}
-        input_lists = {name: [] for name in series.keys()}
-        output_lists = {name: [] for name in series.keys()}
-        for state in history.sorted_list():
-            sizes = {name: state.box(name).size()
-                     for name in self.boxnames()}
-            inputs = {name: state.box(name).input()
-                      for name in self.boxnames()}
-            outputs = {name: state.box(name).removed()
-                       for name in self.boxnames()}
-            for name in lists.keys():
-                lists[name].append(sum([sizes[n] for n in series[name]]))
-                input_lists[name].append(
-                    sum([inputs[n] for n in series[name]]))
-                output_lists[name].append(
-                    sum([outputs[n] for n in series[name]]))
-        for name in series.keys():
-            lists['input_' + name] = input_lists[name]
-            lists['output_' + name] = output_lists[name]
+
+        def sum_lists(lists):
+            res = [0] * len(lists[0])
+            for serie in lists:
+                res = list(map(add, serie, res))
+            return res
+
+        lists = dict()
+        for key in series.keys():
+            lists[key] = sum_lists(
+                [self.box(name).get_size_history() for name in series[key]])
+            lists['input_' + key] = sum_lists(
+                [self.box(name).get_input_history() for name in series[key]])
+            lists['output_' + key] = sum_lists(
+                [self.box(name).get_output_history() for name in series[key]])
         return lists
