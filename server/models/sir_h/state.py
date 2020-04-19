@@ -80,9 +80,6 @@ class State:
         pop = sum([box.full_size() for box in self.boxes()])
         return f'{self.box("SE")} {self.box("INCUB")} {self.box("IR")} {self.box("IH")} {self.box("SM")} {self.box("SI")} {self.box("SS")} {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
 
-    def get_time0(self):
-        return 0
-
     def move(self, src_name, dest_name, delta):
         self.box(src_name).remove(delta)
         self.box(dest_name).add(delta)

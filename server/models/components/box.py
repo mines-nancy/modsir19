@@ -11,11 +11,6 @@ class Box:
         self._output = [0]  # number of possible outputs
         self._removed = [0]  # number of removed elements
 
-        self._input_history = [0]
-        self._output_history = [0]
-        self._size_history = [0]
-        self._removed_history = [0]
-
     def __str__(self):
         input = round(self.input(), 2)
         output = round(self.output(), 2)
@@ -90,8 +85,9 @@ class BoxSource(Box):
 
     def step(self):
         super().step()
-        self.set_output(self.output(1) + self.input(1))
-        self.set_size(self.output(1) + self.input(1))
+        new_output = self.output(1) + self.input(1)
+        self.set_output(new_output)
+        self.set_size(new_output)
 
 
 class BoxTarget(Box):
