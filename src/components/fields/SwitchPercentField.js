@@ -10,6 +10,7 @@ const useStyles = makeStyles(() => ({
         fontSize: 13,
         alignItems: 'center',
         cursor: 'pointer',
+        justifyContent: 'center',
     },
     sliderLabels: {
         width: 350,

@@ -25,6 +25,27 @@ export const Edge = ({
                     }),
                 );
 
+                let refreshLinePositionsInterval = null;
+                const start = () => {
+                    refreshLinePositionsInterval = setInterval(() => {
+                        window.requestAnimationFrame(() => line.position());
+                    }, 200);
+                };
+                const stop = () => {
+                    if (refreshLinePositionsInterval) {
+                        clearInterval(refreshLinePositionsInterval);
+                        refreshLinePositionsInterval = null;
+                    }
+                };
+                window.addEventListener('graph:refresh:start', () => {
+                    start();
+                    setTimeout(stop, 10000);
+                });
+
+                window.addEventListener('graph:refresh:stop', () => {
+                    setTimeout(stop, 1000);
+                });
+
                 line.setOptions({ startSocket: 'bottom', endSocket: 'top', size: 3, ...options });
             }, 500);
         }

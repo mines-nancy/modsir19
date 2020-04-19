@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import {
     ExpansionPanel,
     ExpansionPanelSummary,
@@ -6,9 +6,9 @@ import {
     makeStyles,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import 'custom-event-polyfill';
 
 import NumberField from './NumberField';
-import { GraphContext } from '../Graph/GraphProvider';
 
 const useStyles = makeStyles((theme) => ({
     details: {
@@ -24,7 +24,6 @@ const preventDefault = (evt) => {
 };
 
 const ExpandableNumberField = ({ children, label, input, step, ...props }) => {
-    const { refresh } = useContext(GraphContext);
     const classes = useStyles();
 
     return (
@@ -32,7 +31,15 @@ const ExpandableNumberField = ({ children, label, input, step, ...props }) => {
             {...props}
             TransitionProps={{
                 addEndListener: (node, done) => {
-                    node.addEventListener('transitionend', refresh, false);
+                    window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+
+                    node.addEventListener(
+                        'transitionend',
+                        () => {
+                            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+                        },
+                        false,
+                    );
                 },
             }}
         >
