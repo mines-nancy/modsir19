@@ -110,8 +110,12 @@ class State:
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self, history):
-        series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
+        sizes = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
+                 'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
+        inputs = {'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
+        outputs = {'SE': ['SE'],  'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
+                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], }
 
         def sum_lists(lists):
             res = [0] * len(lists[0])
@@ -120,11 +124,13 @@ class State:
             return res
 
         lists = dict()
-        for key in series.keys():
+        for key in sizes.keys():
             lists[key] = sum_lists(
-                [self.box(name).get_size_history() for name in series[key]])
+                [self.box(name).get_size_history() for name in sizes[key]])
+        for key in inputs.keys():
             lists['input_' + key] = sum_lists(
-                [self.box(name).get_input_history() for name in series[key]])
+                [self.box(name).get_input_history() for name in inputs[key]])
+        for key in outputs.keys():
             lists['output_' + key] = sum_lists(
-                [self.box(name).get_removed_history() for name in series[key]])
+                [self.box(name).get_removed_history() for name in outputs[key]])
         return lists
