@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
 import { CircularProgress, Grid, makeStyles, Card, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import LeaderLine from 'leader-line';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
@@ -23,6 +22,33 @@ import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
 
 const sirEdgesColorCode = '#00688B';
 const hEdgesColorCode = 'red';
+
+const colors = {
+    incubation: {
+        main: 'rgb(164, 18, 179)',
+        bg: 'rgba(164, 18, 179, 0.6)',
+    },
+    normal_care: {
+        main: 'rgb(255, 88, 132)',
+        bg: 'rgba(255, 88, 132, 0.6)',
+    },
+    intensive_care: {
+        main: 'rgb(54, 162, 235)',
+        bg: 'rgba(54, 162, 235, 0.6)',
+    },
+    following_care: {
+        main: 'rgb(54, 54, 255)',
+        bg: 'rgba(54, 54, 255, 0.6)',
+    },
+    death: {
+        main: 'rgb(88, 88, 88)',
+        bg: 'rgba(88, 88, 88, 0.6)',
+    },
+    recovered: {
+        main: 'rgb(88, 235, 88)',
+        bg: 'rgba(88, 235, 88, 0.6)',
+    },
+};
 
 const NodeWithPercentContainer = ({ children }) => (
     <div style={{ display: 'flex', flexDirection: 'column' }}>{children}</div>
@@ -131,10 +157,10 @@ const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
-const formatParametersForModel = (parameters) =>
+const formatParametersForModel = ({ rules, j_0, ...parameters }) =>
     removeMedicalCareSplit({
         ...parameters,
-        ...mapObject(parameters, percentFields, (x) => x / 100),
+        ...mapObject(parameters, percentFields, (x) => round(x / 100)),
     });
 
 const useStyles = makeStyles(() => ({
@@ -307,7 +333,7 @@ const Simulation = () => {
                                                     name="dm_incub"
                                                     label="Incubation"
                                                     component={DurationField}
-                                                    color="rgba(164, 18, 179, 0.6)"
+                                                    color={colors.incubation.bg}
                                                 />
                                             </Node>
                                             <Node
@@ -334,6 +360,8 @@ const Simulation = () => {
                                                     rightName="pc_ih"
                                                     leftLabel="Rétablissements"
                                                     rightLabel="Hospitalisations"
+                                                    leftColor={colors.recovered.main}
+                                                    rightColor={colors.normal_care.main}
                                                 />
                                             </Node>
                                         </NodeWithPercentContainer>
@@ -408,6 +436,8 @@ const Simulation = () => {
                                                         rightName="pc_si"
                                                         leftLabel="Soins médicaux"
                                                         rightLabel="Soins intensifs"
+                                                        leftColor={colors.normal_care.main}
+                                                        rightColor={colors.intensive_care.main}
                                                     />
                                                 </Node>
                                             </NodeWithPercentContainer>
@@ -428,7 +458,7 @@ const Simulation = () => {
                                                         name="dm_sm"
                                                         label="Soins médicaux"
                                                         component={DurationField}
-                                                        color="rgba(255, 88, 132, 0.6)"
+                                                        color={colors.normal_care.bg}
                                                     />
                                                 </Node>
                                                 <Node
@@ -454,6 +484,8 @@ const Simulation = () => {
                                                         rightName="pc_sm_si"
                                                         leftLabel="Sortie ou Décès"
                                                         rightLabel="Soins intensifs"
+                                                        leftColor="grey"
+                                                        rightColor={colors.intensive_care.main}
                                                     />
                                                 </Node>
                                             </NodeWithPercentContainer>
@@ -476,7 +508,7 @@ const Simulation = () => {
                                                     name="dm_si"
                                                     label="Soins intensifs"
                                                     component={DurationField}
-                                                    color="rgba(54, 162, 235, 0.6)"
+                                                    color={colors.intensive_care.bg}
                                                 />
                                             </Node>
                                         </Grid>
@@ -515,6 +547,8 @@ const Simulation = () => {
                                                     rightName="pc_sm_dc"
                                                     leftLabel="Sortie"
                                                     rightLabel="Décès"
+                                                    leftColor={colors.recovered.main}
+                                                    rightColor={colors.death.main}
                                                 />
                                             </Node>
                                         </Grid>
@@ -524,7 +558,7 @@ const Simulation = () => {
                                                     className={classes.card}
                                                     elevation={3}
                                                     style={{
-                                                        backgroundColor: 'rgba(88, 88, 88, 0.6)',
+                                                        backgroundColor: colors.death.bg,
                                                     }}
                                                 >
                                                     <CardContent>Décès</CardContent>
@@ -558,6 +592,8 @@ const Simulation = () => {
                                                     rightName="pc_si_out"
                                                     leftLabel="Décès"
                                                     rightLabel="Sortie"
+                                                    leftColor={colors.death.main}
+                                                    rightColor={colors.recovered.main}
                                                 />
                                             </Node>
                                         </Grid>
@@ -593,6 +629,8 @@ const Simulation = () => {
                                                 rightName="pc_h_ss"
                                                 leftLabel="Guérison"
                                                 rightLabel="Soins de suite"
+                                                leftColor={colors.recovered.main}
+                                                rightColor={colors.following_care.main}
                                             />
                                         </Node>
                                     </GridWithLeftGutter>
@@ -616,7 +654,7 @@ const Simulation = () => {
                                                     name="dm_ss"
                                                     label="Soins de suite"
                                                     component={DurationField}
-                                                    color="rgba(54, 54, 255, 0.6)"
+                                                    color={colors.following_care.bg}
                                                 />
                                             </Node>
                                         </Grid>
@@ -655,7 +693,7 @@ const Simulation = () => {
                                                     className={classes.card}
                                                     elevation={3}
                                                     style={{
-                                                        backgroundColor: 'rgba(88, 235, 88, 0.6)',
+                                                        backgroundColor: colors.recovered.bg,
                                                     }}
                                                 >
                                                     <CardContent>Guérison</CardContent>
