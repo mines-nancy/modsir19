@@ -43,22 +43,15 @@ const defaultValues = {
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        // maxWidth: 1200,
         margin: '0 auto',
         '& h1': {
             fontSize: 38,
         },
     },
-    img: {
-        // width: '100%',
-    },
     aside: {
-        // marginTop: 10,
         background: '#eee',
     },
     section: {
-        position: 'sticky',
-        top: 0,
         padding: '32px !important',
     },
     startButtonContainer: {
@@ -119,7 +112,7 @@ const Home = () => {
                             alt={t('home.visualisation_example_desc')}
                             title={t('home.visualisation_example_desc')}
                         />
-                        <div style={{ position: 'sticky', top: 64 }}>
+                        <div style={{ position: 'sticky', top: 64 + 16 }}>
                             <Grid container>
                                 <Grid item xs={12} sm={9}>
                                     <Typography variant="h1">Modèle SIR + H</Typography>
