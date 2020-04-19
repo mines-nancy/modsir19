@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Form, Field } from 'react-final-form';
-import { Grid, makeStyles, Card, CardContent } from '@material-ui/core';
+import { Form } from 'react-final-form';
+import { Grid, makeStyles, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
+import { addDays, differenceInDays, isSameDay } from 'date-fns';
 
 import Layout from '../../components/Layout';
-import DurationField from '../../components/fields/DurationField';
 import AutoSave from '../../components/fields/AutoSave';
 
 import TimeframeStepper from './TimeframeStepper';
@@ -15,7 +14,6 @@ import Diagram from './Diagram';
 
 import api from '../../api';
 import Chart from './Chart';
-import colors from './colors';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -111,7 +109,6 @@ const Simulation = () => {
         { ...defaultParameters, start_time: 0, name: 'Période initiale' },
     ]);
     const [expanded, setExpanded] = useState(false);
-    const handleExpansionChange = (evt, value) => setExpanded(value);
 
     const handleSubmit = useCallback(
         (values) => {

@@ -79,9 +79,11 @@ export default ({
         death,
         recovery,
     },
+    disabled,
+    linesMargin = '4rem 0',
 }) => (
     <GraphProvider>
-        <Grid container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="population_totale"
                 targets={[
@@ -97,7 +99,7 @@ export default ({
                 <BlockContainer color="white">{totalPopulation}</BlockContainer>
             </Node>
         </Grid>
-        <Grid container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="population_saine_exposee"
                 targets={[
@@ -113,7 +115,7 @@ export default ({
                 <BlockContainer color="rgba(255, 206, 86, 0.6)">{exposedPopulation}</BlockContainer>
             </Node>
         </Grid>
-        <Grid container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
             <NodeWithPercentContainer>
                 <Node name="incubation" targets={[]}>
                     <BlockContainer color={colors.incubation.bg}>{incubation}</BlockContainer>
@@ -144,11 +146,12 @@ export default ({
                         rightLabel="Hospitalisations"
                         leftColor={colors.recovered.main}
                         rightColor={colors.normal_care.main}
+                        disabled={disabled}
                     />
                 </Node>
             </NodeWithPercentContainer>
         </Grid>
-        <Grid container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Grid container xs={1} />
             <Grid container xs={5} justify="flex-start">
                 <Node
@@ -201,6 +204,7 @@ export default ({
                             rightLabel="Soins intensifs"
                             leftColor={colors.normal_care.main}
                             rightColor={colors.intensive_care.main}
+                            disabled={disabled}
                         />
                     </Node>
                 </NodeWithPercentContainer>
@@ -208,7 +212,7 @@ export default ({
             <Grid container xs={1} />
         </Grid>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Grid container xs={5} justify="center">
                 <NodeWithPercentContainer>
                     <Node name="soins_medicaux" targets={[]}>
@@ -239,6 +243,7 @@ export default ({
                             rightLabel="Soins intensifs"
                             leftColor="grey"
                             rightColor={colors.intensive_care.main}
+                            disabled={disabled}
                         />
                     </Node>
                 </NodeWithPercentContainer>
@@ -264,7 +269,7 @@ export default ({
             </Grid>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Grid container xs={5} justify="center">
                 <Node
                     name="post_soins_medicaux"
@@ -294,6 +299,7 @@ export default ({
                         rightLabel="Décès"
                         leftColor={colors.recovered.main}
                         rightColor={colors.death.main}
+                        disabled={disabled}
                     />
                 </Node>
             </Grid>
@@ -331,12 +337,13 @@ export default ({
                         rightLabel="Sortie"
                         leftColor={colors.death.main}
                         rightColor={colors.recovered.main}
+                        disabled={disabled}
                     />
                 </Node>
             </Grid>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="gueris_ou_soins_suite"
                 targets={[
@@ -363,6 +370,7 @@ export default ({
                     rightLabel="Soins de suite"
                     leftColor={colors.recovered.main}
                     rightColor={colors.following_care.main}
+                    disabled={disabled}
                 />
             </Node>
         </GridWithLeftGutter>
@@ -387,7 +395,7 @@ export default ({
             </Grid>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="after_soins_suite"
                 targets={[
@@ -402,7 +410,7 @@ export default ({
             ></Node>
         </GridWithLeftGutter>
 
-        <Grid container xs={12} justify="center" style={{ margin: '4rem 0' }}>
+        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
             <Grid container xs={1} />
             <Grid container xs={11} justify="flex-start">
                 <Node name="guerison">
