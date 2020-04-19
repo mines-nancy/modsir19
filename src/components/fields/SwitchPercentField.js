@@ -29,16 +29,40 @@ const useStyles = makeStyles(() => ({
         padding: '20px 20px 20px 20px',
         background: 'white',
     },
+    rail: {
+        opacity: 1,
+        backgroundColor: (props) => props.rightColor,
+    },
+    track: {
+        backgroundColor: (props) => props.leftColor,
+    },
+    mark: {
+        backgroundColor: (props) => props.leftColor,
+    },
+    markActive: { backgroundColor: 'currentColor' },
+    valueLeft: { paddingRight: 5, paddingBottom: 2 },
+    valueRight: { paddingLeft: 5, paddingBottom: 2 },
+    sliderLeft: {
+        float: 'left',
+        '& > .colored': {
+            color: (props) => props.leftColor,
+        },
+    },
+    sliderRight: {
+        float: 'right',
+        '& > .colored': { color: (props) => props.rightColor },
+    },
 }));
 
-export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel }) => {
-    const classes = useStyles();
+export const SwitchPercentField = (props) => {
+    const classes = useStyles(props);
+    const { leftName, rightName, leftLabel, rightLabel, leftColor } = props;
 
     const { input: input1 } = useField(leftName);
     const { input: input2 } = useField(rightName);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [innerValue, setInnerValue] = React.useState(input2.value);
+    const [innerValue, setInnerValue] = React.useState(input1.value);
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
     const handleClose = () => setAnchorEl(null);
@@ -46,8 +70,8 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
     const handleChange = (_, value) => setInnerValue(value);
 
     const handleChangeCommitted = (_, value) => {
-        input1.onChange(100 - value);
-        input2.onChange(value);
+        input1.onChange(value);
+        input2.onChange(100 - value);
         handleClose();
     };
 
@@ -57,11 +81,11 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
         <>
             <div className={`${classes.pie} ${open ? 'open' : ''}`} onClick={handleClick}>
                 <div className={classes.innerPie}>
-                    <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
+                    <div className={classes.valueLeft}>{input1.value}%</div>
                     <div>
                         <Percent percent={innerValue} />
                     </div>
-                    <div style={{ paddingLeft: 5, paddingBottom: 2 }}>{input2.value}%</div>
+                    <div className={classes.valueRight}>{input2.value}%</div>
                 </div>
             </div>
             <Popover
@@ -79,21 +103,22 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
             >
                 <div className={classes.sliderLabels}>
                     <div>
-                        <span style={{ float: 'left' }}>
-                            {leftLabel}: {100 - innerValue}%
+                        <span className={classes.sliderLeft}>
+                            {leftLabel}: <span class="colored">{innerValue}%</span>
                         </span>
-                        <span style={{ float: 'right' }}>
-                            {rightLabel}: {innerValue}%
+                        <span className={classes.sliderRight}>
+                            {rightLabel}: <span class="colored">{100 - innerValue}%</span>
                         </span>
                     </div>
                     <Slider
+                        classes={classes}
                         value={innerValue}
                         step={1}
                         min={0}
                         max={100}
                         onChangeCommitted={handleChangeCommitted}
                         onChange={handleChange}
-                        track={false}
+                        track={!!leftColor}
                     />
                 </div>
             </Popover>

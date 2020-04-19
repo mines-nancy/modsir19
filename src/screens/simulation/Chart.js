@@ -125,8 +125,18 @@ const Chart = ({ values, startDate }) => {
     const t = useTranslate();
     const theme = useTheme();
     const medium = useMediaQuery(theme.breakpoints.up('md'));
+    const xmedium = useMediaQuery('@media (min-width:1400px)');
     const large = useMediaQuery(theme.breakpoints.up('lg'));
-    const chartSize = medium ? (large ? 700 : 500) : 300;
+    const midlarge = useMediaQuery('@media (min-width:1400px)');
+    const xlarge = useMediaQuery(theme.breakpoints.up('xl'));
+
+    let chartSize;
+    if (xlarge) chartSize = 750;
+    else if (midlarge) chartSize = 675;
+    else if (large) chartSize = 600;
+    else if (xmedium) chartSize = 500;
+    else if (medium) chartSize = 450;
+    else chartSize = 350;
 
     const lineData = data({ t, values, startDate });
 

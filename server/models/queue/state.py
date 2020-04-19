@@ -98,12 +98,12 @@ class State:
         self.box(src_name).remove(delta)
         self.box(dest_name).add(delta)
 
-    def step(self, history):
+    def step(self):
         self.time += 1
         for box in self.boxes():
             box.step()
 
-        self.step_exposed(history)
+        self.step_exposed()
         self.generic_steps(self._moves)
 
     def generic_steps(self, moves):
@@ -112,16 +112,11 @@ class State:
             for dest_name, coefficient in moves[src_name]:
                 self.move(src_name, dest_name, coefficient * output)
 
-    def step_exposed(self, history):
-        previous_state = history.get_last_state(self.time - 1)
-        state_tem = history.get_last_state(self.time - (1+self.delay('tem')))
-        if state_tem == None or previous_state == None:
-            # print(f'previous infected={0} delta={0}')
-            return
-
-        previous_exposed_size = previous_state.box('E').output()
-        infected_tem_size = state_tem.box(
-            'MG').full_size() + state_tem.box('MH').full_size()
+    def step_exposed(self):
+        tem = 1+self.delay('tem')
+        previous_exposed_size = self.box('E').output(1)
+        infected_tem_size = self.box(
+            'MG').full_size(tem) + self.box('MH').full_size(tem)
         delta = self.coefficient(
             'kem') * (previous_exposed_size * infected_tem_size) / self.e0
         # print(self)

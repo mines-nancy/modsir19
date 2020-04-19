@@ -74,7 +74,6 @@ const data = ({ t, values }) => {
 const inputData = ({ t, values }) => {
     const {
         SE,
-        input_SE,
         input_INCUB,
         input_R,
         input_I,
@@ -89,12 +88,6 @@ const inputData = ({ t, values }) => {
     return {
         labels: generateDates(day0, SE.length),
         datasets: [
-            {
-                label: t('chart.exposed'),
-                data: input_SE,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderWidth: 2,
-            },
             {
                 label: t('chart.incub'),
                 data: input_INCUB,
@@ -142,18 +135,7 @@ const inputData = ({ t, values }) => {
 };
 
 const outputData = ({ t, values }) => {
-    const {
-        SE,
-        output_SE,
-        output_INCUB,
-        output_R,
-        output_I,
-        output_SM,
-        output_SI,
-        output_SS,
-        output_DC,
-        j_0,
-    } = values;
+    const { SE, output_SE, output_INCUB, output_I, output_SM, output_SI, output_SS, j_0 } = values;
 
     const day0 = j_0 ? j_0 : Date(2020, 0, 23);
     return {
@@ -172,12 +154,6 @@ const outputData = ({ t, values }) => {
                 borderWidth: 2,
             },
             {
-                label: t('chart.recovered'),
-                data: output_R,
-                backgroundColor: 'rgba(88, 235, 88, 0.6)',
-                borderWidth: 2,
-            },
-            {
                 label: t('chart.intensive_care'),
                 data: output_SI,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
@@ -193,12 +169,6 @@ const outputData = ({ t, values }) => {
                 label: t('chart.following_hospitalized'),
                 data: output_SS,
                 backgroundColor: 'rgba(54, 54, 255, 0.6)',
-                borderWidth: 2,
-            },
-            {
-                label: t('chart.dead'),
-                data: output_DC,
-                backgroundColor: 'rgba(88, 88, 88, 0.6)',
                 borderWidth: 2,
             },
             {

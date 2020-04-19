@@ -221,18 +221,20 @@ const setters = {
     j_0: 'SET_J_0',
 };
 
+const r0 = 2.3;
+const r0_quarantine = 0.8;
 const initialState = {
-    population: 500000,
-    patient0: 1,
-    kpe: 0.6,
-    r: 2.3,
+    population: 1000000,
+    patient0: 100,
+    kpe: 1.0,
+    r: 1.0,
     dm_incub: 3,
     dm_r: 9,
     dm_h: 6,
     dm_sm: 6,
     dm_si: 8,
     dm_ss: 14,
-    beta: 0.15,
+    beta: round2digits(r0 / 9.0),
     pc_ir: 0.84,
     pc_ih: round2digits(1 - 0.84),
     pc_sm: 0.8,
@@ -244,7 +246,14 @@ const initialState = {
     pc_h_ss: 0.2,
     pc_h_r: round2digits(1 - 0.2),
     lim_time: 250,
-    rules: [{ name: 'rule-1', field: 'r', value: 2.0, date: new Date(2020, 3, 16) }],
+    rules: [
+        {
+            name: 'rule-1',
+            field: 'beta',
+            value: round2digits(r0_quarantine / 9.0),
+            date: new Date(2020, 2, 16),
+        },
+    ],
     j_0: new Date(2020, 0, 23),
 };
 

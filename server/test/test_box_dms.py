@@ -1,5 +1,5 @@
 import unittest
-from models.components.box_dms import BoxDms, BoxDmsSource, BoxDmsTarget
+from models.components.box_dms import BoxDms
 
 
 class TestBoxDms(unittest.TestCase):
@@ -30,48 +30,6 @@ class TestBoxDms(unittest.TestCase):
             self.assertAlmostEqual(box.size(), r[i], 2)
             self.assertAlmostEqual(box.output(), outputs[i], 2)
             box.remove(box.output())
-
-    def test_box_dms_source(self):
-        box = BoxDmsSource('DMS-SOURCE')
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 0)
-        self.assertEqual(box.output(), 0)
-
-        box.add(100)
-        self.assertEqual(box.input(), 100)
-        self.assertEqual(box.size(), 0)
-        self.assertEqual(box.output(), 0)
-        box.step()
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 100)
-        self.assertEqual(box.output(), 100)
-
-        box.add(10)
-        box.step()
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 110)
-        self.assertEqual(box.output(), 110)
-
-    def test_box_dms_target(self):
-        box = BoxDmsTarget('DMS-TARGET')
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 0)
-        self.assertEqual(box.output(), 0)
-
-        box.add(100)
-        self.assertEqual(box.input(), 100)
-        self.assertEqual(box.size(), 0)
-        self.assertEqual(box.output(), 0)
-        box.step()
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 100)
-        self.assertEqual(box.output(), 0)
-
-        box.add(10)
-        box.step()
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 110)
-        self.assertEqual(box.output(), 0)
 
 
 if __name__ == '__main__':
