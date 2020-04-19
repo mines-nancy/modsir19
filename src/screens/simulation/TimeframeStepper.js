@@ -50,38 +50,38 @@ const stepIconFactory = (days) => (props) => {
     return <div>J+{days}</div>;
 };
 
-const PeriodStepper = ({
-    periods,
-    selectedPeriodIndex,
-    setSelectedPeriodIndex,
-    onAddPeriod,
-    onRemovePeriod,
+const TimeframeStepper = ({
+    timeframes,
+    selectedTimeframeIndex,
+    setSelectedTimeframeIndex,
+    onAddTimeframe,
+    onRemoveTimeframe,
 }) => {
     const classes = useStyles();
 
-    const firstPeriodStartDate = periods[0].start_date;
+    const firstTimeframestartDate = timeframes[0].start_date;
 
     const handleStepClick = (index) => () => {
-        setSelectedPeriodIndex(index);
+        setSelectedTimeframeIndex(index);
     };
 
     const handleRemove = (index) => (evt) => {
         evt.preventDefault();
         evt.stopPropagation();
-        onRemovePeriod(index);
+        onRemoveTimeframe(index);
     };
 
     return (
         <div className={classes.root}>
             <Stepper
                 classes={{ root: classes.stepper }}
-                activeStep={selectedPeriodIndex}
+                activeStep={selectedTimeframeIndex}
                 orientation="vertical"
                 elevation={0}
                 nonLinear
             >
-                {periods.map((period, index) => (
-                    <Step key={period.start_date}>
+                {timeframes.map((timeframe, index) => (
+                    <Step key={timeframe.start_date}>
                         <StepButton onClick={handleStepClick(index)}>
                             <StepLabel
                                 classes={{
@@ -89,16 +89,16 @@ const PeriodStepper = ({
                                     labelContainer: classes.labelContainer,
                                 }}
                                 StepIconComponent={stepIconFactory(
-                                    differenceInDays(period.start_date, firstPeriodStartDate),
+                                    differenceInDays(timeframe.start_date, firstTimeframestartDate),
                                 )}
                             >
                                 <div>
                                     <Typography variant="h6" className={classes.text}>
-                                        {period.name}
+                                        {timeframe.name}
                                     </Typography>
                                 </div>
                                 <Typography variant="subtitle2">
-                                    A partir du {format(period.start_date, 'dd/MM/yyyy')}
+                                    A partir du {format(timeframe.start_date, 'dd/MM/yyyy')}
                                 </Typography>
                                 <div className={classes.stepActions}>
                                     {index !== 0 && (
@@ -116,7 +116,7 @@ const PeriodStepper = ({
                 ))}
             </Stepper>
             <div className={classes.actions}>
-                <Button variant="outlined" className={classes.button} onClick={onAddPeriod}>
+                <Button variant="outlined" className={classes.button} onClick={onAddTimeframe}>
                     Nouvelle période
                 </Button>
             </div>
@@ -124,4 +124,4 @@ const PeriodStepper = ({
     );
 };
 
-export default PeriodStepper;
+export default TimeframeStepper;

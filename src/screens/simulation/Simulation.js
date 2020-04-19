@@ -12,7 +12,7 @@ import AutoSave from '../../components/fields/AutoSave';
 
 import api from '../../api';
 import Chart from './Chart';
-import PeriodStepper from './PeriodStepper';
+import TimeframeStepper from './TimeframeStepper';
 import TotalPopulation from './TotalPopulation';
 import ExposedPopulation from './ExposedPopulation';
 import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
@@ -121,11 +121,11 @@ const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
-const formatParametersForModel = ({ rules, start_date, ...parameters }, firstPeriodStartDate) =>
+const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
     removeMedicalCareSplit({
         ...parameters,
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
-        start_time: differenceInDays(start_date, firstPeriodStartDate),
+        start_time: differenceInDays(start_date, firstTimeframeStartDate),
     });
 
 const useStyles = makeStyles(() => ({
@@ -149,8 +149,8 @@ const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 const Simulation = () => {
     const classes = useStyles();
     const [values, setValues] = useState();
-    const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(0);
-    const [periods, setPeriods] = useState([
+    const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
+    const [timeframes, setTimeframes] = useState([
         { ...defaultParameters, start_time: 0, name: 'Période initiale' },
     ]);
     const [expanded, setExpanded] = useState(false);
@@ -158,25 +158,25 @@ const Simulation = () => {
 
     const handleSubmit = useCallback(
         (values) => {
-            const periodsWithoutCurrent = [...periods];
-            periodsWithoutCurrent.splice(selectedPeriodIndex, 1);
+            const timeframesWithoutCurrent = [...timeframes];
+            timeframesWithoutCurrent.splice(selectedTimeframeIndex, 1);
 
-            if (periodsWithoutCurrent.some(checkHasSameDate(values.start_date))) {
+            if (timeframesWithoutCurrent.some(checkHasSameDate(values.start_date))) {
                 return;
             }
 
-            setPeriods((list) => {
+            setTimeframes((list) => {
                 const newList = [...list];
-                newList[selectedPeriodIndex] = values;
+                newList[selectedTimeframeIndex] = values;
                 newList.sort((a, b) => a.start_date - b.start_date);
-                setSelectedPeriodIndex(
-                    newList.findIndex((period) => period.start_date === values.start_date),
+                setSelectedTimeframeIndex(
+                    newList.findIndex((timeframe) => timeframe.start_date === values.start_date),
                 );
                 return newList;
             });
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [selectedPeriodIndex],
+        [selectedTimeframeIndex],
     );
 
     const refreshLines = () => {
@@ -187,8 +187,8 @@ const Simulation = () => {
         }, 16);
     };
 
-    const handleAddPeriod = () => {
-        setPeriods((list) => {
+    const handleAddTimeframe = () => {
+        setTimeframes((list) => {
             const lastItem = list[list.length - 1];
             const startDate = addDays(lastItem.start_date, 1);
 
@@ -209,8 +209,8 @@ const Simulation = () => {
         }
     };
 
-    const handleRemovePeriod = (index) => {
-        setPeriods((list) => {
+    const handleRemoveTimeframe = (index) => {
+        setTimeframes((list) => {
             // Can't remove if there's only 1 parameter
             if (list.length === 1) {
                 return;
@@ -224,47 +224,49 @@ const Simulation = () => {
         refreshLines();
 
         // Reset index if current index is deleted
-        if (selectedPeriodIndex === index) {
-            setSelectedPeriodIndex(0);
+        if (selectedTimeframeIndex === index) {
+            setSelectedTimeframeIndex(0);
         }
     };
 
     useEffect(() => {
         (async () => {
             const data = await getModelDebounced(
-                periods.map((parameters) =>
-                    formatParametersForModel(parameters, periods[0].start_date),
+                timeframes.map((parameters) =>
+                    formatParametersForModel(parameters, timeframes[0].start_date),
                 ),
             );
             setValues(data);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [JSON.stringify(periods)]);
+    }, [JSON.stringify(timeframes)]);
 
     return (
         <Layout>
             <Grid container>
                 <Grid item xs={6}>
                     {values ? (
-                        <Chart values={values} startDate={periods[0].start_date} />
+                        <Chart values={values} startDate={timeframes[0].start_date} />
                     ) : (
                         <CircularProgress />
                     )}
                 </Grid>
                 <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
-                    <PeriodStepper
-                        periods={periods}
-                        selectedPeriodIndex={selectedPeriodIndex}
-                        setSelectedPeriodIndex={setSelectedPeriodIndex}
-                        onAddPeriod={handleAddPeriod}
-                        onRemovePeriod={handleRemovePeriod}
+                    <TimeframeStepper
+                        timeframes={timeframes}
+                        selectedTimeframeIndex={selectedTimeframeIndex}
+                        setSelectedTimeframeIndex={setSelectedTimeframeIndex}
+                        onAddTimeframe={handleAddTimeframe}
+                        onRemoveTimeframe={handleRemoveTimeframe}
                     />
                     <Form
+                        // Reset the form at each timeframe change
+                        key={timeframes[selectedTimeframeIndex].start_date}
                         subscription={{}}
                         onSubmit={() => {
                             /* Useless since we use a listener on autosave */
                         }}
-                        initialValues={periods[selectedPeriodIndex]}
+                        initialValues={timeframes[selectedTimeframeIndex]}
                         render={() => (
                             <div className={classes.configuration}>
                                 <AutoSave save={handleSubmit} debounce={200} />
