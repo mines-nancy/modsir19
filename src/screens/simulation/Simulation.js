@@ -445,12 +445,6 @@ const Simulation = () => {
                                                             name: 'soins_intensifs',
                                                             options: {
                                                                 color: hEdgesColorCode,
-                                                                middleLabel: LeaderLine.pathLabel(
-                                                                    '►',
-                                                                    {
-                                                                        color: hEdgesColorCode,
-                                                                    },
-                                                                ),
                                                             },
                                                         },
                                                     ]}
