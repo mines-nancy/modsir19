@@ -1,8 +1,8 @@
 import React from 'react';
 
 export const Percent = ({ percent, size = '20' }) => {
-    const circumference = 31.42;
-    const strokeDash = Math.round((percent * circumference) / 100);
+    const circumference = 2 * Math.PI * 4;
+    const strokeDash = Math.round(((100 - percent) * circumference) / 100);
 
     return (
         <svg height={size} width={size} viewBox="0 0 20 20">
