@@ -25,28 +25,31 @@ export const Edge = ({
                     }),
                 );
 
-                let refreshLinePositionsInterval = null;
-                const start = () => {
-                    refreshLinePositionsInterval = setInterval(() => {
-                        window.requestAnimationFrame(() => line.position());
-                    }, 200);
-                };
-                const stop = () => {
-                    if (refreshLinePositionsInterval) {
-                        clearInterval(refreshLinePositionsInterval);
-                        refreshLinePositionsInterval = null;
-                    }
-                };
+                let isTransitionFinished = true;
+                const start = () =>
+                    window.requestAnimationFrame(() => {
+                        line.position();
+
+                        if (!isTransitionFinished) {
+                            start();
+                        }
+                    });
+
                 window.addEventListener('graph:refresh:start', () => {
+                    isTransitionFinished = false;
                     start();
-                    setTimeout(stop, 10000);
                 });
 
                 window.addEventListener('graph:refresh:stop', () => {
-                    setTimeout(stop, 1000);
+                    isTransitionFinished = true;
                 });
 
-                line.setOptions({ startSocket: 'bottom', endSocket: 'top', size: 3, ...options });
+                line.setOptions({
+                    startSocket: 'bottom',
+                    endSocket: 'top',
+                    size: 3,
+                    ...options,
+                });
             }, 500);
         }
 
