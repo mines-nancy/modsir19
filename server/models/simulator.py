@@ -1,4 +1,3 @@
-from models.components.history import History
 from models.components.simulator import Simulator
 from models.queue.state import State as QueueState
 from models.sir_h.state import State as SirHState

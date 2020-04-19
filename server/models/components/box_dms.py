@@ -10,7 +10,7 @@ class BoxDms(Box):
     def __str__(self):
         input = round(self.input(), 2)
         size = round(self.size(), 2)
-        removed = round(self._output, 2)
+        removed = round(self.removed(), 2)
         return f'BoxDms {self._name} t={self._t} [{input}]\{size}/[{removed}]'
 
     def step(self):
