@@ -89,12 +89,12 @@ const inputData = ({ t, values }) => {
     return {
         labels: generateDates(day0, SE.length),
         datasets: [
-            {
-                label: t('chart.exposed'),
-                data: input_SE,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderWidth: 2,
-            },
+            // {
+            //     label: t('chart.exposed'),
+            //     data: input_SE,
+            //     backgroundColor: 'rgba(255, 206, 86, 0.6)',
+            //     borderWidth: 2,
+            // },
             {
                 label: t('chart.incub'),
                 data: input_INCUB,
