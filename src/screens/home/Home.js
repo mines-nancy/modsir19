@@ -79,7 +79,7 @@ const Home = () => {
     return (
         <Layout>
             <div className={classes.container}>
-                <Grid container spacing={2}>
+                <Grid container>
                     <Grid item xs={12} sm={5} component="aside" className={classes.aside}>
                         <Form
                             subscription={{}}
