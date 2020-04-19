@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { CircularProgress, Grid, makeStyles, Card, CardContent } from '@material-ui/core';
+import { Grid, makeStyles, Card, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
@@ -148,6 +148,7 @@ const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 const Simulation = () => {
     const classes = useStyles();
+    const [loading, setLoading] = useState(false);
     const [values, setValues] = useState();
     const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
     const [timeframes, setTimeframes] = useState([
@@ -231,25 +232,23 @@ const Simulation = () => {
 
     useEffect(() => {
         (async () => {
+            setLoading(true);
             const data = await getModelDebounced(
                 timeframes.map((parameters) =>
                     formatParametersForModel(parameters, timeframes[0].start_date),
                 ),
             );
             setValues(data);
+            setLoading(false);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
     return (
-        <Layout>
+        <Layout loading={loading}>
             <Grid container>
                 <Grid item xs={6}>
-                    {values ? (
-                        <Chart values={values} startDate={timeframes[0].start_date} />
-                    ) : (
-                        <CircularProgress />
-                    )}
+                    {values && <Chart values={values} startDate={timeframes[0].start_date} />}
                 </Grid>
                 <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
                     <TimeframeStepper
