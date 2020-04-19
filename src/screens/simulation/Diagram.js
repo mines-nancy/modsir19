@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Card, CardContent, makeStyles } from '@material-ui/core';
+import { Grid, Card, makeStyles } from '@material-ui/core';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
@@ -80,6 +80,7 @@ export default ({
         recovery,
     },
     disabled,
+    hideSwitchers,
     linesMargin = '4rem 0',
 }) => (
     <GraphProvider>
@@ -139,15 +140,17 @@ export default ({
                         },
                     ]}
                 >
-                    <SwitchPercentField
-                        leftName="pc_ir"
-                        rightName="pc_ih"
-                        leftLabel="Rétablissements"
-                        rightLabel="Hospitalisations"
-                        leftColor={colors.recovered.main}
-                        rightColor={colors.normal_care.main}
-                        disabled={disabled}
-                    />
+                    {!hideSwitchers && (
+                        <SwitchPercentField
+                            leftName="pc_ir"
+                            rightName="pc_ih"
+                            leftLabel="Rétablissements"
+                            rightLabel="Hospitalisations"
+                            leftColor={colors.recovered.main}
+                            rightColor={colors.normal_care.main}
+                            disabled={disabled}
+                        />
+                    )}
                 </Node>
             </NodeWithPercentContainer>
         </Grid>
@@ -197,15 +200,17 @@ export default ({
                             },
                         ]}
                     >
-                        <SwitchPercentField
-                            leftName="pc_sm"
-                            rightName="pc_si"
-                            leftLabel="Soins médicaux"
-                            rightLabel="Soins intensifs"
-                            leftColor={colors.normal_care.main}
-                            rightColor={colors.intensive_care.main}
-                            disabled={disabled}
-                        />
+                        {!hideSwitchers && (
+                            <SwitchPercentField
+                                leftName="pc_sm"
+                                rightName="pc_si"
+                                leftLabel="Soins médicaux"
+                                rightLabel="Soins intensifs"
+                                leftColor={colors.normal_care.main}
+                                rightColor={colors.intensive_care.main}
+                                disabled={disabled}
+                            />
+                        )}
                     </Node>
                 </NodeWithPercentContainer>
             </Grid>
@@ -236,15 +241,17 @@ export default ({
                             },
                         ]}
                     >
-                        <SwitchPercentField
-                            leftName="pc_sm_other"
-                            rightName="pc_sm_si"
-                            leftLabel="Sortie ou Décès"
-                            rightLabel="Soins intensifs"
-                            leftColor="grey"
-                            rightColor={colors.intensive_care.main}
-                            disabled={disabled}
-                        />
+                        {!hideSwitchers && (
+                            <SwitchPercentField
+                                leftName="pc_sm_other"
+                                rightName="pc_sm_si"
+                                leftLabel="Sortie ou Décès"
+                                rightLabel="Soins intensifs"
+                                leftColor="grey"
+                                rightColor={colors.intensive_care.main}
+                                disabled={disabled}
+                            />
+                        )}
                     </Node>
                 </NodeWithPercentContainer>
             </Grid>
@@ -292,15 +299,17 @@ export default ({
                         },
                     ]}
                 >
-                    <SwitchPercentField
-                        leftName="pc_sm_out"
-                        rightName="pc_sm_dc"
-                        leftLabel="Sortie"
-                        rightLabel="Décès"
-                        leftColor={colors.recovered.main}
-                        rightColor={colors.death.main}
-                        disabled={disabled}
-                    />
+                    {!hideSwitchers && (
+                        <SwitchPercentField
+                            leftName="pc_sm_out"
+                            rightName="pc_sm_dc"
+                            leftLabel="Sortie"
+                            rightLabel="Décès"
+                            leftColor={colors.recovered.main}
+                            rightColor={colors.death.main}
+                            disabled={disabled}
+                        />
+                    )}
                 </Node>
             </Grid>
             <Grid container xs={2} justify="center">
@@ -330,15 +339,17 @@ export default ({
                         },
                     ]}
                 >
-                    <SwitchPercentField
-                        leftName="pc_si_dc"
-                        rightName="pc_si_out"
-                        leftLabel="Décès"
-                        rightLabel="Sortie"
-                        leftColor={colors.death.main}
-                        rightColor={colors.recovered.main}
-                        disabled={disabled}
-                    />
+                    {!hideSwitchers && (
+                        <SwitchPercentField
+                            leftName="pc_si_dc"
+                            rightName="pc_si_out"
+                            leftLabel="Décès"
+                            rightLabel="Sortie"
+                            leftColor={colors.death.main}
+                            rightColor={colors.recovered.main}
+                            disabled={disabled}
+                        />
+                    )}
                 </Node>
             </Grid>
         </GridWithLeftGutter>
@@ -363,15 +374,17 @@ export default ({
                     },
                 ]}
             >
-                <SwitchPercentField
-                    leftName="pc_h_r"
-                    rightName="pc_h_ss"
-                    leftLabel="Guérison"
-                    rightLabel="Soins de suite"
-                    leftColor={colors.recovered.main}
-                    rightColor={colors.following_care.main}
-                    disabled={disabled}
-                />
+                {!hideSwitchers && (
+                    <SwitchPercentField
+                        leftName="pc_h_r"
+                        rightName="pc_h_ss"
+                        leftLabel="Guérison"
+                        rightLabel="Soins de suite"
+                        leftColor={colors.recovered.main}
+                        rightColor={colors.following_care.main}
+                        disabled={disabled}
+                    />
+                )}
             </Node>
         </GridWithLeftGutter>
 

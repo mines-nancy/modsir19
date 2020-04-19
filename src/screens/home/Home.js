@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) => ({
             fontSize: 38,
         },
     },
+    img: {
+        float: 'right',
+    },
     aside: {
         background: '#eee',
     },
@@ -99,19 +102,13 @@ const Home = () => {
                                         recovery: <CardContent>GR</CardContent>,
                                     }}
                                     disabled
-                                    linesMargin="4rem 0"
+                                    hideSwitchers
+                                    linesMargin="60px 0"
                                 />
                             )}
                         />
                     </Grid>
                     <Grid item xs={12} sm={7} component="section" className={classes.section}>
-                        <img
-                            className={classes.img}
-                            src={exampleImage}
-                            style={{ width: 200 }}
-                            alt={t('home.visualisation_example_desc')}
-                            title={t('home.visualisation_example_desc')}
-                        />
                         <div style={{ position: 'sticky', top: 64 + 16 }}>
                             <Grid container>
                                 <Grid item xs={12} sm={9}>
@@ -125,6 +122,13 @@ const Home = () => {
                             </Grid>
                             <p>Cette simulation se propose de modéliser :</p>
                             <p>
+                                <img
+                                    className={classes.img}
+                                    src={exampleImage}
+                                    style={{ width: 200 }}
+                                    alt={t('home.visualisation_example_desc')}
+                                    title={t('home.visualisation_example_desc')}
+                                />
                                 <strong>
                                     1. L'évolution générale de l'épidémie sur un territoire selon un
                                     modèle compartimental S.I.R classique:
