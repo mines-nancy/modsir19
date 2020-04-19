@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
         cursor: 'pointer',
         transition: 'transform .3s ease-in-out',
         zIndex: 2,
-        '&:hover': {
+        '&:hover, &.open': {
             transform: 'scale(1.3)',
         },
         display: 'flex',
@@ -55,7 +55,7 @@ export const SwitchPercentField = ({ leftName, rightName, leftLabel, rightLabel 
 
     return (
         <>
-            <div className={classes.pie} onClick={handleClick}>
+            <div className={`${classes.pie} ${open ? 'open' : ''}`} onClick={handleClick}>
                 <div className={classes.innerPie}>
                     <div style={{ paddingRight: 5, paddingBottom: 2 }}>{input1.value}%</div>
                     <div>
