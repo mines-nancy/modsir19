@@ -88,9 +88,9 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const getModel = async (parameterList) => {
+const getModel = async (timeframes) => {
     const { data } = await api.get('/get_sir_h_timeframe', {
-        params: { parameters: { list: parameterList } },
+        params: { parameters: { list: timeframes.filter((timeframe) => timeframe.enabled) } },
     });
 
     return data;
@@ -107,7 +107,7 @@ const Simulation = () => {
     const [values, setValues] = useState();
     const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
     const [timeframes, setTimeframes] = useState([
-        { ...defaultParameters, start_time: 0, name: 'Période initiale' },
+        { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
     ]);
 
     const handleSubmit = useCallback(
@@ -152,6 +152,7 @@ const Simulation = () => {
                     ...lastItem,
                     start_date: startDate,
                     name: 'Nouvelle période',
+                    enabled: true,
                 },
             ];
         });
@@ -204,6 +205,16 @@ const Simulation = () => {
         }, EXPAND_OPEN_ANIMATION_TIME);
     };
 
+    const handleToggleTimeframe = (index) => {
+        setTimeframes((list) => {
+            const timeframe = list[index];
+
+            const newList = [...list];
+            newList[index] = { ...timeframe, enabled: !timeframe.enabled };
+            return newList;
+        });
+    };
+
     useEffect(() => {
         (async () => {
             setLoading(true);
@@ -232,6 +243,7 @@ const Simulation = () => {
                         onAddTimeframe={handleAddTimeframe}
                         onRemoveTimeframe={handleRemoveTimeframe}
                         onDateChange={handleDateChange}
+                        onToggle={handleToggleTimeframe}
                     />
                     <Form
                         // Reset the form at each timeframe change

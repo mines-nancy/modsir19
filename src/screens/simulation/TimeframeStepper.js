@@ -12,6 +12,8 @@ import {
     IconButton,
     Typography,
     StepConnector,
+    Tooltip,
+    Switch,
 } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
@@ -96,6 +98,7 @@ const TimeframeStepper = ({
     onAddTimeframe,
     onRemoveTimeframe,
     onDateChange,
+    onToggle,
 }) => {
     const classes = useStyles();
     const firstTimeframestartDate = timeframes[0].start_date;
@@ -114,6 +117,12 @@ const TimeframeStepper = ({
         evt.preventDefault();
         evt.stopPropagation();
         onDateChange(index);
+    };
+
+    const handleToggle = (index) => (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        onToggle(index);
     };
 
     return (
@@ -154,12 +163,22 @@ const TimeframeStepper = ({
                                 </Typography>
                                 <div className={classes.stepActions}>
                                     {index !== 0 && (
-                                        <IconButton
-                                            aria-label="delete"
-                                            onClick={handleRemove(index)}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
+                                        <>
+                                            <Tooltip title="Activer / Désactiver">
+                                                <Switch
+                                                    color="primary"
+                                                    name="enabled"
+                                                    checked={timeframe.enabled}
+                                                    onChange={handleToggle(index)}
+                                                />
+                                            </Tooltip>
+                                            <IconButton
+                                                aria-label="delete"
+                                                onClick={handleRemove(index)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </>
                                     )}
                                 </div>
                             </StepLabel>
