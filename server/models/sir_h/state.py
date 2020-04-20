@@ -5,20 +5,18 @@ from operator import add
 
 
 class State:
-    def __init__(self, constants, delays, coefficients, time):
+    def __init__(self, parameters):
 
-        self._constants = constants
-        self._delays = delays
-        self._coefficients = coefficients
+        self._parameters = parameters
 
         self._boxes = {
             'SE': BoxSource('SE'),
-            'INCUB': BoxQueue('INCUB', delays['dm_incub']),
-            'IR': BoxDms('IR', delays['dm_r']),
-            'IH': BoxDms('IH', delays['dm_h']),
-            'SM': BoxDms('SM', delays['dm_sm']),
-            'SI': BoxDms('SI', delays['dm_si']),
-            'SS': BoxDms('SS', delays['dm_ss']),
+            'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
+            'IR': BoxDms('IR', self.delay('dm_r')),
+            'IH': BoxDms('IH', self.delay('dm_h')),
+            'SM': BoxDms('SM', self.delay('dm_sm')),
+            'SI': BoxDms('SI', self.delay('dm_si')),
+            'SS': BoxDms('SS', self.delay('dm_ss')),
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
         }
@@ -40,25 +38,27 @@ class State:
             'SS': [('R', 1)],
         }
 
-        self.time = time
+        self.time = 0
+        self.e0 = self.coefficient('kpe') * self.constant('population')
+        self.box('SE').add(self.e0 - self.constant('patient0'))
+        self.box('INCUB').add(self.constant('patient0'))
 
-        self.e0 = self.coefficient('kpe') * constants['population']
-        self.box('SE').add(self.e0 - constants['patient0'])
-        self.box('INCUB').add(constants['patient0'])
+    def constant(self, name):
+        return self.parameter(name)
+
+    def delay(self, name):
+        return self.parameter(name)
+
+    def coefficient(self, name):
+        return self.parameter(name)
+
+    def parameter(self, name):
+        if name in self._parameters:
+            return self._parameters[name]
+        return 0
 
     def change_value(self, name, value):
-        constants_name = ["population", "patient0", "lim_time"]
-        delays_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
-
-        coefficients_name = ['kpe', 'r', 'beta', 'pc_ir', 'pc_ih', 'pc_sm',
-                             'pc_si', 'pc_sm_si', 'pc_sm_out', 'pc_si_dc', 'pc_si_out', 'pc_h_ss', 'pc_h_r']
-
-        if name in constants_name:
-            self._constants[name] = value
-        elif name in delays_name:
-            self._delays[name] = value
-        elif name in coefficients_name:
-            self._coefficients[name] = value
+        self._parameters[name] = value
         print(
             f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 
@@ -70,11 +70,6 @@ class State:
 
     def output(self, name, past=0):
         return self.box(name).output(past)
-
-    def coefficient(self, name):
-        if name in self._coefficients:
-            return self._coefficients[name]
-        return 0
 
     def __str__(self):
         pop = sum([box.full_size() for box in self.boxes()])
