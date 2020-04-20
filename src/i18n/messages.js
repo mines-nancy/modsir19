@@ -23,7 +23,7 @@ const messages = {
             sirPlusH: 'Modèle SIR+H',
             visualisation_example_desc: 'Exemple de visualisation du modèle',
             model_diagram: 'Explication du diagrame',
-            start_button: 'Commencer',
+            start_button: 'Continuer',
         },
         error: {
             shouldBeNumber: 'Doit être un nombre',

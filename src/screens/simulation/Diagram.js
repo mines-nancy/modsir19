@@ -71,6 +71,7 @@ export default ({
         totalPopulation,
         exposedPopulation,
         incubation,
+        infected,
         spontaneousRecovery,
         hospitalisation,
         medicalCare,
@@ -123,22 +124,34 @@ export default ({
                 </Node>
                 <Node
                     name="percent_incubation"
-                    targets={[
-                        {
-                            name: 'retablissement_spontane',
-                            options: {
-                                color: sirEdgesColorCode,
-                                path: 'grid',
-                            },
-                        },
-                        {
-                            name: 'hospitalisation',
-                            options: {
-                                color: sirEdgesColorCode,
-                                path: 'grid',
-                            },
-                        },
-                    ]}
+                    targets={
+                        infected
+                            ? [
+                                  {
+                                      name: 'infected',
+                                      options: {
+                                          color: sirEdgesColorCode,
+                                          path: 'grid',
+                                      },
+                                  },
+                              ]
+                            : [
+                                  {
+                                      name: 'retablissement_spontane',
+                                      options: {
+                                          color: sirEdgesColorCode,
+                                          path: 'grid',
+                                      },
+                                  },
+                                  {
+                                      name: 'hospitalisation',
+                                      options: {
+                                          color: sirEdgesColorCode,
+                                          path: 'grid',
+                                      },
+                                  },
+                              ]
+                    }
                 >
                     {!hideSwitchers && (
                         <SwitchPercentField
@@ -154,36 +167,25 @@ export default ({
                 </Node>
             </NodeWithPercentContainer>
         </Grid>
-        <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
-            <Grid item xs={1} />
-            <Grid container item xs={5} justify="flex-start">
-                <Node
-                    name="retablissement_spontane"
-                    alignmentBase="left"
-                    targets={[
-                        {
-                            name: 'guerison',
-                            options: {
-                                color: sirEdgesColorCode,
-                                path: 'straight',
-                                anchorStart: { x: 25 },
-                                anchorEnd: { x: 25 },
-                            },
-                        },
-                    ]}
-                >
-                    <BlockContainer>{spontaneousRecovery}</BlockContainer>
-                </Node>
-            </Grid>
-
-            <Grid container item xs={5} justify="flex-end">
+        {infected ? (
+            <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
                 <NodeWithPercentContainer>
-                    <Node name="hospitalisation" targets={[]}>
-                        <BlockContainer>{hospitalisation}</BlockContainer>
+                    <Node name="infected" targets={[]}>
+                        <BlockContainer>{infected}</BlockContainer>
                     </Node>
                     <Node
-                        name="percent_hospital"
+                        name="percent_infected"
                         targets={[
+                            {
+                                name: 'guerison',
+                                options: {
+                                    color: sirEdgesColorCode,
+                                    path: 'grid',
+                                    anchorStart: { y: -25, x: 0 },
+                                    anchorEnd: { x: 25 },
+                                    startSocket: 'left',
+                                },
+                            },
                             {
                                 name: 'soins_medicaux',
                                 options: {
@@ -199,23 +201,75 @@ export default ({
                                 },
                             },
                         ]}
-                    >
-                        {!hideSwitchers && (
-                            <SwitchPercentField
-                                leftName="pc_sm"
-                                rightName="pc_si"
-                                leftLabel="Soins médicaux"
-                                rightLabel="Soins intensifs"
-                                leftColor={colors.normal_care.main}
-                                rightColor={colors.intensive_care.main}
-                                disabled={disabled}
-                            />
-                        )}
-                    </Node>
+                    />
                 </NodeWithPercentContainer>
             </Grid>
-            <Grid item xs={1} />
-        </Grid>
+        ) : (
+            <>
+                <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
+                    <Grid item xs={1} />
+                    <Grid container item xs={5} justify="flex-start">
+                        <Node
+                            name="retablissement_spontane"
+                            alignmentBase="left"
+                            targets={[
+                                {
+                                    name: 'guerison',
+                                    options: {
+                                        color: sirEdgesColorCode,
+                                        path: 'straight',
+                                        anchorStart: { x: 25 },
+                                        anchorEnd: { x: 25 },
+                                    },
+                                },
+                            ]}
+                        >
+                            <BlockContainer>{spontaneousRecovery}</BlockContainer>
+                        </Node>
+                    </Grid>
+
+                    <Grid container item xs={5} justify="flex-end">
+                        <NodeWithPercentContainer>
+                            <Node name="hospitalisation" targets={[]}>
+                                <BlockContainer>{hospitalisation}</BlockContainer>
+                            </Node>
+                            <Node
+                                name="percent_hospital"
+                                targets={[
+                                    {
+                                        name: 'soins_medicaux',
+                                        options: {
+                                            color: hEdgesColorCode,
+                                            path: 'grid',
+                                        },
+                                    },
+                                    {
+                                        name: 'soins_intensifs',
+                                        options: {
+                                            color: hEdgesColorCode,
+                                            path: 'grid',
+                                        },
+                                    },
+                                ]}
+                            >
+                                {!hideSwitchers && (
+                                    <SwitchPercentField
+                                        leftName="pc_sm"
+                                        rightName="pc_si"
+                                        leftLabel="Soins médicaux"
+                                        rightLabel="Soins intensifs"
+                                        leftColor={colors.normal_care.main}
+                                        rightColor={colors.intensive_care.main}
+                                        disabled={disabled}
+                                    />
+                                )}
+                            </Node>
+                        </NodeWithPercentContainer>
+                    </Grid>
+                    <Grid item xs={1} />
+                </Grid>
+            </>
+        )}
 
         <GridWithLeftGutter container item xs={12} justify="center" style={{ margin: linesMargin }}>
             <Grid container item xs={5} justify="center">
@@ -277,7 +331,7 @@ export default ({
         </GridWithLeftGutter>
 
         <GridWithLeftGutter container item xs={12} justify="center" style={{ margin: linesMargin }}>
-            <Grid container item xs={5} justify="center">
+            <Grid container item xs={5} justify="center" alignItems="center">
                 <Node
                     name="post_soins_medicaux"
                     targets={[
@@ -317,7 +371,7 @@ export default ({
                     <BlockContainer color={colors.death.bg}>{death}</BlockContainer>
                 </Node>
             </Grid>
-            <Grid container item xs={5} justify="center">
+            <Grid container item xs={5} justify="center" alignItems="center">
                 <Node
                     name="percent_si"
                     targets={[
