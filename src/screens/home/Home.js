@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         '& img': {
             margin: `${theme.spacing(6)} 0`,
-            maxHeight: 80,
+            maxHeight: 50,
         },
     },
     img: {
@@ -159,7 +159,7 @@ const Home = () => {
                                         <p>
                                             Il s’agit d’une initiative commune des élèves et alumni
                                             de Mines Nancy sous la direction des Professeurs Gilles
-                                            Karcher et Pierre-Etiene Moreau, visant à modéliser et
+                                            Karcher et Pierre-Etienne Moreau, visant à modéliser et
                                             prévoir l’évolution de la pandémie Covid19. Marmelab
                                             accompagne l’équipe dans l'accélération du développement
                                             de cette interface.
