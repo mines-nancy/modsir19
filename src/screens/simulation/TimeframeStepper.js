@@ -1,7 +1,9 @@
 import React from 'react';
+import clsx from 'clsx';
 import { differenceInDays, format } from 'date-fns';
 import {
     makeStyles,
+    withStyles,
     Stepper,
     Step,
     StepLabel,
@@ -9,6 +11,9 @@ import {
     Button,
     IconButton,
     Typography,
+    StepConnector,
+    Tooltip,
+    Switch,
 } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
@@ -30,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     text: {
-        display: 'inline',
+        display: 'flex',
+        alignItems: 'center',
     },
     stepActions: {
         minWidth: 47,
@@ -44,11 +50,46 @@ const useStyles = makeStyles((theme) => ({
     button: {
         marginRight: theme.spacing(1),
     },
+    icon: {
+        position: 'relative',
+        minWidth: theme.spacing(5),
+        minHeight: theme.spacing(5),
+        marginRight: theme.spacing(1),
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    iconActive: {
+        '&:before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            width: theme.spacing(5),
+            height: theme.spacing(5),
+            backgroundColor: theme.palette.primary.main,
+            borderRadius: '50%',
+        },
+        '& > span': {
+            position: 'absolute',
+            color: 'white',
+            fontWeight: 'bold',
+        },
+    },
 }));
 
-const stepIconFactory = (days) => (props) => {
-    return <div>J+{days}</div>;
+const stepIconFactory = (days, className) => () => {
+    return (
+        <div className={className}>
+            <span>J+{days}</span>
+        </div>
+    );
 };
+
+const Connector = withStyles({
+    vertical: {
+        marginLeft: 20,
+    },
+})(StepConnector);
 
 const TimeframeStepper = ({
     timeframes,
@@ -56,9 +97,10 @@ const TimeframeStepper = ({
     setSelectedTimeframeIndex,
     onAddTimeframe,
     onRemoveTimeframe,
+    onDateChange,
+    onToggle,
 }) => {
     const classes = useStyles();
-
     const firstTimeframestartDate = timeframes[0].start_date;
 
     const handleStepClick = (index) => () => {
@@ -71,6 +113,18 @@ const TimeframeStepper = ({
         onRemoveTimeframe(index);
     };
 
+    const handleDateChange = (index) => (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        onDateChange(index);
+    };
+
+    const handleToggle = (index) => (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        onToggle(index);
+    };
+
     return (
         <div className={classes.root}>
             <Stepper
@@ -79,6 +133,7 @@ const TimeframeStepper = ({
                 orientation="vertical"
                 elevation={0}
                 nonLinear
+                connector={<Connector />}
             >
                 {timeframes.map((timeframe, index) => (
                     <Step key={timeframe.start_date}>
@@ -90,6 +145,9 @@ const TimeframeStepper = ({
                                 }}
                                 StepIconComponent={stepIconFactory(
                                     differenceInDays(timeframe.start_date, firstTimeframestartDate),
+                                    clsx(classes.icon, {
+                                        [classes.iconActive]: index === selectedTimeframeIndex,
+                                    }),
                                 )}
                             >
                                 <div>
@@ -97,17 +155,30 @@ const TimeframeStepper = ({
                                         {timeframe.name}
                                     </Typography>
                                 </div>
-                                <Typography variant="subtitle2">
-                                    A partir du {format(timeframe.start_date, 'dd/MM/yyyy')}
+                                <Typography variant="subtitle2" className={classes.text}>
+                                    <div>A partir du</div>
+                                    <Button variant="text" onClick={handleDateChange(index)}>
+                                        {format(timeframe.start_date, 'dd/MM/yyyy')}
+                                    </Button>
                                 </Typography>
                                 <div className={classes.stepActions}>
                                     {index !== 0 && (
-                                        <IconButton
-                                            aria-label="delete"
-                                            onClick={handleRemove(index)}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
+                                        <>
+                                            <Tooltip title="Activer / Désactiver">
+                                                <Switch
+                                                    color="primary"
+                                                    name="enabled"
+                                                    checked={timeframe.enabled}
+                                                    onChange={handleToggle(index)}
+                                                />
+                                            </Tooltip>
+                                            <IconButton
+                                                aria-label="delete"
+                                                onClick={handleRemove(index)}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </>
                                     )}
                                 </div>
                             </StepLabel>

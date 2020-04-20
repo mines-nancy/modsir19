@@ -88,9 +88,9 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const getModel = async (parameterList) => {
+const getModel = async (timeframes) => {
     const { data } = await api.get('/get_sir_h_timeframe', {
-        params: { parameters: { list: parameterList } },
+        params: { parameters: { list: timeframes.filter((timeframe) => timeframe.enabled) } },
     });
 
     return data;
@@ -103,12 +103,12 @@ const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 const Simulation = () => {
     const classes = useStyles();
     const [loading, setLoading] = useState(false);
+    const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
     const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
     const [timeframes, setTimeframes] = useState([
-        { ...defaultParameters, start_time: 0, name: 'Période initiale' },
+        { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
     ]);
-    const [expanded, setExpanded] = useState(false);
 
     const handleSubmit = useCallback(
         (values) => {
@@ -152,9 +152,12 @@ const Simulation = () => {
                     ...lastItem,
                     start_date: startDate,
                     name: 'Nouvelle période',
+                    enabled: true,
                 },
             ];
         });
+
+        setSelectedTimeframeIndex(timeframes.length);
 
         if (expanded) {
             refreshLines();
@@ -164,6 +167,11 @@ const Simulation = () => {
     };
 
     const handleRemoveTimeframe = (index) => {
+        // Reset index if current index is deleted
+        if (selectedTimeframeIndex === index) {
+            setSelectedTimeframeIndex(index - 1);
+        }
+
         setTimeframes((list) => {
             // Can't remove if there's only 1 parameter
             if (list.length === 1) {
@@ -176,11 +184,35 @@ const Simulation = () => {
         });
 
         refreshLines();
+    };
 
-        // Reset index if current index is deleted
-        if (selectedTimeframeIndex === index) {
-            setSelectedTimeframeIndex(0);
+    const handleDateChange = (index) => {
+        if (selectedTimeframeIndex !== index) {
+            setSelectedTimeframeIndex(index);
         }
+
+        if (!expanded) {
+            setExpanded(true);
+        }
+
+        const EXPAND_OPEN_ANIMATION_TIME = 250;
+        setTimeout(() => {
+            const dateInput = document.querySelector('#date-picker-inline');
+
+            if (dateInput) {
+                dateInput.click();
+            }
+        }, EXPAND_OPEN_ANIMATION_TIME);
+    };
+
+    const handleToggleTimeframe = (index) => {
+        setTimeframes((list) => {
+            const timeframe = list[index];
+
+            const newList = [...list];
+            newList[index] = { ...timeframe, enabled: !timeframe.enabled };
+            return newList;
+        });
     };
 
     useEffect(() => {
@@ -210,6 +242,8 @@ const Simulation = () => {
                         setSelectedTimeframeIndex={setSelectedTimeframeIndex}
                         onAddTimeframe={handleAddTimeframe}
                         onRemoveTimeframe={handleRemoveTimeframe}
+                        onDateChange={handleDateChange}
+                        onToggle={handleToggleTimeframe}
                     />
                     <Form
                         // Reset the form at each timeframe change
@@ -224,7 +258,12 @@ const Simulation = () => {
                                 <AutoSave save={handleSubmit} debounce={200} />
                                 <Diagram
                                     blocks={{
-                                        totalPopulation: <TotalPopulationBlock />,
+                                        totalPopulation: (
+                                            <TotalPopulationBlock
+                                                expanded={expanded}
+                                                setExpanded={setExpanded}
+                                            />
+                                        ),
                                         exposedPopulation: <ExposedPopulationBlock />,
                                         incubation: (
                                             <AverageDurationBlock

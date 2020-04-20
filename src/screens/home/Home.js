@@ -1,7 +1,15 @@
 import React from 'react';
 import { useTranslate } from 'react-polyglot';
 import { useHistory } from 'react-router-dom';
-import { makeStyles, Grid, Typography, Button, CardContent } from '@material-ui/core';
+import {
+    makeStyles,
+    Grid,
+    Typography,
+    Button,
+    CardContent,
+    useTheme,
+    useMediaQuery,
+} from '@material-ui/core';
 import { Form } from 'react-final-form';
 
 import Layout from '../../components/Layout';
@@ -49,7 +57,14 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     img: {
-        float: 'right',
+        [theme.breakpoints.down('md')]: {
+            width: '100%',
+        },
+        [theme.breakpoints.up('md')]: {
+            float: 'right',
+            width: 200,
+            marginTop: 32,
+        },
     },
     aside: {
         background: '#eee',
@@ -71,6 +86,8 @@ const Home = () => {
     const classes = useStyles();
     const t = useTranslate();
     const history = useHistory();
+    const theme = useTheme();
+    const desktop = useMediaQuery(theme.breakpoints.up('md'));
 
     const start = () => {
         history.push('/simulation');
@@ -79,7 +96,7 @@ const Home = () => {
     return (
         <Layout>
             <div className={classes.container}>
-                <Grid container>
+                <Grid container direction={desktop ? 'row' : 'column-reverse'}>
                     <Grid item xs={12} sm={5} component="aside" className={classes.aside}>
                         <Form
                             subscription={{}}
@@ -93,13 +110,12 @@ const Home = () => {
                                         totalPopulation: <CardContent>P</CardContent>,
                                         exposedPopulation: <CardContent>SE</CardContent>,
                                         incubation: <CardContent>INCUB</CardContent>,
-                                        spontaneousRecovery: <CardContent>R</CardContent>,
-                                        hospitalisation: <CardContent>H</CardContent>,
+                                        infected: <CardContent>INFECTES</CardContent>,
                                         medicalCare: <CardContent>SM</CardContent>,
                                         intensiveCare: <CardContent>SI</CardContent>,
                                         followUpCare: <CardContent>SS</CardContent>,
                                         death: <CardContent>DC</CardContent>,
-                                        recovery: <CardContent>GR</CardContent>,
+                                        recovery: <CardContent>RG</CardContent>,
                                     }}
                                     disabled
                                     hideSwitchers
@@ -120,25 +136,24 @@ const Home = () => {
                                     </Button>
                                 </Grid>
                             </Grid>
+                            <img
+                                className={classes.img}
+                                src={exampleImage}
+                                alt={t('home.visualisation_example_desc')}
+                                title={t('home.visualisation_example_desc')}
+                            />
                             <p>Cette simulation se propose de modéliser :</p>
                             <p>
-                                <img
-                                    className={classes.img}
-                                    src={exampleImage}
-                                    style={{ width: 200 }}
-                                    alt={t('home.visualisation_example_desc')}
-                                    title={t('home.visualisation_example_desc')}
-                                />
                                 <strong>
                                     1. L'évolution générale de l'épidémie sur un territoire selon un
-                                    modèle compartimental S.I.R classique:
+                                    modèle compartimental S.I.R classique :
                                 </strong>
 
                                 <ul>
                                     <li>SE : population saine exposée</li>
                                     <li>INCUB : population en incubation</li>
                                     <li>I : population infectée</li>
-                                    <li>R population : Rétablie (guérie) et supposée immunisée</li>
+                                    <li>RG : Population Rétablie (Guérie) et supposée immunisée</li>
                                 </ul>
 
                                 <p>Les principaux paramètres modifiables sont :</p>
@@ -173,7 +188,7 @@ const Home = () => {
 
                             <p>
                                 <strong>
-                                    2. Les « trajectoires de soins hospitaliers » simplifiées:
+                                    2. Les « trajectoires de soins hospitaliers » simplifiées :
                                 </strong>
 
                                 <ul>
