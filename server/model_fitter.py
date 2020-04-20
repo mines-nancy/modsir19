@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from models.simulator import run_sir_h
+from models.sir_h.simulator import run_sir_h
 from scipy.optimize import minimize
 from scipy.optimize import Bounds
 import numpy as np
@@ -23,14 +23,14 @@ def run_model(params: [float]):
 
     beta_pre, beta_post, patient0, pc_ih, pc_si, pc_sm_si = params
 
-    constants = {'population': 1000000, 'patient0': patient0, 'lim_time': 150}
-    delays = {'dm_incub': 3, 'dm_r': 9, 'dm_h': 6, 'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14}
-    coefficients = {'kpe': 1, 'r': 1, 'beta': beta_pre, 'pc_ir': 1 - pc_ih, 'pc_ih': pc_ih, 'pc_sm': 1 - pc_si,
-                    'pc_si': pc_si,  'pc_sm_si': pc_sm_si, 'pc_sm_out': 1 - pc_sm_si, 'pc_si_dc': 0.5, 'pc_si_out': 0.5,
-                    'pc_h_ss': 0.2, 'pc_h_r': 0.8}
+    parameters = {'population': 1000000, 'patient0': patient0, 'lim_time': 150,
+                  'dm_incub': 3, 'dm_r': 9, 'dm_h': 6, 'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14,
+                  'kpe': 1, 'r': 1, 'beta': beta_pre, 'pc_ir': 1 - pc_ih, 'pc_ih': pc_ih, 'pc_sm': 1 - pc_si,
+                  'pc_si': pc_si,  'pc_sm_si': pc_sm_si, 'pc_sm_out': 1 - pc_sm_si, 'pc_si_dc': 0.5, 'pc_si_out': 0.5,
+                  'pc_h_ss': 0.2, 'pc_h_r': 0.8}
     rules = [{'field': 'beta', 'value': beta_post, 'date': 53}]
 
-    lists = run_sir_h(constants, delays, coefficients, rules)
+    lists = run_sir_h(parameters, rules)
 
     spike_height = max(lists["SI"])
     spike_date = lists["SI"].index(spike_height)
