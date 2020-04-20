@@ -13,10 +13,11 @@ const generateDateInterval = (startDate, numberOfDays) =>
 
 const useStyles = makeStyles({
     root: {
-        padding: 32,
+        padding: 16,
     },
     container: {
         position: 'fixed',
+        left: 24,
     },
 });
 
@@ -131,12 +132,12 @@ const Chart = ({ values, startDate }) => {
     const xlarge = useMediaQuery(theme.breakpoints.up('xl'));
 
     let chartSize;
-    if (xlarge) chartSize = 750;
-    else if (midlarge) chartSize = 675;
-    else if (large) chartSize = 600;
-    else if (xmedium) chartSize = 500;
-    else if (medium) chartSize = 450;
-    else chartSize = 350;
+    if (xlarge) chartSize = 725;
+    else if (midlarge) chartSize = 650;
+    else if (large) chartSize = 575;
+    else if (xmedium) chartSize = 475;
+    else if (medium) chartSize = 425;
+    else chartSize = 325;
 
     const lineData = data({ t, values, startDate });
 
