@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { I18n } from 'react-polyglot';
 
 import messages from './i18n/messages';
@@ -12,10 +12,12 @@ const Experiments = lazy(() =>
     import(/* webpackChunkName: "experiments" */ './screens/experiments/Experiments'),
 );
 
+const basename = process.env.REACT_APP_BASENAME || '/';
+
 const App = () => {
     return (
         <I18n locale="fr" messages={messages.fr}>
-            <HashRouter>
+            <BrowserRouter basename={basename}>
                 <Suspense fallback={<div>Loading...</div>}>
                     <Switch>
                         <Route path="/" exact component={Home} />
@@ -25,7 +27,7 @@ const App = () => {
                         <Route component={NotFound} />
                     </Switch>
                 </Suspense>
-            </HashRouter>
+            </BrowserRouter>
         </I18n>
     );
 };
