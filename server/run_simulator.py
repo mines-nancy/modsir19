@@ -1,5 +1,3 @@
-from models.queue.state import State as QueueState
-from models.past_input.state import State as PastInputState
 from models.sir_h.state import State as SirHState
 from models.simulator import Simulator
 

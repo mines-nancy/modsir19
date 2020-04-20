@@ -109,7 +109,7 @@ class State:
             'r') * self.coefficient('beta') * se * (ir+ih) / n
         self.move('SE', 'INCUB', delta)
 
-    def extract_series(self, history):
+    def extract_series(self):
         sizes = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
         inputs = {'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],

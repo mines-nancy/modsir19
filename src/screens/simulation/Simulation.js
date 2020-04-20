@@ -1,24 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { CircularProgress, Grid, makeStyles, Card, CardContent } from '@material-ui/core';
+import { Grid, makeStyles, Card, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import Layout from '../../components/Layout';
-import DateField from '../../components/fields/DateField';
-import NumberField from '../../components/fields/NumberField';
 import DurationField from '../../components/fields/DurationField';
-import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
-import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
 
 import api from '../../api';
 import Chart from './Chart';
+import TimeframeStepper from './TimeframeStepper';
+import TotalPopulation from './TotalPopulation';
 import ExposedPopulation from './ExposedPopulation';
 import { SwitchPercentField } from '../../components/fields/SwitchPercentField';
-import { format, addDays, differenceInDays, isSameDay } from 'date-fns';
+import { addDays, differenceInDays, isSameDay } from 'date-fns';
 
 const sirEdgesColorCode = '#00688B';
 const hEdgesColorCode = 'red';
@@ -63,37 +61,6 @@ const GridWithLeftGutter = ({ children, ...props }) => (
     </Grid>
 );
 
-const TotalPopulationBlock = () => {
-    const [expanded, setExpanded] = useState(false);
-    const handleExpansionChange = (evt, value) => setExpanded(value);
-
-    return (
-        <Field
-            name="population"
-            label="Population totale"
-            component={ExpandableNumberField}
-            expanded={expanded}
-            onChange={handleExpansionChange}
-            step="100000"
-        >
-            <Field className="small-margin-bottom" name="j_0" label="Début" component={DateField} />
-            <Field
-                className="small-margin-bottom"
-                name="patient0"
-                label="Patients infectés à J-0"
-                component={NumberField}
-                cardless
-            />
-            <Field
-                name="kpe"
-                label="Taux de population exposée"
-                numberInputLabel="Kpe"
-                component={ProportionField}
-            />
-        </Field>
-    );
-};
-
 const round = (x) => Math.round(x * 100) / 100;
 
 const mapObject = (obj, keys, fn) =>
@@ -103,8 +70,6 @@ const mapObject = (obj, keys, fn) =>
               return acc;
           }, {})
         : {};
-
-const startDate = new Date(2020, 0, 23);
 
 const defaultParameters = {
     population: 500000,
@@ -131,8 +96,7 @@ const defaultParameters = {
     pc_h_ss: 20,
     pc_h_r: round(100 - 20),
     lim_time: 250,
-    j_0: startDate,
-    rules: [],
+    start_date: new Date(2020, 0, 23),
 };
 
 const percentFields = [
@@ -157,10 +121,11 @@ const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
-const formatParametersForModel = ({ rules, j_0, ...parameters }) =>
+const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
     removeMedicalCareSplit({
         ...parameters,
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
+        start_time: differenceInDays(start_date, firstTimeframeStartDate),
     });
 
 const useStyles = makeStyles(() => ({
@@ -177,43 +142,76 @@ const getModel = async (parameterList) => {
     return data;
 };
 
-const checkHasSameDate = (date) => ({ j_0 }) => isSameDay(j_0, date);
+const checkHasSameDate = (date) => ({ start_date }) => isSameDay(start_date, date);
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 const Simulation = () => {
     const classes = useStyles();
+    const [loading, setLoading] = useState(false);
     const [values, setValues] = useState();
-    const [parameterIndex, setParameterIndex] = useState(0);
-    const [parametersList, setParametersList] = useState([{ ...defaultParameters, start_time: 0 }]);
+    const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
+    const [timeframes, setTimeframes] = useState([
+        { ...defaultParameters, start_time: 0, name: 'Période initiale' },
+    ]);
+    const [expanded, setExpanded] = useState(false);
+    const handleExpansionChange = (evt, value) => setExpanded(value);
 
     const handleSubmit = useCallback(
         (values) => {
-            const parametersListWithoutCurrent = [...parametersList];
-            parametersListWithoutCurrent.splice(parameterIndex, 1);
-            if (parametersListWithoutCurrent.some(checkHasSameDate(values.j_0))) {
-                alert("Vous ne pouvez pas choisir la même date qu'une autre période");
+            const timeframesWithoutCurrent = [...timeframes];
+            timeframesWithoutCurrent.splice(selectedTimeframeIndex, 1);
+
+            if (timeframesWithoutCurrent.some(checkHasSameDate(values.start_date))) {
                 return;
             }
 
-            setParametersList((list) => {
+            setTimeframes((list) => {
                 const newList = [...list];
-                newList[parameterIndex] = values;
+                newList[selectedTimeframeIndex] = values;
+                newList.sort((a, b) => a.start_date - b.start_date);
+                setSelectedTimeframeIndex(
+                    newList.findIndex((timeframe) => timeframe.start_date === values.start_date),
+                );
                 return newList;
             });
         },
-        [parameterIndex],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [selectedTimeframeIndex],
     );
 
-    const handleAddSimulation = useCallback(() => {
-        setParametersList((list) => {
-            const lastItem = list[list.length - 1];
-            return [...list, { ...lastItem, j_0: addDays(lastItem.j_0, 1) }];
-        });
-    }, []);
+    const refreshLines = () => {
+        window.dispatchEvent(new CustomEvent('graph:refresh:start'));
 
-    const handleRemoveParameter = (index) => () => {
-        setParametersList((list) => {
+        setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+        }, 16);
+    };
+
+    const handleAddTimeframe = () => {
+        setTimeframes((list) => {
+            const lastItem = list[list.length - 1];
+            const startDate = addDays(lastItem.start_date, 1);
+
+            return [
+                ...list,
+                {
+                    ...lastItem,
+                    start_date: startDate,
+                    name: 'Nouvelle période',
+                },
+            ];
+        });
+
+        if (expanded) {
+            refreshLines();
+        } else {
+            setExpanded(true);
+        }
+    };
+
+    const handleRemoveTimeframe = (index) => {
+        setTimeframes((list) => {
             // Can't remove if there's only 1 parameter
             if (list.length === 1) {
                 return;
@@ -224,57 +222,50 @@ const Simulation = () => {
             return newList;
         });
 
+        refreshLines();
+
         // Reset index if current index is deleted
-        if (parameterIndex === index) {
-            setParameterIndex(0);
+        if (selectedTimeframeIndex === index) {
+            setSelectedTimeframeIndex(0);
         }
     };
 
     useEffect(() => {
         (async () => {
+            setLoading(true);
             const data = await getModelDebounced(
-                parametersList.map((parameters) => formatParametersForModel(parameters)),
+                timeframes.map((parameters) =>
+                    formatParametersForModel(parameters, timeframes[0].start_date),
+                ),
             );
             setValues(data);
+            setLoading(false);
         })();
-    }, [JSON.stringify(parametersList)]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [JSON.stringify(timeframes)]);
 
     return (
-        <Layout>
+        <Layout loading={loading}>
             <Grid container>
                 <Grid item xs={6}>
-                    <div style={{ display: /*'flex'*/ 'none' }}>
-                        {parametersList.map((p, index) => (
-                            <div style={{ paddingRight: 10 }}>
-                                <button
-                                    style={{
-                                        color: index === parameterIndex ? 'blue' : 'black',
-                                    }}
-                                    onClick={() => setParameterIndex(index)}
-                                >
-                                    Période {`j${differenceInDays(p.j_0, startDate)}`} (
-                                    {format(p.j_0, 'dd/MM/yyyy')})
-                                </button>
-                                {parametersList.length > 1 && (
-                                    <button onClick={handleRemoveParameter(index)}>X</button>
-                                )}
-                            </div>
-                        ))}
-                        <button onClick={handleAddSimulation}>Ajouter plus de périodes</button>
-                    </div>
-                    {values ? (
-                        <Chart values={values} startDate={startDate} />
-                    ) : (
-                        <CircularProgress />
-                    )}
+                    {values && <Chart values={values} startDate={timeframes[0].start_date} />}
                 </Grid>
                 <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
+                    <TimeframeStepper
+                        timeframes={timeframes}
+                        selectedTimeframeIndex={selectedTimeframeIndex}
+                        setSelectedTimeframeIndex={setSelectedTimeframeIndex}
+                        onAddTimeframe={handleAddTimeframe}
+                        onRemoveTimeframe={handleRemoveTimeframe}
+                    />
                     <Form
+                        // Reset the form at each timeframe change
+                        key={timeframes[selectedTimeframeIndex].start_date}
                         subscription={{}}
                         onSubmit={() => {
                             /* Useless since we use a listener on autosave */
                         }}
-                        initialValues={parametersList[parameterIndex]}
+                        initialValues={timeframes[selectedTimeframeIndex]}
                         render={() => (
                             <div className={classes.configuration}>
                                 <AutoSave save={handleSubmit} debounce={200} />
@@ -297,7 +288,10 @@ const Simulation = () => {
                                                 },
                                             ]}
                                         >
-                                            <TotalPopulationBlock />
+                                            <TotalPopulation
+                                                expanded={expanded}
+                                                handleExpansionChange={handleExpansionChange}
+                                            />
                                         </Node>
                                     </Grid>
                                     <Grid
