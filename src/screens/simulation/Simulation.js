@@ -142,6 +142,7 @@ const Simulation = () => {
     const [graphTimeframes, setGraphTimeframes] = useState(
         extractGraphTimeframes(defaultTimeframes),
     );
+
     const [timeframes, setTimeframes] = useState(defaultTimeframes);
 
     const handleSubmit = useCallback(

@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslate } from 'react-polyglot';
 import { makeStyles } from '@material-ui/core/styles';
 import { addDays, eachDayOfInterval, format } from 'date-fns';
+import { Switch } from '@material-ui/core';
 import c3 from 'c3';
 import 'c3/c3.css';
 
 import { useWindowSize } from '../../utils/useWindowSize';
-import { Button } from '@material-ui/core';
 
 const generateDateInterval = (startDate, numberOfDays) =>
     eachDayOfInterval({
@@ -26,6 +26,9 @@ const useStyles = makeStyles({
         position: 'absolute',
         top: 20,
         right: 20,
+        display: 'flex',
+        alignItems: 'center',
+        color: '#888',
     },
 });
 
@@ -211,6 +214,9 @@ const Chart = ({ values, startDate, timeframes = [] }) => {
                 step: 2,
             },
         },
+        zoom: {
+            enabled: true,
+        },
         size: { height: chartSize * CHART_HEIGHT_RATIO, width: chartSize },
         tooltip: {
             format: {
@@ -224,13 +230,17 @@ const Chart = ({ values, startDate, timeframes = [] }) => {
         <div className={classes.root}>
             <div className={classes.container} style={config.size}>
                 <C3Graph config={config} />
-                <Button
-                    variant="contained"
-                    className={classes.yAxisToggleButton}
-                    onClick={handleYTypeToggle}
-                >
-                    Affichage {yType === 'linear' ? 'Linéaire' : 'Logarithmique'}
-                </Button>
+                <div className={classes.yAxisToggleButton}>
+                    <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
+                        Échelle linéaire
+                    </div>
+                    <div>
+                        <Switch checked={yType === 'log'} onChange={handleYTypeToggle} />
+                    </div>
+                    <div style={{ color: yType === 'linear' ? '#888' : 'black' }}>
+                        Échelle logarithmique
+                    </div>
+                </div>
             </div>
         </div>
     );
