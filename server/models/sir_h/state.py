@@ -81,8 +81,9 @@ class State:
         return f'{self.box("SE")} {self.box("INCUB")} {self.box("IR")} {self.box("IH")} {self.box("SM")} {self.box("SI")} {self.box("SS")} {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
 
     def move(self, src_name, dest_name, delta):
-        self.box(src_name).remove(delta)
-        self.box(dest_name).add(delta)
+        max_delta = min(self.box(src_name).output(), delta)
+        self.box(src_name).remove(max_delta)
+        self.box(dest_name).add(max_delta)
 
     def step(self):
         self.time += 1
@@ -107,6 +108,7 @@ class State:
         n = se + incub + ir + ih + r
         delta = self.coefficient(
             'r') * self.coefficient('beta') * se * (ir+ih) / n
+        assert delta >= 0
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self):

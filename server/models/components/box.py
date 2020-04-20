@@ -83,8 +83,14 @@ class BoxSource(Box):
     def __init__(self, name):
         Box.__init__(self, name)
 
+    def remove(self, size):
+        self._output[self._t] -= size
+        self._size[self._t] -= size
+        self._removed[self._t] += size
+
     def step(self):
         super().step()
+        assert self.output(1) == self.size(1)
         new_output = self.output(1) + self.input(1)
         self.set_output(new_output)
         self.set_size(new_output)

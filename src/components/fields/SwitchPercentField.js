@@ -8,15 +8,18 @@ const useStyles = makeStyles(() => ({
         position: 'relative',
         padding: '15px 0',
         fontSize: 13,
-        cursor: 'pointer',
-        transition: 'transform .3s ease-in-out',
         zIndex: 2,
-        '&:hover, &.open': {
-            transform: 'scale(1.3)',
-        },
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+
+        '&:not(.disabled)': {
+            cursor: 'pointer',
+            transition: 'transform .3s ease-in-out',
+            '&:hover, &.open': {
+                transform: 'scale(1.3)',
+            },
+        },
     },
     innerPie: {
         display: 'flex',
@@ -56,7 +59,7 @@ const useStyles = makeStyles(() => ({
 
 export const SwitchPercentField = (props) => {
     const classes = useStyles(props);
-    const { leftName, rightName, leftLabel, rightLabel, leftColor } = props;
+    const { leftName, rightName, leftLabel, rightLabel, leftColor, disabled } = props;
 
     const { input: input1 } = useField(leftName);
     const { input: input2 } = useField(rightName);
@@ -78,8 +81,11 @@ export const SwitchPercentField = (props) => {
     const open = Boolean(anchorEl);
 
     return (
-        <>
-            <div className={`${classes.pie} ${open ? 'open' : ''}`} onClick={handleClick}>
+        <div>
+            <div
+                className={`${classes.pie} ${open ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
+                onClick={handleClick}
+            >
                 <div className={classes.innerPie}>
                     <div className={classes.valueLeft}>{input1.value}%</div>
                     <div>
@@ -88,40 +94,42 @@ export const SwitchPercentField = (props) => {
                     <div className={classes.valueRight}>{input2.value}%</div>
                 </div>
             </div>
-            <Popover
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-            >
-                <div className={classes.sliderLabels}>
-                    <div>
-                        <span className={classes.sliderLeft}>
-                            {leftLabel}: <span class="colored">{innerValue}%</span>
-                        </span>
-                        <span className={classes.sliderRight}>
-                            {rightLabel}: <span class="colored">{100 - innerValue}%</span>
-                        </span>
+            {!disabled && (
+                <Popover
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                >
+                    <div className={classes.sliderLabels}>
+                        <div>
+                            <span className={classes.sliderLeft}>
+                                {leftLabel}: <span class="colored">{innerValue}%</span>
+                            </span>
+                            <span className={classes.sliderRight}>
+                                {rightLabel}: <span class="colored">{100 - innerValue}%</span>
+                            </span>
+                        </div>
+                        <Slider
+                            classes={classes}
+                            value={innerValue}
+                            step={1}
+                            min={0}
+                            max={100}
+                            onChangeCommitted={handleChangeCommitted}
+                            onChange={handleChange}
+                            track={!!leftColor}
+                        />
                     </div>
-                    <Slider
-                        classes={classes}
-                        value={innerValue}
-                        step={1}
-                        min={0}
-                        max={100}
-                        onChangeCommitted={handleChangeCommitted}
-                        onChange={handleChange}
-                        track={!!leftColor}
-                    />
-                </div>
-            </Popover>
-        </>
+                </Popover>
+            )}
+        </div>
     );
 };

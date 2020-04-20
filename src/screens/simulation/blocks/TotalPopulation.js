@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field } from 'react-final-form';
 
-import TextField from '../../components/fields/TextField';
-import DateField from '../../components/fields/DateField';
-import NumberField from '../../components/fields/NumberField';
-import ExpandableNumberField from '../../components/fields/ExpandableNumberField';
-import ProportionField from '../../components/fields/ProportionField';
+import ExpandableNumberField from '../../../components/fields/ExpandableNumberField';
+import NumberField from '../../../components/fields/NumberField';
+import ProportionField from '../../../components/fields/ProportionField';
+import DateField from '../../../components/fields/DateField';
+import TextField from '../../../components/fields/TextField';
 
-const TotalPopulation = ({ expanded, handleExpansionChange }) => {
+export default () => {
+    const [expanded, setExpanded] = useState(false);
+    const handleExpansionChange = (evt, value) => setExpanded(value);
+
     return (
         <Field
             name="population"
@@ -45,5 +48,3 @@ const TotalPopulation = ({ expanded, handleExpansionChange }) => {
         </Field>
     );
 };
-
-export default TotalPopulation;
