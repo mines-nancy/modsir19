@@ -27,16 +27,16 @@ const mapObject = (obj, keys, fn) =>
 
 const defaultParameters = {
     population: 500000,
-    patient0: 1,
+    patient0: 100,
     kpe: 60,
     r: 2.3,
+    beta: round(2.3 / 2.3 / 9.0),
     dm_incub: 3,
     dm_r: 9,
     dm_h: 6,
     dm_sm: 6,
     dm_si: 8,
     dm_ss: 14,
-    beta: 0.15,
     pc_ir: 84,
     pc_ih: round(100 - 84),
     pc_sm: 80,
@@ -108,6 +108,15 @@ const Simulation = () => {
     const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
     const [timeframes, setTimeframes] = useState([
         { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
+        {
+            ...defaultParameters,
+            r: 0.8,
+            beta: round(0.8 / 0.8 / 9.0),
+            start_date: new Date(2020, 2, 16),
+            start_time: 53,
+            name: 'Confinement',
+            enabled: false,
+        },
     ]);
 
     const handleSubmit = useCallback(
