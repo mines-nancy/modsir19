@@ -23,7 +23,7 @@ def run_model(params: [float]):
 
     beta_pre, beta_post, patient0, pc_ih, pc_si, pc_sm_si = params
 
-    parameters = {'population': 1000000, 'patient0': patient0, 'lim_time': 150,
+    parameters = {'population': 1000000, 'patient0': patient0, 'lim_time': 200,
                   'dm_incub': 3, 'dm_r': 9, 'dm_h': 6, 'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14,
                   'kpe': 1, 'r': 1, 'beta': beta_pre, 'pc_ir': 1 - pc_ih, 'pc_ih': pc_ih, 'pc_sm': 1 - pc_si,
                   'pc_si': pc_si,  'pc_sm_si': pc_sm_si, 'pc_sm_out': 1 - pc_sm_si, 'pc_si_dc': 0.5, 'pc_si_out': 0.5,
@@ -42,14 +42,12 @@ def obj_func(x, goal):
     pred_height, pred_date = run_model(x)
     goal_height, goal_date = goal
 
-    date_weight = 100
-
-    return (pred_height - goal_height)**2 + date_weight*(pred_date - goal_date)**2
+    return (pred_height/goal_height - 1)**2 + (pred_date/goal_date - 1)**2
 
 
 if __name__ == "__main__":
-    target_height = 180
-    target_date = 78
+    target_height = 180  # 180
+    target_date = 78     # 78
     # -> 11/04
 
     target = np.array([target_height, target_date])
@@ -83,10 +81,3 @@ if __name__ == "__main__":
     print(" ### ### ### ###")
     print(f" - spike_height: {round(spike_height, 3)} (targer: {round(target_height, 3)})")
     print(f" - spike_date:   {spike_date} (targer: {target_date})")
-
-    constants = {'population': 1000000, 'patient0': 100, 'lim_time': 150}
-    delays = {'dm_incub': 3, 'dm_r': 9, 'dm_h': 6, 'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14}
-    coefficients = {'kpe': 1, 'r': 1, 'beta': 0.2920, 'pc_ir': 1 - 0.066, 'pc_ih': 0.066, 'pc_sm': 1 - 0.186,
-                    'pc_si': 0.186,  'pc_sm_si': 0.199, 'pc_sm_out': 1 - 0.199, 'pc_si_dc': 0.5, 'pc_si_out': 0.5,
-                    'pc_h_ss': 0.2, 'pc_h_r': 0.8}
-    rules = [{'field': 'beta', 'value': 0.0996, 'date': 53}]
