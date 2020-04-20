@@ -72,7 +72,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         flexWrap: 'wrap',
         '& img': {
-            margin: `${theme.spacing(6)} 0`,
             maxHeight: 50,
         },
     },
