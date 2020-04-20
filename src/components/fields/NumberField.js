@@ -1,15 +1,8 @@
 import clsx from 'clsx';
 import React from 'react';
-import { Card, CardContent, TextField, makeStyles } from '@material-ui/core';
+import { TextField, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
-    card: {
-        maxWidth: (props) => props.width || 350,
-        backgroundColor: (props) => props.color,
-    },
-    root: {
-        paddingBottom: '16px !important',
-    },
     container: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -33,13 +26,12 @@ const NumberField = ({
     label,
     step = '1',
     input: { name, onChange, value, ...restInput },
-    cardless = false,
     className,
     ...props
 }) => {
     const classes = useStyles(props);
 
-    const cardContent = (
+    return (
         <label className={clsx(classes.container, className)}>
             <div className={classes.label}>{label}</div>
             <div className={classes.fieldContainer}>
@@ -54,16 +46,6 @@ const NumberField = ({
                 />
             </div>
         </label>
-    );
-
-    if (cardless) {
-        return cardContent;
-    }
-
-    return (
-        <Card className={classes.card} elevation={3}>
-            <CardContent classes={classes}>{cardContent}</CardContent>
-        </Card>
     );
 };
 
