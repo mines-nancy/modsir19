@@ -33,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     text: {
-        display: 'inline',
+        display: 'flex',
+        alignItems: 'center',
     },
     stepActions: {
         minWidth: 47,
@@ -94,6 +95,7 @@ const TimeframeStepper = ({
     setSelectedTimeframeIndex,
     onAddTimeframe,
     onRemoveTimeframe,
+    onDateChange,
 }) => {
     const classes = useStyles();
     const firstTimeframestartDate = timeframes[0].start_date;
@@ -106,6 +108,12 @@ const TimeframeStepper = ({
         evt.preventDefault();
         evt.stopPropagation();
         onRemoveTimeframe(index);
+    };
+
+    const handleDateChange = (index) => (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        onDateChange(index);
     };
 
     return (
@@ -138,8 +146,11 @@ const TimeframeStepper = ({
                                         {timeframe.name}
                                     </Typography>
                                 </div>
-                                <Typography variant="subtitle2">
-                                    A partir du {format(timeframe.start_date, 'dd/MM/yyyy')}
+                                <Typography variant="subtitle2" className={classes.text}>
+                                    <div>A partir du</div>
+                                    <Button variant="text" onClick={handleDateChange(index)}>
+                                        {format(timeframe.start_date, 'dd/MM/yyyy')}
+                                    </Button>
                                 </Typography>
                                 <div className={classes.stepActions}>
                                     {index !== 0 && (
