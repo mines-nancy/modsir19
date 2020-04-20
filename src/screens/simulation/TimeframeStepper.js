@@ -1,7 +1,9 @@
 import React from 'react';
+import clsx from 'clsx';
 import { differenceInDays, format } from 'date-fns';
 import {
     makeStyles,
+    withStyles,
     Stepper,
     Step,
     StepLabel,
@@ -9,6 +11,7 @@ import {
     Button,
     IconButton,
     Typography,
+    StepConnector,
 } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
@@ -44,11 +47,46 @@ const useStyles = makeStyles((theme) => ({
     button: {
         marginRight: theme.spacing(1),
     },
+    icon: {
+        position: 'relative',
+        minWidth: theme.spacing(5),
+        minHeight: theme.spacing(5),
+        marginRight: theme.spacing(1),
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    iconActive: {
+        '&:before': {
+            content: '""',
+            display: 'block',
+            position: 'absolute',
+            width: theme.spacing(5),
+            height: theme.spacing(5),
+            backgroundColor: theme.palette.primary.main,
+            borderRadius: '50%',
+        },
+        '& > span': {
+            position: 'absolute',
+            color: 'white',
+            fontWeight: 'bold',
+        },
+    },
 }));
 
-const stepIconFactory = (days) => (props) => {
-    return <div>J+{days}</div>;
+const stepIconFactory = (days, className) => () => {
+    return (
+        <div className={className}>
+            <span>J+{days}</span>
+        </div>
+    );
 };
+
+const Connector = withStyles({
+    vertical: {
+        marginLeft: 20,
+    },
+})(StepConnector);
 
 const TimeframeStepper = ({
     timeframes,
@@ -58,7 +96,6 @@ const TimeframeStepper = ({
     onRemoveTimeframe,
 }) => {
     const classes = useStyles();
-
     const firstTimeframestartDate = timeframes[0].start_date;
 
     const handleStepClick = (index) => () => {
@@ -79,6 +116,7 @@ const TimeframeStepper = ({
                 orientation="vertical"
                 elevation={0}
                 nonLinear
+                connector={<Connector />}
             >
                 {timeframes.map((timeframe, index) => (
                     <Step key={timeframe.start_date}>
@@ -90,6 +128,9 @@ const TimeframeStepper = ({
                                 }}
                                 StepIconComponent={stepIconFactory(
                                     differenceInDays(timeframe.start_date, firstTimeframestartDate),
+                                    clsx(classes.icon, {
+                                        [classes.iconActive]: index === selectedTimeframeIndex,
+                                    }),
                                 )}
                             >
                                 <div>

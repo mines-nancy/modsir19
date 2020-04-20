@@ -108,7 +108,6 @@ const Simulation = () => {
     const [timeframes, setTimeframes] = useState([
         { ...defaultParameters, start_time: 0, name: 'Période initiale' },
     ]);
-    const [expanded, setExpanded] = useState(false);
 
     const handleSubmit = useCallback(
         (values) => {
@@ -156,11 +155,9 @@ const Simulation = () => {
             ];
         });
 
-        if (expanded) {
-            refreshLines();
-        } else {
-            setExpanded(true);
-        }
+        setSelectedTimeframeIndex(timeframes.length);
+
+        refreshLines();
     };
 
     const handleRemoveTimeframe = (index) => {

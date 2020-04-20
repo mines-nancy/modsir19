@@ -28,9 +28,9 @@ export const Edge = ({
                 let isTransitionFinished = true;
                 const start = () =>
                     window.requestAnimationFrame(() => {
-                        line.position();
+                        line && line.position();
 
-                        if (!isTransitionFinished) {
+                        if (line && !isTransitionFinished) {
                             start();
                         }
                     });
@@ -56,6 +56,7 @@ export const Edge = ({
         return () => {
             timeout && clearTimeout(timeout);
             line && line.remove();
+            line = null;
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ref1, ref2]);
