@@ -59,8 +59,8 @@ class State:
 
     def change_value(self, name, value):
         self._parameters[name] = value
-        print(
-            f'time = {self.time} new coeff {name} = {value} type={type(value)}')
+        # print(
+        # f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 
     def boxes(self):
         return self._boxes.values()
