@@ -26,11 +26,11 @@ const mapObject = (obj, keys, fn) =>
         : {};
 
 const defaultParameters = {
-    population: 500000,
+    population: 1000000,
     patient0: 100,
-    kpe: 60,
-    r: 2.3,
-    beta: round(2.3 / 2.3 / 9.0),
+    kpe: 100,
+    r: 1.0,
+    beta: round(2.3 / 1.0 / 9.0), // R0 = r * beta * dm_r
     dm_incub: 3,
     dm_r: 9,
     dm_h: 6,
@@ -110,8 +110,8 @@ const Simulation = () => {
         { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
         {
             ...defaultParameters,
-            r: 0.8,
-            beta: round(0.8 / 0.8 / 9.0),
+            r: 1.0,
+            beta: round(0.8 / 1.0 / 9.0), // R0 = r * beta * dm_r
             start_date: new Date(2020, 2, 16),
             start_time: 53,
             name: 'Confinement',
