@@ -23,7 +23,7 @@ def extract_from_parameters(parameters):
     delays_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
 
     coefficients_name = ['kpe', 'r', 'beta', 'pc_ir', 'pc_ih', 'pc_sm',
-                         'pc_si', 'pc_sm_si', 'pc_sm_out', 'pc_si_dc', 'pc_si_out', 'pc_h_ss', 'pc_h_r']
+                         'pc_si', 'pc_sm_si', 'pc_sm_dc', 'pc_sm_out', 'pc_si_dc', 'pc_si_out', 'pc_h_ss', 'pc_h_r']
 
     constants = {key: int(parameters[key]) for key in constants_name}
     delays = {key: int(parameters[key]) for key in delays_name}
