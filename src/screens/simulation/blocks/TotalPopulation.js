@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Field } from 'react-final-form';
 
 import ExpandableNumberField from '../../../components/fields/ExpandableNumberField';
@@ -7,8 +7,7 @@ import ProportionField from '../../../components/fields/ProportionField';
 import DateField from '../../../components/fields/DateField';
 import TextField from '../../../components/fields/TextField';
 
-export default () => {
-    const [expanded, setExpanded] = useState(false);
+export default ({ expanded, setExpanded }) => {
     const handleExpansionChange = (evt, value) => setExpanded(value);
 
     return (
