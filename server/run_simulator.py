@@ -1,8 +1,8 @@
 from models.sir_h.state import State
-from models.simulator import Simulator
+from models.sir_h.simulator import run_sir_h
 
 if __name__ == "__main__":
-    constants = {'population': 500000, 'patient0':  1}
+    constants = {'population': 500000, 'patient0': 1, 'lim_time': 10}
     delays = {'dm_incub': 3, 'dm_r': 9, 'dm_h': 6,
               'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14}
     coefficients = {'kpe': 0.6, 'r': 2.3, 'beta': 0.73,
@@ -14,14 +14,4 @@ if __name__ == "__main__":
     print(
         f'constants={constants} delays={delays} coefficients={coefficients}')
 
-    initial_state = State(constants=constants, delays=delays,
-                          coefficients=coefficients, time=0)
-    simulator = Simulator(initial_state)
-    print(simulator.get_state())
-
-    for i in range(60):
-        simulator.apply_rules(i, [])
-        simulator.step()
-        print(simulator.get_state())
-
-    # print(simulator.extract_series())
+    run_sir_h(constants, delays, coefficients, [])
