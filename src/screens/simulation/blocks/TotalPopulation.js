@@ -37,7 +37,6 @@ export default () => {
                 name="patient0"
                 label="Patients infectés à J-0"
                 component={NumberField}
-                cardless
             />
             <Field
                 name="kpe"

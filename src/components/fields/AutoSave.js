@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormSpy } from 'react-final-form';
-import { isEqual } from 'lodash';
 
 // Coming from official example of async on blur saving
 // https://codesandbox.io/s/7k742qpo36
@@ -8,30 +7,17 @@ import { isEqual } from 'lodash';
 // Mixed with the following
 // https://codesandbox.io/s/5w4yrpyo7k?from-embed
 
-class AutoSave extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { values: props.values, submitting: false };
-    }
+const AutoSave = ({ values, save, debounce }) => {
+    useEffect(() => {
+        const timeout = setTimeout(() => save(values), debounce);
 
-    componentWillReceiveProps(nextProps) {
-        const { save, debounce, values } = this.props;
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [debounce, save, values]);
 
-        if (isEqual(values, nextProps.values)) {
-            return;
-        }
-
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
-
-        this.timeout = setTimeout(() => save(nextProps.values), debounce);
-    }
-
-    render() {
-        return null;
-    }
-}
+    return null;
+};
 
 export default (props) => (
     <FormSpy {...props} subscription={{ values: true }} component={AutoSave} />

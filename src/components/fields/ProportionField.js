@@ -45,11 +45,12 @@ const ProportionField = ({
                 <Typography gutterBottom>{label}</Typography>
                 <Slider
                     {...props}
-                    inputProps={{ ...restInput, ...inputProps }}
+                    {...restInput}
+                    {...inputProps}
                     value={value}
                     min={parseInt(min, 10)}
                     max={parseInt(max, 10)}
-                    step={step}
+                    step={parseFloat(step)}
                     onChange={handleSliderChange}
                 />
             </div>
