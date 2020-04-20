@@ -44,13 +44,13 @@ class State:
         self.box('INCUB').add(self.constant('patient0'))
 
     def constant(self, name):
-        return self.parameter(name)
+        return int(self.parameter(name))
 
     def delay(self, name):
-        return self.parameter(name)
+        return int(self.parameter(name))
 
     def coefficient(self, name):
-        return self.parameter(name)
+        return float(self.parameter(name))
 
     def parameter(self, name):
         if name in self._parameters:
