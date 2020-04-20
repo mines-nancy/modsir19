@@ -49,7 +49,6 @@ const ExpandableNumberField = ({ children, label, input, step, ...props }) => {
                 id="panel1a-header"
             >
                 <NumberField
-                    cardless
                     label={label}
                     input={input}
                     width="100%"

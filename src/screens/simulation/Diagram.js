@@ -31,9 +31,9 @@ const NodeWithPercentContainer = ({ children }) => (
 );
 
 const GridWithLeftGutter = ({ children, ...props }) => (
-    <Grid container xs={12}>
-        <Grid container xs={2} />
-        <Grid container xs={10}>
+    <Grid container item xs={12}>
+        <Grid item xs={2} />
+        <Grid container item xs={10}>
             <Grid {...props}>{children}</Grid>
         </Grid>
     </Grid>
@@ -84,7 +84,7 @@ export default ({
     linesMargin = '4rem 0',
 }) => (
     <GraphProvider>
-        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
+        <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="population_totale"
                 targets={[
@@ -100,7 +100,7 @@ export default ({
                 <BlockContainer color="white">{totalPopulation}</BlockContainer>
             </Node>
         </Grid>
-        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
+        <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="population_saine_exposee"
                 targets={[
@@ -116,7 +116,7 @@ export default ({
                 <BlockContainer color="rgba(255, 206, 86, 0.6)">{exposedPopulation}</BlockContainer>
             </Node>
         </Grid>
-        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
+        <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
             <NodeWithPercentContainer>
                 <Node name="incubation" targets={[]}>
                     <BlockContainer color={colors.incubation.bg}>{incubation}</BlockContainer>
@@ -154,9 +154,9 @@ export default ({
                 </Node>
             </NodeWithPercentContainer>
         </Grid>
-        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
-            <Grid container xs={1} />
-            <Grid container xs={5} justify="flex-start">
+        <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
+            <Grid item xs={1} />
+            <Grid container item xs={5} justify="flex-start">
                 <Node
                     name="retablissement_spontane"
                     alignmentBase="left"
@@ -176,7 +176,7 @@ export default ({
                 </Node>
             </Grid>
 
-            <Grid container xs={5} justify="flex-end">
+            <Grid container item xs={5} justify="flex-end">
                 <NodeWithPercentContainer>
                     <Node name="hospitalisation" targets={[]}>
                         <BlockContainer>{hospitalisation}</BlockContainer>
@@ -214,11 +214,11 @@ export default ({
                     </Node>
                 </NodeWithPercentContainer>
             </Grid>
-            <Grid container xs={1} />
+            <Grid item xs={1} />
         </Grid>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
-            <Grid container xs={5} justify="center">
+        <GridWithLeftGutter container item xs={12} justify="center" style={{ margin: linesMargin }}>
+            <Grid container item xs={5} justify="center">
                 <NodeWithPercentContainer>
                     <Node name="soins_medicaux" targets={[]}>
                         <BlockContainer color={colors.normal_care.bg}>{medicalCare}</BlockContainer>
@@ -255,8 +255,8 @@ export default ({
                     </Node>
                 </NodeWithPercentContainer>
             </Grid>
-            <Grid container xs={2} />
-            <Grid container xs={5} justify="center">
+            <Grid item xs={2} />
+            <Grid container item xs={5} justify="center">
                 <Node
                     name="soins_intensifs"
                     targets={[
@@ -276,8 +276,8 @@ export default ({
             </Grid>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
-            <Grid container xs={5} justify="center">
+        <GridWithLeftGutter container item xs={12} justify="center" style={{ margin: linesMargin }}>
+            <Grid container item xs={5} justify="center">
                 <Node
                     name="post_soins_medicaux"
                     targets={[
@@ -312,12 +312,12 @@ export default ({
                     )}
                 </Node>
             </Grid>
-            <Grid container xs={2} justify="center">
+            <Grid container item xs={2} justify="center">
                 <Node name="deces">
                     <BlockContainer color={colors.death.bg}>{death}</BlockContainer>
                 </Node>
             </Grid>
-            <Grid container xs={5} justify="center">
+            <Grid container item xs={5} justify="center">
                 <Node
                     name="percent_si"
                     targets={[
@@ -354,7 +354,7 @@ export default ({
             </Grid>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
+        <GridWithLeftGutter container item xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="gueris_ou_soins_suite"
                 targets={[
@@ -388,9 +388,9 @@ export default ({
             </Node>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center">
-            <Grid container xs={7} />
-            <Grid container xs={5}>
+        <GridWithLeftGutter container item xs={12} justify="center">
+            <Grid item xs={7} />
+            <Grid container item xs={5}>
                 <Node
                     name="soins_suite"
                     targets={[
@@ -408,7 +408,7 @@ export default ({
             </Grid>
         </GridWithLeftGutter>
 
-        <GridWithLeftGutter container xs={12} justify="center" style={{ margin: linesMargin }}>
+        <GridWithLeftGutter container item xs={12} justify="center" style={{ margin: linesMargin }}>
             <Node
                 name="after_soins_suite"
                 targets={[
@@ -423,14 +423,14 @@ export default ({
             ></Node>
         </GridWithLeftGutter>
 
-        <Grid container xs={12} justify="center" style={{ margin: linesMargin }}>
-            <Grid container xs={1} />
-            <Grid container xs={11} justify="flex-start">
+        <Grid container item xs={12} justify="center" style={{ margin: linesMargin }}>
+            <Grid item xs={1} />
+            <Grid container item xs={11} justify="flex-start">
                 <Node name="guerison">
                     <BlockContainer color={colors.recovered.bg}>{recovery}</BlockContainer>
                 </Node>
             </Grid>
-            <Grid container xs={6} justify="center" />
+            <Grid container item xs={6} justify="center" />
         </Grid>
         <Edges />
     </GraphProvider>
