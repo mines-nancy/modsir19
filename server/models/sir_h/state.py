@@ -59,8 +59,8 @@ class State:
             self._delays[name] = value
         elif name in coefficients_name:
             self._coefficients[name] = value
-        print(
-            f'time = {self.time} new coeff {name} = {value} type={type(value)}')
+        #print(
+        #    f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 
     def boxes(self):
         return self._boxes.values()
