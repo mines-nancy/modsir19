@@ -19,22 +19,13 @@ const ExposedPopulation = () => {
                 Population saine exposée
             </Typography>
             <Field
-                name="r"
-                label="Proportion de contacts effectifs"
-                numberInputLabel="r"
+                name="r0"
+                label="Nombre moyen de personnes qui seront infectées au contact d'une personne contagieuse"
+                numberInputLabel="R0"
                 component={ProportionField}
                 unit={null}
                 max="5"
                 step={0.1}
-            />
-            <Field
-                name="beta"
-                label="Taux d'infection en individus"
-                numberInputLabel="beta"
-                component={ProportionField}
-                unit={null}
-                max="1"
-                step={0.01}
             />
         </CardContent>
     );

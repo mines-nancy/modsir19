@@ -29,8 +29,7 @@ const defaultParameters = {
     population: 1000000,
     patient0: 100,
     kpe: 100,
-    r: 1.0,
-    beta: round(2.3 / 1.0 / 9.0), // R0 = r * beta * dm_r
+    r0: 2.3,
     dm_incub: 3,
     dm_r: 9,
     dm_h: 6,
@@ -75,9 +74,15 @@ const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
     pc_sm_out: parameters.pc_sm_out * pc_sm_other,
 });
 
+const computeRBetaFromR0 = ({ r0, dm_r }) => ({
+    r: 1.0,
+    beta: r0 / dm_r,
+});
+
 const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
     removeMedicalCareSplit({
         ...parameters,
+        ...computeRBetaFromR0(parameters),
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
         start_time: differenceInDays(start_date, firstTimeframeStartDate),
     });
@@ -110,11 +115,16 @@ const Simulation = () => {
         { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
         {
             ...defaultParameters,
-            r: 1.0,
-            beta: round(0.8 / 1.0 / 9.0), // R0 = r * beta * dm_r
+            r0: 0.8,
             start_date: new Date(2020, 2, 16),
-            start_time: 53,
             name: 'Confinement',
+            enabled: false,
+        },
+        {
+            ...defaultParameters,
+            r0: 1.1,
+            start_date: new Date(2020, 4, 11),
+            name: 'Déconfinement',
             enabled: false,
         },
     ]);
