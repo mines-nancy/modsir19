@@ -24,38 +24,6 @@ import MinesNancy from './logos/MinesNancy.png';
 import UniversiteLorraine from './logos/UniversiteLorraine.png';
 import marmelab from './logos/marmelab.png';
 
-const round = (x) => Math.round(x * 100) / 100;
-const startDate = new Date(2020, 0, 23);
-
-const defaultValues = {
-    population: 500000,
-    patient0: 1,
-    kpe: 60,
-    r: 2.3,
-    dm_incub: 3,
-    dm_r: 9,
-    dm_h: 6,
-    dm_sm: 6,
-    dm_si: 8,
-    dm_ss: 14,
-    beta: 0.15,
-    pc_ir: 84,
-    pc_ih: round(100 - 84),
-    pc_sm: 80,
-    pc_si: round(100 - 80),
-    pc_sm_si: 20,
-    pc_sm_other: round(100 - 20), // This field is not sent to the API
-    pc_sm_dc: 20,
-    pc_sm_out: round(100 - 20),
-    pc_si_dc: 50,
-    pc_si_out: 50,
-    pc_h_ss: 20,
-    pc_h_r: round(100 - 20),
-    lim_time: 250,
-    j_0: startDate,
-    rules: [],
-};
-
 const useStyles = makeStyles((theme) => ({
     container: {
         margin: '0 auto',
@@ -122,7 +90,7 @@ const Home = () => {
                             onSubmit={() => {
                                 /* Useless since we use a listener on autosave */
                             }}
-                            initialValues={defaultValues}
+                            initialValues={{}}
                             render={() => (
                                 <Diagram
                                     blocks={{
