@@ -7,7 +7,7 @@ import ProportionField from '../../../components/fields/ProportionField';
 import DateField from '../../../components/fields/DateField';
 import TextField from '../../../components/fields/TextField';
 
-export default ({ expanded, setExpanded }) => {
+export default ({ expanded, setExpanded, hideInitialInfected }) => {
     const handleExpansionChange = (evt, value) => setExpanded(value);
 
     return (
@@ -31,18 +31,20 @@ export default ({ expanded, setExpanded }) => {
                 label="Début"
                 component={DateField}
             />
-            <Field
-                className="small-margin-bottom"
-                name="patient0"
-                label="Patients infectés à J-0"
-                component={NumberField}
-            />
-            <Field
-                name="kpe"
-                label="Taux de population exposée"
-                numberInputLabel="Kpe"
-                component={ProportionField}
-            />
+            <span style={{ display: hideInitialInfected ? 'none' : 'block' }}>
+                <Field
+                    className="small-margin-bottom"
+                    name="patient0"
+                    label="Patients infectés à J-0"
+                    component={NumberField}
+                />
+                <Field
+                    name="kpe"
+                    label="Taux de population exposée"
+                    numberInputLabel="Kpe"
+                    component={ProportionField}
+                />
+            </span>
         </Field>
     );
 };
