@@ -20,7 +20,7 @@ const ExposedPopulation = () => {
             </Typography>
             <Field
                 name="r0"
-                label="Nombre moyen de personnes qui seront infectées au contact d'une personne contagieuse"
+                label="Nombre de Reproduction de Base (taux de contamination)"
                 numberInputLabel="R0"
                 component={ProportionField}
                 unit={null}
