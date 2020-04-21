@@ -9,6 +9,7 @@ import {
     CardContent,
     useTheme,
     useMediaQuery,
+    Tooltip,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { Form } from 'react-final-form';
@@ -69,6 +70,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const Block = ({ name }) => {
+    const t = useTranslate();
+    return (
+        <Tooltip title={t(`diagram.tip.${name}`)}>
+            <CardContent>{t(`diagram.${name}`)}</CardContent>
+        </Tooltip>
+    );
+};
+
 const Home = () => {
     const classes = useStyles();
     const t = useTranslate();
@@ -94,15 +104,15 @@ const Home = () => {
                             render={() => (
                                 <Diagram
                                     blocks={{
-                                        totalPopulation: <CardContent>P</CardContent>,
-                                        exposedPopulation: <CardContent>SE</CardContent>,
-                                        incubation: <CardContent>INCUB</CardContent>,
-                                        infected: <CardContent>INFECTES</CardContent>,
-                                        medicalCare: <CardContent>SM</CardContent>,
-                                        intensiveCare: <CardContent>SI</CardContent>,
-                                        followUpCare: <CardContent>SS</CardContent>,
-                                        death: <CardContent>DC</CardContent>,
-                                        recovery: <CardContent>RG</CardContent>,
+                                        totalPopulation: <Block name="P" />,
+                                        exposedPopulation: <Block name="SE" />,
+                                        incubation: <Block name="INCUB" />,
+                                        infected: <Block name="INFECTES" />,
+                                        medicalCare: <Block name="SM" />,
+                                        intensiveCare: <Block name="SI" />,
+                                        followUpCare: <Block name="SS" />,
+                                        death: <Block name="DC" />,
+                                        recovery: <Block name="RG" />,
                                     }}
                                     disabled
                                     hideSwitchers
@@ -125,11 +135,13 @@ const Home = () => {
 
                                         <p>
                                             Il s’agit d’une initiative commune des élèves et alumni
-                                            de Mines Nancy sous la direction des Professeurs Gilles
-                                            Karcher et Pierre-Etienne Moreau, visant à modéliser et
-                                            prévoir l’évolution de la pandémie Covid19. Marmelab
-                                            accompagne l’équipe dans l'accélération du développement
-                                            de cette interface.
+                                            de Mines Nancy, en collaboration avec le CHRU de Nancy,
+                                            sous la direction des Professeurs Gilles Karcher,
+                                            Pierre-Etienne Moreau et Christian Rabaud, visant à
+                                            modéliser et prévoir l’évolution de la pandémie Covid19
+                                            et ses conséquences sur l’occupation hospitalière.
+                                            Marmelab accompagne l’équipe dans l'accélération du
+                                            développement de cette interface.
                                         </p>
 
                                         <div className={classes.logos}>
@@ -183,10 +195,11 @@ const Home = () => {
                                 </strong>
 
                                 <ul>
-                                    <li>SE : population saine exposée</li>
-                                    <li>INCUB : population en incubation</li>
-                                    <li>I : population infectée</li>
-                                    <li>RG : Population Rétablie (Guérie) et supposée immunisée</li>
+                                    {['SE', 'INCUB', 'INFECTES', 'RG'].map((name) => (
+                                        <li>
+                                            {t(`diagram.${name}`)} : {t(`diagram.tip.${name}`)}
+                                        </li>
+                                    ))}
                                 </ul>
 
                                 <p>Les principaux paramètres modifiables sont :</p>
@@ -194,12 +207,12 @@ const Home = () => {
                                 <ul>
                                     <li>La Population globale du territoire</li>
                                     <li>
-                                        Le facteur R quantifiant l’intensité de l’épidémie qui
-                                        dépend classiquement de 3 facteurs : (R=r*beta*DMG). Si
-                                        R&le;1 l’épidémie est contenue ; si 1&lt;R&lt;1,2 l’épidemie
-                                        est en évolution lente, si R&gt;1,3 l’épidémie est en
-                                        évolution rapide
-                                        <ul>
+                                        Le facteur R0 quantifiant l’intensité de l’épidémie.
+                                        {/* qui dépend classiquement de 3 facteurs : (R=r*beta*DMG). */}{' '}
+                                        Si R0&le;1 l’épidémie est contenue ; si 1&lt;R0&lt;1,2
+                                        l’épidemie est en évolution lente, si R0&gt;1,3 l’épidémie
+                                        est en évolution rapide
+                                        {/* <ul>
                                             <li>
                                                 r : nombre moyen de contacts par unité de temps
                                                 entre Exposés et Infectés (fortement dépendant des
@@ -214,7 +227,7 @@ const Home = () => {
                                                 DMG : durée moyenne de guérison (intrinsèque à la
                                                 maladie)
                                             </li>
-                                        </ul>
+                                        </ul> */}
                                     </li>
                                 </ul>
                             </p>
@@ -225,10 +238,11 @@ const Home = () => {
                                 </strong>
 
                                 <ul>
-                                    <li>SI : soins intensifs</li>
-                                    <li>SM : soins médicaux</li>
-                                    <li>SS : soins de suite</li>
-                                    <li>DC : Décès intra hospitaliers</li>
+                                    {['SI', 'SM', 'SS', 'DC'].map((name) => (
+                                        <li>
+                                            {t(`diagram.${name}`)} : {t(`diagram.tip.${name}`)}
+                                        </li>
+                                    ))}
                                 </ul>
 
                                 <p>
