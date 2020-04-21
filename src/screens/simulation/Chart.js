@@ -35,7 +35,7 @@ const data = ({ t, values, startDate }) => {
     const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
 
     return {
-        labels: generateDateInterval(startDate, SE.length),
+        labels: generateDateInterval(startDate, SE.length - 1),
         datasets: [
             {
                 label: capitalize(t('chart.exposed')),
@@ -133,8 +133,7 @@ const Chart = ({ values, startDate, timeframes = [] }) => {
     const chartSize = windowWidth ? Math.max(windowWidth / 2 - 100, 350) : 850;
 
     const lineData = data({ t, values, startDate });
-
-    const labels = lineData.labels.slice(0, 251).map((date) => {
+    const labels = lineData.labels.slice(0, lineData.labels.length).map((date) => {
         const [d, m, y] = date.split('/');
         return `${y}-${m}-${d}`;
     });
@@ -193,6 +192,7 @@ const Chart = ({ values, startDate, timeframes = [] }) => {
                     count: 8,
                     format: '%d/%m/%Y',
                 },
+                padding: { left: -10 },
             },
         },
         grid: {

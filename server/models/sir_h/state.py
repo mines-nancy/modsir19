@@ -123,11 +123,11 @@ class State:
         lists = dict()
         for key in sizes.keys():
             lists[key] = sum_lists(
-                [self.box(name).get_size_history() for name in sizes[key]])
+                [self.box(name).get_size_history()[1:] for name in sizes[key]])
         for key in inputs.keys():
             lists['input_' + key] = sum_lists(
-                [self.box(name).get_input_history() for name in inputs[key]])
+                [self.box(name).get_input_history()[1:] for name in inputs[key]])
         for key in outputs.keys():
             lists['output_' + key] = sum_lists(
-                [self.box(name).get_removed_history() for name in outputs[key]])
+                [self.box(name).get_removed_history()[1:] for name in outputs[key]])
         return lists
