@@ -103,3 +103,9 @@ class BoxTarget(Box):
     def step(self):
         super().step()
         self.set_size(self.size(1) + self.input(1))
+
+    def remove(self, size):
+        raise Exception('should not be called on BoxTarget')
+
+    def set_output(self, value):
+        raise Exception('should not be called on BoxTarget')
