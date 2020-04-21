@@ -105,29 +105,45 @@ const checkHasSameDate = (date) => ({ start_date }) => isSameDay(start_date, dat
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
+const extractGraphTimeframes = (timeframes) =>
+    timeframes
+        .slice(1)
+        .filter((t) => t.enabled)
+        .map((timeframe) => ({
+            date: timeframe.start_date,
+            label: timeframe.name,
+        }));
+
+const defaultTimeframes = [
+    { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
+    {
+        ...defaultParameters,
+        r0: 0.8,
+        start_date: new Date(2020, 2, 16),
+        name: 'Confinement',
+        enabled: true,
+    },
+    {
+        ...defaultParameters,
+        r0: 1.1,
+        start_date: new Date(2020, 4, 11),
+        name: 'Déconfinement',
+        enabled: true,
+    },
+];
+
 const Simulation = () => {
     const classes = useStyles();
     const [loading, setLoading] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
     const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
-    const [timeframes, setTimeframes] = useState([
-        { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
-        {
-            ...defaultParameters,
-            r0: 0.8,
-            start_date: new Date(2020, 2, 16),
-            name: 'Confinement',
-            enabled: false,
-        },
-        {
-            ...defaultParameters,
-            r0: 1.1,
-            start_date: new Date(2020, 4, 11),
-            name: 'Déconfinement',
-            enabled: false,
-        },
-    ]);
+
+    const [graphTimeframes, setGraphTimeframes] = useState(
+        extractGraphTimeframes(defaultTimeframes),
+    );
+
+    const [timeframes, setTimeframes] = useState(defaultTimeframes);
 
     const handleSubmit = useCallback(
         (values) => {
@@ -243,6 +259,7 @@ const Simulation = () => {
                 ),
             );
             setValues(data);
+            setGraphTimeframes(extractGraphTimeframes(timeframes));
             setLoading(false);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -252,7 +269,13 @@ const Simulation = () => {
         <Layout loading={loading}>
             <Grid container>
                 <Grid item xs={6}>
-                    {values && <Chart values={values} startDate={timeframes[0].start_date} />}
+                    {values && (
+                        <Chart
+                            values={values}
+                            startDate={timeframes[0].start_date}
+                            timeframes={graphTimeframes}
+                        />
+                    )}
                 </Grid>
                 <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
                     <TimeframeStepper
