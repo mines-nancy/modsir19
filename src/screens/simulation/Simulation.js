@@ -281,6 +281,7 @@ const Simulation = () => {
                                             <TotalPopulationBlock
                                                 expanded={expanded}
                                                 setExpanded={setExpanded}
+                                                hideInitialInfected={selectedTimeframeIndex > 0}
                                             />
                                         ),
                                         exposedPopulation: <ExposedPopulationBlock />,
