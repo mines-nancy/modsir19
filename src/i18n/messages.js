@@ -136,6 +136,28 @@ const messages = {
             exit_intensive_care: 'sortie soins intensifs',
             dead: 'décédés',
         },
+        diagram: {
+            P: 'P',
+            SE: 'SE',
+            INFECTES: 'INFECTES',
+            INCUB: 'INCUB',
+            SM: 'SM',
+            SI: 'SI',
+            SS: 'SS',
+            DC: 'DC',
+            RG: 'RG',
+            tip: {
+                P: 'population globale du territoire',
+                SE: 'population saine exposée',
+                INFECTES: 'population infectée',
+                INCUB: 'population en incubation',
+                SM: 'soins médicaux',
+                SI: 'soins intensifs',
+                SS: 'soins de suite',
+                DC: 'décès intra hospitaliers',
+                RG: 'population Rétablie (Guérie) et supposée immunisée',
+            },
+        },
     },
 };
 
