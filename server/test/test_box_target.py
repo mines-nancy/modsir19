@@ -47,6 +47,17 @@ class TestBoxTarget(unittest.TestCase):
         self.assertEqual(box.output(), 0)
         self.assertEqual(box.removed(), 0)
 
+    def test_box_target4(self):
+        box = BoxTarget('TARGET')
+        for i in range(1, 10):
+            box.add(i)
+            box.step()
+        self.assertEqual(box.get_input_history(), list(range(1, 10)) + [0])
+        self.assertEqual(box.get_size_history(), [
+                         int(n*(n+1)/2) for n in range(10)])
+        self.assertEqual(box.get_output_history(), [0]*10)
+        self.assertEqual(box.get_removed_history(), [0]*10)
+
 
 if __name__ == '__main__':
     unittest.main()
