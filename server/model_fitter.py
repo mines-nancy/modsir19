@@ -42,7 +42,9 @@ def obj_func(x, goal):
     pred_height, pred_date = run_model(x)
     goal_height, goal_date = goal
 
-    return (pred_height/goal_height - 1)**2 + (pred_date/goal_date - 1)**2
+    date_weight = 10
+
+    return (pred_height/goal_height - 1)**2 + date_weight * (pred_date/goal_date - 1)**2
 
 
 if __name__ == "__main__":
