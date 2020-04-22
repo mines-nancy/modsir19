@@ -16,7 +16,7 @@ class Box:
         output = round(self.output(), 2)
         removed = round(self.removed(), 2)
         size = round(self.size(), 2)
-        return f'Box {self._name} t={self._t} [{input}]\{size}/[{output}->{removed}]'
+        return f'Box {self._name} [{input}]\{size}/[{output}->{removed}]'
 
     def step(self):
         self._input.append(0)

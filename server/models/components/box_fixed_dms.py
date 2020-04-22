@@ -14,7 +14,7 @@ class BoxFixedDms(Box):
         input = round(self.input(), 2)
         size = round(self.size(), 2)
         removed = round(self.removed(), 2)
-        return f'BoxDms {self._name} t={self._t} [{input}]\{size}/[{removed}]'
+        return f'BoxDms {self._name} [{input}]\{size}/[{removed}]'
 
     def step(self):
         previous_input = self.input()

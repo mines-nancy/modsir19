@@ -1,5 +1,6 @@
 from models.components.box import BoxSource, BoxTarget
 from models.components.box_fixed_dms import BoxFixedDms
+from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
 from models.components.box_fixed_delay import BoxFixedDelay
 from operator import add
@@ -24,7 +25,7 @@ class State:
 
         # src -> [targets]
         def lambda_coefficient(a, b=None):
-            if type(a) == 'int':
+            if isinstance(a, int):
                 return lambda: a
             elif b == None:
                 return lambda: self.coefficient(a)

@@ -4,10 +4,10 @@ from models.sir_h.simulator import run_sir_h
 if __name__ == "__main__":
     parameters = {'population': 500000,
                   'patient0': 1,
-                  'lim_time': 10,
+                  'lim_time': 100,
                   'r': 2.3,
-                  'beta': 0.73,
-                  'kpe': 0.6,
+                  'beta': 1.0 / 9,
+                  'kpe': 1.0,
                   'dm_incub': 3,
                   'dm_r': 9, 'dm_h': 6,
                   'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14,

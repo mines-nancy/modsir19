@@ -15,6 +15,6 @@ def run_sir_h(parameters, rules):
     for i in range(lim_time):
         apply_rules(state, i, rules)
         state.step()
-        # print(state)
+        print(state)
 
     return state.extract_series()
