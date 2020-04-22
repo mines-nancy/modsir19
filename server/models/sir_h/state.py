@@ -22,20 +22,28 @@ class State:
         }
 
         # src -> [targets]
+        def coefficient(a, b=None):
+            if type(a) == 'int':
+                return lambda: a
+            elif b == None:
+                return lambda: self.coefficient(a)
+            else:
+                return lambda: self.coefficient(a)*self.coefficient(b)
+
         self._moves = {
-            'INCUB': [('IR', self.coefficient('pc_ir')), ('IH', self.coefficient('pc_ih'))],
-            'IR': [('R', 1)],
-            'IH': [('SM', self.coefficient('pc_sm')), ('SI', self.coefficient('pc_si'))],
-            'SM': [('SI', self.coefficient('pc_sm_si')),
-                   ('DC', self.coefficient('pc_sm_dc')),
-                   ('SS', self.coefficient('pc_sm_out')
-                    * self.coefficient('pc_h_ss')),
-                   ('R', self.coefficient('pc_sm_out') * self.coefficient('pc_h_r'))],
-            'SI': [('DC', self.coefficient('pc_si_dc')),
-                   ('SS', self.coefficient('pc_si_out')
-                    * self.coefficient('pc_h_ss')),
-                   ('R', self.coefficient('pc_si_out') * self.coefficient('pc_h_r'))],
-            'SS': [('R', 1)],
+            'INCUB': [('IR', coefficient('pc_ir')),
+                      ('IH', coefficient('pc_ih'))],
+            'IR': [('R', coefficient(1))],
+            'IH': [('SM', coefficient('pc_sm')),
+                   ('SI', coefficient('pc_si'))],
+            'SM': [('SI', coefficient('pc_sm_si')),
+                   ('DC', coefficient('pc_sm_dc')),
+                   ('SS', coefficient('pc_sm_out', 'pc_h_ss')),
+                   ('R', coefficient('pc_sm_out', 'pc_h_r'))],
+            'SI': [('DC', coefficient('pc_si_dc')),
+                   ('SS', coefficient('pc_si_out', 'pc_h_ss')),
+                   ('R', coefficient('pc_si_out', 'pc_h_r'))],
+            'SS': [('R', coefficient(1))]
         }
 
         self.time = 0
@@ -57,27 +65,20 @@ class State:
             return self._parameters[name]
         return 0
 
-    def change_value(self, name, value):
-        self._parameters[name] = value
-        print(
-            f'time = {self.time} new coeff {name} = {value} type={type(value)}')
+    def change_value(self, field_name, value):
+        self._parameters[field_name] = value
+        box_to_update = {'dm_incub': 'INCUB',
+                         'dm_r': 'IR',
+                         'dm_h': 'IH',
+                         'dm_sm': 'SM',
+                         'dm_si': 'SI',
+                         'dm_ss': 'SS'}
+        if field_name in box_to_update.keys():
+            self.box(box_to_update[field_name]).set_duration(
+                self.delay(field_name))
 
-    def update_moves(self):
-        self._moves = {
-            'INCUB': [('IR', self.coefficient('pc_ir')), ('IH', self.coefficient('pc_ih'))],
-            'IR': [('R', 1)],
-            'IH': [('SM', self.coefficient('pc_sm')), ('SI', self.coefficient('pc_si'))],
-            'SM': [('SI', self.coefficient('pc_sm_si')),
-                   ('DC', self.coefficient('pc_sm_dc')),
-                   ('SS', self.coefficient('pc_sm_out')
-                    * self.coefficient('pc_h_ss')),
-                   ('R', self.coefficient('pc_sm_out') * self.coefficient('pc_h_r'))],
-            'SI': [('DC', self.coefficient('pc_si_dc')),
-                   ('SS', self.coefficient('pc_si_out')
-                    * self.coefficient('pc_h_ss')),
-                   ('R', self.coefficient('pc_si_out') * self.coefficient('pc_h_r'))],
-            'SS': [('R', 1)],
-        }
+        print(
+            f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
     def boxes(self):
         return self._boxes.values()
@@ -108,8 +109,8 @@ class State:
     def generic_steps(self, moves):
         for src_name in moves.keys():
             output = self.output(src_name)
-            for dest_name, coefficient in moves[src_name]:
-                self.move(src_name, dest_name, coefficient * output)
+            for dest_name, lambda_coefficient in moves[src_name]:
+                self.move(src_name, dest_name, lambda_coefficient() * output)
 
     def step_exposed(self):
         se = self.box('SE').output(1)

@@ -7,6 +7,9 @@ class BoxQueue(Box):
         Box.__init__(self, name)
         self._duration = duration
 
+    def set_duration(self, value):
+        self._duration = value
+
     def step(self):
         previous_input = self.input()
         previous_output = self.output()
