@@ -4,6 +4,7 @@ from models.components.box import Box, BoxSource, BoxTarget
 
 class TestBoxTarget(unittest.TestCase):
 
+    # elementary behavior
     def test_box_target1(self):
         box = BoxTarget('TARGET')
         self.assertEqual(box.input(), 0)
@@ -24,6 +25,7 @@ class TestBoxTarget(unittest.TestCase):
         self.assertEqual(box.size(), 110)
         self.assertEqual(box.output(), 0)
 
+    # multiple inputs are added
     def test_box_target2(self):
         box = BoxTarget('TARGET')
         self.assertEqual(box.input(), 0)
@@ -35,6 +37,7 @@ class TestBoxTarget(unittest.TestCase):
         self.assertEqual(box.size(), 0)
         self.assertEqual(box.output(), 0)
 
+    # can't remove from a target
     def test_box_target3(self):
         box = BoxTarget('TARGET')
         with self.assertRaises(Exception):
@@ -47,6 +50,7 @@ class TestBoxTarget(unittest.TestCase):
         self.assertEqual(box.output(), 0)
         self.assertEqual(box.removed(), 0)
 
+    # check history
     def test_box_target4(self):
         box = BoxTarget('TARGET')
         for i in range(1, 10):
