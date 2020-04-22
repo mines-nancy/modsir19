@@ -10,7 +10,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-export const Node = ({ name, targets = [], alignmentBase = 'center', children, style }) => {
+export const Node = ({ name, targets = [], children, style }) => {
     const classes = useStyles();
     const { registerNode } = useContext(GraphContext);
 
