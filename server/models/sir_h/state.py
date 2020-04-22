@@ -14,7 +14,7 @@ class State:
         self._boxes = {
             'SE': BoxSource('SE'),
             'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
-            'IR': BoxFixedDms('IR', self.delay('dm_r')),
+            'IR': BoxDms('IR', self.delay('dm_r')),
             'IH': BoxFixedDms('IH', self.delay('dm_h')),
             'SM': BoxFixedDms('SM', self.delay('dm_sm')),
             'SI': BoxFixedDms('SI', self.delay('dm_si')),

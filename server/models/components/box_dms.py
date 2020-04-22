@@ -26,7 +26,7 @@ class BoxDms(Box):
     def step(self):
         previous_input = self.input()
         previous_output = self.output()
-        previous_size = self.size()
+        # previous_size = self.size()
         previous_queue = self.queue()
 
         super().step()
@@ -36,20 +36,24 @@ class BoxDms(Box):
             self.set_output(previous_output + previous_input)
             return
 
-        new_queue = deque(map(lambda x: x-x/self._duration, previous_queue))
-        print(f'prev:{previous_queue} new:{new_queue}')
+        new_output = sum(x/self._duration for x in previous_queue)
+        new_queue = deque(map(lambda x: x - x/self._duration, previous_queue))
+        # print(f'prev:{previous_queue} new:{new_queue} new output={new_output}')
 
         if len(previous_queue) == self._duration:
-            new_queue.pop()
+            lost = new_queue.pop()
+            if len(new_queue) > 0:
+                last = new_queue.pop()
+                new_queue.append(last+lost)
+            else:
+                new_queue.append(lost)
 
         new_queue.appendleft(previous_input)
         self._queue.append(new_queue)
 
-        new_output = sum(x/self._duration for x in previous_queue)
         # new_output = previous_size / self._duration
-        new_size = previous_size + previous_input - new_output
+        # new_size = previous_size + previous_input - new_output
+        new_size = sum([x for x in new_queue])
 
-        # print(f'pop: {output}')
         self.set_size(new_size)
         self.set_output(previous_output + new_output)
-        # print(f'output: {self._output}')
