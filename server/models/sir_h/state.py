@@ -22,7 +22,7 @@ class State:
         }
 
         # src -> [targets]
-        def coefficient(a, b=None):
+        def lambda_coefficient(a, b=None):
             if type(a) == 'int':
                 return lambda: a
             elif b == None:
@@ -31,19 +31,19 @@ class State:
                 return lambda: self.coefficient(a)*self.coefficient(b)
 
         self._moves = {
-            'INCUB': [('IR', coefficient('pc_ir')),
-                      ('IH', coefficient('pc_ih'))],
-            'IR': [('R', coefficient(1))],
-            'IH': [('SM', coefficient('pc_sm')),
-                   ('SI', coefficient('pc_si'))],
-            'SM': [('SI', coefficient('pc_sm_si')),
-                   ('DC', coefficient('pc_sm_dc')),
-                   ('SS', coefficient('pc_sm_out', 'pc_h_ss')),
-                   ('R', coefficient('pc_sm_out', 'pc_h_r'))],
-            'SI': [('DC', coefficient('pc_si_dc')),
-                   ('SS', coefficient('pc_si_out', 'pc_h_ss')),
-                   ('R', coefficient('pc_si_out', 'pc_h_r'))],
-            'SS': [('R', coefficient(1))]
+            'INCUB': [('IR', lambda_coefficient('pc_ir')),
+                      ('IH', lambda_coefficient('pc_ih'))],
+            'IR': [('R', lambda_coefficient(1))],
+            'IH': [('SM', lambda_coefficient('pc_sm')),
+                   ('SI', lambda_coefficient('pc_si'))],
+            'SM': [('SI', lambda_coefficient('pc_sm_si')),
+                   ('DC', lambda_coefficient('pc_sm_dc')),
+                   ('SS', lambda_coefficient('pc_sm_out', 'pc_h_ss')),
+                   ('R', lambda_coefficient('pc_sm_out', 'pc_h_r'))],
+            'SI': [('DC', lambda_coefficient('pc_si_dc')),
+                   ('SS', lambda_coefficient('pc_si_out', 'pc_h_ss')),
+                   ('R', lambda_coefficient('pc_si_out', 'pc_h_r'))],
+            'SS': [('R', lambda_coefficient(1))]
         }
 
         self.time = 0
