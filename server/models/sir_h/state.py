@@ -23,7 +23,7 @@ class State:
 
         # src -> [targets]
         def lambda_coefficient(a, b=None):
-            if type(a) == 'int':
+            if isinstance(a, int):
                 return lambda: a
             elif b == None:
                 return lambda: self.coefficient(a)
