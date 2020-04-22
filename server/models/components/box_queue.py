@@ -9,13 +9,16 @@ class BoxQueue(Box):
         self._duration = duration
         self._queue = [deque()]  # items in the box
 
+    def set_duration(self, value):
+        self._duration = value
+
     def queue(self, past=0):
         if self._t-past >= 0:
             return self._queue[self._t-past]
         return deque()
 
-    def set_duration(self, value):
-        self._duration = value
+    def get_queue_history(self):
+        return list(self._queue)
 
     def step(self):
         previous_input = self.input()
@@ -37,8 +40,5 @@ class BoxQueue(Box):
             new_output = current_queue.pop()
             self.set_output(previous_output + new_output)
             new_size -= new_output
-        current_queue.appendleft(input)
+        current_queue.appendleft(previous_input)
         self.set_size(new_size)
-
-    def get_queue_history(self):
-        return list(self._queue)

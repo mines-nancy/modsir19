@@ -1,34 +1,55 @@
 import math
-from models.components.box import Box, BoxSource, BoxTarget
+from collections import deque
+from models.components.box import Box
 
 
 class BoxDms(Box):
     def __init__(self, name, duration=math.inf):
         Box.__init__(self, name)
         self._duration = duration
+        self._queue = [deque()]  # items in the box
 
     def set_duration(self, value):
         self._duration = value
 
-    def __str__(self):
-        input = round(self.input(), 2)
-        size = round(self.size(), 2)
-        removed = round(self.removed(), 2)
-        return f'BoxDms {self._name} t={self._t} [{input}]\{size}/[{removed}]'
+    def queue(self, past=0):
+        if self._t-past >= 0:
+            return self._queue[self._t-past]
+        return deque()
+
+    def get_queue_history(self):
+        return list(self._queue)
+
+    # def size(self):
+        # return sum([x for x in self.queue()])
 
     def step(self):
         previous_input = self.input()
         previous_output = self.output()
         previous_size = self.size()
+        previous_queue = self.queue()
 
         super().step()
 
         if self._duration == 0:
+            self._queue.append(deque(previous_queue))  # copy of previous_queue
             self.set_output(previous_output + previous_input)
             return
 
-        new_output = previous_size / self._duration
+        new_queue = deque(map(lambda x: x-x/self._duration, previous_queue))
+        print(f'prev:{previous_queue} new:{new_queue}')
+
+        if len(previous_queue) == self._duration:
+            new_queue.pop()
+
+        new_queue.appendleft(previous_input)
+        self._queue.append(new_queue)
+
+        new_output = sum(x/self._duration for x in previous_queue)
+        # new_output = previous_size / self._duration
+        new_size = previous_size + previous_input - new_output
+
         # print(f'pop: {output}')
-        self.set_size(previous_size + previous_input - new_output)
+        self.set_size(new_size)
         self.set_output(previous_output + new_output)
         # print(f'output: {self._output}')

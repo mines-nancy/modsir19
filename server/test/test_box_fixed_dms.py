@@ -1,11 +1,11 @@
 import unittest
-from models.components.box_dms import BoxDms
+from models.components.box_fixed_dms import BoxFixedDms
 
 
 class TestBoxDms(unittest.TestCase):
 
     def test_box_dms1(self):
-        box = BoxDms('DMS-10', 10)
+        box = BoxFixedDms('DMS-10', 10)
         box.add(1)
         self.assertEqual(box.input(), 1)
         self.assertEqual(box.size(), 0)
@@ -16,7 +16,7 @@ class TestBoxDms(unittest.TestCase):
         self.assertEqual(box.output(), 0)
 
     def test_box_dms2(self):
-        box = BoxDms('DMS-10', 10)
+        box = BoxFixedDms('DMS-10', 10)
         inputs = [1, 2, 4, 8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         r = [1.00, 2.90, 6.61, 13.95, 22.55, 32.30, 39.07, 44.16, 47.75, 49.97, 50.97, 50.88, 49.79, 47.81, 45.03, 41.53, 37.37, 33.64, 30.27, 27.25, 24.52, 22.07, 19.86, 17.88, 16.09, 14.48, 13.03, 11.73, 10.56,
@@ -27,8 +27,8 @@ class TestBoxDms(unittest.TestCase):
             box.add(inputs[i])
             self.assertEqual(box.input(), inputs[i])
             box.step()
-            self.assertAlmostEqual(box.size(), r[i], 0)
-            self.assertAlmostEqual(box.output(), outputs[i], 0)
+            self.assertAlmostEqual(box.size(), r[i], 2)
+            self.assertAlmostEqual(box.output(), outputs[i], 2)
             box.remove(box.output())
 
 

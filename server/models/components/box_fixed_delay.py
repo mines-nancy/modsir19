@@ -2,10 +2,13 @@ import math
 from models.components.box import Box
 
 
-class BoxDelay(Box):
+class BoxFixedDelay(Box):
     def __init__(self, name, duration=math.inf):
         Box.__init__(self, name)
         self._duration = duration
+
+    def set_duration(self, value):
+        self._duration = value
 
     def step(self):
         previous_input = self.input()

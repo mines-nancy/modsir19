@@ -4,7 +4,7 @@ from models.components.box_queue import BoxQueue
 
 class TestBoxQueue(unittest.TestCase):
 
-    def test_box_queue1(self):
+    def test_box_queue_elementary(self):
         box = BoxQueue('QUEUE-1', 1)
         box.add(1)
         self.assertEqual(box.input(), 1)
