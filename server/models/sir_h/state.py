@@ -62,6 +62,23 @@ class State:
         print(
             f'time = {self.time} new coeff {name} = {value} type={type(value)}')
 
+    def update_moves(self):
+        self._moves = {
+            'INCUB': [('IR', self.coefficient('pc_ir')), ('IH', self.coefficient('pc_ih'))],
+            'IR': [('R', 1)],
+            'IH': [('SM', self.coefficient('pc_sm')), ('SI', self.coefficient('pc_si'))],
+            'SM': [('SI', self.coefficient('pc_sm_si')),
+                   ('DC', self.coefficient('pc_sm_dc')),
+                   ('SS', self.coefficient('pc_sm_out')
+                    * self.coefficient('pc_h_ss')),
+                   ('R', self.coefficient('pc_sm_out') * self.coefficient('pc_h_r'))],
+            'SI': [('DC', self.coefficient('pc_si_dc')),
+                   ('SS', self.coefficient('pc_si_out')
+                    * self.coefficient('pc_h_ss')),
+                   ('R', self.coefficient('pc_si_out') * self.coefficient('pc_h_r'))],
+            'SS': [('R', 1)],
+        }
+
     def boxes(self):
         return self._boxes.values()
 
