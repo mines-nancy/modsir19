@@ -7,6 +7,9 @@ class BoxDms(Box):
         Box.__init__(self, name)
         self._duration = duration
 
+    def set_duration(self, value):
+        self._duration = value
+
     def __str__(self):
         input = round(self.input(), 2)
         size = round(self.size(), 2)
