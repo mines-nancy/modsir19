@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Form } from 'react-final-form';
 import { Grid, makeStyles, CardContent } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { addDays, differenceInDays, isSameDay } from 'date-fns';
+import { addDays, differenceInDays, isSameDay, startOfDay, endOfDay } from 'date-fns';
 
 import Layout from '../../components/Layout';
 import AutoSave from '../../components/fields/AutoSave';
@@ -84,7 +84,7 @@ const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeS
         ...parameters,
         ...computeRBetaFromR0(parameters),
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
-        start_time: differenceInDays(start_date, firstTimeframeStartDate),
+        start_time: differenceInDays(endOfDay(start_date), startOfDay(firstTimeframeStartDate)),
     });
 
 const useStyles = makeStyles(() => ({

@@ -6,7 +6,7 @@ import { Chart } from './SirPlusHChartView';
 import api from '../../api';
 import SirPlusHSliders from './SirPlusHSliders';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, startOfDay, endOfDay } from 'date-fns';
 import { DownloadButton } from './SirPlusHDownloadButton';
 
 const drawerWidth = 270;
@@ -50,7 +50,10 @@ const useStyles = makeStyles((theme) =>
 );
 
 const convertRules = (rules, j_0) =>
-    rules.map((rule) => ({ ...rule, date: differenceInDays(rule.date, j_0) }));
+    rules.map((rule) => ({
+        ...rule,
+        date: differenceInDays(endOfDay(rule.date), startOfDay(j_0)),
+    }));
 
 const getModel = async (parameters) => {
     const newRules = convertRules(parameters.rules, parameters.j_0);

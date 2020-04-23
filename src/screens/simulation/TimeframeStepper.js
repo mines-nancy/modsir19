@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInDays, format, startOfDay, endOfDay } from 'date-fns';
 import {
     makeStyles,
     withStyles,
@@ -144,7 +144,10 @@ const TimeframeStepper = ({
                                     labelContainer: classes.labelContainer,
                                 }}
                                 StepIconComponent={stepIconFactory(
-                                    differenceInDays(timeframe.start_date, firstTimeframestartDate),
+                                    differenceInDays(
+                                        endOfDay(timeframe.start_date),
+                                        startOfDay(firstTimeframestartDate),
+                                    ),
                                     clsx(classes.icon, {
                                         [classes.iconActive]: index === selectedTimeframeIndex,
                                     }),

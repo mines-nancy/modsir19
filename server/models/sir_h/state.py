@@ -46,10 +46,17 @@ class State:
             'SS': [('R', lambda_coefficient(1))]
         }
 
-        self.time = 0
+        self.time = -1  # first step should be t=0
         self.e0 = self.coefficient('kpe') * self.constant('population')
         self.box('SE').add(self.e0 - self.constant('patient0'))
         self.box('INCUB').add(self.constant('patient0'))
+
+    def __str__(self):
+        pop = sum([box.full_size() for box in self.boxes()])
+        return f't={self.time} {self.box("SE")} {self.box("INCUB")}' +\
+            f'\n    {self.box("IR")} {self.box("IH")}' + \
+            f'\n    {self.box("SM")} {self.box("SI")} {self.box("SS")}' +\
+            f'\n    {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
 
     def constant(self, name):
         return int(self.parameter(name))
@@ -89,10 +96,6 @@ class State:
     def output(self, name, past=0):
         return self.box(name).output(past)
 
-    def __str__(self):
-        pop = sum([box.full_size() for box in self.boxes()])
-        return f'{self.box("SE")} {self.box("INCUB")} {self.box("IR")} {self.box("IH")} {self.box("SM")} {self.box("SI")} {self.box("SS")} {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
-
     def move(self, src_name, dest_name, delta):
         max_delta = min(self.box(src_name).output(), delta)
         self.box(src_name).remove(max_delta)
@@ -120,7 +123,7 @@ class State:
         r = self.box('R').full_size(1)
         n = se + incub + ir + ih + r
         delta = self.coefficient(
-            'r') * self.coefficient('beta') * se * (ir+ih) / n
+            'r') * self.coefficient('beta') * se * (ir+ih) / n if n > 0 else 0
         assert delta >= 0
         self.move('SE', 'INCUB', delta)
 
