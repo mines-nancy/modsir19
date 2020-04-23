@@ -16,7 +16,7 @@ class Box:
         output = round(self.output(), 2)
         removed = round(self.removed(), 2)
         size = round(self.size(), 2)
-        return f'Box {self._name} t={self._t} [{input}]\{size}/[{output}->{removed}]'
+        return f'Box {self._name} [{input}]\{size}/[{output}->{removed}]'
 
     def step(self):
         self._input.append(0)
@@ -103,3 +103,9 @@ class BoxTarget(Box):
     def step(self):
         super().step()
         self.set_size(self.size(1) + self.input(1))
+
+    def remove(self, size):
+        raise Exception('should not be called on BoxTarget')
+
+    def set_output(self, value):
+        raise Exception('should not be called on BoxTarget')

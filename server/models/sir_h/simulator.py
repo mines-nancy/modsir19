@@ -3,7 +3,6 @@ from models.sir_h.state import State
 
 def apply_rules(state, date, rules):
     applicable_rules = [rule for rule in rules if date == rule['date']]
-
     for rule in applicable_rules:
         state.change_value(rule['field'], rule['value'])
 

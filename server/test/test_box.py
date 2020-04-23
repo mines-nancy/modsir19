@@ -3,8 +3,6 @@ from models.components.box import Box, BoxSource, BoxTarget
 
 
 class TestBox(unittest.TestCase):
-    # def setUp(self):
-    # self.box = BoxDms('DMS-10', 10)
 
     def test_box1(self):
         box = Box('BOX')
@@ -75,27 +73,6 @@ class TestBox(unittest.TestCase):
         self.assertEqual(box.input(), 0)
         self.assertEqual(box.size(), 100)
         self.assertEqual(box.output(), 100)
-
-    def test_box_target(self):
-        box = BoxTarget('TARGET')
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 0)
-        self.assertEqual(box.output(), 0)
-
-        box.add(100)
-        self.assertEqual(box.input(), 100)
-        self.assertEqual(box.size(), 0)
-        self.assertEqual(box.output(), 0)
-        box.step()
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 100)
-        self.assertEqual(box.output(), 0)
-
-        box.add(10)
-        box.step()
-        self.assertEqual(box.input(), 0)
-        self.assertEqual(box.size(), 110)
-        self.assertEqual(box.output(), 0)
 
 
 if __name__ == '__main__':

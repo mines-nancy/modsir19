@@ -1,5 +1,5 @@
 import math
-from models.components.box import Box, BoxSource, BoxTarget
+from models.components.box import Box
 
 
 class BoxDms(Box):
@@ -14,7 +14,7 @@ class BoxDms(Box):
         input = round(self.input(), 2)
         size = round(self.size(), 2)
         removed = round(self.removed(), 2)
-        return f'BoxDms {self._name} t={self._t} [{input}]\{size}/[{removed}]'
+        return f'BoxDms {self._name} [{input}]\{size}/[{removed}]'
 
     def step(self):
         previous_input = self.input()
@@ -24,7 +24,10 @@ class BoxDms(Box):
         super().step()
 
         if self._duration == 0:
-            self.set_output(previous_output + previous_input)
+            new_output = previous_input + previous_size
+            self.set_output(previous_output + new_output)
+            self.set_size(previous_size + previous_input - new_output)
+            assert self.size() == 0
             return
 
         new_output = previous_size / self._duration
