@@ -31,12 +31,17 @@ class BoxQueue(Box):
         current_queue = self.queue()
 
         if self._duration == 0:
-            self.set_output(previous_output + previous_input)
+            new_output = 0
+            # remove all elements from current queue
+            while len(current_queue) > 0:
+                new_output += current_queue.pop()
+            self.set_output(previous_output + previous_input + new_output)
             return
 
         new_size = previous_size + previous_input
 
-        if len(current_queue) == self._duration:
+        # remove extra elements
+        while len(current_queue) >= self._duration:
             new_output = current_queue.pop()
             self.set_output(previous_output + new_output)
             new_size -= new_output

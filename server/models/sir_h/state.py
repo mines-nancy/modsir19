@@ -1,8 +1,6 @@
 from models.components.box import BoxSource, BoxTarget
-from models.components.box_fixed_dms import BoxFixedDms
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
-from models.components.box_fixed_delay import BoxFixedDelay
 from operator import add
 
 
@@ -15,10 +13,10 @@ class State:
             'SE': BoxSource('SE'),
             'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
             'IR': BoxDms('IR', self.delay('dm_r')),
-            'IH': BoxFixedDms('IH', self.delay('dm_h')),
-            'SM': BoxFixedDms('SM', self.delay('dm_sm')),
-            'SI': BoxFixedDms('SI', self.delay('dm_si')),
-            'SS': BoxFixedDms('SS', self.delay('dm_ss')),
+            'IH': BoxDms('IH', self.delay('dm_h')),
+            'SM': BoxDms('SM', self.delay('dm_sm')),
+            'SI': BoxDms('SI', self.delay('dm_si')),
+            'SS': BoxDms('SS', self.delay('dm_ss')),
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
         }

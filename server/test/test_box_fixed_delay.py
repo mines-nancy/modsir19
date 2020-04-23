@@ -25,6 +25,15 @@ class TestBoxFixedDelay(unittest.TestCase):
         self.assertEqual(box.size(), 0)
         self.assertEqual(box.output(), 1)
 
+    def check_input_output(self, box, inputs, r, outputs):
+        for i in range(len(inputs)):
+            box.add(inputs[i])
+            self.assertEqual(box.input(), inputs[i])
+            box.step()
+            self.assertEqual(box.size(), r[i])
+            self.assertEqual(box.output(), outputs[i])
+            box.remove(box.output())
+
     def test_box_delay2(self):
         box = BoxFixedDelay('DELAY-10', 10)
         inputs = [1, 2, 4, 8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -33,13 +42,7 @@ class TestBoxFixedDelay(unittest.TestCase):
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         outputs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 4, 8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0,
                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        for i in range(len(inputs)):
-            box.add(inputs[i])
-            self.assertEqual(box.input(), inputs[i])
-            box.step()
-            self.assertEqual(box.size(), r[i])
-            self.assertEqual(box.output(), outputs[i])
-            box.remove(box.output())
+        self.check_input_output(box, inputs, r, outputs)
 
 
 if __name__ == '__main__':

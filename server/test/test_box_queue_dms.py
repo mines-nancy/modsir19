@@ -1,11 +1,11 @@
 import unittest
-from models.components.box_dms import BoxDms
+from models.components.box_queue_dms import BoxQueueDms
 
 
 class TestBoxDms(unittest.TestCase):
 
     def test_box_dms1(self):
-        box = BoxDms('DMS-10', 10)
+        box = BoxQueueDms('DMS-10', 10)
         box.add(1)
         self.assertEqual(box.input(), 1)
         self.assertEqual(box.size(), 0)
@@ -25,7 +25,7 @@ class TestBoxDms(unittest.TestCase):
             box.remove(box.output())
 
     def test_box_dms2(self):
-        box = BoxDms('DMS-10', 10)
+        box = BoxQueueDms('DMS-10', 10)
         inputs = [1, 2, 4, 8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         r = [1.000000000, 2.900000000, 6.610000000, 13.949000000, 22.554100000, 32.298690000, 39.068821000, 44.161938900, 47.745745010, 49.971170509, 50.974053458, 50.876648112, 49.788983301, 47.810084971, 45.029076474, 41.526168826, 37.373551944, 33.636196749, 30.272577074, 27.245319367, 24.520787430, 22.068708687, 19.861837819, 17.875654037, 16.088088633, 14.479279770, 13.031351793, 11.728216613, 10.555394952, 9.499855457, 8.549869911,
