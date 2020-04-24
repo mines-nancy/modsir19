@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslate } from 'react-polyglot';
 import { makeStyles } from '@material-ui/core/styles';
 import { addDays, eachDayOfInterval, format } from 'date-fns';
-import { Switch } from '@material-ui/core';
+import { merge } from 'lodash';
 import c3 from 'c3';
 import 'c3/c3.css';
-
-import { useWindowSize } from '../../utils/useWindowSize';
 
 const generateDateInterval = (startDate, numberOfDays) =>
     eachDayOfInterval({
@@ -17,18 +15,6 @@ const generateDateInterval = (startDate, numberOfDays) =>
 const useStyles = makeStyles({
     root: {
         padding: 16,
-    },
-    container: {
-        position: 'fixed',
-        left: 24,
-    },
-    yAxisToggleButton: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        display: 'flex',
-        alignItems: 'center',
-        color: '#888',
     },
 });
 
@@ -87,163 +73,158 @@ const data = ({ t, values, startDate }) => {
 const useDataCallback = (data, callback) => {
     useEffect(() => {
         callback && callback(data);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(data)]);
 };
 
-const C3Graph = ({ config }) => {
+const C3Graph = React.forwardRef(({ config }, chartRef) => {
     const elRef = useRef(null);
-    const chart = useRef(null);
 
     useEffect(() => {
-        if (elRef.current && !chart.current) {
-            chart.current = c3.generate({ bindto: elRef.current, ...config });
+        if (elRef.current && !chartRef.current) {
+            chartRef.current = c3.generate({ bindto: elRef.current, ...config });
         }
 
         return () => {
             try {
-                chart.current && chart.current.destroy();
+                chartRef.current && chartRef.current.destroy();
             } catch (e) {
-                console.log('c3js error', e);
+                // eslint-disable-next-line no-console
+                console.error('Error while destroying the chart', e);
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Handle chart resize
-    useDataCallback(config.size, chart.current && chart.current.resize);
+    useDataCallback(config.size, chartRef.current && chartRef.current.resize);
 
     // Handle grid vertical lines change
-    useDataCallback(config.grid.x.lines, chart.current && chart.current.xgrids);
+    useDataCallback(config.grid.x.lines, chartRef.current && chartRef.current.xgrids);
 
     // Handle data changes
-    useDataCallback(config.data, chart.current && chart.current.load);
+    useDataCallback(config.data, chartRef.current && chartRef.current.load);
 
     // Handle Y axis type change
-    useDataCallback(config.axis.y.type, chart.current && ((y) => chart.current.axis.types({ y })));
+    useDataCallback(
+        config.axis.y.type,
+        chartRef.current && ((y) => chartRef.current.axis.types({ y })),
+    );
 
     return <div ref={elRef} />;
-};
+});
 
-const CHART_HEIGHT_RATIO = 0.7;
+const Chart = React.forwardRef(
+    (
+        { values, startDate, timeframes = [], size, customConfig = {}, children, ...rest },
+        chartRef,
+    ) => {
+        const classes = useStyles();
+        const t = useTranslate();
 
-const Chart = ({ values, startDate, timeframes = [] }) => {
-    const classes = useStyles();
-    const t = useTranslate();
-    const { width: windowWidth } = useWindowSize();
-    const [yType, setYType] = useState('linear');
+        const lineData = data({ t, values, startDate });
+        const labels = lineData.labels.slice(0, lineData.labels.length).map((date) => {
+            const [d, m, y] = date.split('/');
+            return `${y}-${m}-${d}`;
+        });
 
-    const handleYTypeToggle = () => setYType((type) => (type === 'linear' ? 'log' : 'linear'));
-
-    const chartSize = windowWidth ? Math.max(windowWidth / 2 - 100, 350) : 850;
-
-    const lineData = data({ t, values, startDate });
-    const labels = lineData.labels.slice(0, lineData.labels.length).map((date) => {
-        const [d, m, y] = date.split('/');
-        return `${y}-${m}-${d}`;
-    });
-
-    const config = {
-        padding: {
-            top: 80,
-        },
-        point: {
-            show: false,
-        },
-        data: {
-            x: 'x',
-            columns: [
-                ['x', ...labels],
-                ...lineData.datasets.map((dataSet) => [dataSet.label, ...dataSet.data]),
-            ],
-            types: lineData.datasets.reduce(
-                (agg, dataSet) => ({
-                    ...agg,
-                    [dataSet.label]: 'area',
-                }),
-                {},
-            ),
-            colors: lineData.datasets.reduce(
-                (agg, dataSet) => ({
-                    ...agg,
-                    [dataSet.label]: dataSet.backgroundColor,
-                }),
-                {},
-            ),
-            order: (d1, d2) => {
-                // Sort legend by smaller values first
-                return (
-                    Math.max(
-                        0,
-                        d1.values.map((i) => i.value),
-                    ) -
-                    Math.max(
-                        0,
-                        d2.values.map((i) => i.value),
-                    )
-                );
-            },
-        },
-        axis: {
-            y: {
-                type: yType,
-                tick: {
-                    format: (value) => Math.round(value),
+        const config = merge(
+            {
+                padding: {
+                    top: 80,
+                },
+                point: {
+                    show: false,
+                },
+                data: {
+                    x: 'x',
+                    columns: [
+                        ['x', ...labels],
+                        ...lineData.datasets.map((dataSet) => [dataSet.label, ...dataSet.data]),
+                    ],
+                    types: lineData.datasets.reduce(
+                        (agg, dataSet) => ({
+                            ...agg,
+                            [dataSet.label]: 'area',
+                        }),
+                        {},
+                    ),
+                    colors: lineData.datasets.reduce(
+                        (agg, dataSet) => ({
+                            ...agg,
+                            [dataSet.label]: dataSet.backgroundColor,
+                        }),
+                        {},
+                    ),
+                    order: (d1, d2) => {
+                        // Sort legend by smaller values first
+                        return (
+                            Math.max(
+                                0,
+                                d1.values.map((i) => i.value),
+                            ) -
+                            Math.max(
+                                0,
+                                d2.values.map((i) => i.value),
+                            )
+                        );
+                    },
+                },
+                axis: {
+                    y: {
+                        type: 'linear',
+                        tick: {
+                            format: (value) => Math.round(value),
+                        },
+                    },
+                    x: {
+                        type: 'timeseries',
+                        tick: {
+                            count: 8,
+                            format: '%d/%m/%Y',
+                        },
+                        padding: { left: -10 },
+                    },
+                },
+                grid: {
+                    x: {
+                        lines: timeframes.map((timeframe) => ({
+                            value: format(timeframe.date, 'yyyy-MM-dd'),
+                            text: timeframe.label,
+                        })),
+                    },
+                },
+                legend: {
+                    inset: {
+                        anchor: 'top-right',
+                        x: 20,
+                        y: 10,
+                        step: 2,
+                    },
+                },
+                zoom: {
+                    enabled: true,
+                },
+                size,
+                tooltip: {
+                    format: {
+                        title: (date) => format(date, 'dd/MM/yyyy'),
+                        value: (value) => Math.round((value + Number.EPSILON) * 100) / 100,
+                    },
                 },
             },
-            x: {
-                type: 'timeseries',
-                tick: {
-                    count: 8,
-                    format: '%d/%m/%Y',
-                },
-                padding: { left: -10 },
-            },
-        },
-        grid: {
-            x: {
-                lines: timeframes.map((timeframe) => ({
-                    value: format(timeframe.date, 'yyyy-MM-dd'),
-                    text: timeframe.label,
-                })),
-            },
-        },
-        legend: {
-            inset: {
-                anchor: 'top-right',
-                x: 20,
-                y: 10,
-                step: 2,
-            },
-        },
-        zoom: {
-            enabled: true,
-        },
-        size: { height: chartSize * CHART_HEIGHT_RATIO, width: chartSize },
-        tooltip: {
-            format: {
-                title: (date) => format(date, 'dd/MM/yyyy'),
-                value: (value) => Math.round((value + Number.EPSILON) * 100) / 100,
-            },
-        },
-    };
+            customConfig,
+        );
 
-    return (
-        <div className={classes.root}>
-            <div className={classes.container} style={config.size}>
-                <C3Graph config={config} />
-                <div className={classes.yAxisToggleButton}>
-                    <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
-                        Échelle linéaire
-                    </div>
-                    <div>
-                        <Switch checked={yType === 'log'} onChange={handleYTypeToggle} />
-                    </div>
-                    <div style={{ color: yType === 'linear' ? '#888' : 'black' }}>
-                        Échelle logarithmique
-                    </div>
+        return (
+            <div className={classes.root} {...rest}>
+                <div style={config.size}>
+                    <C3Graph config={config} ref={chartRef} />
+                    {children}
                 </div>
             </div>
-        </div>
-    );
-};
+        );
+    },
+);
 
 export default Chart;

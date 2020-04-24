@@ -7,6 +7,7 @@ import Home from './screens/home/Home';
 import Legals from './screens/Legals';
 import NotFound from './screens/NotFound';
 import Simulation from './screens/simulation/Simulation';
+import PublicSimulation from './screens/simulation/PublicSimulation';
 
 const Experiments = lazy(() =>
     import(/* webpackChunkName: "experiments" */ './screens/experiments/Experiments'),
@@ -22,6 +23,7 @@ const App = () => {
                     <Switch>
                         <Route path="/" exact component={Home} />
                         <Route path="/simulation" exact component={Simulation} />
+                        <Route path="/public" exact component={PublicSimulation} />
                         <Route path="/mentions-legales" exact component={Legals} />
                         <Route path="/experiments" component={Experiments} />
                         <Route component={NotFound} />

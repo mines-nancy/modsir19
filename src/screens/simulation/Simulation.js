@@ -1,95 +1,34 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
-import { Grid, makeStyles, CardContent } from '@material-ui/core';
+import { Grid, makeStyles, CardContent, Switch } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { addDays, differenceInDays, isSameDay, startOfDay, endOfDay } from 'date-fns';
+import { addDays, isSameDay } from 'date-fns';
 
 import Layout from '../../components/Layout';
 import AutoSave from '../../components/fields/AutoSave';
-
+import { formatParametersForModel, defaultTimeframes, extractGraphTimeframes } from './common';
 import TimeframeStepper from './TimeframeStepper';
 import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
-
 import Diagram from './Diagram';
-
 import api from '../../api';
 import Chart from './Chart';
-
-const round = (x) => Math.round(x * 100) / 100;
-
-const mapObject = (obj, keys, fn) =>
-    obj
-        ? keys.reduce((acc, key) => {
-              acc[key] = fn(obj[key]);
-              return acc;
-          }, {})
-        : {};
-
-const defaultParameters = {
-    population: 1000000,
-    patient0: 100,
-    kpe: 100,
-    r0: 2.3,
-    dm_incub: 3,
-    dm_r: 9,
-    dm_h: 6,
-    dm_sm: 6,
-    dm_si: 8,
-    dm_ss: 14,
-    pc_ir: 84,
-    pc_ih: round(100 - 84),
-    pc_sm: 80,
-    pc_si: round(100 - 80),
-    pc_sm_si: 20,
-    pc_sm_other: round(100 - 20), // This field is not sent to the API
-    pc_sm_dc: 20,
-    pc_sm_out: round(100 - 20),
-    pc_si_dc: 50,
-    pc_si_out: 50,
-    pc_h_ss: 20,
-    pc_h_r: round(100 - 20),
-    lim_time: 250,
-    start_date: new Date(2020, 0, 23),
-};
-
-const percentFields = [
-    'kpe',
-    'pc_ir',
-    'pc_ih',
-    'pc_sm',
-    'pc_si',
-    'pc_sm_si',
-    'pc_sm_out',
-    'pc_sm_dc',
-    'pc_sm_other',
-    'pc_si_dc',
-    'pc_si_out',
-    'pc_h_ss',
-    'pc_h_r',
-];
-
-const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({
-    ...parameters,
-    pc_sm_dc: parameters.pc_sm_dc * pc_sm_other,
-    pc_sm_out: parameters.pc_sm_out * pc_sm_other,
-});
-
-const computeRBetaFromR0 = ({ r0, dm_r }) => ({
-    r: 1.0,
-    beta: r0 / dm_r,
-});
-
-const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
-    removeMedicalCareSplit({
-        ...parameters,
-        ...computeRBetaFromR0(parameters),
-        ...mapObject(parameters, percentFields, (x) => round(x / 100)),
-        start_time: differenceInDays(endOfDay(start_date), startOfDay(firstTimeframeStartDate)),
-    });
+import { useWindowSize } from '../../utils/useWindowSize';
 
 const useStyles = makeStyles(() => ({
     configuration: {
         width: '100%',
+    },
+    yAxisToggleButton: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        display: 'flex',
+        alignItems: 'center',
+        color: '#888',
+    },
+    chartContainer: {
+        position: 'fixed',
+        left: 24,
     },
 }));
 
@@ -105,39 +44,17 @@ const checkHasSameDate = (date) => ({ start_date }) => isSameDay(start_date, dat
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
-const extractGraphTimeframes = (timeframes) =>
-    timeframes
-        .slice(1)
-        .filter((t) => t.enabled)
-        .map((timeframe) => ({
-            date: timeframe.start_date,
-            label: timeframe.name,
-        }));
-
-const defaultTimeframes = [
-    { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
-    {
-        ...defaultParameters,
-        r0: 0.8,
-        start_date: new Date(2020, 2, 16),
-        name: 'Confinement',
-        enabled: true,
-    },
-    {
-        ...defaultParameters,
-        r0: 1.1,
-        start_date: new Date(2020, 4, 11),
-        name: 'Déconfinement',
-        enabled: true,
-    },
-];
+const CHART_HEIGHT_RATIO = 0.7;
 
 const Simulation = () => {
     const classes = useStyles();
+    const chartRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
+    const { width: windowWidth } = useWindowSize();
     const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
+    const [yType, setYType] = useState('linear');
 
     const [graphTimeframes, setGraphTimeframes] = useState(
         extractGraphTimeframes(defaultTimeframes),
@@ -175,6 +92,8 @@ const Simulation = () => {
             window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
         }, 16);
     };
+
+    const handleYTypeToggle = () => setYType((type) => (type === 'linear' ? 'log' : 'linear'));
 
     const handleAddTimeframe = () => {
         setTimeframes((list) => {
@@ -265,16 +184,44 @@ const Simulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
+    const chartSize = windowWidth ? Math.max(windowWidth / 2 - 100, 350) : 850;
+
+    const customConfig = {
+        axis: {
+            y: { type: yType },
+        },
+    };
+
     return (
         <Layout loading={loading}>
             <Grid container>
                 <Grid item xs={6}>
                     {values && (
-                        <Chart
-                            values={values}
-                            startDate={timeframes[0].start_date}
-                            timeframes={graphTimeframes}
-                        />
+                        <div className={classes.chartContainer}>
+                            <Chart
+                                values={values}
+                                startDate={timeframes[0].start_date}
+                                timeframes={graphTimeframes}
+                                size={{ height: chartSize * CHART_HEIGHT_RATIO, width: chartSize }}
+                                ref={chartRef}
+                                customConfig={customConfig}
+                            >
+                                <div className={classes.yAxisToggleButton}>
+                                    <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
+                                        Échelle linéaire
+                                    </div>
+                                    <div>
+                                        <Switch
+                                            checked={yType === 'log'}
+                                            onChange={handleYTypeToggle}
+                                        />
+                                    </div>
+                                    <div style={{ color: yType === 'linear' ? '#888' : 'black' }}>
+                                        Échelle logarithmique
+                                    </div>
+                                </div>
+                            </Chart>
+                        </div>
                     )}
                 </Grid>
                 <Grid item xs={6} style={{ backgroundColor: '#eee' }}>

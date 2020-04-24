@@ -29,7 +29,8 @@
         "react-final-form": "^6.4.0",
         "react-polyglot": "^0.6.1",
         "react-router-dom": "^5.1.2",
-        "react-scripts": "3.4.1"
+        "react-scripts": "3.4.1",
+        "d3": "5.16.0"
     },
     "scripts": {
         "start": "react-app-rewired start",

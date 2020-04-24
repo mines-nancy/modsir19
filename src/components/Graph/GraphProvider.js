@@ -9,23 +9,17 @@ export const GraphProvider = ({ children }) => {
 
             if (n === null) {
                 return { [name]: node };
-            } else
-                return {
-                    ...n,
-                    [name]: node,
-                };
+            }
+
+            return {
+                ...n,
+                [name]: node,
+            };
         });
     }, []);
 
     return (
-        <GraphContext.Provider
-            value={{
-                nodes,
-                registerNode,
-            }}
-        >
-            {children}
-        </GraphContext.Provider>
+        <GraphContext.Provider value={{ nodes, registerNode }}>{children}</GraphContext.Provider>
     );
 };
 
