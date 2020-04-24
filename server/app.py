@@ -8,28 +8,13 @@ from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 
 from models.sir_h.simulator import run_sir_h
-
+from models.rule import extract_from_parameters, build_rules_from_parameters
 # Test master update to deploy 2
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-
-def extract_from_parameters(parameters):
-    start_time = int(parameters['start_time'])
-
-    parameters_name = ["population", "patient0", "lim_time",
-                       'dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss',
-                       'kpe', 'r', 'beta',
-                       'pc_ir', 'pc_ih',
-                       'pc_sm', 'pc_si',
-                       'pc_sm_si', 'pc_sm_dc', 'pc_sm_out',
-                       'pc_si_dc', 'pc_si_out',
-                       'pc_h_ss', 'pc_h_r']
-
-    parameters = {key: parameters[key] for key in parameters_name}
-    return start_time, parameters
 
 # SIR+H model with timeframe
 # parameters= {list:[{start_time:xxx, population:xxx, patient0:xxx, ...}]}
@@ -40,15 +25,7 @@ def get_sir_h_timeframe():
     # print('get_sir_h_timeframe parameters', request_parameters)
     parameters_list = request_parameters['list']
 
-    rules = []
-    for index, parameters_timeframe in enumerate(parameters_list):
-        if index > 0:
-            start_time, parameters = extract_from_parameters(
-                parameters_timeframe)
-            for key in parameters:
-                rules.append(
-                    {'field': key, 'value': parameters[key], 'date': start_time})
-
+    rules = build_rules_from_parameters(parameters_list)
     start_time, parameters = extract_from_parameters(parameters_list[0])
 
     lists = run_sir_h(parameters, rules)

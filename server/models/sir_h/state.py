@@ -12,7 +12,7 @@ class State:
 
         self._boxes = {
             'SE': BoxSource('SE'),
-            'INCUB': BoxQueue('INCUB', self.delay('dm_incub')-1),
+            'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
             'IR': BoxDms('IR', self.delay('dm_r')),
             'IH': BoxDms('IH', self.delay('dm_h')),
             'SM': BoxDms('SM', self.delay('dm_sm')),
@@ -83,15 +83,16 @@ class State:
                          'dm_si': 'SI',
                          'dm_ss': 'SS'}
 
-        if field_name == 'dm_incub':
-            self.box(box_to_update[field_name]).set_duration(
-                self.delay(field_name) - 1)
-        elif field_name in box_to_update.keys():
+        if field_name in box_to_update.keys():
             self.box(box_to_update[field_name]).set_duration(
                 self.delay(field_name))
 
         print(
             f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
+
+    def evacuation(self, src, dest, value):
+        self.box(src).force_output()
+        self.move(src, dest, value)
 
     def boxes(self):
         return self._boxes.values()
