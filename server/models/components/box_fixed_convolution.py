@@ -2,13 +2,11 @@ import math
 from models.components.box import Box
 
 
-class BoxFixedDelay(Box):
-    def __init__(self, name, duration=math.inf):
+class BoxFixedConvolution(Box):
+    def __init__(self, name, output_coefficients):
         Box.__init__(self, name)
-        self._duration = duration
-
-    def set_duration(self, value):
-        self._duration = value
+        self._duration = len(output_coefficients)
+        self._output_coefficients = output_coefficients
 
     def step(self):
         previous_input = self.input()
@@ -21,8 +19,9 @@ class BoxFixedDelay(Box):
             return
 
         new_size = previous_size + previous_input
-        if self._t >= self._duration:
-            new_output = self.input(self._duration)
-            self.set_output(previous_output + new_output)
-            new_size -= new_output
+        new_output = 0
+        for index, coefficient in enumerate(self._output_coefficients):
+            new_output += coefficient * self.input(1 + index)
+        new_size -= new_output
+        self.set_output(previous_output + new_output)
         self.set_size(new_size)
