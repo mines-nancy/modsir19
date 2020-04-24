@@ -48,7 +48,6 @@ class TestBoxFixedDelay(unittest.TestCase):
             self.assertEqual(box.input(), inputs[i])
             box.step()
             self.assertEqual(box.size(), r[i])
-            print(f'size={box.size()}')
             self.assertEqual(box.output(), outputs[i])
             box.remove(box.output())
 

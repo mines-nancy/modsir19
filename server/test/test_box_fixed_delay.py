@@ -24,7 +24,7 @@ class TestBoxFixedDelay(unittest.TestCase):
             self.assertEqual(box.output(), outputs[i])
             box.remove(box.output())
 
-    def test_box_convolution_delay1(self):
+    def test_box_delay1(self):
         box = BoxFixedDelay('DELAY-1', 1)
         inputs = [1, 2, 4, 8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
         r = [0 for x in inputs]
