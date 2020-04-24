@@ -217,7 +217,8 @@ const extractTooltipData = (data) =>
 
 const PublicSimulation = () => {
     const classes = useStyles();
-    const [loading, setLoading] = useState(false);
+    // eslint-disable-next-line no-unused-vars
+    const [loading, setLoading] = useState(false); // @FIXME Use the loading
     const [values, setValues] = useState();
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentStats, setCurrentStats] = useState({});
@@ -228,7 +229,7 @@ const PublicSimulation = () => {
         extractGraphTimeframes(defaultTimeframes),
     );
 
-    const [timeframes, setTimeframes] = useState(defaultTimeframes);
+    const [timeframes] = useState(defaultTimeframes);
 
     useEffect(() => {
         (async () => {

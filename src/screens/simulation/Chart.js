@@ -73,6 +73,7 @@ const data = ({ t, values, startDate }) => {
 const useDataCallback = (data, callback) => {
     useEffect(() => {
         callback && callback(data);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(data)]);
 };
 
@@ -88,9 +89,11 @@ const C3Graph = React.forwardRef(({ config }, chartRef) => {
             try {
                 chartRef.current && chartRef.current.destroy();
             } catch (e) {
-                console.log('c3js error', e);
+                // eslint-disable-next-line no-console
+                console.error('Error while destroying the chart', e);
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Handle chart resize
