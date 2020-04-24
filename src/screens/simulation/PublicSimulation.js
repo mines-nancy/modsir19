@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { makeStyles, Card, Grid, Switch } from '@material-ui/core';
+import { makeStyles, Card } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { formatParametersForModel, defaultTimeframes, extractGraphTimeframes } from './common';
@@ -28,15 +28,37 @@ const useStyles = makeStyles(() => ({
         zIndex: 999,
     },
     mobileLegend: {},
-    card: {
-        padding: 20,
-        width: 80,
-        height: 80,
+    blockContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        paddingLeft: '33%',
+    },
+    blockRow: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        width: '100%',
+        '&:first-child': {
+            marginBottom: 48,
+        },
+    },
+    block: {
+        padding: 8,
+        width: 64,
+        height: 64,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
         backgroundColor: (props) => props.color || 'white',
+    },
+    blockLabel: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+    },
+    blockValue: {
+        marginTop: 8,
     },
     yAxisToggleButton: {
         position: 'absolute',
@@ -60,12 +82,18 @@ const getModel = async (timeframes) => {
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
-const Block = ({ children, ...props }) => {
+const EmptyBlock = () => <div style={{ padding: 8, width: 64, height: 64 }} />;
+
+const Block = ({ children, label, value, ...props }) => {
     const classes = useStyles(props);
+    const intl = new Intl.NumberFormat();
 
     return (
-        <Card className={classes.card} elevation={3} {...props}>
-            {children}
+        <Card className={classes.block} elevation={3} {...props}>
+            <div>
+                <div className={classes.blockLabel}>{label}</div>
+                <div className={classes.blockValue}>{value ? intl.format(value) : value}</div>
+            </div>
         </Card>
     );
 };
@@ -81,6 +109,8 @@ const straightLine = (name, options = {}) => ({
 });
 
 const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mobile }) => {
+    const classes = useStyles();
+
     const addMouseProps = (ids) => ({
         onMouseEnter: () => onLegendEnter(ids),
         onMouseLeave: () => onLegendLeave(),
@@ -100,105 +130,87 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
 
     return (
         <GraphProvider>
-            <div>
-                <Grid container justify="center">
-                    <Grid item xs={4}>
-                        <Node
-                            name="sain"
-                            targets={[
-                                straightLine('malade', {
-                                    anchorStart: { x: 120, y: '50%' },
-                                    anchorEnd: { x: '0%', y: '50%' },
-                                }),
-                            ]}
-                        >
-                            <Block {...addMouseProps(['Exposés'])}>
-                                <div>
-                                    <div>Sain</div>
-                                    <div>{stats['Exposés'] || ''}</div>
-                                </div>
-                            </Block>
-                        </Node>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Node
-                            name="malade"
-                            targets={[
-                                straightLine('gueri', {
-                                    anchorStart: { x: 120, y: '50%' },
-                                    anchorEnd: { x: '0%', y: '50%' },
-                                }),
-                                straightLine('hospitalisation', {
-                                    anchorStart: { x: '33%', y: '100%' },
-                                    anchorEnd: { x: '33%', y: '0%' },
-                                }),
-                            ]}
-                        >
-                            <Block {...addMouseProps(['Incubation', 'Infectés'])}>
-                                <div>
-                                    <div>Malade</div>
-                                    <div>
-                                        {(stats['Incubation'] || 0) + (stats['Infectés'] || 0) ||
-                                            ''}
-                                    </div>
-                                </div>
-                            </Block>
-                        </Node>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Node name="gueri" targets={[]}>
-                            <Block {...addMouseProps(['Guéris'])}>
-                                <div>
-                                    <div>Guéri</div>
-                                    <div>{stats['Guéris'] || ''}</div>
-                                </div>
-                            </Block>
-                        </Node>
-                    </Grid>
-                    <Grid item xs={4}></Grid>
-                    <Grid item xs={4} style={{ paddingTop: 40 }}>
-                        <Node
-                            name="hospitalisation"
-                            targets={[
-                                straightLine('decede', {
-                                    anchorStart: { x: 120, y: '50%' },
-                                    anchorEnd: { x: '0%', y: '50%' },
-                                }),
-                                straightLine('gueri', {
-                                    anchorStart: { x: '66%', y: '0%' },
-                                    anchorEnd: { x: '0%', y: '100%' },
-                                }),
-                            ]}
-                        >
-                            <Block
-                                {...addMouseProps([
-                                    'Soins de suite',
-                                    'Soins intensifs',
-                                    'Soins medicaux',
-                                ])}
-                            >
-                                <div>
-                                    <div>Hospitalisé</div>
-                                    <div>
-                                        {(stats['Soins de suite'] || 0) +
-                                            (stats['Soins intensifs'] || 0) +
-                                            (stats['Soins medicaux'] || 0) || ''}
-                                    </div>
-                                </div>
-                            </Block>
-                        </Node>
-                    </Grid>
-                    <Grid item xs={4} style={{ paddingTop: 40 }}>
-                        <Node name="decede" targets={[]}>
-                            <Block {...addMouseProps(['Décédés'])}>
-                                <div>
-                                    <div>Décédé</div>
-                                    <div>{stats['Décédés'] || ''}</div>
-                                </div>
-                            </Block>
-                        </Node>
-                    </Grid>
-                </Grid>
+            <div className={classes.blockContainer}>
+                <div className={classes.blockRow}>
+                    <Node
+                        name="sain"
+                        targets={[
+                            straightLine('malade', {
+                                anchorStart: { x: '100%', y: '50%' },
+                                anchorEnd: { x: '0%', y: '50%' },
+                            }),
+                        ]}
+                    >
+                        <Block
+                            {...addMouseProps(['Exposés'])}
+                            label="Sains"
+                            value={stats['Exposés'] || ''}
+                        />
+                    </Node>
+                    <Node
+                        name="malade"
+                        targets={[
+                            straightLine('gueri', {
+                                anchorStart: { x: '100%', y: '50%' },
+                                anchorEnd: { x: '0%', y: '50%' },
+                            }),
+                            straightLine('hospitalisation', {
+                                anchorStart: { x: '50%', y: '100%' },
+                                anchorEnd: { x: '50%', y: '0%' },
+                            }),
+                        ]}
+                    >
+                        <Block
+                            {...addMouseProps(['Incubation', 'Infectés'])}
+                            label="Malades"
+                            value={(stats['Incubation'] || 0) + (stats['Infectés'] || 0) || ''}
+                        />
+                    </Node>
+                    <Node name="gueri" targets={[]}>
+                        <Block
+                            {...addMouseProps(['Guéris'])}
+                            label="Guéris"
+                            value={stats['Guéris'] || ''}
+                        />
+                    </Node>
+                </div>
+                <div className={classes.blockRow}>
+                    <EmptyBlock />
+                    <Node
+                        name="hospitalisation"
+                        targets={[
+                            straightLine('decede', {
+                                anchorStart: { x: '100%', y: '50%' },
+                                anchorEnd: { x: '0%', y: '50%' },
+                            }),
+                            straightLine('gueri', {
+                                anchorStart: { x: '100%', y: '0%' },
+                                anchorEnd: { x: '0%', y: '100%' },
+                            }),
+                        ]}
+                    >
+                        <Block
+                            {...addMouseProps([
+                                'Soins de suite',
+                                'Soins intensifs',
+                                'Soins medicaux',
+                            ])}
+                            label="Hospitalisés"
+                            value={
+                                (stats['Soins de suite'] || 0) +
+                                    (stats['Soins intensifs'] || 0) +
+                                    (stats['Soins medicaux'] || 0) || ''
+                            }
+                        />
+                    </Node>
+                    <Node name="decede" targets={[]}>
+                        <Block
+                            {...addMouseProps(['Décédés'])}
+                            label="Décédés"
+                            value={stats['Décédés'] || ''}
+                        />
+                    </Node>
+                </div>
             </div>
             <Edges />
         </GraphProvider>
@@ -206,11 +218,12 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
 };
 
 const roundValue = (value) => Math.round(value);
-const extractTooltipData = (data) =>
-    data.reduce(
-        (agg, value) => ({
+const extractTooltipData = (points) =>
+    points.reduce(
+        (agg, d) => ({
             ...agg,
-            [value.id]: roundValue(value.value),
+            [d.id]: roundValue(d.value),
+            date: d.x,
         }),
         {},
     );
@@ -222,7 +235,6 @@ const PublicSimulation = () => {
     const [values, setValues] = useState();
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentStats, setCurrentStats] = useState({});
-    const [yType, setYType] = useState('linear');
     const chartRef = useRef(null);
 
     const [graphTimeframes, setGraphTimeframes] = useState(
@@ -246,13 +258,11 @@ const PublicSimulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
-    const handleYTypeToggle = () => setYType((type) => (type === 'linear' ? 'log' : 'linear'));
-
     const handleCaptureTooltipData = useCallback(
         debounce((data) => {
             setCurrentStats(extractTooltipData(data));
             return null;
-        }, 50),
+        }, 30),
         [],
     );
 
@@ -286,7 +296,6 @@ const PublicSimulation = () => {
             },
             y: {
                 show: false,
-                type: yType,
             },
         },
     };
@@ -312,21 +321,7 @@ const PublicSimulation = () => {
                     customConfig={config}
                     ref={chartRef}
                     style={{ padding: 0 }}
-                >
-                    {!isMobile && (
-                        <div className={classes.yAxisToggleButton}>
-                            <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
-                                Échelle linéaire
-                            </div>
-                            <div>
-                                <Switch checked={yType === 'log'} onChange={handleYTypeToggle} />
-                            </div>
-                            <div style={{ color: yType === 'linear' ? '#888' : 'black' }}>
-                                Échelle logarithmique
-                            </div>
-                        </div>
-                    )}
-                </Chart>
+                />
             </div>
         </div>
     );
