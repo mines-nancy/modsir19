@@ -1,12 +1,13 @@
 import math
-from collections import deque
 from models.components.box import Box
+from collections import deque
 
 
-class BoxQueue(Box):
-    def __init__(self, name, duration=math.inf):
+class BoxConvolution(Box):
+    def __init__(self, name, output_coefficients):
         Box.__init__(self, name)
-        self._duration = duration
+        self._duration = len(output_coefficients)
+        self._output_coefficients = output_coefficients
         self._queue = [deque()]  # items in the box
 
     def set_duration(self, value):
@@ -27,24 +28,32 @@ class BoxQueue(Box):
         previous_queue = self.queue()
 
         super().step()
-        self._queue.append(deque(previous_queue))  # copy of previous_queue
-        current_queue = self.queue()
+        current_queue = deque(previous_queue)  # copy of previous_queue
 
         if self._duration == 0:
             new_output = 0
             # remove all elements from current queue
             while len(current_queue) > 0:
-                new_output += current_queue.pop()
+                init, current_value = current_queue.pop()
+                new_output += current_value
             self.set_output(previous_output + previous_input + new_output)
             return
 
         new_size = previous_size + previous_input
+        current_queue.appendleft((previous_input, previous_input))
 
         # remove extra elements
         new_output = 0
-        while len(current_queue) >= self._duration:
-            new_output += current_queue.pop()
-        current_queue.appendleft(previous_input)
+        while len(current_queue) > self._duration:
+            new_output += current_queue.pop()[1]
+
+        delta = [self._output_coefficients[i]*v if self._output_coefficients[i]*v <= r else r
+                 for i, (v, r) in enumerate(current_queue)]
+        new_queue = [(v, r - delta[i])
+                     for i, (v, r) in enumerate(current_queue)]
+        self._queue.append(new_queue)  # copy of previous_queue
+
+        new_output += sum(delta)
         new_size -= new_output
         self.set_output(previous_output + new_output)
         self.set_size(new_size)
