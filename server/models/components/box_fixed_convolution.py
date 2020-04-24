@@ -8,6 +8,10 @@ class BoxFixedConvolution(Box):
         self._duration = len(output_coefficients)
         self._output_coefficients = output_coefficients
 
+    def set_duration(self, value):
+        # do nothing
+        pass
+
     def step(self):
         previous_input = self.input()
         previous_output = self.output()
