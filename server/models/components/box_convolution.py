@@ -57,13 +57,45 @@ class BoxConvolution(Box):
         while len(current_queue) > self._duration:
             new_output += current_queue.pop()[1]
 
-        delta = [self._output_coefficients[i]*v if self._output_coefficients[i]*v <= r else r
-                 for i, (v, r) in enumerate(current_queue)]
-        new_queue = [(v, r - delta[i])
-                     for i, (v, r) in enumerate(current_queue)]
-        self._queue.append(new_queue)
+        # transition step for all elements
+        # (v,r) -> (v, r-ki*v)
+        # output += ki*v
+        new_list = []
+        for i in range(len(current_queue)):
+            v, r = current_queue[i]
+            delta = self._output_coefficients[i] * \
+                v if self._output_coefficients[i]*v <= r else r
+            new_list.append((v, r - delta))
+            new_output += delta
+        # delta = [self._output_coefficients[i]*v if self._output_coefficients[i]*v <= r else r
+        #          for i, (v, r) in enumerate(current_queue)]
+        # new_list = [(v, r - delta[i])
+        #              for i, (v, r) in enumerate(current_queue)]
+        # new_output += sum(delta)
 
-        new_output += sum(delta)
+        self._queue.append(deque(new_list))
         new_size -= new_output
         self.set_output(previous_output + new_output)
         self.set_size(new_size)
+
+    def force_output(self, value):
+        current_size = self.size()
+        current_output = self.output()
+        current_queue = self.queue()
+
+        if current_size <= value:
+            self.set_size(0)
+            self.set_output(current_output + current_size)
+            current_queue.clear()
+        else:
+            new_output = 0
+            for i in range(len(current_queue)-1, -1, -1):
+                if value > 0:
+                    v, r = current_queue[i]
+                    delta = min(r, value)
+                    current_queue[i] = (v, r - delta)
+                    value -= delta
+                    new_output += delta
+
+            self.set_size(current_size - new_output)
+            self.set_output(current_output + new_output)

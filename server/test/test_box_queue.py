@@ -61,45 +61,45 @@ class TestBoxQueue(unittest.TestCase):
                    8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
         self.check_input_output(box, inputs, r, outputs)
 
-    # def test_box_queue_increase_duration(self):
-    #     box = BoxQueue('QUEUE', 5)
-    #     inputs = [5]*5+[0]*5
-    #     r = [5, 10, 15, 20, 25, 20, 15, 10, 5, 0]
-    #     outputs = [0, 0, 0, 0, 0, 5, 5, 5, 5, 5]
-    #     self.check_input_output(box, inputs, r, outputs)
+    def test_box_queue_increase_duration(self):
+        box = BoxQueue('QUEUE', 5)
+        inputs = [5]*5+[0]*5
+        r = [5, 10, 15, 20, 20, 15, 10, 5, 0, 0]
+        outputs = [0, 0, 0, 0, 5, 5, 5, 5, 5, 0]
+        self.check_input_output(box, inputs, r, outputs)
 
-    #     inputs = [5]*5+[0]*5
-    #     r = [5, 10, 15, 20, 25, 25, 25, 20, 15, 10]
-    #     outputs = [0, 0, 0, 0, 0, 0, 0, 5, 5, 5]
-    #     for i in range(len(inputs)):
-    #         if i == 3:
-    #             box.set_duration(7)
-    #         box.add(inputs[i])
-    #         self.assertEqual(box.input(), inputs[i])
-    #         box.step()
-    #         self.assertEqual(box.size(), r[i])
-    #         self.assertEqual(box.output(), outputs[i])
-    #         box.remove(box.output())
+        inputs = [5]*5+[0]*5
+        r = [5, 10, 15, 20, 25, 25, 20, 15, 10, 5]
+        outputs = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5]
+        for i in range(len(inputs)):
+            if i == 3:
+                box.set_duration(7)
+            box.add(inputs[i])
+            self.assertEqual(box.input(), inputs[i])
+            box.step()
+            self.assertEqual(box.size(), r[i])
+            self.assertEqual(box.output(), outputs[i])
+            box.remove(box.output())
 
-    # def test_box_queue_decrease_duration(self):
-    #     box = BoxQueue('QUEUE', 5)
-    #     inputs = [5]*5+[0]*5
-    #     r = [5, 10, 15, 20, 25, 20, 15, 10, 5, 0]
-    #     outputs = [0, 0, 0, 0, 0, 5, 5, 5, 5, 5]
-    #     self.check_input_output(box, inputs, r, outputs)
+    def test_box_queue_decrease_duration(self):
+        box = BoxQueue('QUEUE', 5)
+        inputs = [5]*5+[0]*5
+        r = [5, 10, 15, 20, 20, 15, 10, 5, 0, 0]
+        outputs = [0, 0, 0, 0, 5, 5, 5, 5, 5, 0]
+        self.check_input_output(box, inputs, r, outputs)
 
-    #     inputs = [5]*5+[0]*5
-    #     r = [5, 10, 15, 15, 15, 10, 5, 0, 0, 0]
-    #     outputs = [0, 0, 0, 5, 5, 5, 5, 5, 0, 0]
-    #     for i in range(len(inputs)):
-    #         if i == 2:
-    #             box.set_duration(3)
-    #         box.add(inputs[i])
-    #         self.assertEqual(box.input(), inputs[i])
-    #         box.step()
-    #         self.assertEqual(box.size(), r[i])
-    #         self.assertEqual(box.output(), outputs[i])
-    #         box.remove(box.output())
+        inputs = [5]*5+[0]*5
+        r = [5, 10, 10, 10, 10, 5, 0, 0, 0, 0]
+        outputs = [0, 0, 5, 5, 5, 5, 5, 0, 0, 0]
+        for i in range(len(inputs)):
+            if i == 2:
+                box.set_duration(3)
+            box.add(inputs[i])
+            self.assertEqual(box.input(), inputs[i])
+            box.step()
+            self.assertEqual(box.size(), r[i])
+            self.assertEqual(box.output(), outputs[i])
+            box.remove(box.output())
 
 
 if __name__ == '__main__':

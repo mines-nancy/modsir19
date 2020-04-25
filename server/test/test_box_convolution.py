@@ -75,6 +75,26 @@ class TestBoxFixedDelay(unittest.TestCase):
                    8, 10, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
         self.check_input_output(box, inputs, r, outputs)
 
+    def test_box_force_output10(self):
+        box = BoxConvolution('DELAY-10', 9*[0]+[1])
+        inputs = [1, 2, 4, 8, 10, 12, 10, 9, 8, 7,
+                  6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+        r = [1, 3, 7, 15, 25, 37, 47, 56, 64, 70, 74,
+             75, 71, 64, 54, 45, 36, 28, 21, 15, 10, 6, 3, 1, 0, 0]
+
+        for i in range(4):
+            box.add(inputs[i])
+            box.step()
+            box.remove(box.output())
+        self.assertAlmostEqual(box.size(), r[3])
+        self.assertAlmostEqual(box.output(), 0)
+
+        box.force_output(10)
+        self.assertAlmostEqual(box.size(), 15-10)
+
+        box.force_output(10)
+        self.assertAlmostEqual(box.size(), 0)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -39,8 +39,17 @@ class BoxDms(Box):
             return
 
         new_output = (previous_size + previous_input) / self._duration
-        print(
-            f'previous size = {previous_size} previous input={previous_input} new output: {new_output}')
+        # print( f'previous size = {previous_size} previous input={previous_input} new output: {new_output}')
         self.set_size(previous_size + previous_input - new_output)
         self.set_output(previous_output + new_output)
         # print(f'output: {self._output}')
+
+    def force_output(self, value):
+        current_size = self.size()
+        current_output = self.output()
+        if current_size <= value:
+            self.set_size(0)
+            self.set_output(current_output + current_size)
+        else:
+            self.set_size(current_size - value)
+            self.set_output(current_output + value)

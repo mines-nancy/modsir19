@@ -91,8 +91,9 @@ class State:
             f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
     def evacuation(self, src, dest, value):
-        self.box(src).force_output()
-        self.move(src, dest, value)
+        self.box(src).force_output(value)
+        max_value = min(self.box(src).output(), value)
+        self.move(src, dest, max_value)
 
     def boxes(self):
         return self._boxes.values()
