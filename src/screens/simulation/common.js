@@ -12,29 +12,29 @@ const mapObject = (obj, keys, fn) =>
 
 export const defaultParameters = {
     population: 1000000,
-    patient0: 100,
+    patient0: 40,
     kpe: 100,
-    r0: 2.3,
-    dm_incub: 3,
+    r0: 3.31,
+    dm_incub: 4,
     dm_r: 9,
     dm_h: 6,
     dm_sm: 6,
-    dm_si: 8,
+    dm_si: 9,
     dm_ss: 14,
-    pc_ir: 84,
-    pc_ih: round(100 - 84),
-    pc_sm: 80,
-    pc_si: round(100 - 80),
-    pc_sm_si: 20,
-    pc_sm_other: round(100 - 20), // This field is not sent to the API
-    pc_sm_dc: 20,
-    pc_sm_out: round(100 - 20),
-    pc_si_dc: 50,
-    pc_si_out: 50,
+    pc_ir: 98,
+    pc_ih: round(100 - 98),
+    pc_sm: 84,
+    pc_si: round(100 - 84),
+    pc_sm_si: 21,
+    pc_sm_other: round(100 - 21), // This field is not sent to the API
+    pc_sm_dc: 25,
+    pc_sm_out: round(100 - 25),
+    pc_si_dc: 40,
+    pc_si_out: 60,
     pc_h_ss: 20,
     pc_h_r: round(100 - 20),
     lim_time: 250,
-    start_date: new Date(2020, 0, 23),
+    start_date: new Date(2020, 0, 6),
 };
 
 export const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
@@ -65,7 +65,7 @@ export const defaultTimeframes = [
     { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
     {
         ...defaultParameters,
-        r0: 0.8,
+        r0: 0.4,
         start_date: new Date(2020, 2, 16),
         name: 'Confinement',
         enabled: true,
