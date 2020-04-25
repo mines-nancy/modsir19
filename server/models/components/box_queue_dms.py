@@ -4,6 +4,8 @@ from models.components.box import Box
 
 
 class BoxQueueDms(Box):
+    "Just for experiments, will be removed"
+
     def __init__(self, name, duration=math.inf):
         Box.__init__(self, name)
         self._duration = duration

@@ -4,6 +4,15 @@ from collections import deque
 
 
 class BoxConvolution(Box):
+    """
+    BoxConvolution([Ki,...])
+
+    with [K0, K1, K2, K4, K5] we have
+    output(t) = K4*input(t-5) + K3*input(t-4) + K2*input(t-3) + K1*input(t-2) + K0*input(t-1)
+
+    duration of a BoxConvolution can be updated
+    """
+
     def __init__(self, name, output_coefficients):
         Box.__init__(self, name)
         self._duration = len(output_coefficients)
@@ -37,6 +46,7 @@ class BoxConvolution(Box):
                 init, current_value = current_queue.pop()
                 new_output += current_value
             self.set_output(previous_output + previous_input + new_output)
+            self._queue.append(current_queue)
             return
 
         new_size = previous_size + previous_input
@@ -51,7 +61,7 @@ class BoxConvolution(Box):
                  for i, (v, r) in enumerate(current_queue)]
         new_queue = [(v, r - delta[i])
                      for i, (v, r) in enumerate(current_queue)]
-        self._queue.append(new_queue)  # copy of previous_queue
+        self._queue.append(new_queue)
 
         new_output += sum(delta)
         new_size -= new_output

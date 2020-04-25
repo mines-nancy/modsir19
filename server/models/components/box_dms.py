@@ -3,6 +3,14 @@ from models.components.box import Box
 
 
 class BoxDms(Box):
+    """
+    BoxDms(duration=n) is a 1-delay box
+    output at t+1 corresponds to the (size+input)/duration at t
+    size at t+1 corresponds to size at t minus output at t+1
+
+    duration of a BoxDms can be updated
+    """
+
     def __init__(self, name, duration=math.inf):
         Box.__init__(self, name)
         self._duration = duration
@@ -30,8 +38,9 @@ class BoxDms(Box):
             assert self.size() == 0
             return
 
-        new_output = previous_size / self._duration
-        # print(f'pop: {output}')
+        new_output = (previous_size + previous_input) / self._duration
+        print(
+            f'previous size = {previous_size} previous input={previous_input} new output: {new_output}')
         self.set_size(previous_size + previous_input - new_output)
         self.set_output(previous_output + new_output)
         # print(f'output: {self._output}')
