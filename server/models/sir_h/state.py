@@ -1,6 +1,7 @@
 from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
+from models.components.box_fixed_convolution import BoxFixedConvolution
 from operator import add
 
 
@@ -11,11 +12,12 @@ class State:
 
         self._boxes = {
             'SE': BoxSource('SE'),
-            'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
+            'INCUB': BoxQueue('INCUB', self.delay('dm_incub')-1),
             'IR': BoxDms('IR', self.delay('dm_r')),
             'IH': BoxDms('IH', self.delay('dm_h')),
             'SM': BoxDms('SM', self.delay('dm_sm')),
-            'SI': BoxDms('SI', self.delay('dm_si')),
+            # 'SI': BoxDms('SI', self.delay('dm_si')),
+            'SI': BoxFixedConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
             'SS': BoxDms('SS', self.delay('dm_ss')),
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
@@ -80,7 +82,11 @@ class State:
                          'dm_sm': 'SM',
                          'dm_si': 'SI',
                          'dm_ss': 'SS'}
-        if field_name in box_to_update.keys():
+
+        if field_name == 'dm_incub':
+            self.box(box_to_update[field_name]).set_duration(
+                self.delay(field_name) - 1)
+        elif field_name in box_to_update.keys():
             self.box(box_to_update[field_name]).set_duration(
                 self.delay(field_name))
 
