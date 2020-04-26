@@ -29,15 +29,15 @@ class RuleEvacuation(Rule):
         state.evacuation(self._src, self._dest, self._value)
 
 
-def apply_rules(state, date, rules):
-    applicable_rules = [rule for rule in rules if date == rule.date()]
+def apply_rules(state, rules):
+    applicable_rules = [rule for rule in rules if state.time == rule.date()]
     for rule in applicable_rules:
         rule.apply(state)
 
 
-def apply_evacuations(state, data_chu):
+def apply_evacuations(state, src, dest, data_chu):
     date = state.time
     if date in data_chu and data_chu[date] != None:
-        delta = state.box('SI').size()-data_chu[date]
-        rule = RuleEvacuation(date, 'SI', 'R', delta)
+        delta = state.box(src).size() - data_chu[date]
+        rule = RuleEvacuation(date, src, dest, delta)
         rule.apply(state)

@@ -8,7 +8,7 @@ from operator import add
 class State:
     def __init__(self, parameters):
 
-        self._parameters = parameters
+        self._parameters = dict(parameters)  # to not modify parameters
 
         self._boxes = {
             'SE': BoxSource('SE'),

@@ -1,3 +1,6 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
 from models.sir_h.state import State
 from models.sir_h.simulator import run_sir_h
 from models.rule import RuleChangeField, RuleEvacuation
@@ -8,7 +11,7 @@ if __name__ == "__main__":
     parameters = {'population': 1000000,
                   'patient0': 40,
                   'lim_time': 250,
-                  'r': 1,
+                  'r': 1.0,
                   'beta': 3.31 / dm_r,
                   'kpe': 1.0,
                   'dm_incub': 4,
@@ -50,6 +53,19 @@ if __name__ == "__main__":
     ]
 
     # number of days since day0 -> number of residents in SI
-    data_day0 = {date-day0: data_chu[date] for date in data_chu}
+    data_day0 = {date-day0: data_chu[date]
+                 for date in data_chu if date % 5 == 0}
+    print(list(data_day0.keys()))
 
-    run_sir_h(parameters, rules, data_day0)
+    series = run_sir_h(parameters, rules)
+    corrected_series = run_sir_h(parameters, rules, data_day0)
+
+    SI = series['SI']
+    corrected_SI = corrected_series['SI']
+    # print(corrected_SI)
+
+    x = np.linspace(0, len(SI), len(SI))
+    plt.plot(x, SI)
+    plt.plot(x, corrected_SI)
+    plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x')
+    plt.savefig('filename')

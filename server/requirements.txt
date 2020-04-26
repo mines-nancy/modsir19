@@ -1,3 +1,5 @@
 Flask==1.1.2
 flask-cors
 python-dotenv
+numpy==1.18.3
+matplotlib
