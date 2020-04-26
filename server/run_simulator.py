@@ -1,12 +1,14 @@
 from models.sir_h.state import State
 from models.sir_h.simulator import run_sir_h
+from models.rule import RuleChangeField
+
 
 if __name__ == "__main__":
     parameters = {'population': 1000000,
                   'patient0': 100,
-                  'lim_time': 115,
+                  'lim_time': 15,
                   'r': 1,
-                  'beta': 0.25555555555555554,
+                  'beta': 0.25555,
                   'kpe': 1.0,
                   'dm_incub': 3,
                   'dm_r': 9, 'dm_h': 6,
@@ -19,15 +21,11 @@ if __name__ == "__main__":
     print(f'parameters={parameters}')
 
     # run_sir_h(parameters, [])
-    run_sir_h(parameters, [{'date': 53, 'field': 'dm_incub', 'value': 0},
-                           {'date': 53, 'field': 'dm_sm', 'value': 0},
-                           {'date': 53, 'field': 'r', 'value': 1.0},
-                           {'date': 53, 'field': 'beta',
-                               'value': 0.08888888888888889},
-                           {'date': 108, 'field': 'dm_incub', 'value': 1},
-                           {'date': 108, 'field': 'r', 'value': 1.0},
-                           {'date': 108, 'field': 'beta',
-                               'value': 0.12222222222222223},
-
-
+    run_sir_h(parameters, [RuleChangeField(53,  'dm_incub',  0),
+                           RuleChangeField(53,  'dm_sm',  0),
+                           RuleChangeField(53,  'r',  1.0),
+                           RuleChangeField(53,  'beta', 0.08888),
+                           RuleChangeField(108,  'dm_incub',  1),
+                           RuleChangeField(108,  'r',  1.0),
+                           RuleChangeField(108,  'beta', 0.1222),
                            ])

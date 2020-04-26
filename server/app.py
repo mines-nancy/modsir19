@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Created on 04/04/2020
 
-"""
 
 from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 
 from models.sir_h.simulator import run_sir_h
+from models.rule import RuleChangeField
 
-# Test master update to deploy 2
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -31,6 +28,17 @@ def extract_from_parameters(parameters):
     parameters = {key: parameters[key] for key in parameters_name}
     return start_time, parameters
 
+
+def build_rules_from_parameters(parameters_list):
+    rules = []
+    for index, parameters_timeframe in enumerate(parameters_list):
+        if index > 0:
+            start_time, parameters = extract_from_parameters(
+                parameters_timeframe)
+            for key in parameters:
+                rules.append(RuleChangeField(start_time, key, parameters[key]))
+    return rules
+
 # SIR+H model with timeframe
 # parameters= {list:[{start_time:xxx, population:xxx, patient0:xxx, ...}]}
 # start_time in (0, 1, 2, 3, ...)
@@ -40,15 +48,7 @@ def get_sir_h_timeframe():
     # print('get_sir_h_timeframe parameters', request_parameters)
     parameters_list = request_parameters['list']
 
-    rules = []
-    for index, parameters_timeframe in enumerate(parameters_list):
-        if index > 0:
-            start_time, parameters = extract_from_parameters(
-                parameters_timeframe)
-            for key in parameters:
-                rules.append(
-                    {'field': key, 'value': parameters[key], 'date': start_time})
-
+    rules = build_rules_from_parameters(parameters_list)
     start_time, parameters = extract_from_parameters(parameters_list[0])
 
     lists = run_sir_h(parameters, rules)

@@ -2,6 +2,14 @@ import math
 
 
 class Box:
+    """
+    Box has a clock and 3 compartments:
+    input -- defined at time t, will be added to size at t+1 and re-initialized to 0
+    size -- defined at time t, a part will be added to output at t+1
+    output -- can be used by other Box using remove method
+    A Box has an history all all its internal values
+    """
+
     def __init__(self, name):
         self._name = name
 
@@ -80,6 +88,8 @@ class Box:
 
 
 class BoxSource(Box):
+    """BoxSource is a 1-delay box, where output and size are always equal"""
+
     def __init__(self, name):
         Box.__init__(self, name)
 
@@ -97,6 +107,8 @@ class BoxSource(Box):
 
 
 class BoxTarget(Box):
+    """BoxTarget is a 1-delay box wiht no output"""
+
     def __init__(self, name):
         Box.__init__(self, name)
 

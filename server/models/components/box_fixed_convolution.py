@@ -3,6 +3,15 @@ from models.components.box import Box
 
 
 class BoxFixedConvolution(Box):
+    """
+    BoxFixedConvolution([Ki,...])
+
+    with [K0, K1, K2, K4, K5] we have
+    output(t) = K4*input(t-5) + K3*input(t-4) + K2*input(t-3) + K1*input(t-2) + K0*input(t-1)
+
+    duration of a BoxFixedConvolution canont be updated
+    """
+
     def __init__(self, name, output_coefficients):
         Box.__init__(self, name)
         self._duration = len(output_coefficients)

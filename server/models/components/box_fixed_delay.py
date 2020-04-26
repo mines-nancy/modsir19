@@ -3,6 +3,15 @@ from models.components.box import Box
 
 
 class BoxFixedDelay(Box):
+    """
+    BoxFixedDelay(duration=n) is a n-delay box
+    the output at t+n corresponds to the input at t
+    methods input(d), output(d), size(d) correspond to resp. input, output, size at t-d
+    so we have output(0) == input(n)
+
+    duration of a BoxFixedDelay cannot be updated
+    """
+
     def __init__(self, name, duration=math.inf):
         Box.__init__(self, name)
         self._duration = duration
