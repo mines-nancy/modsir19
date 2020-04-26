@@ -33,3 +33,11 @@ def apply_rules(state, date, rules):
     applicable_rules = [rule for rule in rules if date == rule.date()]
     for rule in applicable_rules:
         rule.apply(state)
+
+
+def apply_evacuations(state, data_chu):
+    date = state.time
+    if date in data_chu and data_chu[date] != None:
+        delta = state.box('SI').size()-data_chu[date]
+        rule = RuleEvacuation(date, 'SI', 'R', delta)
+        rule.apply(state)

@@ -1,7 +1,7 @@
 from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
-from models.components.box_fixed_convolution import BoxFixedConvolution
+from models.components.box_convolution import BoxConvolution
 from operator import add
 
 
@@ -17,7 +17,7 @@ class State:
             'IH': BoxDms('IH', self.delay('dm_h')),
             'SM': BoxDms('SM', self.delay('dm_sm')),
             # 'SI': BoxDms('SI', self.delay('dm_si')),
-            'SI': BoxFixedConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
+            'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
             'SS': BoxDms('SS', self.delay('dm_ss')),
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
@@ -94,6 +94,7 @@ class State:
         self.box(src).force_output(value)
         max_value = min(self.box(src).output(), value)
         self.move(src, dest, max_value)
+        print(f'evacuation time = {self.time} delta {max_value}')
 
     def boxes(self):
         return self._boxes.values()
