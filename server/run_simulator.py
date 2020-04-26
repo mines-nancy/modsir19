@@ -4,14 +4,15 @@ from models.rule import RuleChangeField, RuleEvacuation
 
 
 if __name__ == "__main__":
+    dm_r = 9
     parameters = {'population': 1000000,
                   'patient0': 40,
                   'lim_time': 250,
                   'r': 1,
-                  'beta': 3.31 / 9.0,
+                  'beta': 3.31 / dm_r,
                   'kpe': 1.0,
                   'dm_incub': 4,
-                  'dm_r': 9, 'dm_h': 6,
+                  'dm_r': dm_r, 'dm_h': 6,
                   'dm_sm': 6, 'dm_si': 9, 'dm_ss': 14,
                   'pc_ir': 0.98, 'pc_ih': 0.02,
                   'pc_sm': 0.84, 'pc_si': 0.16,
@@ -19,8 +20,10 @@ if __name__ == "__main__":
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
                   'pc_h_ss': 0.2, 'pc_h_r': 0.8}
     print(f'parameters={parameters}')
-    # T0 : 01/01/2020
-    # day from 01/01/2020 -> R(SI)
+
+    day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
+
+    # number of days since 01/01/2020 -> number of residents in SI
     data_chu = {46: 1.5, 47: None, 48: None, 49: None,
                 50: None, 51: None, 52: None, 53: 1.5, 54: 1.5,
                 55: 1.5, 56: 1.5, 57: 1.5, 58: 1.5, 59: 3,
@@ -36,19 +39,17 @@ if __name__ == "__main__":
                 105: 109.5, 106: 105, 107: 100.5, 108: 99, 109: 99,
                 110: 93, 111: 87}
 
-    # start of simulation : 06/01/2020 => J0 = 6 days from 01/01/2020
-    # 16/03/2020 -> J0 + 70
-    # 11/05/2020 -> J0 + 126
-    # day from 06/01/2020 -> R(SI)
-    data_day0 = {date-6: data_chu[date] for date in data_chu}
+    confinement = 70  # 16/03/2020 -> day0 + 70
+    deconfinement = 126  # 11/05/2020 -> day0 + 126
 
-    confinement = 70
-    deconfinement = 126
     rules = [
         RuleChangeField(confinement,  'r',  1.0),
-        RuleChangeField(confinement,  'beta', 0.4 / 9.0),
+        RuleChangeField(confinement,  'beta', 0.4 / dm_r),
         RuleChangeField(deconfinement,  'r',  1.0),
-        RuleChangeField(deconfinement,  'beta', 1.1 / 9.0),
+        RuleChangeField(deconfinement,  'beta', 1.1 / dm_r),
     ]
+
+    # number of days since day0 -> number of residents in SI
+    data_day0 = {date-day0: data_chu[date] for date in data_chu}
 
     run_sir_h(parameters, rules, data_day0)
