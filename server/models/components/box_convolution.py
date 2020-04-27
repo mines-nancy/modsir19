@@ -78,24 +78,45 @@ class BoxConvolution(Box):
         self.set_output(previous_output + new_output)
         self.set_size(new_size)
 
+    def compute_size(self):
+        return sum([r for v, r in self.queue()])
+
     def force_output(self, value):
         current_size = self.size()
         current_output = self.output()
         current_queue = self.queue()
 
+        if value <= 0:
+            print(f'cannot force negative output {value}')
+            return
+
+        # if math.fabs(current_size - self.compute_size()) > 0.1:
+        #     print(f'size={current_size} computed size={self.compute_size()}')
+
         if current_size <= value:
+            # print(f'simple remove {value} from {current_size}')
             self.set_size(0)
             self.set_output(current_output + current_size)
             current_queue.clear()
         else:
+            to_remove = value
+            # print(f'remove {to_remove} from {current_size}')
             new_output = 0
             for i in range(len(current_queue)-1, -1, -1):
-                if value > 0:
+                if to_remove > 0:
                     v, r = current_queue[i]
-                    delta = min(r, value)
+                    delta = min(r, to_remove)
                     current_queue[i] = (v, r - delta)
-                    value -= delta
+                    to_remove -= delta
                     new_output += delta
 
             self.set_size(current_size - new_output)
             self.set_output(current_output + new_output)
+
+            # if math.fabs(self.size() - self.compute_size()) > 0.1:
+            # print( f'end size={self.size()} computed size={self.compute_size()}')
+
+            # if math.fabs(new_output - value) > 0.1:
+            # print( f'end value={value} new_output={new_output} new size={self.size()}')
+            assert math.fabs(self.size() + value - current_size) < 0.1
+            assert math.fabs(new_output - value) < 0.1
