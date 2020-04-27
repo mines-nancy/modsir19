@@ -8,18 +8,32 @@ from models.rule import RuleChangeField, RuleEvacuation
 
 if __name__ == "__main__":
     dm_r = 9
+    # parameters = {'population': 1000000,
+    #               'patient0': 40,
+    #               'lim_time': 250,
+    #               'r': 1.0,
+    #               'beta': 3.31 / dm_r,
+    #               'kpe': 1.0,
+    #               'dm_incub': 4,
+    #               'dm_r': dm_r, 'dm_h': 6,
+    #               'dm_sm': 6, 'dm_si': 9, 'dm_ss': 14,
+    #               'pc_ir': 0.98, 'pc_ih': 0.02,
+    #               'pc_sm': 0.84, 'pc_si': 0.16,
+    #               'pc_sm_si': 0.21, 'pc_sm_dc': 0.79 * 0.25, 'pc_sm_out': 0.79 * 0.75,
+    #               'pc_si_dc': 0.4, 'pc_si_out': 0.6,
+    #               'pc_h_ss': 0.2, 'pc_h_r': 0.8}
     parameters = {'population': 1000000,
                   'patient0': 40,
                   'lim_time': 250,
                   'r': 1.0,
-                  'beta': 3.31 / dm_r,
+                  'beta': 2.839 / dm_r,
                   'kpe': 1.0,
                   'dm_incub': 4,
                   'dm_r': dm_r, 'dm_h': 6,
                   'dm_sm': 6, 'dm_si': 9, 'dm_ss': 14,
-                  'pc_ir': 0.98, 'pc_ih': 0.02,
-                  'pc_sm': 0.84, 'pc_si': 0.16,
-                  'pc_sm_si': 0.21, 'pc_sm_dc': 0.79 * 0.25, 'pc_sm_out': 0.79 * 0.75,
+                  'pc_ir': 1-0.027, 'pc_ih': 0.027,
+                  'pc_sm': 1-0.147, 'pc_si': 0.147,
+                  'pc_sm_si': 0.203, 'pc_sm_dc': (1-.203) * 0.25, 'pc_sm_out': (1-.203) * 0.75,
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
                   'pc_h_ss': 0.2, 'pc_h_r': 0.8}
     print(f'parameters={parameters}')
@@ -47,9 +61,10 @@ if __name__ == "__main__":
 
     rules = [
         RuleChangeField(confinement,  'r',  1.0),
-        RuleChangeField(confinement,  'beta', 0.4 / dm_r),
-        RuleChangeField(deconfinement,  'r',  1.0),
-        RuleChangeField(deconfinement,  'beta', 1.1 / dm_r),
+        # RuleChangeField(confinement,  'beta', 0.4 / dm_r),
+        RuleChangeField(confinement,  'beta', 1.032 / dm_r),
+        # RuleChangeField(deconfinement,  'r',  1.0),
+        # RuleChangeField(deconfinement,  'beta', 1.1 / dm_r),
     ]
 
     # number of days since day0 -> number of residents in SI
@@ -58,14 +73,13 @@ if __name__ == "__main__":
     print(list(data_day0.keys()))
 
     series = run_sir_h(parameters, rules)
-    corrected_series = run_sir_h(parameters, rules, data_day0)
+    # corrected_series = run_sir_h(parameters, rules, data_day0)
 
     SI = series['SI']
-    corrected_SI = corrected_series['SI']
-    # print(corrected_SI)
+    # corrected_SI = corrected_series['SI']
 
     x = np.linspace(0, len(SI), len(SI))
     plt.plot(x, SI)
-    plt.plot(x, corrected_SI)
+    # plt.plot(x, corrected_SI)
     plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x')
     plt.savefig('filename')
