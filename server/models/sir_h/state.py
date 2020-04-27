@@ -3,6 +3,8 @@ from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
 from operator import add
+import math
+from scipy.optimize import fsolve
 
 
 class State:
@@ -10,15 +12,39 @@ class State:
 
         self._parameters = dict(parameters)  # to not modify parameters
 
+        def f(dms, n=21):
+            ks = list()
+            for itr in range(n):
+                ks.append(math.exp(-itr/dms) - math.exp(-(itr+1)/dms))
+            residuals = 1 - sum(ks)
+            # find q such that (1-q^n)/(1-q) -1 - residuals = 0
+            q = solve(residuals, n)[0]
+            for itr in range(n):
+                ks[itr] += q**(itr+1)
+            return ks
+
+        def solve(s, n):
+            # find q such that (1-q^n)/(1-q) -1 - s = 0
+            def f(q): return (1-q ** n)/(1-q) - 1 - s
+            res = fsolve(f, s/n)
+            return res
+
         self._boxes = {
             'SE': BoxSource('SE'),
             'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
-            'IR': BoxDms('IR', self.delay('dm_r')),
-            'IH': BoxDms('IH', self.delay('dm_h')),
-            'SM': BoxDms('SM', self.delay('dm_sm')),
+
+            # 'IR': BoxDms('IR', self.delay('dm_r')),
+            # 'IH': BoxDms('IH', self.delay('dm_h')),
+            # 'SM': BoxDms('SM', self.delay('dm_sm')),
             # 'SI': BoxDms('SI', self.delay('dm_si')),
+            # 'SS': BoxDms('SS', self.delay('dm_ss')),
+
+            'IR': BoxConvolution('IR', f(self.delay('dm_r'))),
+            'IH': BoxConvolution('IH', f(self.delay('dm_h'))),
+            'SM': BoxConvolution('SM', f(self.delay('dm_sm'))),
             'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
-            'SS': BoxDms('SS', self.delay('dm_ss')),
+            'SS': BoxConvolution('SS', f(self.delay('dm_ss'))),
+
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
         }
