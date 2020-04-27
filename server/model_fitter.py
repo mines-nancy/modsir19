@@ -48,9 +48,8 @@ def obj_func(x, goal):
 
 
 if __name__ == "__main__":
-    target_height = 180  # 180
-    target_date = 78     # 78
-    # -> 11/04
+    target_height = 174  # 180
+    target_date = 69     # 78 -> 11/04
 
     target = np.array([target_height, target_date])
     x0 = np.array([2.3/9, 2.3/9, 100, 0.16, 0.2, 0.2])
@@ -71,6 +70,24 @@ if __name__ == "__main__":
     r0_post = beta_post*9
 
     print(res.x)
+
+    if True:
+        beta_pre, beta_post, patient0, pc_ih, pc_si, pc_sm_si = res.x
+
+        parameters = {'population': 1000000, 'patient0': patient0, 'lim_time': 200,
+                      'dm_incub': 3, 'dm_r': 9, 'dm_h': 6, 'dm_sm': 6, 'dm_si': 8, 'dm_ss': 14,
+                      'kpe': 1, 'r': 1, 'beta': beta_pre, 'pc_ir': 1 - pc_ih, 'pc_ih': pc_ih, 'pc_sm': 1 - pc_si,
+                      'pc_si': pc_si, 'pc_sm_si': pc_sm_si, 'pc_sm_out': 1 - pc_sm_si, 'pc_si_dc': 0.5,
+                      'pc_si_out': 0.5,
+                      'pc_h_ss': 0.2, 'pc_h_r': 0.8}
+        rules = [{'field': 'beta', 'value': beta_post, 'date': 53}]
+
+        lists = run_sir_h(parameters, rules)
+
+        print(" --- AOI --- ")
+        print(lists["SI"][29:89])
+        print()
+
     print("Optimal parameters: ")
     print(f" - beta_ore: {beta_pre}")
     print(f" - beta_post:{beta_post}")
