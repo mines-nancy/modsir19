@@ -1,3 +1,5 @@
+from models.rule import RuleChangeField, RuleEvacuation
+
 def get_default_params() :
     r0 = 3.31
     r0_confinement = 0.4
@@ -26,7 +28,6 @@ def get_default_params() :
                   'pc_sm_si': pc_sm_si, 'pc_sm_dc': (1-pc_sm_si) * 0.25, 'pc_sm_out': (1-pc_sm_si) * 0.75,
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
                   'pc_h_ss': 0.2, 'pc_h_r': 0.8}
-    print(f'parameters={parameters}')
 
     # number of days since 01/01/2020 -> number of residents in SI
     data_chu = {46: 1.5, 47: None, 48: None, 49: None,
@@ -53,7 +54,7 @@ def get_default_params() :
     ]
 
     return { 'parameters' : dict(parameters),
-        'rules' : [ r in rules ],
+        'rules' : [ r for r in rules ],
         'confinement' : confinement,
         'deconfinement' : deconfinement,
         'data_chu' : dict(data_chu),
