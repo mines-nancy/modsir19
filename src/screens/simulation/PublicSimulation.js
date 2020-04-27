@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { makeStyles, Card } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import { format, startOfDay, addDays } from 'date-fns';
 import * as d3 from 'd3';
 import { debounce } from 'lodash';
 import { parseSvg } from 'd3-interpolate/src/transform/parse';
@@ -12,7 +13,6 @@ import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
-import { format } from 'date-fns';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -275,6 +275,82 @@ const PublicSimulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
+    useEffect(() => {
+        const chart = chartRef.current;
+        console.log('reset');
+
+        if (!chart) {
+            return;
+        }
+
+        const getTimeframeFromDatum = ({ text }) =>
+            timeframes.find((timeframe) => timeframe.name === text);
+
+        const getOffsetBoundaries = (timeframe) => {
+            const index = timeframes.indexOf(timeframe);
+            const x = chart.internal.x(timeframe.start_date);
+
+            const previous = timeframes[index - 1];
+            const next = timeframes[index + 1];
+
+            const min = chart.internal.x(addDays(previous.start_date, 1)) - x;
+            const max = next ? chart.internal.x(addDays(next.start_date, -1)) - x : Infinity;
+
+            return { min, max };
+        };
+
+        const drag = d3
+            .drag()
+            .subject(function () {
+                const t = d3.select(this);
+                const { translateX, translateY } = parseSvg(t.attr('transform'));
+                return { x: translateX, y: translateY };
+            })
+            .on('drag', function (d) {
+                const timeframe = getTimeframeFromDatum(d);
+                const { min, max } = getOffsetBoundaries(timeframe);
+
+                console.group('timeframe');
+                console.log('CURRENT', d3.event.x);
+                console.log('MIN', min);
+                console.log('MAX', max);
+                console.groupEnd();
+
+                d3.select(this).attr(
+                    'transform',
+                    `translate(${Math.max(min, Math.min(max, d3.event.x))} 0)`,
+                );
+            })
+            .on('end', function (d) {
+                const timeframe = getTimeframeFromDatum(d);
+                const { min, max } = getOffsetBoundaries(timeframe);
+
+                const endPosition =
+                    chart.internal.x(timeframe.start_date) +
+                    Math.max(min, Math.min(max, d3.event.x));
+
+                setTimeframes((timeframes) =>
+                    timeframes.map((timeframe) => {
+                        if (timeframe.name === d.text) {
+                            return {
+                                ...timeframe,
+                                start_date: startOfDay(chart.internal.x.invert(endPosition)),
+                            };
+                        }
+
+                        return timeframe;
+                    }),
+                );
+            });
+
+        d3.selectAll('.draggable-line').call(drag);
+
+        return () => {
+            d3.selectAll('.draggable-line').on('drag', null).on('end', null);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [chartRef.current, JSON.stringify(timeframes)]);
+
     const handleCaptureTooltipData = useCallback(
         debounce((data) => {
             setCurrentStats(extractTooltipData(data));
@@ -297,6 +373,7 @@ const PublicSimulation = () => {
     if (!values) {
         return null;
     }
+
     const config = {
         zoom: { enabled: false },
         legend: {
@@ -310,37 +387,6 @@ const PublicSimulation = () => {
             x: {
                 lines,
             },
-        },
-        onrendered: () => {
-            const drag = d3
-                .drag()
-                .on('start', function (d) {
-                    d.startX = chartRef.current.internal.x(new Date(d.value));
-                })
-                .subject(function () {
-                    const t = d3.select(this);
-                    const { translateX, translateY } = parseSvg(t.attr('transform'));
-                    return { x: translateX, y: translateY };
-                })
-                .on('drag', function () {
-                    d3.select(this).attr('transform', 'translate(' + d3.event.x + ' 0)');
-                })
-                .on('end', function (d) {
-                    const endPosition =
-                        chartRef.current.internal.margin.left + d.startX + d3.event.x;
-
-                    setTimeframes((timeframes) =>
-                        timeframes.map((t) => {
-                            if (t.name === d.text) {
-                                t.start_date = chartRef.current.internal.x.invert(endPosition);
-                            }
-
-                            return t;
-                        }),
-                    );
-                });
-
-            d3.selectAll('.c3-xgrid-line').call(drag);
         },
         axis: {
             y: {
