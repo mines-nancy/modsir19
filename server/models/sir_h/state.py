@@ -33,12 +33,6 @@ class State:
             'SE': BoxSource('SE'),
             'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
 
-            # 'IR': BoxDms('IR', self.delay('dm_r')),
-            # 'IH': BoxDms('IH', self.delay('dm_h')),
-            # 'SM': BoxDms('SM', self.delay('dm_sm')),
-            # 'SI': BoxDms('SI', self.delay('dm_si')),
-            # 'SS': BoxDms('SS', self.delay('dm_ss')),
-
             'IR': BoxConvolution('IR', f(self.delay('dm_r'))),
             'IH': BoxConvolution('IH', f(self.delay('dm_h'))),
             'SM': BoxConvolution('SM', f(self.delay('dm_sm'))),

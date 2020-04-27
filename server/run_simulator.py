@@ -7,20 +7,22 @@ from models.rule import RuleChangeField, RuleEvacuation
 
 
 if __name__ == "__main__":
-    # r0 = 3.31
-    # pc_ih = 0.02
-    # pc_si = 0.16
-    # pc_sm_si = 0.21
+    r0 = 3.31
+    r0_confinement = 0.4
+    pc_ih = 0.02
+    pc_si = 0.16
+    pc_sm_si = 0.21
 
+    day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
     dm_r = 9
-    r0 = 2.85
-    r0_confinement = 0.532
-    pc_ih = 0.03
-    pc_si = 0.154
-    pc_sm_si = 0.207
+    # r0 = 2.799
+    # r0_confinement = 1.205
+    # pc_ih = 0.067
+    # pc_si = 0.228
+    # pc_sm_si = 0.256
     parameters = {'population': 1000000,
-                  'patient0': 40,
-                  'lim_time': 250,
+                  'patient0': 90,
+                  'lim_time': 200,
                   'r': 1.0,
                   'beta': r0 / dm_r,
                   'kpe': 1.0,
@@ -33,8 +35,6 @@ if __name__ == "__main__":
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
                   'pc_h_ss': 0.2, 'pc_h_r': 0.8}
     print(f'parameters={parameters}')
-
-    day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
 
     # number of days since 01/01/2020 -> number of residents in SI
     data_chu = {46: 1.5, 47: None, 48: None, 49: None,
@@ -52,10 +52,9 @@ if __name__ == "__main__":
                 105: 109.5, 106: 105, 107: 100.5, 108: 99, 109: 99,
                 110: 93, 111: 87}
 
-    confinement = 70  # 16/03/2020 -> day0 + 70
-    deconfinement = 126  # 11/05/2020 -> day0 + 126
+    confinement = 75 - day0  # 16/03/2020 -> 01/01 + 75
+    deconfinement = 131 - day0  # 11/05/2020 -> 01/01 + 131
 
-    # r0_confinement = 0.4
     rules = [
         RuleChangeField(confinement,  'r',  1.0),
         RuleChangeField(confinement,  'beta', r0_confinement / dm_r),
@@ -63,17 +62,17 @@ if __name__ == "__main__":
 
     # number of days since day0 -> number of residents in SI
     data_day0 = {date-day0: data_chu[date]
-                 for date in data_chu if date % 5 == 0}
+                 for date in data_chu if date % 1 == 0}
     print(list(data_day0.keys()))
 
     series = run_sir_h(parameters, rules)
-    corrected_series = run_sir_h(parameters, rules, data_day0)
+    # corrected_series = run_sir_h(parameters, rules, data_day0)
 
     SI = series['SI']
-    corrected_SI = corrected_series['SI']
+    # corrected_SI = corrected_series['SI']
 
     x = np.linspace(0, len(SI), len(SI))
     plt.plot(x, SI)
-    plt.plot(x, corrected_SI)
+    # plt.plot(x, corrected_SI)
     plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x')
     plt.savefig('filename')
