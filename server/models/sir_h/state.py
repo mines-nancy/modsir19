@@ -2,9 +2,8 @@ from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
+from models.components.utils import compute_residuals, compute_khi
 from operator import add
-import math
-from scipy.optimize import fsolve
 
 
 class State:
@@ -12,32 +11,18 @@ class State:
 
         self._parameters = dict(parameters)  # to not modify parameters
 
-        def f(dms, n=21):
-            ks = list()
-            for itr in range(n):
-                ks.append(math.exp(-itr/dms) - math.exp(-(itr+1)/dms))
-            residuals = 1 - sum(ks)
-            # find q such that (1-q^n)/(1-q) -1 - residuals = 0
-            q = solve(residuals, n)[0]
-            for itr in range(n):
-                ks[itr] += q**(itr+1)
-            return ks
-
-        def solve(s, n):
-            # find q such that (1-q^n)/(1-q) -1 - s = 0
-            def f(q): return (1-q ** n)/(1-q) - 1 - s
-            res = fsolve(f, s/n)
-            return res
+        def compute_ki(dm_name, max_days=21):
+            return compute_khi(compute_residuals(self.delay(dm_name), max_days))
 
         self._boxes = {
             'SE': BoxSource('SE'),
             'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
 
-            'IR': BoxConvolution('IR', f(self.delay('dm_r'))),
-            'IH': BoxConvolution('IH', f(self.delay('dm_h'))),
-            'SM': BoxConvolution('SM', f(self.delay('dm_sm'))),
+            'IR': BoxConvolution('IR', compute_ki('dm_r')),
+            'IH': BoxConvolution('IH', compute_ki('dm_h')),
+            'SM': BoxConvolution('SM', compute_ki('dm_sm')),
             'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
-            'SS': BoxConvolution('SS', f(self.delay('dm_ss'))),
+            'SS': BoxConvolution('SS', compute_ki('dm_ss')),
 
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')

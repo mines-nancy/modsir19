@@ -7,21 +7,21 @@ from models.rule import RuleChangeField, RuleEvacuation
 
 
 if __name__ == "__main__":
-    r0 = 3.31
-    r0_confinement = 0.4
-    pc_ih = 0.02
-    pc_si = 0.16
-    pc_sm_si = 0.21
+    # r0 = 3.31
+    # r0_confinement = 0.4
+    # pc_ih = 0.02
+    # pc_si = 0.16
+    # pc_sm_si = 0.21
 
     day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
     dm_r = 9
-    # r0 = 2.799
-    # r0_confinement = 1.205
-    # pc_ih = 0.067
-    # pc_si = 0.228
-    # pc_sm_si = 0.256
+    r0 = 2.898
+    r0_confinement = 0.488
+    pc_ih = 0.032
+    pc_si = 0.154
+    pc_sm_si = 0.211
     parameters = {'population': 1000000,
-                  'patient0': 90,
+                  'patient0': 40,
                   'lim_time': 200,
                   'r': 1.0,
                   'beta': r0 / dm_r,
