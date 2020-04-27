@@ -3,7 +3,6 @@ import { makeStyles, Card } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import * as d3 from 'd3';
 import { debounce } from 'lodash';
-import * as d3Transform from 'd3-transform';
 import { parseSvg } from 'd3-interpolate/src/transform/parse';
 
 import { formatParametersForModel, defaultTimeframes, extractGraphTimeframes } from './common';
@@ -14,7 +13,6 @@ import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import { format } from 'date-fns';
-console.log({ d3 });
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -252,13 +250,11 @@ const PublicSimulation = () => {
 
     const lines = useMemo(
         () =>
-            graphTimeframes.map(
-                (timeframe) =>
-                    console.log(timeframe.date) || {
-                        value: format(timeframe.date, 'yyyy-MM-dd'),
-                        text: timeframe.label,
-                    },
-            ),
+            graphTimeframes.map((timeframe) => ({
+                value: format(timeframe.date, 'yyyy-MM-dd'),
+                text: timeframe.label,
+            })),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [
             /* Leave this empty to keep same lines, d3 will change lines */
         ],
@@ -316,7 +312,7 @@ const PublicSimulation = () => {
             },
         },
         onrendered: () => {
-            var drag = d3
+            const drag = d3
                 .drag()
                 .on('start', function (d) {
                     d.startX = chartRef.current.internal.x(new Date(d.value));
@@ -326,13 +322,13 @@ const PublicSimulation = () => {
                     const { translateX, translateY } = parseSvg(t.attr('transform'));
                     return { x: translateX, y: translateY };
                 })
-
                 .on('drag', function () {
                     d3.select(this).attr('transform', 'translate(' + d3.event.x + ' 0)');
                 })
                 .on('end', function (d) {
-                    const endPosition = d.startX + d3.event.x;
-                    console.log('a', chartRef.current.internal.x.invert(endPosition));
+                    const endPosition =
+                        chartRef.current.internal.margin.left + d.startX + d3.event.x;
+
                     setTimeframes((timeframes) =>
                         timeframes.map((t) => {
                             if (t.name === d.text) {
@@ -345,24 +341,8 @@ const PublicSimulation = () => {
                 });
 
             d3.selectAll('.c3-xgrid-line').call(drag);
-
-            // d3.selectAll('.c3-xgrid-line')
-            //     .enter()
-            //     .append('span')
-            //     .attr('data-id', function (id) {
-            //         return id;
-            //     })
-            //     .html(function (id) {
-            //         return id;
-            //     })
-            //     .each(function (id) {
-            //         d3.select(this).style('background-color', 'red');
-            //     });
         },
         axis: {
-            // x: {
-            //     show: false,
-            // },
             y: {
                 show: false,
             },

@@ -20,3 +20,8 @@ code {
 .MuiCardContent-root:last-child{
   padding-bottom: 16px !important;
 }
+
+.draggable-line line {
+  cursor: ew-resize;
+  stroke-width: 2px;
+}

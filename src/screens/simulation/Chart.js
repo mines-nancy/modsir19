@@ -191,6 +191,7 @@ const Chart = React.forwardRef(
                         lines: timeframes.map((timeframe) => ({
                             value: format(timeframe.date, 'yyyy-MM-dd'),
                             text: timeframe.label,
+                            class: 'draggable-line',
                         })),
                     },
                 },
