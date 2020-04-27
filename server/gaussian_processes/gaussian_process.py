@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# The code on gaussian processes gas been adapted from Imperial College's CO493
+# "Probabilistic Inferrence" lead by Dr. Mark Van der Wilk
+
 from typing import Tuple
 
 import matplotlib.pyplot as plt
@@ -311,7 +315,6 @@ class GaussianProcess(object):
 
         prior_m = self.prior_mean(new_data_points).reshape((-1, 1))
         mean = prior_m + temp.dot(y - self.prior_mean(X_cur))
-        print(new_data_points.shape, temp.dot(y).shape, mean.shape)
         std_list = []
 
         for x in X_other:

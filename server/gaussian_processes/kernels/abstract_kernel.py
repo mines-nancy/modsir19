@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# The code on gaussian processes gas been adapted from Imperial College's CO493
+# "Probabilistic Inferrence" lead by Dr. Mark Van der Wilk
+
 import abc
 
 import numpy as np

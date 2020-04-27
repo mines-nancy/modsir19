@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on 24/04/2020
-
-@author: Paul Festor
-"""
+# The code on gaussian processes gas been adapted from Imperial College's CO493
+# "Probabilistic Inferrence" lead by Dr. Mark Van der Wilk
 
 import matplotlib.pyplot as plt
 import numpy as np
