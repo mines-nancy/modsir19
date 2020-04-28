@@ -15,12 +15,11 @@ class BoxConvolution(Box):
 
     def __init__(self, name, output_coefficients):
         Box.__init__(self, name)
-        self._duration = len(output_coefficients)
         self._output_coefficients = output_coefficients
         self._queue = [deque()]  # items in the box
 
-    def set_duration(self, value):
-        self._duration = value
+    def set_output_coefficients(self, output_coefficients):
+        self._output_coefficients = output_coefficients
 
     def queue(self, past=0):
         if self._t-past >= 0:
@@ -39,7 +38,7 @@ class BoxConvolution(Box):
         super().step()
         current_queue = deque(previous_queue)  # copy of previous_queue
 
-        if self._duration == 0:
+        if len(self._output_coefficients) == 0:
             new_output = 0
             # remove all elements from current queue
             while len(current_queue) > 0:
@@ -54,7 +53,7 @@ class BoxConvolution(Box):
 
         # remove extra elements
         new_output = 0
-        while len(current_queue) > self._duration:
+        while len(current_queue) > len(self._output_coefficients):
             new_output += current_queue.pop()[1]
 
         # transition step for all elements
@@ -67,35 +66,41 @@ class BoxConvolution(Box):
                 v if self._output_coefficients[i]*v <= r else r
             new_list.append((v, r - delta))
             new_output += delta
-        # delta = [self._output_coefficients[i]*v if self._output_coefficients[i]*v <= r else r
-        #          for i, (v, r) in enumerate(current_queue)]
-        # new_list = [(v, r - delta[i])
-        #              for i, (v, r) in enumerate(current_queue)]
-        # new_output += sum(delta)
 
         self._queue.append(deque(new_list))
         new_size -= new_output
         self.set_output(previous_output + new_output)
         self.set_size(new_size)
 
+    def compute_size(self):
+        return sum([r for v, r in self.queue()])
+
     def force_output(self, value):
         current_size = self.size()
         current_output = self.output()
         current_queue = self.queue()
+
+        if value <= 0:
+            print(f'cannot force negative output {value}')
+            return
 
         if current_size <= value:
             self.set_size(0)
             self.set_output(current_output + current_size)
             current_queue.clear()
         else:
+            to_remove = value
             new_output = 0
             for i in range(len(current_queue)-1, -1, -1):
-                if value > 0:
+                if to_remove > 0:
                     v, r = current_queue[i]
-                    delta = min(r, value)
+                    delta = min(r, to_remove)
                     current_queue[i] = (v, r - delta)
-                    value -= delta
+                    to_remove -= delta
                     new_output += delta
 
             self.set_size(current_size - new_output)
             self.set_output(current_output + new_output)
+
+            assert math.fabs(self.size() + value - current_size) < 0.1
+            assert math.fabs(new_output - value) < 0.1
