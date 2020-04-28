@@ -91,7 +91,7 @@ class State:
         elif field_name in ['dm_incub']:
             self.box(box_to_update[field_name]).set_output_coefficients(
                 compute_delay_ki(self.delay(field_name)))
-        else:
+        elif field_name in ['dm_si']:
             print(f'no update for: {field_name}')
 
         print(
@@ -113,15 +113,22 @@ class State:
         return self.box(name).output(past)
 
     def move(self, src_name, dest_name, delta):
-        max_delta = min(self.box(src_name).output(), delta)
-        self.box(src_name).remove(max_delta)
-        self.box(dest_name).add(max_delta)
+        if delta <= 0:
+            return
+
+        if delta < self.box(src_name).output():
+            self.box(src_name).remove(delta)
+            self.box(dest_name).add(delta)
+        else:
+            max_delta = self.box(src_name).output()
+            self.box(src_name).remove(max_delta)
+            self.box(dest_name).add(max_delta)
+        assert self.box(src_name).output() >= 0
 
     def step(self):
         self.time += 1
         for box in self.boxes():
             box.step()
-        # print('***', self)
         self.step_exposed()
         self.generic_steps(self._moves)
 
@@ -140,6 +147,9 @@ class State:
         n = se + incub + ir + ih + r
         delta = self.coefficient(
             'r') * self.coefficient('beta') * se * (ir+ih) / n if n > 0 else 0
+
+        if delta < 0:
+            delta = 0
         assert delta >= 0
         self.move('SE', 'INCUB', delta)
 
