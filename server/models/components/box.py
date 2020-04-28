@@ -14,10 +14,10 @@ class Box:
         self._name = name
 
         self._t = 0
-        self._size = [0]
-        self._input = [0]  # number of inputs before step
-        self._output = [0]  # number of possible outputs
-        self._removed = [0]  # number of removed elements
+        self._size = [0.0]
+        self._input = [0.0]  # number of inputs before step
+        self._output = [0.0]  # number of possible outputs
+        self._removed = [0.0]  # number of removed elements
 
     def __str__(self):
         input = round(self.input(), 2)
@@ -68,9 +68,13 @@ class Box:
         self._output[self._t] = value
 
     def add(self, size):
+        if size == 0:
+            return
         self._input[self._t] += size
 
     def remove(self, size):
+        if size == 0:
+            return
         self._output[self._t] -= size
         self._removed[self._t] += size
 
