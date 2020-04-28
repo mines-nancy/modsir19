@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { makeStyles, Card, Typography, Slider } from '@material-ui/core';
+import { makeStyles, Card, Typography, Slider, useMediaQuery, useTheme } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { format } from 'date-fns';
@@ -18,32 +18,39 @@ import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
 import PublicDescriptionModal from './PublicDescriptionModal';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
     },
+    chartViewContainer: {
+        flex: 1,
+        display: 'flex',
+        [theme.breakpoints.down('sm')]: {
+            flexDirection: 'column-reverse',
+        },
+    },
     rangeSlider: {
         flex: '0 0 50px',
         padding: '80px 0 0 25px',
+        [theme.breakpoints.down('sm')]: {
+            padding: '0 12px',
+        },
     },
     formContainer: {
         flex: '0 0 200px',
     },
-    chartViewContainer: {
-        flex: 1,
-        display: 'flex',
-    },
     legend: {
-        position: 'absolute',
-        right: 20,
-        top: 20,
-        width: 550,
-        height: 350,
-        zIndex: 999,
+        [theme.breakpoints.up('sm')]: {
+            position: 'absolute',
+            right: 20,
+            top: 20,
+            width: 550,
+            height: 350,
+            zIndex: 999,
+        },
     },
-    mobileLegend: {},
     blockContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -87,12 +94,18 @@ const useStyles = makeStyles(() => ({
     form: {
         marginTop: 16,
         display: 'flex',
+        [theme.breakpoints.down('sm')]: {
+            flexDirection: 'column',
+        },
     },
     formControl: {
         flex: '1 0 0',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+        },
         '& > *': {
             alignItems: 'center',
             minWidth: 200,
@@ -148,15 +161,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
     });
 
     if (mobile) {
-        return (
-            <div>
-                {Object.keys(stats).map((name) => (
-                    <div>
-                        {name}: {stats[name]}
-                    </div>
-                ))}
-            </div>
-        );
+        return null;
     }
 
     return (
@@ -302,6 +307,9 @@ const getTimeframesFromValues = ({
 const ZoomSlider = ({ max: maxValue, range, onChange }) => {
     const [innerMax, setInnerMax] = useState(maxValue);
 
+    const theme = useTheme();
+    const small = useMediaQuery(theme.breakpoints.down('sm'));
+
     const handleChange = (commited) => (_, value) => {
         setInnerMax(value);
         commited && onChange(value);
@@ -309,7 +317,7 @@ const ZoomSlider = ({ max: maxValue, range, onChange }) => {
 
     return (
         <Slider
-            orientation="vertical"
+            orientation={small ? 'horizontal' : 'vertical'}
             value={innerMax}
             max={range.max}
             min={range.min}
@@ -331,6 +339,8 @@ const PublicSimulation = () => {
     const [modalOpen, setModalOpen] = useState(
         window.localStorage.getItem('never_show_modal_again') === 'true' ? false : true,
     );
+    const theme = useTheme();
+    const small = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [graphTimeframes, setGraphTimeframes] = useState(
         extractGraphTimeframes(getTimeframesFromValues(initialValues)),
@@ -411,8 +421,6 @@ const PublicSimulation = () => {
         },
     };
 
-    const isMobile = windowWidth < 800;
-
     return (
         <Layout>
             <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
@@ -426,12 +434,12 @@ const PublicSimulation = () => {
                         />
                     </div>
                     <div style={{ flex: 1, position: 'relative' }}>
-                        <div className={isMobile ? classes.mobileLegend : classes.legend}>
+                        <div className={classes.legend}>
                             <Legend
                                 stats={currentStats}
                                 onLegendEnter={handleLegendEnter}
                                 onLegendLeave={handleLegendLeave}
-                                mobile={isMobile}
+                                mobile={small}
                             />
                         </div>
                         <div>
@@ -439,7 +447,13 @@ const PublicSimulation = () => {
                                 values={values}
                                 startDate={timeframes[0].start_date}
                                 timeframes={graphTimeframes}
-                                size={{ height: windowHeight - 200, width: windowWidth - 100 }}
+                                size={
+                                    small
+                                        ? {
+                                              width: windowWidth,
+                                          }
+                                        : { height: windowHeight - 200, width: windowWidth - 100 }
+                                }
                                 customConfig={config}
                                 ref={chartRef}
                                 style={{ padding: 0 }}
