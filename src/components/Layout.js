@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
     container: {
-        paddingTop: 64,
+        paddingTop: ({ withoutAppbar }) => (withoutAppbar ? 0 : 64),
         minHeight: '98vh',
     },
     footer: {
@@ -21,12 +21,12 @@ const useStyles = makeStyles({
     },
 });
 
-const Layout = ({ children, ...props }) => {
-    const classes = useStyles();
+const Layout = ({ children, withoutAppbar, ...props }) => {
+    const classes = useStyles({ withoutAppbar });
 
     return (
         <>
-            <MainAppBar {...props} />
+            {!withoutAppbar && <MainAppBar {...props} />}
             <div className={classes.container}>{children}</div>
             <AppBar position="relative" className={classes.footer}>
                 <Toolbar classes={{ root: classes.toolbar }}>

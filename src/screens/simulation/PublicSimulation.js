@@ -455,7 +455,7 @@ const PublicSimulation = () => {
     };
 
     return (
-        <Layout>
+        <Layout withoutAppbar>
             <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
@@ -486,7 +486,7 @@ const PublicSimulation = () => {
                                               width: windowWidth,
                                           }
                                         : {
-                                              height: windowHeight - 200 - 64,
+                                              height: windowHeight - 200,
                                               width: windowWidth - 100,
                                           }
                                 }
