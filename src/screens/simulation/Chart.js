@@ -16,6 +16,9 @@ const useStyles = makeStyles({
     root: {
         padding: 16,
     },
+    container: {
+        margin: '0 auto',
+    },
 });
 
 const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
@@ -191,6 +194,7 @@ const Chart = React.forwardRef(
                         lines: timeframes.map((timeframe) => ({
                             value: format(timeframe.date, 'yyyy-MM-dd'),
                             text: timeframe.label,
+                            class: 'draggable-line',
                         })),
                     },
                 },
@@ -218,7 +222,7 @@ const Chart = React.forwardRef(
 
         return (
             <div className={classes.root} {...rest}>
-                <div style={config.size}>
+                <div className={classes.container} style={config.size}>
                     <C3Graph config={config} ref={chartRef} />
                     {children}
                 </div>

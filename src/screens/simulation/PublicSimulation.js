@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { makeStyles, Card } from '@material-ui/core';
+import { Form, Field } from 'react-final-form';
+import { makeStyles, Card, Typography } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { formatParametersForModel, defaultTimeframes, extractGraphTimeframes } from './common';
+import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
+import DateField from '../../components/fields/DateField';
+import ProportionField from '../../components/fields/ProportionField';
+import AutoSave from '../../components/fields/AutoSave';
+import { differenceInDays, format } from 'date-fns';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -67,6 +72,24 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         alignItems: 'center',
         color: '#888',
+    },
+    chartContainer: {
+        margin: '0 auto',
+    },
+    form: {
+        marginTop: 16,
+        display: 'flex',
+    },
+    formControl: {
+        flex: '1 0 0',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        '& > *': {
+            alignItems: 'center',
+            minWidth: 200,
+            marginBottom: 12,
+        },
     },
 }));
 
@@ -228,6 +251,46 @@ const extractTooltipData = (points) =>
         {},
     );
 
+const initialValues = {
+    initial_start_date: new Date('2020-01-09'),
+    initial_r0: 3.4,
+    lockdown_start_date: new Date('2020-03-17'),
+    lockdown_r0: 0.5,
+    deconfinement_start_date: new Date('2020-05-11'),
+    deconfinement_r0: 1.1,
+};
+
+const getTimeframesFromValues = ({
+    initial_start_date,
+    initial_r0,
+    lockdown_start_date,
+    lockdown_r0,
+    deconfinement_start_date,
+    deconfinement_r0,
+}) => [
+    {
+        ...defaultParameters,
+        r0: initial_r0,
+        start_time: 0,
+        name: 'Période initiale',
+        enabled: true,
+    },
+    {
+        ...defaultParameters,
+        r0: lockdown_r0,
+        start_date: differenceInDays(initial_start_date, lockdown_start_date),
+        name: 'Confinement',
+        enabled: true,
+    },
+    {
+        ...defaultParameters,
+        r0: deconfinement_r0,
+        start_date: differenceInDays(initial_start_date, deconfinement_start_date),
+        name: 'Déconfinement',
+        enabled: true,
+    },
+];
+
 const PublicSimulation = () => {
     const classes = useStyles();
     // eslint-disable-next-line no-unused-vars
@@ -238,10 +301,16 @@ const PublicSimulation = () => {
     const chartRef = useRef(null);
 
     const [graphTimeframes, setGraphTimeframes] = useState(
-        extractGraphTimeframes(defaultTimeframes),
+        extractGraphTimeframes(getTimeframesFromValues(initialValues)),
     );
 
-    const [timeframes] = useState(defaultTimeframes);
+    const [timeframes, setTimeframes] = useState(getTimeframesFromValues(initialValues));
+
+    const lines = graphTimeframes.map((timeframe) => ({
+        value: format(timeframe.date, 'yyyy-MM-dd'),
+        text: timeframe.label,
+        class: 'draggable-line',
+    }));
 
     useEffect(() => {
         (async () => {
@@ -281,6 +350,10 @@ const PublicSimulation = () => {
         return null;
     }
 
+    const handleSubmit = (values) => {
+        setTimeframes(getTimeframesFromValues(values));
+    };
+
     const config = {
         zoom: { enabled: false },
         legend: {
@@ -290,10 +363,10 @@ const PublicSimulation = () => {
             // This is the only way to get data from current position
             contents: handleCaptureTooltipData,
         },
+        grid: {
+            x: { lines },
+        },
         axis: {
-            x: {
-                show: false,
-            },
             y: {
                 show: false,
             },
@@ -312,17 +385,80 @@ const PublicSimulation = () => {
                     mobile={isMobile}
                 />
             </div>
-            <div>
+            <div className={classes.chartContainer}>
                 <Chart
                     values={values}
                     startDate={timeframes[0].start_date}
                     timeframes={graphTimeframes}
-                    size={{ height: windowHeight, width: windowWidth }}
+                    size={{ height: windowHeight * 0.8, width: windowWidth * 0.9 }}
                     customConfig={config}
                     ref={chartRef}
                     style={{ padding: 0 }}
                 />
             </div>
+            <Form
+                subscription={{}}
+                onSubmit={() => {
+                    /* Useless since we use a listener on autosave */
+                }}
+                initialValues={initialValues}
+                render={() => (
+                    <div className={classes.form}>
+                        <AutoSave save={handleSubmit} debounce={200} />
+                        <div className={classes.formControl}>
+                            <Typography variant="h6">Période initiale</Typography>
+                            <Field
+                                className="small-margin-bottom"
+                                name="initial_start_date"
+                                label="Début"
+                                component={DateField}
+                            />
+                            <Field
+                                name="initial_r0"
+                                label="R0"
+                                component={ProportionField}
+                                unit=""
+                                max="5"
+                                step={0.1}
+                            />
+                        </div>
+                        <div className={classes.formControl}>
+                            <Typography variant="h6">Confinement</Typography>
+                            <Field
+                                className="small-margin-bottom"
+                                name="lockdown_start_date"
+                                label="Début"
+                                component={DateField}
+                            />
+                            <Field
+                                name="lockdown_r0"
+                                label="R0"
+                                component={ProportionField}
+                                unit=""
+                                max="5"
+                                step={0.1}
+                            />
+                        </div>
+                        <div className={classes.formControl}>
+                            <Typography variant="h6">Déconfinement</Typography>
+                            <Field
+                                className="small-margin-bottom"
+                                name="deconfinement_start_date"
+                                label="Début"
+                                component={DateField}
+                            />
+                            <Field
+                                name="deconfinement_r0"
+                                label="R0"
+                                component={ProportionField}
+                                unit=""
+                                max="5"
+                                step={0.1}
+                            />
+                        </div>
+                    </div>
+                )}
+            />
         </div>
     );
 };
