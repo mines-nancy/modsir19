@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     actions: {
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
     },
     noliststyle: {
         listStyleType: 'none',
@@ -40,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
 
 const PublicDescriptionModal = ({ onClose, ...props }) => {
     const classes = useStyles();
+
+    const handleNeverShowAgain = (...args) => {
+        window.localStorage.setItem('never_show_modal_again', 'true');
+        onClose(...args);
+    };
 
     return (
         <Modal {...props} onClose={onClose} className={classes.modal} aria-labelledby="Description">
@@ -148,6 +153,14 @@ const PublicDescriptionModal = ({ onClose, ...props }) => {
                     </p>
                 </CardContent>
                 <CardActions classes={{ root: classes.actions }}>
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleNeverShowAgain}
+                    >
+                        Ne plus afficher cette fenêtre
+                    </Button>
                     <Button size="small" variant="contained" color="primary" onClick={onClose}>
                         Continuer
                     </Button>

@@ -328,7 +328,9 @@ const PublicSimulation = () => {
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentStats, setCurrentStats] = useState({});
     const chartRef = useRef(null);
-    const [modalOpen, setModalOpen] = useState(true);
+    const [modalOpen, setModalOpen] = useState(
+        window.localStorage.getItem('never_show_modal_again') === 'true' ? false : true,
+    );
 
     const [graphTimeframes, setGraphTimeframes] = useState(
         extractGraphTimeframes(getTimeframesFromValues(initialValues)),
