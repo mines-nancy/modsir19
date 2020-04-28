@@ -27,6 +27,17 @@ def compute_khi(residuals):
     return khi
 
 
+def compute_exp_ki(duration, max_days=21):
+    return compute_khi(compute_residuals(duration, max_days))
+
+
+def compute_delay_ki(duration):
+    if duration <= 1:
+        return [1]
+    else:
+        return [0]*(duration-2) + [0.5, 0.5]
+
+
 def compute_area(dms, max_days):
 
     residuals = compute_residuals(dms, max_days)

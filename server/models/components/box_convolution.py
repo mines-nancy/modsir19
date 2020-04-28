@@ -15,12 +15,11 @@ class BoxConvolution(Box):
 
     def __init__(self, name, output_coefficients):
         Box.__init__(self, name)
-        self._duration = len(output_coefficients)
         self._output_coefficients = output_coefficients
         self._queue = [deque()]  # items in the box
 
-    def set_duration(self, value):
-        self._duration = value
+    def set_output_coefficients(self, output_coefficients):
+        self._output_coefficients = output_coefficients
 
     def queue(self, past=0):
         if self._t-past >= 0:
@@ -39,7 +38,7 @@ class BoxConvolution(Box):
         super().step()
         current_queue = deque(previous_queue)  # copy of previous_queue
 
-        if self._duration == 0:
+        if len(self._output_coefficients) == 0:
             new_output = 0
             # remove all elements from current queue
             while len(current_queue) > 0:
@@ -54,7 +53,7 @@ class BoxConvolution(Box):
 
         # remove extra elements
         new_output = 0
-        while len(current_queue) > self._duration:
+        while len(current_queue) > len(self._output_coefficients):
             new_output += current_queue.pop()[1]
 
         # transition step for all elements
