@@ -4,6 +4,7 @@ import { makeStyles, Card, Typography, Slider, useMediaQuery, useTheme } from '@
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { format } from 'date-fns';
+import { ZoomIn, ZoomOut } from '@material-ui/icons';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
             width: 550,
             height: 350,
             zIndex: 999,
+            pointerEvents: 'none',
         },
     },
     blockContainer: {
@@ -57,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         alignItems: 'flex-end',
         paddingLeft: '33%',
+        pointerEvents: 'none',
     },
     blockRow: {
         display: 'flex',
@@ -111,6 +114,24 @@ const useStyles = makeStyles((theme) => ({
             alignItems: 'center',
             minWidth: 200,
             marginBottom: 12,
+        },
+    },
+    zoom: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        [theme.breakpoints.down('sm')]: {
+            flexDirection: 'row',
+        },
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    zoomSlider: {
+        [theme.breakpoints.down('sm')]: {
+            width: '85% !important',
+        },
+        [theme.breakpoints.up('sm')]: {
+            height: '80% !important',
         },
     },
 }));
@@ -312,6 +333,7 @@ const getTimeframesFromValues = ({
 
 const ZoomSlider = ({ max: maxValue, range, onChange }) => {
     const [innerMax, setInnerMax] = useState(maxValue);
+    const classes = useStyles();
 
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('sm'));
@@ -322,15 +344,20 @@ const ZoomSlider = ({ max: maxValue, range, onChange }) => {
     };
 
     return (
-        <Slider
-            orientation={small ? 'horizontal' : 'vertical'}
-            value={innerMax}
-            max={range.max}
-            min={range.min}
-            onChangeCommitted={handleChange(true)}
-            onChange={handleChange(false)}
-            aria-labelledby="range-slider"
-        />
+        <div className={classes.zoom}>
+            <ZoomOut fontSize="small" />
+            <Slider
+                classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
+                orientation={small ? 'horizontal' : 'vertical'}
+                value={innerMax}
+                max={range.max}
+                min={range.min}
+                onChangeCommitted={handleChange(true)}
+                onChange={handleChange(false)}
+                aria-labelledby="range-slider"
+            />
+            <ZoomIn fontSize="small" />
+        </div>
     );
 };
 
