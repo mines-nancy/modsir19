@@ -8,6 +8,7 @@ const useStyles = makeStyles({
     },
     slider: {
         flex: 'O 0 auto',
+        minWidth: 100,
     },
     numberContainer: {
         marginLeft: 24,
