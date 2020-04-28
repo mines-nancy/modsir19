@@ -17,21 +17,42 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         outline: 0,
+        maxWidth: '100vw',
+        maxHeight: '100vh',
     },
     card: {
-        maxWidth: 900,
-        maxHeight: '90%',
+        maxWidth: '100%',
+        maxHeight: '100%',
         overflowY: 'scroll',
-        padding: theme.spacing(3),
+        padding: theme.spacing(1),
+        [theme.breakpoints.up('md')]: {
+            maxWidth: 900,
+            maxHeight: '90%',
+            padding: theme.spacing(3),
+        },
+        '& img': {
+            maxWidth: '100%',
+        },
         '& ul': {
             marginBottom: theme.spacing(2),
+            [theme.breakpoints.down('sm')]: {
+                paddingLeft: theme.spacing(2),
+            },
         },
         '& li': {
             marginBottom: theme.spacing(1),
         },
     },
     actions: {
-        justifyContent: 'space-between',
+        [theme.breakpoints.down('sm')]: {
+            flexDirection: 'column',
+            '& button': {
+                marginBottom: theme.spacing(1),
+            },
+        },
+        [theme.breakpoints.up('sm')]: {
+            justifyContent: 'space-between',
+        },
     },
     noliststyle: {
         listStyleType: 'none',
