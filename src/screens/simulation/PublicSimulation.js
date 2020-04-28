@@ -458,7 +458,10 @@ const PublicSimulation = () => {
                                         ? {
                                               width: windowWidth,
                                           }
-                                        : { height: windowHeight - 200, width: windowWidth - 100 }
+                                        : {
+                                              height: windowHeight - 200 - 64,
+                                              width: windowWidth - 100,
+                                          }
                                 }
                                 customConfig={config}
                                 ref={chartRef}
