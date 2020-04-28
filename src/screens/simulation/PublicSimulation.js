@@ -17,6 +17,7 @@ import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
 import PublicDescriptionModal from './PublicDescriptionModal';
+import colors from './colors';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -181,6 +182,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                             {...addMouseProps(['Exposés'])}
                             label="Sains"
                             value={stats['Exposés'] || ''}
+                            color={colors.exposed.bg}
                         />
                     </Node>
                     <Node
@@ -200,6 +202,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                             {...addMouseProps(['Incubation', 'Infectés'])}
                             label="Malades"
                             value={(stats['Incubation'] || 0) + (stats['Infectés'] || 0) || ''}
+                            color={colors.infected.bg}
                         />
                     </Node>
                     <Node name="gueri" targets={[]}>
@@ -207,6 +210,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                             {...addMouseProps(['Guéris'])}
                             label="Guéris"
                             value={stats['Guéris'] || ''}
+                            color={colors.recovered.bg}
                         />
                     </Node>
                 </div>
@@ -237,6 +241,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                                     (stats['Soins intensifs'] || 0) +
                                     (stats['Soins medicaux'] || 0) || ''
                             }
+                            color={colors.intensive_care.bg}
                         />
                     </Node>
                     <Node name="decede" targets={[]}>
@@ -244,6 +249,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                             {...addMouseProps(['Décédés'])}
                             label="Décédés"
                             value={stats['Décédés'] || ''}
+                            color={colors.death.bg}
                         />
                     </Node>
                 </div>

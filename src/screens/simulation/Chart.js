@@ -6,6 +6,8 @@ import { merge } from 'lodash';
 import c3 from 'c3';
 import 'c3/c3.css';
 
+import colors from './colors';
+
 const generateDateInterval = (startDate, numberOfDays) =>
     eachDayOfInterval({
         start: startDate,
@@ -32,42 +34,42 @@ const data = ({ t, values, startDate }) => {
             {
                 label: capitalize(t('chart.exposed')),
                 data: SE,
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                backgroundColor: colors.exposed.main,
             },
             {
                 label: capitalize(t('chart.incub')),
                 data: INCUB,
-                backgroundColor: 'rgba(164, 18, 179, 0.6)',
+                backgroundColor: colors.incubation.main,
             },
             {
                 label: capitalize(t('chart.recovered')),
                 data: R,
-                backgroundColor: 'rgba(88, 235, 88, 0.6)',
+                backgroundColor: colors.recovered.main,
             },
             {
                 label: capitalize(t('chart.intensive_care')),
                 data: SI,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                backgroundColor: colors.intensive_care.main,
             },
             {
                 label: capitalize(t('chart.normal_care')),
                 data: SM,
-                backgroundColor: 'rgba(255, 88, 132, 0.6)',
+                backgroundColor: colors.normal_care.main,
             },
             {
                 label: capitalize(t('chart.following_hospitalized')),
                 data: SS,
-                backgroundColor: 'rgba(54, 54, 255, 0.6)',
+                backgroundColor: colors.following_care.main,
             },
             {
                 label: capitalize(t('chart.dead')),
                 data: DC,
-                backgroundColor: 'rgba(88, 88, 88, 0.6)',
+                backgroundColor: colors.death.main,
             },
             {
                 label: capitalize(t('chart.infected')),
                 data: I,
-                backgroundColor: 'rgba(255, 158, 132, 0.6)',
+                backgroundColor: colors.infected.main,
             },
         ],
     };
@@ -166,15 +168,15 @@ const Chart = React.forwardRef(
                         {},
                     ),
                     order: (d1, d2) => {
-                        // Sort legend by smaller values first
+                        // Sort legend by bigger values first
                         return (
                             Math.max(
                                 0,
-                                d1.values.map((i) => i.value),
+                                d2.values.map((i) => i.value),
                             ) -
                             Math.max(
                                 0,
-                                d2.values.map((i) => i.value),
+                                d1.values.map((i) => i.value),
                             )
                         );
                     },
