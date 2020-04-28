@@ -1,4 +1,57 @@
 from models.rule import RuleChangeField, RuleEvacuation
+import json
+import re
+import importlib
+
+def export_json(filename, parameters = None, rules = None, others = None ) :
+
+    ''' @TODO eventually this should be part of the Rule class '''
+    def serialise_rule(rule) :
+        return { 'type' : str(type(rule)), 'vars' : vars(rule) }
+
+    data = dict()
+    data['parameters'] = parameters
+    data['rules'] = [ serialise_rule(r) for r in rules ]
+    data['others'] = others
+
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file)
+        json_file.close()
+
+
+def import_json(filename) :
+
+    with open(filename) as json_file:
+        data = json.load(json_file)
+        json_file.close()
+
+    parameters = data['parameters']
+    others = data['others']
+
+    raw_rules = data['rules']
+
+    ''' @TODO the following code should eventually be in class Rule '''
+    rules = list()
+
+    for r in raw_rules :
+        ''' format is "<class 'models.rule.RuleChangeField'>" '''
+        m = re.search(r"<class '(\w+\.)*(\w+)'>", r['type'])
+        rule_module = m.group(1)
+        rule_type = m.group(2)
+        print(rule_type, r['vars'])
+        print(rule_module)
+
+        module = importlib.import_module("models.rule")
+        class_type = getattr(module, rule_type)
+        ''' @BUG there is no guarantee the order is preserved, arguments may be passed in the wrong order '''
+        rule = class_type(*r['vars'].values())
+
+        rules.append(rule)
+
+    ''' end @TODO section '''
+
+    return parameters, rules, others
+
 
 def get_default_params() :
     r0 = 3.31
@@ -30,7 +83,7 @@ def get_default_params() :
                   'pc_h_ss': 0.2, 'pc_h_r': 0.8}
 
     # number of days since 01/01/2020 -> number of residents in SI
-    data_chu = {46: 1.5, 47: None, 48: None, 49: None,
+    data_chu_rea = {46: 1.5, 47: None, 48: None, 49: None,
                 50: None, 51: None, 52: None, 53: 1.5, 54: 1.5,
                 55: 1.5, 56: 1.5, 57: 1.5, 58: 1.5, 59: 3,
                 60: 4.5, 61: 3, 62: 6, 63: 9, 64: 9,
@@ -54,10 +107,9 @@ def get_default_params() :
     ]
 
     return { 'parameters' : dict(parameters),
-        'rules' : [ r for r in rules ],
-        'confinement' : confinement,
-        'deconfinement' : deconfinement,
-        'data_chu' : dict(data_chu),
-        'day0' : day0,
-        'r0' : r0,
-        'r0_confinement' : r0_confinement }
+             'rules' : [ r for r in rules ],
+             'data' : dict({'data_chu_rea' : dict(data_chu_rea), 'day0' : day0 }),
+             'other' : dict({ 'confinement' : confinement,
+                              'deconfinement' : deconfinement,
+                              'r0' : r0,
+                              'r0_confinement' : r0_confinement}) }
