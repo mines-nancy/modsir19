@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { makeStyles, Card, Typography } from '@material-ui/core';
+import { makeStyles, Card, Typography, Slider } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
@@ -20,9 +20,21 @@ const useStyles = makeStyles(() => ({
         position: 'absolute',
         top: 0,
         left: 0,
-        bottom: 0,
         right: 0,
-        zIndex: 0,
+        bottom: 0,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    rangeSlider: {
+        flex: '0 0 50px',
+        padding: '50px 25px',
+    },
+    formContainer: {
+        flex: '0 0 200px',
+    },
+    chartViewContainer: {
+        flex: 1,
+        display: 'flex',
     },
     legend: {
         position: 'absolute',
@@ -72,9 +84,6 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         alignItems: 'center',
         color: '#888',
-    },
-    chartContainer: {
-        margin: '0 auto',
     },
     form: {
         marginTop: 16,
@@ -291,6 +300,27 @@ const getTimeframesFromValues = ({
     },
 ];
 
+const ZoomSlider = ({ max: maxValue, range, onChange }) => {
+    const [innerMax, setInnerMax] = useState(maxValue);
+
+    const handleChange = (commited) => (_, value) => {
+        setInnerMax(value);
+        commited && onChange(value);
+    };
+
+    return (
+        <Slider
+            orientation="vertical"
+            value={innerMax}
+            max={range.max}
+            min={range.min}
+            onChangeCommitted={handleChange(true)}
+            onChange={handleChange(false)}
+            aria-labelledby="range-slider"
+        />
+    );
+};
+
 const PublicSimulation = () => {
     const classes = useStyles();
     // eslint-disable-next-line no-unused-vars
@@ -299,12 +329,12 @@ const PublicSimulation = () => {
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentStats, setCurrentStats] = useState({});
     const chartRef = useRef(null);
-
     const [graphTimeframes, setGraphTimeframes] = useState(
         extractGraphTimeframes(getTimeframesFromValues(initialValues)),
     );
 
     const [timeframes, setTimeframes] = useState(getTimeframesFromValues(initialValues));
+    const [zoomMax, setZoomMax] = useState(timeframes[0].population);
 
     const lines = graphTimeframes.map((timeframe) => ({
         value: format(timeframe.date, 'yyyy-MM-dd'),
@@ -355,7 +385,7 @@ const PublicSimulation = () => {
     };
 
     const config = {
-        zoom: { enabled: false },
+        zoom: { enabled: true, rescale: true },
         legend: {
             show: false,
         },
@@ -368,7 +398,8 @@ const PublicSimulation = () => {
         },
         axis: {
             y: {
-                show: false,
+                show: true,
+                max: zoomMax,
             },
         },
     };
@@ -377,88 +408,101 @@ const PublicSimulation = () => {
 
     return (
         <div className={classes.root}>
-            <div className={isMobile ? classes.mobileLegend : classes.legend}>
-                <Legend
-                    stats={currentStats}
-                    onLegendEnter={handleLegendEnter}
-                    onLegendLeave={handleLegendLeave}
-                    mobile={isMobile}
-                />
-            </div>
-            <div className={classes.chartContainer}>
-                <Chart
-                    values={values}
-                    startDate={timeframes[0].start_date}
-                    timeframes={graphTimeframes}
-                    size={{ height: windowHeight * 0.8, width: windowWidth * 0.9 }}
-                    customConfig={config}
-                    ref={chartRef}
-                    style={{ padding: 0 }}
-                />
-            </div>
-            <Form
-                subscription={{}}
-                onSubmit={() => {
-                    /* Useless since we use a listener on autosave */
-                }}
-                initialValues={initialValues}
-                render={() => (
-                    <div className={classes.form}>
-                        <AutoSave save={handleSubmit} debounce={200} />
-                        <div className={classes.formControl}>
-                            <Typography variant="h6">Période initiale</Typography>
-                            <Field
-                                className="small-margin-bottom"
-                                name="initial_start_date"
-                                label="Début"
-                                component={DateField}
-                            />
-                            <Field
-                                name="initial_r0"
-                                label="R0"
-                                component={ProportionField}
-                                unit=""
-                                max="5"
-                                step={0.1}
-                            />
-                        </div>
-                        <div className={classes.formControl}>
-                            <Typography variant="h6">Confinement</Typography>
-                            <Field
-                                className="small-margin-bottom"
-                                name="lockdown_start_date"
-                                label="Début"
-                                component={DateField}
-                            />
-                            <Field
-                                name="lockdown_r0"
-                                label="R0"
-                                component={ProportionField}
-                                unit=""
-                                max="5"
-                                step={0.1}
-                            />
-                        </div>
-                        <div className={classes.formControl}>
-                            <Typography variant="h6">Déconfinement</Typography>
-                            <Field
-                                className="small-margin-bottom"
-                                name="deconfinement_start_date"
-                                label="Début"
-                                component={DateField}
-                            />
-                            <Field
-                                name="deconfinement_r0"
-                                label="R0"
-                                component={ProportionField}
-                                unit=""
-                                max="5"
-                                step={0.1}
-                            />
-                        </div>
+            <div className={classes.chartViewContainer}>
+                <div className={classes.rangeSlider}>
+                    <ZoomSlider
+                        max={zoomMax}
+                        range={{ max: timeframes[0].population, min: 1 }}
+                        onChange={setZoomMax}
+                    />
+                </div>
+                <div style={{ flex: 1, position: 'relative' }}>
+                    <div className={isMobile ? classes.mobileLegend : classes.legend}>
+                        <Legend
+                            stats={currentStats}
+                            onLegendEnter={handleLegendEnter}
+                            onLegendLeave={handleLegendLeave}
+                            mobile={isMobile}
+                        />
                     </div>
-                )}
-            />
+                    <div>
+                        <Chart
+                            values={values}
+                            startDate={timeframes[0].start_date}
+                            timeframes={graphTimeframes}
+                            size={{ height: windowHeight - 200, width: windowWidth - 100 }}
+                            customConfig={config}
+                            ref={chartRef}
+                            style={{ padding: 0 }}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className={classes.formContainer}>
+                <Form
+                    subscription={{}}
+                    onSubmit={() => {
+                        /* Useless since we use a listener on autosave */
+                    }}
+                    initialValues={initialValues}
+                    render={() => (
+                        <div className={classes.form}>
+                            <AutoSave save={handleSubmit} debounce={200} />
+                            <div className={classes.formControl}>
+                                <Typography variant="h6">Période initiale</Typography>
+                                <Field
+                                    className="small-margin-bottom"
+                                    name="initial_start_date"
+                                    label="Début"
+                                    component={DateField}
+                                />
+                                <Field
+                                    name="initial_r0"
+                                    label="R0"
+                                    component={ProportionField}
+                                    unit=""
+                                    max="5"
+                                    step={0.1}
+                                />
+                            </div>
+                            <div className={classes.formControl}>
+                                <Typography variant="h6">Confinement</Typography>
+                                <Field
+                                    className="small-margin-bottom"
+                                    name="lockdown_start_date"
+                                    label="Début"
+                                    component={DateField}
+                                />
+                                <Field
+                                    name="lockdown_r0"
+                                    label="R0"
+                                    component={ProportionField}
+                                    unit=""
+                                    max="5"
+                                    step={0.1}
+                                />
+                            </div>
+                            <div className={classes.formControl}>
+                                <Typography variant="h6">Déconfinement</Typography>
+                                <Field
+                                    className="small-margin-bottom"
+                                    name="deconfinement_start_date"
+                                    label="Début"
+                                    component={DateField}
+                                />
+                                <Field
+                                    name="deconfinement_r0"
+                                    label="R0"
+                                    component={ProportionField}
+                                    unit=""
+                                    max="5"
+                                    step={0.1}
+                                />
+                            </div>
+                        </div>
+                    )}
+                />
+            </div>
         </div>
     );
 };

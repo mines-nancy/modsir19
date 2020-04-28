@@ -114,6 +114,12 @@ const C3Graph = React.forwardRef(({ config }, chartRef) => {
         chartRef.current && ((y) => chartRef.current.axis.types({ y })),
     );
 
+    // Handle Y axis max zoom change
+    useDataCallback(
+        config.axis.y.max,
+        chartRef.current && ((y) => chartRef.current.axis.range({ max: { y } })),
+    );
+
     return <div ref={elRef} />;
 });
 
