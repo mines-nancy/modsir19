@@ -19,12 +19,10 @@ from models.rule import RuleChangeField
 import matplotlib.pyplot as plt
 
 import defaults
-
 import datetime
 
-
 """
-Objectif: Coller au jour et a la hauteur du pic de rea
+Objectif: ajuster la courbe prédite par SIR+H pour coller au mieux aux données observées en réa
 
 Parametres ajustables: @TODO compléter la descritpion obsolète
  - beta pre-confinement
@@ -32,10 +30,7 @@ Parametres ajustables: @TODO compléter la descritpion obsolète
  - patient0
  - Parametres hospitaliers
     - pc_ih
-    - pc_si
-    - pc_sm_si
 """
-
 
 def run_model(params: [float]):
 
@@ -60,7 +55,7 @@ def run_model(params: [float]):
 
     return spike_height, spike_date, lists["SI"]
 
-
+''' objective function minimising weighted distance between peak and height of peak '''
 def obj_func(model_parameters, targets):
     pred_height, pred_date, full = run_model(model_parameters)
     target_height, target_date = targets
@@ -71,12 +66,10 @@ def obj_func(model_parameters, targets):
     assert(date_weight <= 1)
 
     return (1-date_weight) * (pred_height/target_height - 1)**2 + date_weight * ((pred_date-target_date)/200)**2
-    # return (1-date_weight) * (pred_height/target_height - 1)**2 + date_weight * (pred_date/target_date-1)**2
 
+''' objective function minimising SSD between sample points '''
 def obj_func2(model_parameters, targets):
     pred_height, pred_date, full = run_model(model_parameters)
-
-    date_weight = 0.999
 
     value = 0.0
     day0 = defaults.get_default_params()['data']['day0']
@@ -89,11 +82,6 @@ def obj_func2(model_parameters, targets):
 
 def optimize(init_parameters, parameter_bounds, target) :
 
-    '''
-    res = minimize(fun=(lambda model_parameters: obj_func(model_parameters, target)), x0=init_parameters,
-                       method='trust-krylov', bounds=parameter_bounds,
-                       options={"inexact": True})
-    '''
     res = minimize(fun=(lambda model_parameters: obj_func(model_parameters, target)), x0=init_parameters,
                        method='trust-constr', bounds=parameter_bounds,
                        options={})
@@ -103,11 +91,6 @@ def optimize(init_parameters, parameter_bounds, target) :
 
 def optimize2(init_parameters, parameter_bounds, target) :
 
-    '''
-    res = minimize(fun=(lambda model_parameters: obj_func(model_parameters, target)), x0=init_parameters,
-                       method='trust-krylov', bounds=parameter_bounds,
-                       options={"inexact": True})
-    '''
     res = minimize(fun=(lambda model_parameters: obj_func2(model_parameters, target)), x0=init_parameters,
                        method='trust-constr', bounds=parameter_bounds,
                        options={})
@@ -146,15 +129,16 @@ if __name__ == "__main__":
     auto_supbounds = [ (1+boundmargin)*p for p in default_parameters]
     auto_bounds = Bounds(auto_infbounds, auto_supbounds)
 
-    manual_infbounds = [3.0/9, 0.1/9, 90, 0]
-    manual_supbounds = [4.0/9, 2.0/9, 90, 200]
+    manual_infbounds = [3.0/9, 0.1/9, 0, 0]
+    manual_supbounds = [4.0/9, 2.0/9, 200, 10]
     manual_bounds = Bounds(manual_infbounds, manual_supbounds)
 
     results = {}
 
-    results['auto1'] = optimize(default_parameters, auto_bounds, targets)
+    #results['auto1'] = optimize(default_parameters, auto_bounds, targets)
     results['auto2'] = optimize2(default_parameters, auto_bounds, data_chu)
     results['manual1'] = optimize(manual_parameters, manual_bounds, targets)
+    '''@BUG following line of code produces failed assertion at runtime '''
     #results['manual2'] = optimize2(manual_parameters, manual_bounds, data_chu)
 
     outputdir = "./outputs/"
