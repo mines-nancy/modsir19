@@ -13,16 +13,18 @@ import Diagram from './Diagram';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
+import { ImportButton, ExportButton } from './ExportImport';
 
 const useStyles = makeStyles(() => ({
     configuration: {
         width: '100%',
     },
-    yAxisToggleButton: {
+    chartActions: {
         position: 'absolute',
         top: 20,
-        right: 20,
+        width: '100%',
         display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         color: '#888',
     },
@@ -206,18 +208,26 @@ const Simulation = () => {
                                 ref={chartRef}
                                 customConfig={customConfig}
                             >
-                                <div className={classes.yAxisToggleButton}>
-                                    <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
-                                        Échelle linéaire
-                                    </div>
+                                <div className={classes.chartActions}>
                                     <div>
-                                        <Switch
-                                            checked={yType === 'log'}
-                                            onChange={handleYTypeToggle}
-                                        />
+                                        <ExportButton timeframes={timeframes} />
+                                        <ImportButton setTimeframes={setTimeframes} />
                                     </div>
-                                    <div style={{ color: yType === 'linear' ? '#888' : 'black' }}>
-                                        Échelle logarithmique
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
+                                            Échelle linéaire
+                                        </div>
+                                        <div>
+                                            <Switch
+                                                checked={yType === 'log'}
+                                                onChange={handleYTypeToggle}
+                                            />
+                                        </div>
+                                        <div
+                                            style={{ color: yType === 'linear' ? '#888' : 'black' }}
+                                        >
+                                            Échelle logarithmique
+                                        </div>
                                     </div>
                                 </div>
                             </Chart>
