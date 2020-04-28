@@ -27,51 +27,51 @@ const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 
 const data = ({ t, values, startDate }) => {
     const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
-
+    const datasets = [
+        SE && {
+            label: capitalize(t('chart.exposed')),
+            data: SE,
+            backgroundColor: colors.exposed.main,
+        },
+        INCUB && {
+            label: capitalize(t('chart.incub')),
+            data: INCUB,
+            backgroundColor: colors.incubation.main,
+        },
+        R && {
+            label: capitalize(t('chart.recovered')),
+            data: R,
+            backgroundColor: colors.recovered.main,
+        },
+        SI && {
+            label: capitalize(t('chart.intensive_care')),
+            data: SI,
+            backgroundColor: colors.intensive_care.main,
+        },
+        SM && {
+            label: capitalize(t('chart.normal_care')),
+            data: SM,
+            backgroundColor: colors.normal_care.main,
+        },
+        SS && {
+            label: capitalize(t('chart.following_hospitalized')),
+            data: SS,
+            backgroundColor: colors.following_care.main,
+        },
+        DC && {
+            label: capitalize(t('chart.dead')),
+            data: DC,
+            backgroundColor: colors.death.main,
+        },
+        I && {
+            label: capitalize(t('chart.infected')),
+            data: I,
+            backgroundColor: colors.infected.main,
+        },
+    ];
     return {
         labels: generateDateInterval(startDate, SE.length - 1),
-        datasets: [
-            {
-                label: capitalize(t('chart.exposed')),
-                data: SE,
-                backgroundColor: colors.exposed.main,
-            },
-            {
-                label: capitalize(t('chart.incub')),
-                data: INCUB,
-                backgroundColor: colors.incubation.main,
-            },
-            {
-                label: capitalize(t('chart.recovered')),
-                data: R,
-                backgroundColor: colors.recovered.main,
-            },
-            {
-                label: capitalize(t('chart.intensive_care')),
-                data: SI,
-                backgroundColor: colors.intensive_care.main,
-            },
-            {
-                label: capitalize(t('chart.normal_care')),
-                data: SM,
-                backgroundColor: colors.normal_care.main,
-            },
-            {
-                label: capitalize(t('chart.following_hospitalized')),
-                data: SS,
-                backgroundColor: colors.following_care.main,
-            },
-            {
-                label: capitalize(t('chart.dead')),
-                data: DC,
-                backgroundColor: colors.death.main,
-            },
-            {
-                label: capitalize(t('chart.infected')),
-                data: I,
-                backgroundColor: colors.infected.main,
-            },
-        ],
+        datasets: datasets.filter((value) => value),
     };
 };
 
