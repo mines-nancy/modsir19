@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { FormSpy } from 'react-final-form';
+import { isEqual } from 'lodash';
 
 // Coming from official example of async on blur saving
 // https://codesandbox.io/s/7k742qpo36
@@ -7,12 +8,21 @@ import { FormSpy } from 'react-final-form';
 // Mixed with the following
 // https://codesandbox.io/s/5w4yrpyo7k?from-embed
 
+let previousValues = {};
+
 const AutoSave = ({ values, save, debounce }) => {
     useEffect(() => {
-        const timeout = setTimeout(() => save(values), debounce);
+        let timeout;
+
+        if (!isEqual(previousValues, values)) {
+            previousValues = values;
+            timeout = setTimeout(() => save(values), debounce);
+        }
 
         return () => {
-            clearTimeout(timeout);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
         };
     }, [debounce, save, values]);
 

@@ -22,6 +22,5 @@ code {
 }
 
 .draggable-line line {
-  cursor: ew-resize;
   stroke-width: 2px;
 }

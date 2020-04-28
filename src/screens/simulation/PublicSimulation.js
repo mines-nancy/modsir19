@@ -13,7 +13,7 @@ import { Edges } from '../../components/Graph/Edges';
 import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
-import { differenceInDays, format } from 'date-fns';
+import { format } from 'date-fns';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -278,14 +278,14 @@ const getTimeframesFromValues = ({
     {
         ...defaultParameters,
         r0: lockdown_r0,
-        start_date: differenceInDays(initial_start_date, lockdown_start_date),
+        start_date: lockdown_start_date,
         name: 'Confinement',
         enabled: true,
     },
     {
         ...defaultParameters,
         r0: deconfinement_r0,
-        start_date: differenceInDays(initial_start_date, deconfinement_start_date),
+        start_date: deconfinement_start_date,
         name: 'Déconfinement',
         enabled: true,
     },
