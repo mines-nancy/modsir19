@@ -66,11 +66,6 @@ class BoxConvolution(Box):
                 v if self._output_coefficients[i]*v <= r else r
             new_list.append((v, r - delta))
             new_output += delta
-        # delta = [self._output_coefficients[i]*v if self._output_coefficients[i]*v <= r else r
-        #          for i, (v, r) in enumerate(current_queue)]
-        # new_list = [(v, r - delta[i])
-        #              for i, (v, r) in enumerate(current_queue)]
-        # new_output += sum(delta)
 
         self._queue.append(deque(new_list))
         new_size -= new_output
@@ -89,17 +84,12 @@ class BoxConvolution(Box):
             print(f'cannot force negative output {value}')
             return
 
-        # if math.fabs(current_size - self.compute_size()) > 0.1:
-        #     print(f'size={current_size} computed size={self.compute_size()}')
-
         if current_size <= value:
-            # print(f'simple remove {value} from {current_size}')
             self.set_size(0)
             self.set_output(current_output + current_size)
             current_queue.clear()
         else:
             to_remove = value
-            # print(f'remove {to_remove} from {current_size}')
             new_output = 0
             for i in range(len(current_queue)-1, -1, -1):
                 if to_remove > 0:
@@ -112,10 +102,5 @@ class BoxConvolution(Box):
             self.set_size(current_size - new_output)
             self.set_output(current_output + new_output)
 
-            # if math.fabs(self.size() - self.compute_size()) > 0.1:
-            # print( f'end size={self.size()} computed size={self.compute_size()}')
-
-            # if math.fabs(new_output - value) > 0.1:
-            # print( f'end value={value} new_output={new_output} new size={self.size()}')
             assert math.fabs(self.size() + value - current_size) < 0.1
             assert math.fabs(new_output - value) < 0.1
