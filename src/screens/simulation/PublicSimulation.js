@@ -331,15 +331,15 @@ const getTimeframesFromValues = ({
     },
 ];
 
-const ZoomSlider = ({ max: maxValue, range, onChange }) => {
-    const [innerMax, setInnerMax] = useState(maxValue);
+const ZoomSlider = ({ onChange, initValue }) => {
+    const [zoomValue, setZoomValue] = useState(initValue);
     const classes = useStyles();
 
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('sm'));
 
     const handleChange = (commited) => (_, value) => {
-        setInnerMax(value);
+        setZoomValue(value);
         commited && onChange(value);
     };
 
@@ -349,9 +349,9 @@ const ZoomSlider = ({ max: maxValue, range, onChange }) => {
             <Slider
                 classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
                 orientation={small ? 'horizontal' : 'vertical'}
-                value={innerMax}
-                max={range.max}
-                min={range.min}
+                value={zoomValue}
+                max={100}
+                min={0}
                 onChangeCommitted={handleChange(true)}
                 onChange={handleChange(false)}
                 aria-labelledby="range-slider"
@@ -380,7 +380,13 @@ const PublicSimulation = () => {
     );
 
     const [timeframes, setTimeframes] = useState(getTimeframesFromValues(initialValues));
-    const [zoomMax, setZoomMax] = useState(timeframes[0].population);
+
+    var minY = Math.log(100);
+    var maxY = Math.log(timeframes[0].population);
+    const scale = (maxY - minY) / 100;
+    const zoomToY = (value) => Math.exp(minY + scale * value);
+    const yToZoom = (value) => (Math.log(value) - minY) / scale;
+    const [zoomValue, setZoomValue] = useState(yToZoom(timeframes[0].population));
 
     const lines = graphTimeframes.map((timeframe) => ({
         value: format(timeframe.date, 'yyyy-MM-dd'),
@@ -449,7 +455,7 @@ const PublicSimulation = () => {
         axis: {
             y: {
                 show: true,
-                max: zoomMax,
+                max: zoomToY(zoomValue),
             },
         },
     };
@@ -460,11 +466,7 @@ const PublicSimulation = () => {
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
-                        <ZoomSlider
-                            max={zoomMax}
-                            range={{ max: timeframes[0].population, min: 1 }}
-                            onChange={setZoomMax}
-                        />
+                        <ZoomSlider onChange={setZoomValue} initValue={zoomValue} />
                     </div>
                     <div style={{ flex: 1, position: 'relative' }}>
                         <div className={classes.legend}>
