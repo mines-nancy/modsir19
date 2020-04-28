@@ -3,31 +3,30 @@ import { Form, Field } from 'react-final-form';
 import { makeStyles, Card, Typography, Slider } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
+import { format } from 'date-fns';
+
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
+import Layout from '../../components/Layout';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
-import { format } from 'date-fns';
+import PublicDescriptionModal from './PublicDescriptionModal';
 
 const useStyles = makeStyles(() => ({
     root: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
     },
     rangeSlider: {
         flex: '0 0 50px',
-        padding: '50px 25px',
+        padding: '80px 0 0 25px',
     },
     formContainer: {
         flex: '0 0 200px',
@@ -280,7 +279,7 @@ const getTimeframesFromValues = ({
     {
         ...defaultParameters,
         r0: initial_r0,
-        start_time: 0,
+        start_time: initial_start_date,
         name: 'Période initiale',
         enabled: true,
     },
@@ -329,6 +328,8 @@ const PublicSimulation = () => {
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentStats, setCurrentStats] = useState({});
     const chartRef = useRef(null);
+    const [modalOpen, setModalOpen] = useState(true);
+
     const [graphTimeframes, setGraphTimeframes] = useState(
         extractGraphTimeframes(getTimeframesFromValues(initialValues)),
     );
@@ -384,6 +385,10 @@ const PublicSimulation = () => {
         setTimeframes(getTimeframesFromValues(values));
     };
 
+    const handleModalClose = () => {
+        setModalOpen(false);
+    };
+
     const config = {
         zoom: { enabled: true, rescale: true },
         legend: {
@@ -407,103 +412,106 @@ const PublicSimulation = () => {
     const isMobile = windowWidth < 800;
 
     return (
-        <div className={classes.root}>
-            <div className={classes.chartViewContainer}>
-                <div className={classes.rangeSlider}>
-                    <ZoomSlider
-                        max={zoomMax}
-                        range={{ max: timeframes[0].population, min: 1 }}
-                        onChange={setZoomMax}
+        <Layout>
+            <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
+            <div className={classes.root}>
+                <div className={classes.chartViewContainer}>
+                    <div className={classes.rangeSlider}>
+                        <ZoomSlider
+                            max={zoomMax}
+                            range={{ max: timeframes[0].population, min: 1 }}
+                            onChange={setZoomMax}
+                        />
+                    </div>
+                    <div style={{ flex: 1, position: 'relative' }}>
+                        <div className={isMobile ? classes.mobileLegend : classes.legend}>
+                            <Legend
+                                stats={currentStats}
+                                onLegendEnter={handleLegendEnter}
+                                onLegendLeave={handleLegendLeave}
+                                mobile={isMobile}
+                            />
+                        </div>
+                        <div>
+                            <Chart
+                                values={values}
+                                startDate={timeframes[0].start_date}
+                                timeframes={graphTimeframes}
+                                size={{ height: windowHeight - 200, width: windowWidth - 100 }}
+                                customConfig={config}
+                                ref={chartRef}
+                                style={{ padding: 0 }}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className={classes.formContainer}>
+                    <Form
+                        subscription={{}}
+                        onSubmit={() => {
+                            /* Useless since we use a listener on autosave */
+                        }}
+                        initialValues={initialValues}
+                        render={() => (
+                            <div className={classes.form}>
+                                <AutoSave save={handleSubmit} debounce={200} />
+                                <div className={classes.formControl}>
+                                    <Typography variant="h6">Période initiale</Typography>
+                                    <Field
+                                        className="small-margin-bottom"
+                                        name="initial_start_date"
+                                        label="Début"
+                                        component={DateField}
+                                    />
+                                    <Field
+                                        name="initial_r0"
+                                        label="R0"
+                                        component={ProportionField}
+                                        unit=""
+                                        max="5"
+                                        step={0.1}
+                                    />
+                                </div>
+                                <div className={classes.formControl}>
+                                    <Typography variant="h6">Confinement</Typography>
+                                    <Field
+                                        className="small-margin-bottom"
+                                        name="lockdown_start_date"
+                                        label="Début"
+                                        component={DateField}
+                                    />
+                                    <Field
+                                        name="lockdown_r0"
+                                        label="R0"
+                                        component={ProportionField}
+                                        unit=""
+                                        max="5"
+                                        step={0.1}
+                                    />
+                                </div>
+                                <div className={classes.formControl}>
+                                    <Typography variant="h6">Déconfinement</Typography>
+                                    <Field
+                                        className="small-margin-bottom"
+                                        name="deconfinement_start_date"
+                                        label="Début"
+                                        component={DateField}
+                                    />
+                                    <Field
+                                        name="deconfinement_r0"
+                                        label="R0"
+                                        component={ProportionField}
+                                        unit=""
+                                        max="5"
+                                        step={0.1}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     />
                 </div>
-                <div style={{ flex: 1, position: 'relative' }}>
-                    <div className={isMobile ? classes.mobileLegend : classes.legend}>
-                        <Legend
-                            stats={currentStats}
-                            onLegendEnter={handleLegendEnter}
-                            onLegendLeave={handleLegendLeave}
-                            mobile={isMobile}
-                        />
-                    </div>
-                    <div>
-                        <Chart
-                            values={values}
-                            startDate={timeframes[0].start_date}
-                            timeframes={graphTimeframes}
-                            size={{ height: windowHeight - 200, width: windowWidth - 100 }}
-                            customConfig={config}
-                            ref={chartRef}
-                            style={{ padding: 0 }}
-                        />
-                    </div>
-                </div>
             </div>
-            <div className={classes.formContainer}>
-                <Form
-                    subscription={{}}
-                    onSubmit={() => {
-                        /* Useless since we use a listener on autosave */
-                    }}
-                    initialValues={initialValues}
-                    render={() => (
-                        <div className={classes.form}>
-                            <AutoSave save={handleSubmit} debounce={200} />
-                            <div className={classes.formControl}>
-                                <Typography variant="h6">Période initiale</Typography>
-                                <Field
-                                    className="small-margin-bottom"
-                                    name="initial_start_date"
-                                    label="Début"
-                                    component={DateField}
-                                />
-                                <Field
-                                    name="initial_r0"
-                                    label="R0"
-                                    component={ProportionField}
-                                    unit=""
-                                    max="5"
-                                    step={0.1}
-                                />
-                            </div>
-                            <div className={classes.formControl}>
-                                <Typography variant="h6">Confinement</Typography>
-                                <Field
-                                    className="small-margin-bottom"
-                                    name="lockdown_start_date"
-                                    label="Début"
-                                    component={DateField}
-                                />
-                                <Field
-                                    name="lockdown_r0"
-                                    label="R0"
-                                    component={ProportionField}
-                                    unit=""
-                                    max="5"
-                                    step={0.1}
-                                />
-                            </div>
-                            <div className={classes.formControl}>
-                                <Typography variant="h6">Déconfinement</Typography>
-                                <Field
-                                    className="small-margin-bottom"
-                                    name="deconfinement_start_date"
-                                    label="Début"
-                                    component={DateField}
-                                />
-                                <Field
-                                    name="deconfinement_r0"
-                                    label="R0"
-                                    component={ProportionField}
-                                    unit=""
-                                    max="5"
-                                    step={0.1}
-                                />
-                            </div>
-                        </div>
-                    )}
-                />
-            </div>
-        </div>
+        </Layout>
     );
 };
 
