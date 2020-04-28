@@ -115,9 +115,9 @@ const PublicDescriptionModal = ({ onClose, ...props }) => {
                     </p>
                     <ul className={classes.noliststyle}>
                         <li>
-                            <strong>DMG</strong> est la durée moyenne de guérisons spontanée, sur
-                            laquelle on ne peut pas agir. Elle caractéristique de chaque maladie.
-                            Pour le COVID19 elle est estimée à 9 jours
+                            <strong>DMG</strong> est la durée moyenne de guérison spontanée, sur
+                            laquelle on ne peut pas agir. Elle est caractéristique de chaque
+                            maladie. Pour le COVID19 elle est estimée à 9 jours
                         </li>
                         <li>
                             <strong>r</strong> quantifie le nombre moyen de contacts par jour entre
