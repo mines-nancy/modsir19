@@ -69,9 +69,11 @@ const data = ({ t, values, startDate }) => {
             backgroundColor: colors.infected.main,
         },
     ];
+    const filteredDatasets = datasets.filter((value) => !!value);
+    const nbValues = filteredDatasets.length > 0 ? filteredDatasets[0].data.length - 1 : 0;
     return {
-        labels: generateDateInterval(startDate, SE.length - 1),
-        datasets: datasets.filter((value) => value),
+        labels: generateDateInterval(startDate, nbValues),
+        datasets: filteredDatasets,
     };
 };
 
