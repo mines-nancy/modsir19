@@ -460,6 +460,14 @@ const PublicSimulation = () => {
         },
     };
 
+    const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
+    const mergedValues = {
+        SE: values.SE,
+        DC: values.DC,
+        R: values.R,
+        I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
+        SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
+    };
     return (
         <Layout withoutAppbar>
             <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
@@ -484,7 +492,7 @@ const PublicSimulation = () => {
                         </div>
                         <div>
                             <Chart
-                                values={values}
+                                values={mergedValues}
                                 startDate={timeframes[0].start_date}
                                 timeframes={graphTimeframes}
                                 size={
