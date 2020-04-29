@@ -331,8 +331,14 @@ const getTimeframesFromValues = ({
     },
 ];
 
-const ZoomSlider = ({ onChange, initValue }) => {
-    const [zoomValue, setZoomValue] = useState(initValue);
+const ZoomSlider = ({ onChange, initValue, min, max }) => {
+    var logMin = Math.log(min);
+    var logMax = Math.log(max);
+    const scale = (logMax - logMin) / 100;
+    const zoomToValue = (value) => Math.exp(logMin + scale * value);
+    const valueToZoom = (value) => (Math.log(value) - logMin) / scale;
+
+    const [zoomValue, setZoomValue] = useState(valueToZoom(initValue));
     const classes = useStyles();
 
     const theme = useTheme();
@@ -340,7 +346,7 @@ const ZoomSlider = ({ onChange, initValue }) => {
 
     const handleChange = (commited) => (_, value) => {
         setZoomValue(value);
-        commited && onChange(value);
+        commited && onChange(zoomToValue(value));
     };
 
     return (
@@ -380,13 +386,7 @@ const PublicSimulation = () => {
     );
 
     const [timeframes, setTimeframes] = useState(getTimeframesFromValues(initialValues));
-
-    var minY = Math.log(100);
-    var maxY = Math.log(timeframes[0].population);
-    const scale = (maxY - minY) / 100;
-    const zoomToY = (value) => Math.exp(minY + scale * value);
-    const yToZoom = (value) => (Math.log(value) - minY) / scale;
-    const [zoomValue, setZoomValue] = useState(yToZoom(timeframes[0].population));
+    const [yMax, setYMax] = useState(timeframes[0].population);
 
     const lines = graphTimeframes.map((timeframe) => ({
         value: format(timeframe.date, 'yyyy-MM-dd'),
@@ -455,7 +455,7 @@ const PublicSimulation = () => {
         axis: {
             y: {
                 show: true,
-                max: zoomToY(zoomValue),
+                max: yMax,
             },
         },
     };
@@ -466,7 +466,12 @@ const PublicSimulation = () => {
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
-                        <ZoomSlider onChange={setZoomValue} initValue={zoomValue} />
+                        <ZoomSlider
+                            onChange={setYMax}
+                            min={300}
+                            max={timeframes[0].population}
+                            initValue={timeframes[0].population}
+                        />
                     </div>
                     <div style={{ flex: 1, position: 'relative' }}>
                         <div className={classes.legend}>
