@@ -16,7 +16,6 @@ import { Edges } from '../../components/Graph/Edges';
 import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
-import PublicDescriptionModal from './PublicDescriptionModal';
 import colors from './colors';
 import { ZoomSlider } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
@@ -322,9 +321,7 @@ const PublicSimulation = () => {
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentStats, setCurrentStats] = useState({});
     const chartRef = useRef(null);
-    const [modalOpen, setModalOpen] = useState(
-        window.localStorage.getItem('never_show_modal_again') === 'true' ? false : true,
-    );
+
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -383,10 +380,6 @@ const PublicSimulation = () => {
         setTimeframes(getTimeframesFromValues(values));
     };
 
-    const handleModalClose = () => {
-        setModalOpen(false);
-    };
-
     const config = {
         zoom: { enabled: true, rescale: true },
         legend: {
@@ -417,7 +410,6 @@ const PublicSimulation = () => {
     };
     return (
         <>
-            <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
