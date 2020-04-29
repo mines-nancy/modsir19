@@ -355,12 +355,19 @@ const PublicSimulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
-    const handleCaptureTooltipData = useCallback(
+    const handleStatsFromTooltipData = useCallback(
         debounce((data) => {
             setCurrentStats(extractTooltipData(data));
-            return null;
         }, 30),
         [],
+    );
+
+    const handleCaptureTooltipData = useCallback(
+        (data) => {
+            handleStatsFromTooltipData(data);
+            return format(new Date(data[0].x), 'dd/MM/yyyy');
+        },
+        [handleStatsFromTooltipData],
     );
 
     const handleLegendEnter = useCallback(
@@ -421,6 +428,7 @@ const PublicSimulation = () => {
 
     return (
         <>
+            <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
