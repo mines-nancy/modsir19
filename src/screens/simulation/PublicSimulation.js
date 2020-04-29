@@ -294,7 +294,7 @@ const getTimeframesFromValues = ({
     {
         ...defaultParameters,
         r0: initial_r0,
-        start_date: subDays(initial_start_date, 15),
+        start_date: subDays(initial_start_date, 5),
         start_time: 0,
         name: '', // Just shift graph to see "Periode initiale"
         enabled: true,
