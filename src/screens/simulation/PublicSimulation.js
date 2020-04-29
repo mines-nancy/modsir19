@@ -414,6 +414,13 @@ const PublicSimulation = () => {
         I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
         SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
     };
+    const visibleValues = Object.keys(mergedValues).reduce((acc, key) => {
+        if (Math.max(...mergedValues[key]) <= 1.3 * zoomMax) {
+            acc[key] = mergedValues[key];
+        }
+        return acc;
+    }, {});
+
     return (
         <Layout withoutAppbar>
             <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
@@ -438,7 +445,7 @@ const PublicSimulation = () => {
                         </div>
                         <div>
                             <Chart
-                                values={mergedValues}
+                                values={visibleValues}
                                 startDate={timeframes[0].start_date}
                                 timeframes={graphTimeframes}
                                 size={
