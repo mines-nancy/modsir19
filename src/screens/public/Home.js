@@ -1,34 +1,24 @@
 import React from 'react';
-import {
-    makeStyles,
-    Modal,
-    Card,
-    CardContent,
-    CardActions,
-    Button,
-    Typography,
-} from '@material-ui/core';
+import { makeStyles, Typography, Button } from '@material-ui/core';
 
+import Layout from '../../components/Layout';
 import diagram from './diagram.png';
+import Acknowledgments from './Acknowledgments';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
-    modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        outline: 0,
-        maxWidth: '100vw',
-        maxHeight: '100vh',
+    layout: {
+        background: '#eee',
     },
-    card: {
-        maxWidth: '100%',
-        maxHeight: '100%',
-        overflowY: 'scroll',
-        padding: theme.spacing(1),
-        [theme.breakpoints.up('md')]: {
-            maxWidth: 900,
-            maxHeight: '90%',
-            padding: theme.spacing(3),
+    container: {
+        width: '100%',
+    },
+    home: {
+        margin: '0 auto',
+        maxWidth: 900,
+        padding: theme.spacing(2),
+        '& p:first-child': {
+            marginTop: 0,
         },
         '& img': {
             maxWidth: '100%',
@@ -43,34 +33,36 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: theme.spacing(1),
         },
     },
-    actions: {
-        [theme.breakpoints.down('sm')]: {
-            flexDirection: 'column',
-            '& button': {
-                marginBottom: theme.spacing(1),
-            },
-        },
-        [theme.breakpoints.up('sm')]: {
-            justifyContent: 'space-between',
-        },
-    },
-    noliststyle: {
-        listStyleType: 'none',
+    start: {
+        backgroundColor: 'white',
+        color: theme.palette.primary.main,
     },
 }));
 
-const PublicDescriptionModal = ({ onClose, ...props }) => {
+const Home = () => {
     const classes = useStyles();
+    const history = useHistory();
 
-    const handleNeverShowAgain = (...args) => {
-        window.localStorage.setItem('never_show_modal_again', 'true');
-        onClose(...args);
+    const start = () => {
+        history.push('/simulation');
     };
 
     return (
-        <Modal {...props} onClose={onClose} className={classes.modal} aria-labelledby="Description">
-            <Card className={classes.card}>
-                <CardContent>
+        <Layout
+            className={classes.layout}
+            actions={
+                <Button
+                    className={classes.start}
+                    variant="contained"
+                    color="inherit"
+                    onClick={start}
+                >
+                    Commencer
+                </Button>
+            }
+        >
+            <div className={classes.container}>
+                <div className={classes.home}>
                     <p>
                         Ce simulateur permet de comprendre comment évolue une épidémie, et en
                         particulier l’épidémie COVID19, et de visualiser les effets des mesures
@@ -172,23 +164,11 @@ const PublicDescriptionModal = ({ onClose, ...props }) => {
                         confinement / déconfinement en fonction de leur date et de leur
                         «&nbsp;rigueur&nbsp;» exprimée par la valeur de R0.
                     </p>
-                </CardContent>
-                <CardActions classes={{ root: classes.actions }}>
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        color="primary"
-                        onClick={handleNeverShowAgain}
-                    >
-                        Ne plus afficher cette fenêtre
-                    </Button>
-                    <Button size="small" variant="contained" color="primary" onClick={onClose}>
-                        Continuer
-                    </Button>
-                </CardActions>
-            </Card>
-        </Modal>
+                    <Acknowledgments />
+                </div>
+            </div>
+        </Layout>
     );
 };
 
-export default PublicDescriptionModal;
+export default Home;

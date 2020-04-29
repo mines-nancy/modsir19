@@ -6,7 +6,8 @@ import messages from './i18n/messages';
 import ProHome from './screens/pro/Home';
 import Legals from './screens/Legals';
 import NotFound from './screens/NotFound';
-import Simulation from './screens/simulation/Simulation';
+import PublicHome from './screens/public/Home';
+import ProSimulation from './screens/simulation/Simulation';
 import PublicSimulation from './screens/simulation/PublicSimulation';
 
 const Experiments = lazy(() =>
@@ -21,9 +22,10 @@ const App = () => {
             <BrowserRouter basename={basename}>
                 <Suspense fallback={<div>Loading...</div>}>
                     <Switch>
-                        <Route path="/" exact component={PublicSimulation} />
+                        <Route path="/" exact component={PublicHome} />
+                        <Route path="/simulation" exact component={PublicSimulation} />
                         <Route path="/pro" exact component={ProHome} />
-                        <Route path="/pro/simulation" exact component={Simulation} />
+                        <Route path="/pro/simulation" exact component={ProSimulation} />
                         <Route path="/mentions-legales" exact component={Legals} />
                         <Route path="/experiments" component={Experiments} />
                         <Route component={NotFound} />

@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-export const MainAppBar = ({ loading }) => {
+export const MainAppBar = ({ loading, actions }) => {
     const classes = useStyles();
     const t = useTranslate();
 
@@ -42,6 +42,7 @@ export const MainAppBar = ({ loading }) => {
                         </Link>
                     </Typography>
                     {loading && <CircularProgress color="inherit" />}
+                    {actions}
                 </Toolbar>
             </AppBar>
         </div>

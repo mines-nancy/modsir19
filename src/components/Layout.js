@@ -18,15 +18,15 @@ const useStyles = makeStyles({
     },
 });
 
-const Layout = ({ children, withoutAppbar, ...props }) => {
+const Layout = ({ className, children, withoutAppbar, ...props }) => {
     const classes = useStyles({ withoutAppbar });
 
     return (
-        <>
+        <div className={className}>
             {!withoutAppbar && <MainAppBar {...props} />}
             <div className={classes.container}>{children}</div>
             <Footer />
-        </>
+        </div>
     );
 };
 
