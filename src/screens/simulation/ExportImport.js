@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import { Button, Snackbar } from '@material-ui/core';
+import { Button, Snackbar, makeStyles } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { GetApp, Publish } from '@material-ui/icons';
 import { format } from 'date-fns';
 
+const useStyles = makeStyles((theme) => ({
+    button: {
+        backgroundColor: 'white',
+        color: theme.palette.primary.main,
+        marginRight: theme.spacing(1),
+        '&:hover': {
+            backgroundColor: '#eee',
+        },
+        '&:focus': {
+            backgroundColor: '#eee',
+        },
+    },
+}));
+
 export const ExportButton = ({ timeframes }) => {
+    const classes = useStyles();
+
     const handleExport = () => {
         const json = JSON.stringify({
             version: 1,
@@ -24,10 +40,11 @@ export const ExportButton = ({ timeframes }) => {
     return (
         <Button
             variant="outlined"
-            color="primary"
+            color="inherit"
             size="small"
             startIcon={<GetApp />}
             onClick={handleExport}
+            className={classes.button}
         >
             Exporter
         </Button>
@@ -37,6 +54,7 @@ export const ExportButton = ({ timeframes }) => {
 const parseDate = (timeframe) => ({ ...timeframe, start_date: new Date(timeframe.start_date) });
 
 export const ImportButton = ({ setTimeframes }) => {
+    const classes = useStyles();
     const [error, setError] = useState(false);
 
     const handleImport = () => {
@@ -75,10 +93,11 @@ export const ImportButton = ({ setTimeframes }) => {
             <Button
                 style={{ marginLeft: 8 }}
                 variant="outlined"
-                color="primary"
+                color="inherit"
                 size="small"
                 startIcon={<Publish />}
                 onClick={handleImport}
+                className={classes.button}
             >
                 Importer
             </Button>

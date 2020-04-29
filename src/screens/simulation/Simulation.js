@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
-import { Grid, makeStyles, CardContent, Switch } from '@material-ui/core';
+import { makeStyles, CardContent, Switch } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { addDays, isSameDay } from 'date-fns';
 
@@ -17,19 +17,29 @@ import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider } from './ZoomSlider';
 
 const useStyles = makeStyles(() => ({
+    root: {
+        display: 'flex',
+    },
+    chartSide: {
+        flex: '0 0 50%',
+    },
+    parametersSide: {
+        flex: '0 0 50%',
+        backgroundColor: '#eee',
+    },
     configuration: {
         width: '100%',
     },
     chartActions: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         color: '#888',
-        padding: '30px 30px 0px 30px',
+        padding: '0 30px',
     },
     chartContainer: {
         position: 'fixed',
-        left: 24,
+        left: 0,
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
@@ -206,39 +216,19 @@ const Simulation = () => {
     };
 
     return (
-        <Layout loading={loading}>
-            <Grid container>
-                <Grid item xs={6}>
+        <Layout
+            loading={loading}
+            actions={
+                <>
+                    <ExportButton timeframes={timeframes} />
+                    <ImportButton setTimeframes={setTimeframes} />
+                </>
+            }
+        >
+            <div className={classes.root}>
+                <div className={classes.chartSide}>
                     {values && (
                         <div className={classes.chartContainer}>
-                            <div className={classes.chartActions}>
-                                <div>
-                                    <ExportButton timeframes={timeframes} />
-                                    <ImportButton setTimeframes={setTimeframes} />
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <div
-                                        style={{
-                                            color: yType === 'log' ? '#888' : 'black',
-                                        }}
-                                    >
-                                        Échelle linéaire
-                                    </div>
-                                    <div>
-                                        <Switch
-                                            checked={yType === 'log'}
-                                            onChange={handleYTypeToggle}
-                                        />
-                                    </div>
-                                    <div
-                                        style={{
-                                            color: yType === 'linear' ? '#888' : 'black',
-                                        }}
-                                    >
-                                        Échelle logarithmique
-                                    </div>
-                                </div>
-                            </div>
                             <div className={classes.chartView}>
                                 <div className={classes.rangeSlider}>
                                     <ZoomSlider
@@ -262,10 +252,34 @@ const Simulation = () => {
                                     />
                                 </div>
                             </div>
+                            <div className={classes.chartActions}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <div
+                                        style={{
+                                            color: yType === 'log' ? '#888' : 'black',
+                                        }}
+                                    >
+                                        Échelle linéaire
+                                    </div>
+                                    <div>
+                                        <Switch
+                                            checked={yType === 'log'}
+                                            onChange={handleYTypeToggle}
+                                        />
+                                    </div>
+                                    <div
+                                        style={{
+                                            color: yType === 'linear' ? '#888' : 'black',
+                                        }}
+                                    >
+                                        Échelle logarithmique
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
-                </Grid>
-                <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
+                </div>
+                <div className={classes.parametersSide}>
                     <TimeframeStepper
                         timeframes={timeframes}
                         selectedTimeframeIndex={selectedTimeframeIndex}
@@ -339,8 +353,8 @@ const Simulation = () => {
                             </div>
                         )}
                     />
-                </Grid>
-            </Grid>
+                </div>
+            </div>
         </Layout>
     );
 };
