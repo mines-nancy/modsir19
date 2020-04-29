@@ -53,11 +53,6 @@ def compute_residuals(khi_tab):
     
     return residuals
 
-
-#def compute_exp_ki(duration, max_days=21):
-#    return compute_khi(compute_residuals(duration, max_days))
-
-
 def compute_delay_ki(duration):
     if duration <= 1:
         return [1]
