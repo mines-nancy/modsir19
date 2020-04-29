@@ -3,14 +3,13 @@ import { Form, Field } from 'react-final-form';
 import { makeStyles, Card, Typography, useMediaQuery, useTheme } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
-import Layout from '../../components/Layout';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import DateField from '../../components/fields/DateField';
@@ -295,6 +294,7 @@ const getTimeframesFromValues = ({
         r0: initial_r0,
         start_time: initial_start_date,
         name: 'Période initiale',
+        lim_time: 365 + differenceInDays(new Date(), initial_start_date),
         enabled: true,
     },
     {
@@ -302,6 +302,7 @@ const getTimeframesFromValues = ({
         r0: lockdown_r0,
         start_date: lockdown_start_date,
         name: 'Confinement',
+        lim_time: 365 + differenceInDays(new Date(), initial_start_date),
         enabled: true,
     },
     {
@@ -309,6 +310,7 @@ const getTimeframesFromValues = ({
         r0: deconfinement_r0,
         start_date: deconfinement_start_date,
         name: 'Déconfinement',
+        lim_time: 365 + differenceInDays(new Date(), initial_start_date),
         enabled: true,
     },
 ];
