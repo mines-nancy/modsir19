@@ -19,6 +19,7 @@ import AutoSave from '../../components/fields/AutoSave';
 import PublicDescriptionModal from './PublicDescriptionModal';
 import colors from './colors';
 import { ZoomSlider } from './ZoomSlider';
+import { Footer } from '../../components/Footer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -415,7 +416,7 @@ const PublicSimulation = () => {
         SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
     };
     return (
-        <Layout withoutAppbar>
+        <>
             <PublicDescriptionModal open={modalOpen} onClose={handleModalClose} />
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
@@ -445,9 +446,11 @@ const PublicSimulation = () => {
                                     small
                                         ? {
                                               width: windowWidth,
+                                              height: windowWidth * 0.7, // mobile scale
                                           }
                                         : {
-                                              height: windowHeight - 200,
+                                              height:
+                                                  windowHeight - 200 /* form */ - 32 /* footer */,
                                               width: windowWidth - 100,
                                           }
                                 }
@@ -524,7 +527,8 @@ const PublicSimulation = () => {
                     />
                 </div>
             </div>
-        </Layout>
+            <Footer />
+        </>
     );
 };
 
