@@ -34,7 +34,7 @@ export const defaultParameters = {
     pc_h_ss: 20,
     pc_h_r: round(100 - 20),
     lim_time: 250,
-    start_date: new Date(2020, 0, 1),
+    start_date: new Date(2020, 0, 6),
 };
 
 export const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
