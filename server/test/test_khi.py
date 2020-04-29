@@ -1,8 +1,10 @@
-from models.components.utils import compute_khi, compute_area_and_expectation
+from models.components.utils import compute_residuals, compute_khi, compute_area_and_expectation
+import matplotlib.pyplot as plt
 
 dms = 5
 max_days = 21
 prob_type = 'binomial'
+#prob_type = 'exponential'
 
 khi_tab = compute_khi(dms, max_days, prob_type)
 residuals = compute_residuals(khi_tab)
