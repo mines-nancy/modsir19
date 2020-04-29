@@ -14,23 +14,33 @@ import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
+import { ZoomSlider } from './ZoomSlider';
 
 const useStyles = makeStyles(() => ({
     configuration: {
         width: '100%',
     },
     chartActions: {
-        position: 'absolute',
-        top: 20,
-        width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         color: '#888',
+        padding: '30px 30px 0px 30px',
     },
     chartContainer: {
         position: 'fixed',
         left: 24,
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    chartView: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    rangeSlider: {
+        flex: '0 0 50px',
+        padding: '60px 0px 30px 0px',
     },
 }));
 
@@ -63,6 +73,7 @@ const Simulation = () => {
     );
 
     const [timeframes, setTimeframes] = useState(defaultTimeframes);
+    const [zoomMax, setZoomMax] = useState(timeframes[0].population);
 
     const handleSubmit = useCallback(
         (values) => {
@@ -190,7 +201,7 @@ const Simulation = () => {
 
     const customConfig = {
         axis: {
-            y: { type: yType },
+            y: { type: yType, max: zoomMax },
         },
     };
 
@@ -200,37 +211,57 @@ const Simulation = () => {
                 <Grid item xs={6}>
                     {values && (
                         <div className={classes.chartContainer}>
-                            <Chart
-                                values={values}
-                                startDate={timeframes[0].start_date}
-                                timeframes={graphTimeframes}
-                                size={{ height: chartSize * CHART_HEIGHT_RATIO, width: chartSize }}
-                                ref={chartRef}
-                                customConfig={customConfig}
-                            >
-                                <div className={classes.chartActions}>
-                                    <div>
-                                        <ExportButton timeframes={timeframes} />
-                                        <ImportButton setTimeframes={setTimeframes} />
+                            <div className={classes.chartActions}>
+                                <div>
+                                    <ExportButton timeframes={timeframes} />
+                                    <ImportButton setTimeframes={setTimeframes} />
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <div
+                                        style={{
+                                            color: yType === 'log' ? '#888' : 'black',
+                                        }}
+                                    >
+                                        Échelle linéaire
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <div style={{ color: yType === 'log' ? '#888' : 'black' }}>
-                                            Échelle linéaire
-                                        </div>
-                                        <div>
-                                            <Switch
-                                                checked={yType === 'log'}
-                                                onChange={handleYTypeToggle}
-                                            />
-                                        </div>
-                                        <div
-                                            style={{ color: yType === 'linear' ? '#888' : 'black' }}
-                                        >
-                                            Échelle logarithmique
-                                        </div>
+                                    <div>
+                                        <Switch
+                                            checked={yType === 'log'}
+                                            onChange={handleYTypeToggle}
+                                        />
+                                    </div>
+                                    <div
+                                        style={{
+                                            color: yType === 'linear' ? '#888' : 'black',
+                                        }}
+                                    >
+                                        Échelle logarithmique
                                     </div>
                                 </div>
-                            </Chart>
+                            </div>
+                            <div className={classes.chartView}>
+                                <div className={classes.rangeSlider}>
+                                    <ZoomSlider
+                                        onChange={setZoomMax}
+                                        min={300}
+                                        max={timeframes[0].population}
+                                        initValue={timeframes[0].population}
+                                    />
+                                </div>
+                                <div>
+                                    <Chart
+                                        values={values}
+                                        startDate={timeframes[0].start_date}
+                                        timeframes={graphTimeframes}
+                                        size={{
+                                            height: chartSize * CHART_HEIGHT_RATIO,
+                                            width: chartSize,
+                                        }}
+                                        ref={chartRef}
+                                        customConfig={customConfig}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     )}
                 </Grid>
