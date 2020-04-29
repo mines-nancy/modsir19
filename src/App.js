@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { I18n } from 'react-polyglot';
 
 import messages from './i18n/messages';
-import Home from './screens/home/Home';
+import ProHome from './screens/pro/Home';
 import Legals from './screens/Legals';
 import NotFound from './screens/NotFound';
 import Simulation from './screens/simulation/Simulation';
@@ -21,9 +21,9 @@ const App = () => {
             <BrowserRouter basename={basename}>
                 <Suspense fallback={<div>Loading...</div>}>
                     <Switch>
-                        <Route path="/" exact component={Home} />
-                        <Route path="/simulation" exact component={Simulation} />
-                        <Route path="/public" exact component={PublicSimulation} />
+                        <Route path="/" exact component={PublicSimulation} />
+                        <Route path="/pro" exact component={ProHome} />
+                        <Route path="/pro/simulation" exact component={Simulation} />
                         <Route path="/mentions-legales" exact component={Legals} />
                         <Route path="/experiments" component={Experiments} />
                         <Route component={NotFound} />

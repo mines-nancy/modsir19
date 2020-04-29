@@ -87,7 +87,7 @@ const Home = () => {
     const desktop = useMediaQuery(theme.breakpoints.up('md'));
 
     const start = () => {
-        history.push('/simulation');
+        history.push('/pro/simulation');
     };
 
     return (
