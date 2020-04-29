@@ -27,7 +27,7 @@ def compute_param(dms, max_days, prob_type):
         
     return param
 
-def compute_khi(dms, max_days, prob_type = 'binomial') :
+def compute_khi(dms, max_days = 21, prob_type = 'binomial') :
     
     khi_tab = []
     param = compute_param(dms, max_days, prob_type)

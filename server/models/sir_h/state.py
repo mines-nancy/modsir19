@@ -2,7 +2,7 @@ from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
-from models.components.utils import compute_exp_ki, compute_delay_ki
+from models.components.utils import compute_khi, compute_delay_ki
 from operator import add
 
 
@@ -16,11 +16,11 @@ class State:
             # 'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
             'INCUB': BoxConvolution('INCUB', compute_delay_ki(self.delay('dm_incub'))),
 
-            'IR': BoxConvolution('IR', compute_exp_ki(self.delay('dm_r'))),
-            'IH': BoxConvolution('IH', compute_exp_ki(self.delay('dm_h'))),
-            'SM': BoxConvolution('SM', compute_exp_ki(self.delay('dm_sm'))),
+            'IR': BoxConvolution('IR', compute_khi(self.delay('dm_r'))),
+            'IH': BoxConvolution('IH', compute_khi(self.delay('dm_h'))),
+            'SM': BoxConvolution('SM', compute_khi(self.delay('dm_sm'))),
             'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
-            'SS': BoxConvolution('SS', compute_exp_ki(self.delay('dm_ss'))),
+            'SS': BoxConvolution('SS', compute_khi(self.delay('dm_ss'))),
 
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
