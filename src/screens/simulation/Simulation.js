@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
-import { Grid, makeStyles, CardContent, Switch } from '@material-ui/core';
+import { makeStyles, CardContent, Switch } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { addDays, isSameDay } from 'date-fns';
 
@@ -17,6 +17,16 @@ import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider } from './ZoomSlider';
 
 const useStyles = makeStyles(() => ({
+    root: {
+        display: 'flex',
+    },
+    chartSide: {
+        flex: '0 0 50%',
+    },
+    parametersSide: {
+        flex: '0 0 50%',
+        backgroundColor: '#eee',
+    },
     configuration: {
         width: '100%',
     },
@@ -29,7 +39,7 @@ const useStyles = makeStyles(() => ({
     },
     chartContainer: {
         position: 'fixed',
-        left: 24,
+        left: 0,
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
@@ -215,8 +225,8 @@ const Simulation = () => {
                 </>
             }
         >
-            <Grid container>
-                <Grid item xs={6}>
+            <div className={classes.root}>
+                <div className={classes.chartSide}>
                     {values && (
                         <div className={classes.chartContainer}>
                             <div className={classes.chartView}>
@@ -268,8 +278,8 @@ const Simulation = () => {
                             </div>
                         </div>
                     )}
-                </Grid>
-                <Grid item xs={6} style={{ backgroundColor: '#eee' }}>
+                </div>
+                <div className={classes.parametersSide}>
                     <TimeframeStepper
                         timeframes={timeframes}
                         selectedTimeframeIndex={selectedTimeframeIndex}
@@ -343,8 +353,8 @@ const Simulation = () => {
                             </div>
                         )}
                     />
-                </Grid>
-            </Grid>
+                </div>
+            </div>
         </Layout>
     );
 };

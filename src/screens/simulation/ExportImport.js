@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme) => ({
     button: {
         backgroundColor: 'white',
         color: theme.palette.primary.main,
+        marginRight: theme.spacing(1),
         '&:hover': {
             backgroundColor: '#eee',
         },
