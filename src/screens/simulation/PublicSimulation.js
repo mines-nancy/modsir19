@@ -331,8 +331,14 @@ const getTimeframesFromValues = ({
     },
 ];
 
-const ZoomSlider = ({ max: maxValue, range, onChange }) => {
-    const [innerMax, setInnerMax] = useState(maxValue);
+const ZoomSlider = ({ onChange, initValue, min, max }) => {
+    var logMin = Math.log(min);
+    var logMax = Math.log(max);
+    const scale = (logMax - logMin) / 100;
+    const zoomToValue = (value) => Math.exp(logMin + scale * value);
+    const valueToZoom = (value) => (Math.log(value) - logMin) / scale;
+
+    const [innerMax, setInnerMax] = useState(valueToZoom(initValue));
     const classes = useStyles();
 
     const theme = useTheme();
@@ -340,7 +346,7 @@ const ZoomSlider = ({ max: maxValue, range, onChange }) => {
 
     const handleChange = (commited) => (_, value) => {
         setInnerMax(value);
-        commited && onChange(value);
+        commited && onChange(zoomToValue(value));
     };
 
     return (
@@ -350,8 +356,8 @@ const ZoomSlider = ({ max: maxValue, range, onChange }) => {
                 classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
                 orientation={small ? 'horizontal' : 'vertical'}
                 value={innerMax}
-                max={range.max}
-                min={range.min}
+                max={100}
+                min={0}
                 onChangeCommitted={handleChange(true)}
                 onChange={handleChange(false)}
                 aria-labelledby="range-slider"
@@ -461,9 +467,10 @@ const PublicSimulation = () => {
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
                         <ZoomSlider
-                            max={zoomMax}
-                            range={{ max: timeframes[0].population, min: 1 }}
                             onChange={setZoomMax}
+                            min={300}
+                            max={timeframes[0].population}
+                            initValue={timeframes[0].population}
                         />
                     </div>
                     <div style={{ flex: 1, position: 'relative' }}>
