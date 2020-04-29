@@ -338,14 +338,14 @@ const ZoomSlider = ({ onChange, initValue, min, max }) => {
     const zoomToValue = (value) => Math.exp(logMin + scale * value);
     const valueToZoom = (value) => (Math.log(value) - logMin) / scale;
 
-    const [zoomValue, setZoomValue] = useState(valueToZoom(initValue));
+    const [innerMax, setInnerMax] = useState(valueToZoom(initValue));
     const classes = useStyles();
 
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('sm'));
 
     const handleChange = (commited) => (_, value) => {
-        setZoomValue(value);
+        setInnerMax(value);
         commited && onChange(zoomToValue(value));
     };
 
@@ -355,7 +355,7 @@ const ZoomSlider = ({ onChange, initValue, min, max }) => {
             <Slider
                 classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
                 orientation={small ? 'horizontal' : 'vertical'}
-                value={zoomValue}
+                value={innerMax}
                 max={100}
                 min={0}
                 onChangeCommitted={handleChange(true)}
@@ -386,7 +386,7 @@ const PublicSimulation = () => {
     );
 
     const [timeframes, setTimeframes] = useState(getTimeframesFromValues(initialValues));
-    const [yMax, setYMax] = useState(timeframes[0].population);
+    const [zoomMax, setZoomMax] = useState(timeframes[0].population);
 
     const lines = graphTimeframes.map((timeframe) => ({
         value: format(timeframe.date, 'yyyy-MM-dd'),
@@ -455,7 +455,7 @@ const PublicSimulation = () => {
         axis: {
             y: {
                 show: true,
-                max: yMax,
+                max: zoomMax,
             },
         },
     };
@@ -467,7 +467,7 @@ const PublicSimulation = () => {
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
                         <ZoomSlider
-                            onChange={setYMax}
+                            onChange={setZoomMax}
                             min={300}
                             max={timeframes[0].population}
                             initValue={timeframes[0].population}
