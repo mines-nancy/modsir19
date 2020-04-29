@@ -87,7 +87,7 @@ class State:
                          'dm_ss': 'SS'}
         if field_name in ['dm_r', 'dm_h', 'dm_sm', 'dm_ss']:
             self.box(box_to_update[field_name]).set_output_coefficients(
-                compute_exp_ki(self.delay(field_name)))
+                compute_khi(self.delay(field_name)))
         elif field_name in ['dm_incub']:
             self.box(box_to_update[field_name]).set_output_coefficients(
                 compute_delay_ki(self.delay(field_name)))
