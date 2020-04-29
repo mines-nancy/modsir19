@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         height: '100%',
         [theme.breakpoints.down('sm')]: {
-            flexDirection: 'row',
+            flexDirection: 'row-reverse',
         },
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -43,7 +43,7 @@ export const ZoomSlider = ({ onChange, initValue, min, max }) => {
 
     return (
         <div className={classes.zoom}>
-            <ZoomOut fontSize="small" />
+            <ZoomIn fontSize="small" />
             <Slider
                 classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
                 orientation={small ? 'horizontal' : 'vertical'}
@@ -54,7 +54,7 @@ export const ZoomSlider = ({ onChange, initValue, min, max }) => {
                 onChange={handleChange(false)}
                 aria-labelledby="range-slider"
             />
-            <ZoomIn fontSize="small" />
+            <ZoomOut fontSize="small" />
         </div>
     );
 };
