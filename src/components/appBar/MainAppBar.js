@@ -24,6 +24,10 @@ const useStyles = makeStyles((theme) =>
         },
         progress: {
             fill: 'white',
+            marginLeft: theme.spacing(2),
+        },
+        loadingContainer: {
+            minWidth: 64,
         },
     }),
 );
@@ -41,8 +45,14 @@ export const MainAppBar = ({ loading, actions }) => {
                             {t('projectTitle')}
                         </Link>
                     </Typography>
-                    {loading && <CircularProgress color="inherit" />}
                     {actions}
+                    {typeof loading !== 'undefined' && (
+                        <div className={classes.loadingContainer}>
+                            {loading && (
+                                <CircularProgress className={classes.progress} color="inherit" />
+                            )}
+                        </div>
+                    )}
                 </Toolbar>
             </AppBar>
         </div>

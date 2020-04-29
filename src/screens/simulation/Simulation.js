@@ -22,10 +22,10 @@ const useStyles = makeStyles(() => ({
     },
     chartActions: {
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         color: '#888',
-        padding: '30px 30px 0px 30px',
+        padding: '0 30px',
     },
     chartContainer: {
         position: 'fixed',
@@ -206,39 +206,19 @@ const Simulation = () => {
     };
 
     return (
-        <Layout loading={loading}>
+        <Layout
+            loading={loading}
+            actions={
+                <>
+                    <ExportButton timeframes={timeframes} />
+                    <ImportButton setTimeframes={setTimeframes} />
+                </>
+            }
+        >
             <Grid container>
                 <Grid item xs={6}>
                     {values && (
                         <div className={classes.chartContainer}>
-                            <div className={classes.chartActions}>
-                                <div>
-                                    <ExportButton timeframes={timeframes} />
-                                    <ImportButton setTimeframes={setTimeframes} />
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <div
-                                        style={{
-                                            color: yType === 'log' ? '#888' : 'black',
-                                        }}
-                                    >
-                                        Échelle linéaire
-                                    </div>
-                                    <div>
-                                        <Switch
-                                            checked={yType === 'log'}
-                                            onChange={handleYTypeToggle}
-                                        />
-                                    </div>
-                                    <div
-                                        style={{
-                                            color: yType === 'linear' ? '#888' : 'black',
-                                        }}
-                                    >
-                                        Échelle logarithmique
-                                    </div>
-                                </div>
-                            </div>
                             <div className={classes.chartView}>
                                 <div className={classes.rangeSlider}>
                                     <ZoomSlider
@@ -260,6 +240,30 @@ const Simulation = () => {
                                         ref={chartRef}
                                         customConfig={customConfig}
                                     />
+                                </div>
+                            </div>
+                            <div className={classes.chartActions}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <div
+                                        style={{
+                                            color: yType === 'log' ? '#888' : 'black',
+                                        }}
+                                    >
+                                        Échelle linéaire
+                                    </div>
+                                    <div>
+                                        <Switch
+                                            checked={yType === 'log'}
+                                            onChange={handleYTypeToggle}
+                                        />
+                                    </div>
+                                    <div
+                                        style={{
+                                            color: yType === 'linear' ? '#888' : 'black',
+                                        }}
+                                    >
+                                        Échelle logarithmique
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -10,7 +10,6 @@ import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
-import Layout from '../../components/Layout';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import DateField from '../../components/fields/DateField';
