@@ -70,8 +70,7 @@ const data = ({ t, values, startDate }) => {
         },
     ];
     const filteredDatasets = datasets.filter((value) => !!value);
-    console.log({ filteredDatasets });
-    const nbValues = filteredDatasets.length > 0 ? datasets.length - 1 : 0;
+    const nbValues = filteredDatasets.length > 0 ? filteredDatasets[0].data.length - 1 : 0;
     return {
         labels: generateDateInterval(startDate, nbValues),
         datasets: filteredDatasets,
