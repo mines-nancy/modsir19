@@ -415,8 +415,10 @@ const PublicSimulation = () => {
         SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
     };
     const visibleValues = Object.keys(mergedValues).reduce((acc, key) => {
-        if (Math.max(...mergedValues[key]) <= 1.3 * zoomMax) {
+        if (Math.max(...mergedValues[key]) <= 10.0 * zoomMax) {
             acc[key] = mergedValues[key];
+        } else {
+            acc[key] = Array.from({ length: mergedValues[key].length }, (v, i) => 0);
         }
         return acc;
     }, {});
