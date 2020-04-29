@@ -1,34 +1,61 @@
 from scipy.optimize import fsolve
+import matplotlib.pyplot as plt
 
 
-def compute_ratio(dms, max_days):
-    def f(q):
-        return (1 / 2) * (1 - q ** max_days) * (1 + q) / (1 - q) - dms
+def factorial(k) :
+    
+    fact = 1
+    
+    for i in range(1, k + 1) :
+        fact *= i
+    
+    return fact
 
-    solutions = fsolve(f, 5)
-    ratio = solutions[0]
-    return ratio
+def binomial_coeff(k, n) :
+    
+    return factorial(n) / (factorial(k) * factorial(n - k))
 
+def compute_param(dms, max_days, prob_type):
+    
+    if prob_type == 'exponential':
+        def f(x):
+            return (1 - x ** (max_days)) / (1 - x) - dms
+        solutions = fsolve(f, 5)
+        param = solutions[0]
+    elif prob_type == 'binomial':
+        param = (dms - 1) / max_days
+        
+    return param
 
-def compute_residuals(dms, max_days):
-    ratio = compute_ratio(dms, max_days)
-    residuals = [ratio ** i for i in range(max_days + 1)]
+def compute_khi(dms, max_days, prob_type = 'binomial') :
+    
+    khi_tab = []
+    param = compute_param(dms, max_days, prob_type)
+    
+    if prob_type == 'exponential':
+        for k in range(max_days - 1):
+            khi = param ** k * (1 - param)
+            khi_tab.append(khi)
+        khi_tab.append(param ** (max_days - 1))
+    elif prob_type == 'binomial':
+        for k in range(max_days):
+            khi = binomial_coeff(k, max_days) * param ** k * (1 - param) ** (max_days - k)
+            khi_tab.append(khi)
+    
+    return khi_tab
+    
+def compute_residuals(khi_tab):
+    
+    residuals = [1]
+    
+    for k in range(len(khi_tab)) :
+        residuals.append(residuals[k] - khi_tab[k])
+    
     return residuals
 
 
-def compute_khi(residuals):
-    max_days = len(residuals) - 1
-    khi = [residuals[i] - residuals[i + 1] for i in range(max_days)]
-    proba_tot = sum(khi)
-
-    for i in range(max_days):
-        khi[i] /= proba_tot
-
-    return khi
-
-
-def compute_exp_ki(duration, max_days=21):
-    return compute_khi(compute_residuals(duration, max_days))
+#def compute_exp_ki(duration, max_days=21):
+#    return compute_khi(compute_residuals(duration, max_days))
 
 
 def compute_delay_ki(duration):
@@ -38,22 +65,40 @@ def compute_delay_ki(duration):
         return [0]*(duration-2) + [0.5, 0.5]
 
 
-def compute_area(dms, max_days):
-
-    residuals = compute_residuals(dms, max_days)
-    khi = compute_khi(residuals)
-
+def compute_area_and_expectation(khi_tab, residuals):
+    
     area = 0
-    for k in range(max_days):
+    expectation_contribs = []
+    N = len(khi_tab)
+    
+    for k in range(N) :
         area += (residuals[k] + residuals[k + 1]) / 2
+        expectation_contribs.append((k + 1) * khi_tab[k])
+    
+    expectation = sum(expectation_contribs)
+    
+    return area, expectation, sum(khi_tab)
 
-    sum_khi = sum(khi)
 
-    return area, sum_khi
-
-
-# area, sum_khi = compute_area(5, 10)
-
-# print('khi = ' + str(compute_khi(compute_residuals(5, 21))))
-# print('area = ' + str(area))
-# print('sum(khi) = ' + str(sum_khi))
+#dms = 5
+#max_days = 21
+#prob_type = 'exponential'
+#
+#khi_tab = compute_khi(dms, max_days, prob_type)
+#residuals = compute_residuals(khi_tab)
+#
+#area, expectation, sum_khi = compute_area_and_expectation(khi_tab, residuals)
+#
+#delta_area = abs(dms - area)
+#delta_khi = abs(1 - sum_khi)
+#delta_expectation = abs(dms - expectation)
+#
+#print('area = ' + str(area))
+#print('delta_area = ' + str(delta_area) + '\n')
+#print('expectation = ' + str(expectation))
+#print('delta_expectation = ' + str(delta_expectation) + '\n')
+#print('sum(khi) = ' + str(sum_khi))
+#print('delta_khi = ' + str(delta_khi) + '\n')
+#
+#plt.plot([k for k in range(max_days + 1)], residuals)
+#plt.bar([k for k in range(1, max_days + 1)], khi_tab, color = 'red')
