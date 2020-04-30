@@ -24,3 +24,7 @@ code {
 .draggable-line line {
   stroke-width: 2px;
 }
+
+.c3-xgrid-line text {
+  font-size: 14px;
+}

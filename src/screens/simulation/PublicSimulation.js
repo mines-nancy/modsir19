@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { makeStyles, Card, Typography, useMediaQuery, useTheme } from '@material-ui/core';
+import { makeStyles, Card, Typography, useMediaQuery, useTheme, Paper } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { format, differenceInDays } from 'date-fns';
+import { format, subDays, differenceInDays } from 'date-fns';
+import { InfoOutlined } from '@material-ui/icons';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
@@ -18,6 +19,7 @@ import AutoSave from '../../components/fields/AutoSave';
 import colors from './colors';
 import { ZoomSlider } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
+import { PopoverInfo } from '../../components/PopoverInfo';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -292,7 +294,15 @@ const getTimeframesFromValues = ({
     {
         ...defaultParameters,
         r0: initial_r0,
-        start_time: initial_start_date,
+        start_date: subDays(initial_start_date, 5),
+        start_time: 0,
+        name: '', // Just shift graph to see "Periode initiale"
+        enabled: true,
+    },
+    {
+        ...defaultParameters,
+        r0: initial_r0,
+        start_date: initial_start_date,
         name: 'Période initiale',
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
         enabled: true,
@@ -314,6 +324,27 @@ const getTimeframesFromValues = ({
         enabled: true,
     },
 ];
+
+const R0HelpIcon = (
+    <>
+        <span>R0</span>
+        <PopoverInfo
+            content={
+                <Paper style={{ padding: 10 }}>
+                    R0 correspond au nombre moyen de personnes infectées par une personne
+                    contaminée.
+                </Paper>
+            }
+        >
+            <InfoOutlined
+                style={{
+                    marginBottom: -5,
+                    paddingLeft: 10,
+                }}
+            />
+        </PopoverInfo>
+    </>
+);
 
 const PublicSimulation = () => {
     const classes = useStyles();
@@ -477,14 +508,8 @@ const PublicSimulation = () => {
                                 <div className={classes.formControl}>
                                     <Typography variant="h6">Période initiale</Typography>
                                     <Field
-                                        className="small-margin-bottom"
-                                        name="initial_start_date"
-                                        label="Début"
-                                        component={DateField}
-                                    />
-                                    <Field
                                         name="initial_r0"
-                                        label="R0"
+                                        label={R0HelpIcon}
                                         component={ProportionField}
                                         unit=""
                                         max="5"
@@ -501,7 +526,7 @@ const PublicSimulation = () => {
                                     />
                                     <Field
                                         name="lockdown_r0"
-                                        label="R0"
+                                        label={R0HelpIcon}
                                         component={ProportionField}
                                         unit=""
                                         max="5"
@@ -518,7 +543,7 @@ const PublicSimulation = () => {
                                     />
                                     <Field
                                         name="deconfinement_r0"
-                                        label="R0"
+                                        label={R0HelpIcon}
                                         component={ProportionField}
                                         unit=""
                                         max="5"
