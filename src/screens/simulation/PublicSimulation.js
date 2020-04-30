@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { makeStyles, Card, Typography, useMediaQuery, useTheme, Paper } from '@material-ui/core';
+import {
+    makeStyles,
+    Card,
+    Typography,
+    useMediaQuery,
+    useTheme,
+    Paper,
+    CardContent,
+} from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { format, subDays, differenceInDays } from 'date-fns';
@@ -123,6 +131,12 @@ const useStyles = makeStyles((theme) => ({
             minWidth: 200,
             marginBottom: 12,
         },
+    },
+    formCard: {
+        minWidth: 300,
+    },
+    formSlider: {
+        marginTop: theme.spacing(2),
     },
 }));
 
@@ -541,56 +555,94 @@ const PublicSimulation = () => {
                             /* Useless since we use a listener on autosave */
                         }}
                         initialValues={initialValues}
-                        render={() => (
-                            <div className={classes.form}>
-                                <AutoSave save={handleSubmit} debounce={200} />
-                                <div className={classes.formControl}>
-                                    <Typography variant="h6">Période initiale</Typography>
-                                    <Field
-                                        name="initial_r0"
-                                        label={R0HelpIcon}
-                                        component={ProportionField}
-                                        unit=""
-                                        max="5"
-                                        step={0.1}
-                                    />
+                        render={({ form }) => {
+                            const { values } = form.getState();
+
+                            return (
+                                <div className={classes.form}>
+                                    <AutoSave save={handleSubmit} debounce={200} />
+                                    <div className={classes.formControl}>
+                                        <Card className={classes.formCard}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="h2">
+                                                    Période initiale
+                                                </Typography>
+                                                <Typography color="textSecondary" gutterBottom>
+                                                    A partir du{' '}
+                                                    {format(
+                                                        values.initial_start_date,
+                                                        'dd/MM/yyyy',
+                                                    )}
+                                                </Typography>
+                                                <div className={classes.formSlider}>
+                                                    <Field
+                                                        name="initial_r0"
+                                                        label={R0HelpIcon}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="5"
+                                                        step={0.1}
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                    <div className={classes.formControl}>
+                                        <Card className={classes.formCard}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="h2">
+                                                    Confinement
+                                                </Typography>
+                                                <Typography color="textSecondary" gutterBottom>
+                                                    A partir du{' '}
+                                                    {format(
+                                                        values.lockdown_start_date,
+                                                        'dd/MM/yyyy',
+                                                    )}
+                                                </Typography>
+                                                <div className={classes.formSlider}>
+                                                    <Field
+                                                        name="lockdown_r0"
+                                                        label={R0HelpIcon}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="5"
+                                                        step={0.1}
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                    <div className={classes.formControl}>
+                                        <Card className={classes.formCard}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="h2">
+                                                    Déconfinement
+                                                </Typography>
+                                                <div className={classes.formSlider}>
+                                                    <Field
+                                                        className="small-margin-bottom"
+                                                        name="deconfinement_start_date"
+                                                        label="Début"
+                                                        component={DateField}
+                                                    />
+                                                    <Field
+                                                        name="deconfinement_r0"
+                                                        label={R0HelpIcon}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="5"
+                                                        step={0.1}
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
                                 </div>
-                                <div className={classes.formControl}>
-                                    <Typography variant="h6">Confinement</Typography>
-                                    <Field
-                                        className="small-margin-bottom"
-                                        name="lockdown_start_date"
-                                        label="Début"
-                                        component={DateField}
-                                    />
-                                    <Field
-                                        name="lockdown_r0"
-                                        label={R0HelpIcon}
-                                        component={ProportionField}
-                                        unit=""
-                                        max="5"
-                                        step={0.1}
-                                    />
-                                </div>
-                                <div className={classes.formControl}>
-                                    <Typography variant="h6">Déconfinement</Typography>
-                                    <Field
-                                        className="small-margin-bottom"
-                                        name="deconfinement_start_date"
-                                        label="Début"
-                                        component={DateField}
-                                    />
-                                    <Field
-                                        name="deconfinement_r0"
-                                        label={R0HelpIcon}
-                                        component={ProportionField}
-                                        unit=""
-                                        max="5"
-                                        step={0.1}
-                                    />
-                                </div>
-                            </div>
-                        )}
+                            );
+                        }}
                     />
                 </div>
             </div>
