@@ -131,12 +131,19 @@ const useStyles = makeStyles((theme) => ({
             minWidth: 200,
             marginBottom: 12,
         },
+        '&:nth-child(3)': {
+            flex: '2 0 0',
+        },
     },
     formCard: {
         minWidth: 300,
     },
     formSlider: {
         marginTop: theme.spacing(2),
+    },
+    formSliderDeconfinement: {
+        marginTop: theme.spacing(1),
+        minWidth: 350,
     },
 }));
 
@@ -220,7 +227,9 @@ const Legend = ({
                         <span>
                             sur un échantillon de {Intl.NumberFormat().format(total)} individus
                             <br />
-                            Déplacez la souris sur le graph pour suivre l'évolution
+                            <Typography color="textSecondary" gutterBottom>
+                                Déplacez la souris sur le graph pour suivre l'évolution
+                            </Typography>
                         </span>
                     </>
                 ) : (
@@ -234,7 +243,9 @@ const Legend = ({
                         <span>
                             sur un échantillon de {Intl.NumberFormat().format(total)} individus
                             <br />
-                            dont {percentImmunised}% sont considérés immunisés
+                            <Typography color="textSecondary" gutterBottom>
+                                dont {percentImmunised}% sont considérés immunisés
+                            </Typography>
                         </span>
                     </>
                 )}
@@ -328,7 +339,7 @@ const Legend = ({
 };
 
 const initialValues = {
-    initial_start_date: new Date('2020-01-09'),
+    initial_start_date: new Date('2020-01-06'),
     initial_r0: 3.4,
     lockdown_start_date: new Date('2020-03-17'),
     lockdown_r0: 0.5,
@@ -371,24 +382,27 @@ const getTimeframesFromValues = ({
 ];
 
 const R0HelpIcon = (
-    <>
-        <span>R0</span>
-        <PopoverInfo
-            content={
-                <Paper style={{ padding: 10 }}>
-                    R0 correspond au nombre moyen de personnes infectées par une personne
-                    contaminée.
-                </Paper>
-            }
-        >
-            <InfoOutlined
-                style={{
-                    marginBottom: -5,
-                    paddingLeft: 10,
-                }}
-            />
-        </PopoverInfo>
-    </>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div>R0</div>
+        <div>
+            <PopoverInfo
+                content={
+                    <Paper style={{ padding: 10 }}>
+                        R0 correspond au nombre moyen de personnes infectées par une personne
+                        contaminée.
+                    </Paper>
+                }
+            >
+                <InfoOutlined
+                    style={{
+                        marginBottom: -5,
+                        paddingLeft: 10,
+                    }}
+                    fontSize="small"
+                />
+            </PopoverInfo>
+        </div>
+    </div>
 );
 
 const PublicSimulation = () => {
@@ -585,7 +599,7 @@ const PublicSimulation = () => {
                                                 <div className={classes.formSlider}>
                                                     <Field
                                                         name="initial_r0"
-                                                        label={R0HelpIcon}
+                                                        label="R0"
                                                         component={ProportionField}
                                                         unit=""
                                                         max="5"
@@ -612,7 +626,7 @@ const PublicSimulation = () => {
                                                 <div className={classes.formSlider}>
                                                     <Field
                                                         name="lockdown_r0"
-                                                        label={R0HelpIcon}
+                                                        label="R0"
                                                         component={ProportionField}
                                                         unit=""
                                                         max="5"
@@ -629,7 +643,7 @@ const PublicSimulation = () => {
                                                 <Typography variant="h5" component="h2">
                                                     Déconfinement
                                                 </Typography>
-                                                <div className={classes.formSlider}>
+                                                <div className={classes.formSliderDeconfinement}>
                                                     <Field
                                                         className="small-margin-bottom"
                                                         name="deconfinement_start_date"
