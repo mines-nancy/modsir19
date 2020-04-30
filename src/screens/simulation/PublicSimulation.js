@@ -197,31 +197,47 @@ const Legend = ({
         onClick: () => onLegendClick(key),
     });
 
-    if (!date || !index || !values) {
+    if (!values || mobile) {
         return null;
     }
-    if (mobile) {
-        return null;
-    }
-    const R = Math.round(values.R[index], 0);
-    const H = Math.round(values.SM[index] + values.SI[index] + values.SS[index]);
-    const DC = Math.round(values.DC[index]);
-    const SE = Math.round(values.SE[index]);
-    const M = Math.round(values.I[index] + values.INCUB[index]);
+
+    const i = index || values.R.length - 1;
+
+    const R = Math.round(values.R[i], 0);
+    const H = Math.round(values.SM[i] + values.SI[i] + values.SS[i]);
+    const DC = Math.round(values.DC[i]);
+    const SE = Math.round(values.SE[i]);
+    const M = Math.round(values.I[i] + values.INCUB[i]);
     const percentImmunised = percent(R, total);
 
     return (
         <GraphProvider>
             <div className={classes.legendTitle}>
-                <strong>
-                    {date ? `Population au ${format(date, 'dd/MM/yyyy')}` : 'Population impactée '}
-                    <br />
-                </strong>
-                <span>
-                    sur un échantillon de {Intl.NumberFormat().format(total)} individus
-                    <br />
-                    dont {percentImmunised}% sont considérés immunisés
-                </span>
+                {!date ? (
+                    <>
+                        <strong>Population impactée</strong>
+                        <br />
+                        <span>
+                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
+                            <br />
+                            Déplacez la souris sur le graph pour suivre l'évolution
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <strong>
+                            {date
+                                ? `Population au ${format(date, 'dd/MM/yyyy')}`
+                                : 'Population impactée '}
+                            <br />
+                        </strong>
+                        <span>
+                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
+                            <br />
+                            dont {percentImmunised}% sont considérés immunisés
+                        </span>
+                    </>
+                )}
             </div>
             <div className={classes.legendBlockContainer}>
                 <div className={classes.blockRow}>
