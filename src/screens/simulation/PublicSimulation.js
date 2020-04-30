@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'none',
         },
     },
+    legendTitle: {
+        padding: '0 0 30px 33%',
+        textAlign: 'center',
+    },
     blockContainer: {
         display: 'flex',
         flexDirection: 'column',
@@ -171,6 +175,18 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
 
     return (
         <GraphProvider>
+            <div className={classes.legendTitle}>
+                <strong>
+                    {stats.date
+                        ? `Population au ${format(stats.date, 'dd/MM/yyyy')}`
+                        : 'Population impactée '}
+                    <br />
+                </strong>
+                <span>
+                    sur un échantillon de 100 000 individus <br />
+                    dont 10% sont immunisés
+                </span>
+            </div>
             <div className={classes.blockContainer}>
                 <div className={classes.blockRow}>
                     <Node
