@@ -1,12 +1,26 @@
-from models.components.utils import compute_residuals, compute_khi, compute_area_and_expectation
+from models.components.utils import compute_residuals, compute_khi_exp, compute_khi_binom
 import matplotlib.pyplot as plt
 
-dms = 5
-max_days = 21
-prob_type = 'binomial'
-#prob_type = 'exponential'
 
-khi_tab = compute_khi(dms, max_days, prob_type)
+def compute_area_and_expectation(khi_tab, residuals):
+    
+    area = 0
+    expectation_contribs = []
+    N = len(khi_tab)
+    
+    for k in range(N) :
+        area += (residuals[k] + residuals[k + 1]) / 2
+        expectation_contribs.append((k + 1) * khi_tab[k])
+    
+    expectation = sum(expectation_contribs)
+    
+    return area, expectation, sum(khi_tab)
+
+
+dms = 20
+max_days = 21
+
+khi_tab = compute_khi_binom(dms, max_days)
 residuals = compute_residuals(khi_tab)
 
 area, expectation, sum_khi = compute_area_and_expectation(khi_tab, residuals)
