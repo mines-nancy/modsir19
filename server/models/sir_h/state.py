@@ -4,23 +4,24 @@ from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
 from models.components.utils import compute_khi_exp, compute_khi_binom, compute_khi_delay
 from operator import add
+import math
 
 
 class State:
     def __init__(self, parameters):
+        self._integer = True
 
         self._parameters = dict(parameters)  # to not modify parameters
 
         self._boxes = {
             'SE': BoxSource('SE'),
-            # 'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
-            'INCUB': BoxConvolution('INCUB', compute_khi_delay(self.delay('dm_incub'))),
+            'INCUB': BoxConvolution('INCUB', compute_khi_delay(self.delay('dm_incub')), self._integer),
 
-            'IR': BoxConvolution('IR', compute_khi_exp(self.delay('dm_r'))),
-            'IH': BoxConvolution('IH', compute_khi_exp(self.delay('dm_h'))),
-            'SM': BoxConvolution('SM', compute_khi_exp(self.delay('dm_sm'))),
-            'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
-            'SS': BoxConvolution('SS', compute_khi_exp(self.delay('dm_ss'))),
+            'IR': BoxConvolution('IR', compute_khi_exp(self.delay('dm_r')), self._integer),
+            'IH': BoxConvolution('IH', compute_khi_exp(self.delay('dm_h')), self._integer),
+            'SM': BoxConvolution('SM', compute_khi_exp(self.delay('dm_sm')), self._integer),
+            'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02], self._integer),
+            'SS': BoxConvolution('SS', compute_khi_exp(self.delay('dm_ss')), self._integer),
 
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
@@ -52,7 +53,8 @@ class State:
         }
 
         self.time = -1  # first step should be t=0
-        self.e0 = self.coefficient('kpe') * self.constant('population')
+        self.e0, _ = self.split(self.constant(
+            'population'), [self.coefficient('kpe')])
         self.box('SE').add(self.e0 - self.constant('patient0'))
         self.box('INCUB').add(self.constant('patient0'))
 
@@ -62,6 +64,20 @@ class State:
             f'\n    {self.box("IR")} {self.box("IH")}' + \
             f'\n    {self.box("SM")} {self.box("SI")} {self.box("SS")}' +\
             f'\n    {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
+
+    def split(self, value, coefficients):
+        res = [value*c for c in coefficients]
+
+        if self._integer:
+            res_int = [math.floor(v) for v in res]
+            if len(res_int) == 1:
+                res_int.append(math.floor(value-sum(res_int)))
+            else:
+                res_int[-1] += (math.floor(value-sum(res_int)))
+            assert sum(res_int) == value
+            return res_int
+        else:
+            return res
 
     def constant(self, name):
         return int(self.parameter(name))
@@ -135,8 +151,12 @@ class State:
     def generic_steps(self, moves):
         for src_name in moves.keys():
             output = self.output(src_name)
-            for dest_name, lambda_coefficient in moves[src_name]:
-                self.move(src_name, dest_name, lambda_coefficient() * output)
+            if self._integer:
+                assert math.floor(output) == output
+            to_move = self.split(
+                output, [lambda_coefficient() for dest, lambda_coefficient in moves[src_name]])
+            for i, (dest_name, _) in enumerate(moves[src_name]):
+                self.move(src_name, dest_name, to_move[i])
 
     def step_exposed(self):
         se = self.box('SE').output(1)
@@ -147,10 +167,13 @@ class State:
         n = se + incub + ir + ih + r
         delta = self.coefficient(
             'r') * self.coefficient('beta') * se * (ir+ih) / n if n > 0 else 0
-
-        if delta < 0:
-            delta = 0
+        if self._integer:
+            delta = round(delta)
+        else:
+            if delta < 0:
+                delta = 0
         assert delta >= 0
+
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self):

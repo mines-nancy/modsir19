@@ -13,8 +13,9 @@ class BoxConvolution(Box):
     duration of a BoxConvolution can be updated
     """
 
-    def __init__(self, name, output_coefficients):
+    def __init__(self, name, output_coefficients, int_output=False):
         Box.__init__(self, name)
+        self._integer = int_output
         self._output_coefficients = output_coefficients
         self._queue = [deque()]  # items in the box
 
@@ -62,8 +63,12 @@ class BoxConvolution(Box):
         new_list = []
         for i in range(len(current_queue)):
             v, r = current_queue[i]
-            delta = self._output_coefficients[i] * \
-                v if self._output_coefficients[i]*v <= r else r
+            if self._output_coefficients[i] * v > r:
+                delta = r
+            elif self._integer:
+                delta = math.floor(self._output_coefficients[i] * v)
+            else:
+                delta = self._output_coefficients[i] * v
             new_list.append((v, r - delta))
             new_output += delta
 
@@ -102,5 +107,9 @@ class BoxConvolution(Box):
             self.set_size(current_size - new_output)
             self.set_output(current_output + new_output)
 
-            assert math.fabs(self.size() + value - current_size) < 0.1
-            assert math.fabs(new_output - value) < 0.1
+            if self._integer:
+                assert math.fabs(self.size() + value - current_size) == 0
+                assert math.fabs(new_output - value) == 0
+            else:
+                assert math.fabs(self.size() + value - current_size) < 0.1
+                assert math.fabs(new_output - value) < 0.1
