@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
     footer: {
-        height: 32,
+        minHeight: 36, // remove strange MUI toolbar padding
     },
     toolbar: {
         minHeight: 32,
