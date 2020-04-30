@@ -21,10 +21,20 @@ code {
   padding-bottom: 16px !important;
 }
 
+/* C3 */
+
 .draggable-line line {
   stroke-width: 2px;
 }
 
 .c3-xgrid-line text {
   font-size: 14px;
+}
+
+.c3-line {
+  stroke-width: 3px!important;
+}
+
+.c3-area {
+  opacity: 0.5!important;
 }
