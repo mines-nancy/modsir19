@@ -142,6 +142,12 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 300,
         position: 'relative',
     },
+    formCardHeader: {
+        paddingBottom: 0,
+    },
+    formCardContent: {
+        paddingTop: 0,
+    },
     formSlider: {
         marginTop: theme.spacing(2),
     },
@@ -598,8 +604,11 @@ const PublicSimulation = () => {
                                     <AutoSave save={handleSubmit} debounce={200} />
                                     <div className={classes.formControl}>
                                         <Card className={classes.formCard}>
-                                            <CardHeader title="Avant confinement" />
-                                            <CardContent>
+                                            <CardHeader
+                                                className={classes.formCardHeader}
+                                                title="Avant confinement"
+                                            />
+                                            <CardContent className={classes.formCardContent}>
                                                 <Typography color="textSecondary" gutterBottom>
                                                     A partir du{' '}
                                                     {format(
@@ -624,6 +633,7 @@ const PublicSimulation = () => {
                                     <div className={classes.formControl}>
                                         <Card className={classes.formCard}>
                                             <CardHeader
+                                                className={classes.formCardHeader}
                                                 title={
                                                     <Typography variant="h5" component="h2">
                                                         Confinement
@@ -640,7 +650,7 @@ const PublicSimulation = () => {
                                                     </Tooltip>
                                                 }
                                             />
-                                            <CardContent>
+                                            <CardContent className={classes.formCardContent}>
                                                 <Typography color="textSecondary" gutterBottom>
                                                     A partir du{' '}
                                                     {format(
@@ -665,6 +675,7 @@ const PublicSimulation = () => {
                                     <div className={classes.formControl}>
                                         <Card className={classes.formCard}>
                                             <CardHeader
+                                                className={classes.formCardHeader}
                                                 title="Déconfinement"
                                                 action={
                                                     <Tooltip title="Activer / Désactiver">
@@ -677,7 +688,7 @@ const PublicSimulation = () => {
                                                     </Tooltip>
                                                 }
                                             />
-                                            <CardContent>
+                                            <CardContent className={classes.formCardContent}>
                                                 <div className={classes.formSliderDeconfinement}>
                                                     <Field
                                                         className="small-margin-bottom"
