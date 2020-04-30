@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
-import { makeStyles, Card, Typography, useMediaQuery, useTheme, Paper } from '@material-ui/core';
+import {
+    makeStyles,
+    Card,
+    Typography,
+    useMediaQuery,
+    useTheme,
+    Paper,
+    CardContent,
+} from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { format, subDays, differenceInDays } from 'date-fns';
+import { format, addDays, differenceInDays } from 'date-fns';
 import { InfoOutlined } from '@material-ui/icons';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
@@ -124,6 +132,12 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: 12,
         },
     },
+    formCard: {
+        minWidth: 300,
+    },
+    formSlider: {
+        marginTop: theme.spacing(2),
+    },
 }));
 
 const getModel = async (timeframes) => {
@@ -183,31 +197,47 @@ const Legend = ({
         onClick: () => onLegendClick(key),
     });
 
-    if (!date || !index || !values) {
+    if (!values || mobile) {
         return null;
     }
-    if (mobile) {
-        return null;
-    }
-    const R = Math.round(values.R[index], 0);
-    const H = Math.round(values.SM[index] + values.SI[index] + values.SS[index]);
-    const DC = Math.round(values.DC[index]);
-    const SE = Math.round(values.SE[index]);
-    const M = Math.round(values.I[index] + values.INCUB[index]);
+
+    const i = index || values.R.length - 1;
+
+    const R = Math.round(values.R[i], 0);
+    const H = Math.round(values.SM[i] + values.SI[i] + values.SS[i]);
+    const DC = Math.round(values.DC[i]);
+    const SE = Math.round(values.SE[i]);
+    const M = Math.round(values.I[i] + values.INCUB[i]);
     const percentImmunised = percent(R, total);
 
     return (
         <GraphProvider>
             <div className={classes.legendTitle}>
-                <strong>
-                    {date ? `Population au ${format(date, 'dd/MM/yyyy')}` : 'Population impactée '}
-                    <br />
-                </strong>
-                <span>
-                    sur un échantillon de {total} individus
-                    <br />
-                    dont {percentImmunised}% sont considérés immunisés
-                </span>
+                {!date ? (
+                    <>
+                        <strong>Population impactée</strong>
+                        <br />
+                        <span>
+                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
+                            <br />
+                            Déplacez la souris sur le graph pour suivre l'évolution
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <strong>
+                            {date
+                                ? `Population au ${format(date, 'dd/MM/yyyy')}`
+                                : 'Population impactée '}
+                            <br />
+                        </strong>
+                        <span>
+                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
+                            <br />
+                            dont {percentImmunised}% sont considérés immunisés
+                        </span>
+                    </>
+                )}
             </div>
             <div className={classes.legendBlockContainer}>
                 <div className={classes.blockRow}>
@@ -317,16 +347,8 @@ const getTimeframesFromValues = ({
     {
         ...defaultParameters,
         r0: initial_r0,
-        start_date: subDays(initial_start_date, 5),
-        start_time: 0,
-        name: '', // Just shift graph to see "Periode initiale"
-        enabled: true,
-    },
-    {
-        ...defaultParameters,
-        r0: initial_r0,
         start_date: initial_start_date,
-        name: 'Période initiale',
+        name: '', // Before lockdown
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
         enabled: true,
     },
@@ -541,56 +563,98 @@ const PublicSimulation = () => {
                             /* Useless since we use a listener on autosave */
                         }}
                         initialValues={initialValues}
-                        render={() => (
-                            <div className={classes.form}>
-                                <AutoSave save={handleSubmit} debounce={200} />
-                                <div className={classes.formControl}>
-                                    <Typography variant="h6">Période initiale</Typography>
-                                    <Field
-                                        name="initial_r0"
-                                        label={R0HelpIcon}
-                                        component={ProportionField}
-                                        unit=""
-                                        max="5"
-                                        step={0.1}
-                                    />
+                        render={({ form }) => {
+                            const { values } = form.getState();
+
+                            return (
+                                <div className={classes.form}>
+                                    <AutoSave save={handleSubmit} debounce={200} />
+                                    <div className={classes.formControl}>
+                                        <Card className={classes.formCard}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="h2">
+                                                    Avant confinement
+                                                </Typography>
+                                                <Typography color="textSecondary" gutterBottom>
+                                                    A partir du{' '}
+                                                    {format(
+                                                        values.initial_start_date,
+                                                        'dd/MM/yyyy',
+                                                    )}
+                                                </Typography>
+                                                <div className={classes.formSlider}>
+                                                    <Field
+                                                        name="initial_r0"
+                                                        label={R0HelpIcon}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="5"
+                                                        step={0.1}
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                    <div className={classes.formControl}>
+                                        <Card className={classes.formCard}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="h2">
+                                                    Confinement
+                                                </Typography>
+                                                <Typography color="textSecondary" gutterBottom>
+                                                    A partir du{' '}
+                                                    {format(
+                                                        values.lockdown_start_date,
+                                                        'dd/MM/yyyy',
+                                                    )}
+                                                </Typography>
+                                                <div className={classes.formSlider}>
+                                                    <Field
+                                                        name="lockdown_r0"
+                                                        label={R0HelpIcon}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="5"
+                                                        step={0.1}
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                    <div className={classes.formControl}>
+                                        <Card className={classes.formCard}>
+                                            <CardContent>
+                                                <Typography variant="h5" component="h2">
+                                                    Déconfinement
+                                                </Typography>
+                                                <div className={classes.formSlider}>
+                                                    <Field
+                                                        className="small-margin-bottom"
+                                                        name="deconfinement_start_date"
+                                                        label="Début"
+                                                        component={DateField}
+                                                        minDate={addDays(
+                                                            values.lockdown_start_date,
+                                                            1,
+                                                        )}
+                                                    />
+                                                    <Field
+                                                        name="deconfinement_r0"
+                                                        label={R0HelpIcon}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="5"
+                                                        step={0.1}
+                                                    />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
                                 </div>
-                                <div className={classes.formControl}>
-                                    <Typography variant="h6">Confinement</Typography>
-                                    <Field
-                                        className="small-margin-bottom"
-                                        name="lockdown_start_date"
-                                        label="Début"
-                                        component={DateField}
-                                    />
-                                    <Field
-                                        name="lockdown_r0"
-                                        label={R0HelpIcon}
-                                        component={ProportionField}
-                                        unit=""
-                                        max="5"
-                                        step={0.1}
-                                    />
-                                </div>
-                                <div className={classes.formControl}>
-                                    <Typography variant="h6">Déconfinement</Typography>
-                                    <Field
-                                        className="small-margin-bottom"
-                                        name="deconfinement_start_date"
-                                        label="Début"
-                                        component={DateField}
-                                    />
-                                    <Field
-                                        name="deconfinement_r0"
-                                        label={R0HelpIcon}
-                                        component={ProportionField}
-                                        unit=""
-                                        max="5"
-                                        step={0.1}
-                                    />
-                                </div>
-                            </div>
-                        )}
+                            );
+                        }}
                     />
                 </div>
             </div>

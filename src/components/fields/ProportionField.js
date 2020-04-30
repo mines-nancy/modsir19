@@ -5,6 +5,7 @@ const useStyles = makeStyles({
     formControl: {
         display: 'flex',
         justifyContent: 'space-between',
+        alignItems: 'center',
     },
     slider: {
         flex: 'O 0 auto',
