@@ -164,12 +164,15 @@ const straightLine = (name, options = {}) => ({
     },
 });
 
+const percent = (value, total) => Math.round((value / total + Number.EPSILON) * 100) || 0;
+
 const Legend = ({
     stats,
     onLegendEnter = () => {},
     onLegendLeave = () => {},
     onLegendClick,
     mobile,
+    total,
 }) => {
     const classes = useStyles();
 
@@ -183,6 +186,8 @@ const Legend = ({
         return null;
     }
 
+    const percentImmunised = percent(stats['Guéris'], total);
+
     return (
         <GraphProvider>
             <div className={classes.legendTitle}>
@@ -193,8 +198,12 @@ const Legend = ({
                     <br />
                 </strong>
                 <span>
-                    sur un échantillon de 100 000 individus <br />
-                    dont 10% sont immunisés
+                    sur un échantillon de {total} individus
+                    {/*
+                    @TODO: Use percent from the whole stats and not legend ones
+                    <br />
+                    dont {percentImmunised}% sont considérés immunisés
+                    */}
                 </span>
             </div>
             <div className={classes.legendBlockContainer}>
@@ -504,6 +513,7 @@ const PublicSimulation = () => {
                                 onLegendEnter={handleLegendEnter}
                                 onLegendLeave={handleLegendLeave}
                                 onLegendClick={handleLegendClick}
+                                total={timeframes[0].population}
                                 mobile={small}
                             />
                         </div>
