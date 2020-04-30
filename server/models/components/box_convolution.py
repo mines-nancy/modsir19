@@ -15,8 +15,8 @@ class BoxConvolution(Box):
 
     def __init__(self, name, output_coefficients, int_output=False):
         Box.__init__(self, name)
-        self._integer = int_output
-        self._output_coefficients = output_coefficients
+        self._integer = int_output  # when True, the output is an integer
+        self._output_coefficients = output_coefficients  # sum should be equal to 1
         self._queue = [deque()]  # items in the box
 
     def set_output_coefficients(self, output_coefficients):
@@ -58,8 +58,8 @@ class BoxConvolution(Box):
             new_output += current_queue.pop()[1]
 
         # transition step for all elements
-        # (v,r) -> (v, r-ki*v)
-        # output += ki*v
+        #   (v,r) -> (v, r-ki*v)
+        #   output += ki*v
         new_list = []
         for i in range(len(current_queue)):
             v, r = current_queue[i]
