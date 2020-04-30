@@ -167,7 +167,8 @@ const straightLine = (name, options = {}) => ({
 const percent = (value, total) => Math.round((value / total + Number.EPSILON) * 100) || 0;
 
 const Legend = ({
-    stats,
+    date: { date, index },
+    values,
     onLegendEnter = () => {},
     onLegendLeave = () => {},
     onLegendClick,
@@ -182,28 +183,30 @@ const Legend = ({
         onClick: () => onLegendClick(key),
     });
 
+    if (!date || !index || !values) {
+        return null;
+    }
     if (mobile) {
         return null;
     }
-
-    const percentImmunised = percent(stats['Guéris'], total);
+    const R = Math.round(values.R[index], 0);
+    const H = Math.round(values.SM[index] + values.SI[index] + values.SS[index]);
+    const DC = Math.round(values.DC[index]);
+    const SE = Math.round(values.SE[index]);
+    const M = Math.round(values.I[index] + values.INCUB[index]);
+    const percentImmunised = percent(R, total);
 
     return (
         <GraphProvider>
             <div className={classes.legendTitle}>
                 <strong>
-                    {stats.date
-                        ? `Population au ${format(stats.date, 'dd/MM/yyyy')}`
-                        : 'Population impactée '}
+                    {date ? `Population au ${format(date, 'dd/MM/yyyy')}` : 'Population impactée '}
                     <br />
                 </strong>
                 <span>
                     sur un échantillon de {total} individus
-                    {/*
-                    @TODO: Use percent from the whole stats and not legend ones
                     <br />
                     dont {percentImmunised}% sont considérés immunisés
-                    */}
                 </span>
             </div>
             <div className={classes.legendBlockContainer}>
@@ -220,7 +223,7 @@ const Legend = ({
                         <Block
                             {...addMouseProps('SE', ['Exposés'])}
                             label="Sains"
-                            value={stats['Exposés'] || ''}
+                            value={SE || ''}
                             color={colors.exposed.bg}
                         />
                     </Node>
@@ -240,7 +243,7 @@ const Legend = ({
                         <Block
                             {...addMouseProps('I', ['Incubation', 'Infectés'])}
                             label="Malades"
-                            value={(stats['Incubation'] || 0) + (stats['Infectés'] || 0) || ''}
+                            value={M}
                             color={colors.infected.bg}
                         />
                     </Node>
@@ -248,7 +251,7 @@ const Legend = ({
                         <Block
                             {...addMouseProps('R', ['Guéris'])}
                             label="Guéris"
-                            value={stats['Guéris'] || ''}
+                            value={R}
                             color={colors.recovered.bg}
                         />
                     </Node>
@@ -275,11 +278,7 @@ const Legend = ({
                                 'Soins medicaux',
                             ])}
                             label="Hospitalisés"
-                            value={
-                                (stats['Soins de suite'] || 0) +
-                                    (stats['Soins intensifs'] || 0) +
-                                    (stats['Soins medicaux'] || 0) || ''
-                            }
+                            value={H}
                             color={colors.intensive_care.bg}
                         />
                     </Node>
@@ -287,7 +286,7 @@ const Legend = ({
                         <Block
                             {...addMouseProps('DC', ['Décédés'])}
                             label="Décédés"
-                            value={stats['Décédés'] || ''}
+                            value={DC}
                             color={colors.death.bg}
                         />
                     </Node>
@@ -297,17 +296,6 @@ const Legend = ({
         </GraphProvider>
     );
 };
-
-const roundValue = (value) => Math.round(value);
-const extractTooltipData = (points) =>
-    points.reduce(
-        (agg, d) => ({
-            ...agg,
-            [d.id]: roundValue(d.value),
-            date: d.x,
-        }),
-        {},
-    );
 
 const initialValues = {
     initial_start_date: new Date('2020-01-09'),
@@ -387,7 +375,7 @@ const PublicSimulation = () => {
     const [loading, setLoading] = useState(false); // @FIXME Use the loading
     const [values, setValues] = useState();
     const { width: windowWidth, height: windowHeight } = useWindowSize();
-    const [currentStats, setCurrentStats] = useState({});
+    const [currentDate, setCurrentDate] = useState({});
     const chartRef = useRef(null);
 
     const theme = useTheme();
@@ -426,9 +414,10 @@ const PublicSimulation = () => {
 
     const handleCaptureTooltipData = useCallback(
         debounce((data) => {
-            setCurrentStats(extractTooltipData(data));
+            const date = data.length > 0 ? { index: data[0].index, date: data[0].x } : {};
+            setCurrentDate(date);
             return null;
-        }, 30),
+        }, 10),
         [],
     );
 
@@ -509,7 +498,8 @@ const PublicSimulation = () => {
                     <div style={{ flex: 1, position: 'relative', paddingTop: small ? 0 : 50 }}>
                         <div className={classes.legend}>
                             <Legend
-                                stats={currentStats}
+                                date={currentDate}
+                                values={values}
                                 onLegendEnter={handleLegendEnter}
                                 onLegendLeave={handleLegendLeave}
                                 onLegendClick={handleLegendClick}
