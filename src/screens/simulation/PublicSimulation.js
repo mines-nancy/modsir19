@@ -8,6 +8,8 @@ import {
     useTheme,
     Paper,
     CardContent,
+    Tooltip,
+    CardHeader,
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
@@ -23,6 +25,7 @@ import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
+import SwitchField from '../../components/fields/SwitchField';
 import AutoSave from '../../components/fields/AutoSave';
 import colors from './colors';
 import { ZoomSlider, useZoom } from './ZoomSlider';
@@ -137,6 +140,7 @@ const useStyles = makeStyles((theme) => ({
     },
     formCard: {
         minWidth: 300,
+        position: 'relative',
     },
     formSlider: {
         marginTop: theme.spacing(2),
@@ -144,6 +148,11 @@ const useStyles = makeStyles((theme) => ({
     formSliderDeconfinement: {
         marginTop: theme.spacing(1),
         minWidth: 350,
+    },
+    toggle: {
+        position: 'absolute',
+        top: 12,
+        right: 0,
     },
 }));
 
@@ -343,8 +352,10 @@ const initialValues = {
     initial_r0: 3.4,
     lockdown_start_date: new Date('2020-03-17'),
     lockdown_r0: 0.5,
+    lockdown_enabled: true,
     deconfinement_start_date: new Date('2020-05-11'),
     deconfinement_r0: 1.1,
+    deconfinement_enabled: true,
 };
 
 const getTimeframesFromValues = ({
@@ -352,8 +363,10 @@ const getTimeframesFromValues = ({
     initial_r0,
     lockdown_start_date,
     lockdown_r0,
+    lockdown_enabled,
     deconfinement_start_date,
     deconfinement_r0,
+    deconfinement_enabled,
 }) => [
     {
         ...defaultParameters,
@@ -369,7 +382,7 @@ const getTimeframesFromValues = ({
         start_date: lockdown_start_date,
         name: 'Confinement',
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: true,
+        enabled: lockdown_enabled,
     },
     {
         ...defaultParameters,
@@ -377,7 +390,7 @@ const getTimeframesFromValues = ({
         start_date: deconfinement_start_date,
         name: 'Déconfinement',
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: true,
+        enabled: lockdown_enabled && deconfinement_enabled,
     },
 ];
 
@@ -585,10 +598,8 @@ const PublicSimulation = () => {
                                     <AutoSave save={handleSubmit} debounce={200} />
                                     <div className={classes.formControl}>
                                         <Card className={classes.formCard}>
+                                            <CardHeader title="Avant confinement" />
                                             <CardContent>
-                                                <Typography variant="h5" component="h2">
-                                                    Avant confinement
-                                                </Typography>
                                                 <Typography color="textSecondary" gutterBottom>
                                                     A partir du{' '}
                                                     {format(
@@ -612,10 +623,24 @@ const PublicSimulation = () => {
                                     </div>
                                     <div className={classes.formControl}>
                                         <Card className={classes.formCard}>
+                                            <CardHeader
+                                                title={
+                                                    <Typography variant="h5" component="h2">
+                                                        Confinement
+                                                    </Typography>
+                                                }
+                                                action={
+                                                    <Tooltip title="Activer / Désactiver">
+                                                        <Field
+                                                            className={classes.toggle}
+                                                            name="lockdown_enabled"
+                                                            component={SwitchField}
+                                                            type="checkbox"
+                                                        />
+                                                    </Tooltip>
+                                                }
+                                            />
                                             <CardContent>
-                                                <Typography variant="h5" component="h2">
-                                                    Confinement
-                                                </Typography>
                                                 <Typography color="textSecondary" gutterBottom>
                                                     A partir du{' '}
                                                     {format(
@@ -639,10 +664,20 @@ const PublicSimulation = () => {
                                     </div>
                                     <div className={classes.formControl}>
                                         <Card className={classes.formCard}>
+                                            <CardHeader
+                                                title="Déconfinement"
+                                                action={
+                                                    <Tooltip title="Activer / Désactiver">
+                                                        <Field
+                                                            className={classes.toggle}
+                                                            name="deconfinement_enabled"
+                                                            component={SwitchField}
+                                                            type="checkbox"
+                                                        />
+                                                    </Tooltip>
+                                                }
+                                            />
                                             <CardContent>
-                                                <Typography variant="h5" component="h2">
-                                                    Déconfinement
-                                                </Typography>
                                                 <div className={classes.formSliderDeconfinement}>
                                                     <Field
                                                         className="small-margin-bottom"
