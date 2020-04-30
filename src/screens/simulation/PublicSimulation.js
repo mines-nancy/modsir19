@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { format, subDays, differenceInDays } from 'date-fns';
+import { format, addDays, differenceInDays } from 'date-fns';
 import { InfoOutlined } from '@material-ui/icons';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
@@ -218,7 +218,7 @@ const Legend = ({
                     <br />
                 </strong>
                 <span>
-                    sur un échantillon de {total} individus
+                    sur un échantillon de {Intl.NumberFormat().format(total)} individus
                     <br />
                     dont {percentImmunised}% sont considérés immunisés
                 </span>
@@ -331,16 +331,8 @@ const getTimeframesFromValues = ({
     {
         ...defaultParameters,
         r0: initial_r0,
-        start_date: subDays(initial_start_date, 5),
-        start_time: 0,
-        name: '', // Just shift graph to see "Periode initiale"
-        enabled: true,
-    },
-    {
-        ...defaultParameters,
-        r0: initial_r0,
         start_date: initial_start_date,
-        name: 'Période initiale',
+        name: '', // Before lockdown
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
         enabled: true,
     },
@@ -565,7 +557,7 @@ const PublicSimulation = () => {
                                         <Card className={classes.formCard}>
                                             <CardContent>
                                                 <Typography variant="h5" component="h2">
-                                                    Période initiale
+                                                    Avant confinement
                                                 </Typography>
                                                 <Typography color="textSecondary" gutterBottom>
                                                     A partir du{' '}
@@ -627,6 +619,10 @@ const PublicSimulation = () => {
                                                         name="deconfinement_start_date"
                                                         label="Début"
                                                         component={DateField}
+                                                        minDate={addDays(
+                                                            values.lockdown_start_date,
+                                                            1,
+                                                        )}
                                                     />
                                                     <Field
                                                         name="deconfinement_r0"
