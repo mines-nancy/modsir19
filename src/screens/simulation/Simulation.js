@@ -14,7 +14,7 @@ import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
-import { ZoomSlider } from './ZoomSlider';
+import { ZoomSlider, useZoom } from './ZoomSlider';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -83,7 +83,10 @@ const Simulation = () => {
     );
 
     const [timeframes, setTimeframes] = useState(defaultTimeframes);
-    const [zoomMax, setZoomMax] = useState(timeframes[0].population);
+    const { zoom, value: zoomInnerValue, handleChange: handleZoomChange } = useZoom({
+        min: 300,
+        max: timeframes[0].population,
+    });
 
     const handleSubmit = useCallback(
         (values) => {
@@ -211,7 +214,7 @@ const Simulation = () => {
 
     const customConfig = {
         axis: {
-            y: { type: yType, max: zoomMax },
+            y: { type: yType, max: zoom },
         },
     };
 
@@ -232,10 +235,8 @@ const Simulation = () => {
                             <div className={classes.chartView}>
                                 <div className={classes.rangeSlider}>
                                     <ZoomSlider
-                                        onChange={setZoomMax}
-                                        min={300}
-                                        max={timeframes[0].population}
-                                        initValue={timeframes[0].population}
+                                        onChange={handleZoomChange}
+                                        value={zoomInnerValue}
                                     />
                                 </div>
                                 <div>

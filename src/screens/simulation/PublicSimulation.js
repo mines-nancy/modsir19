@@ -17,7 +17,7 @@ import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import AutoSave from '../../components/fields/AutoSave';
 import colors from './colors';
-import { ZoomSlider } from './ZoomSlider';
+import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
 import { PopoverInfo } from '../../components/PopoverInfo';
 
@@ -75,6 +75,8 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     block: {
+        pointerEvents: 'all',
+        cursor: 'pointer',
         padding: 8,
         width: 64,
         height: 64,
@@ -161,12 +163,19 @@ const straightLine = (name, options = {}) => ({
     },
 });
 
-const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mobile }) => {
+const Legend = ({
+    stats,
+    onLegendEnter = () => {},
+    onLegendLeave = () => {},
+    onLegendClick,
+    mobile,
+}) => {
     const classes = useStyles();
 
-    const addMouseProps = (ids) => ({
+    const addMouseProps = (key, ids) => ({
         onMouseEnter: () => onLegendEnter(ids),
         onMouseLeave: () => onLegendLeave(),
+        onClick: () => onLegendClick(key),
     });
 
     if (mobile) {
@@ -199,7 +208,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                         ]}
                     >
                         <Block
-                            {...addMouseProps(['Exposés'])}
+                            {...addMouseProps('SE', ['Exposés'])}
                             label="Sains"
                             value={stats['Exposés'] || ''}
                             color={colors.exposed.bg}
@@ -219,7 +228,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                         ]}
                     >
                         <Block
-                            {...addMouseProps(['Incubation', 'Infectés'])}
+                            {...addMouseProps('I', ['Incubation', 'Infectés'])}
                             label="Malades"
                             value={(stats['Incubation'] || 0) + (stats['Infectés'] || 0) || ''}
                             color={colors.infected.bg}
@@ -227,7 +236,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                     </Node>
                     <Node name="gueri" targets={[]}>
                         <Block
-                            {...addMouseProps(['Guéris'])}
+                            {...addMouseProps('R', ['Guéris'])}
                             label="Guéris"
                             value={stats['Guéris'] || ''}
                             color={colors.recovered.bg}
@@ -250,7 +259,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                         ]}
                     >
                         <Block
-                            {...addMouseProps([
+                            {...addMouseProps('SI', [
                                 'Soins de suite',
                                 'Soins intensifs',
                                 'Soins medicaux',
@@ -266,7 +275,7 @@ const Legend = ({ stats, onLegendEnter = () => {}, onLegendLeave = () => {}, mob
                     </Node>
                     <Node name="decede" targets={[]}>
                         <Block
-                            {...addMouseProps(['Décédés'])}
+                            {...addMouseProps('DC', ['Décédés'])}
                             label="Décédés"
                             value={stats['Décédés'] || ''}
                             color={colors.death.bg}
@@ -379,7 +388,10 @@ const PublicSimulation = () => {
     );
 
     const [timeframes, setTimeframes] = useState(getTimeframesFromValues(initialValues));
-    const [zoomMax, setZoomMax] = useState(timeframes[0].population);
+    const { zoom, setZoom, value: zoomInnerValue, handleChange: handleZoomChange } = useZoom({
+        min: 300,
+        max: timeframes[0].population,
+    });
 
     const lines = graphTimeframes.map((timeframe) => ({
         value: format(timeframe.date, 'yyyy-MM-dd'),
@@ -425,6 +437,25 @@ const PublicSimulation = () => {
         return null;
     }
 
+    const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
+    const mergedValues = {
+        SE: values.SE,
+        DC: values.DC,
+        R: values.R,
+        I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
+        SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
+    };
+
+    const handleLegendClick = (key) => {
+        const max = Math.max(...mergedValues[key]);
+
+        if (zoom === max) {
+            setZoom(timeframes[0].population);
+        } else {
+            setZoom(max);
+        }
+    };
+
     const handleSubmit = (values) => {
         setTimeframes(getTimeframesFromValues(values));
     };
@@ -444,21 +475,13 @@ const PublicSimulation = () => {
         axis: {
             y: {
                 show: true,
-                max: zoomMax,
+                max: zoom,
             },
         },
     };
 
-    const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
-    const mergedValues = {
-        SE: values.SE,
-        DC: values.DC,
-        R: values.R,
-        I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
-        SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
-    };
     const visibleValues = Object.keys(mergedValues).reduce((acc, key) => {
-        if (Math.max(...mergedValues[key]) <= 10.0 * zoomMax) {
+        if (Math.max(...mergedValues[key]) <= 10.0 * zoom) {
             acc[key] = mergedValues[key];
         } else {
             acc[key] = Array.from({ length: mergedValues[key].length }, (v, i) => 0);
@@ -471,12 +494,7 @@ const PublicSimulation = () => {
             <div className={classes.root}>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
-                        <ZoomSlider
-                            onChange={setZoomMax}
-                            min={300}
-                            max={timeframes[0].population}
-                            initValue={timeframes[0].population}
-                        />
+                        <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
                     </div>
                     <div style={{ flex: 1, position: 'relative' }}>
                         <div className={classes.legend}>
@@ -484,6 +502,7 @@ const PublicSimulation = () => {
                                 stats={currentStats}
                                 onLegendEnter={handleLegendEnter}
                                 onLegendLeave={handleLegendLeave}
+                                onLegendClick={handleLegendClick}
                                 mobile={small}
                             />
                         </div>

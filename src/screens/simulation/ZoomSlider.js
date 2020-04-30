@@ -23,23 +23,42 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ZoomSlider = ({ onChange, initValue, min, max }) => {
-    var logMin = Math.log(min);
-    var logMax = Math.log(max);
+export const useZoom = ({ min, max }) => {
+    const logMin = Math.log(min);
+    const logMax = Math.log(max);
+
     const scale = (logMax - logMin) / 100;
     const zoomToValue = (value) => Math.exp(logMin + scale * value);
     const valueToZoom = (value) => (Math.log(value) - logMin) / scale;
 
-    const [innerMax, setInnerMax] = useState(valueToZoom(initValue));
-    const classes = useStyles();
-
-    const theme = useTheme();
-    const small = useMediaQuery(theme.breakpoints.down('sm'));
+    const [innerValue, setInnerValue] = useState(valueToZoom(max));
+    const [value, setValue] = useState(max);
 
     const handleChange = (commited) => (_, value) => {
-        setInnerMax(value);
-        commited && onChange(zoomToValue(value));
+        setInnerValue(value);
+
+        if (commited) {
+            setValue(zoomToValue(value));
+        }
     };
+
+    const setZoom = (value) => {
+        setValue(value);
+        setInnerValue(valueToZoom(value));
+    };
+
+    return {
+        zoom: value,
+        value: innerValue,
+        handleChange,
+        setZoom,
+    };
+};
+
+export const ZoomSlider = ({ onChange, value }) => {
+    const classes = useStyles();
+    const theme = useTheme();
+    const small = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
         <div className={classes.zoom}>
@@ -47,11 +66,11 @@ export const ZoomSlider = ({ onChange, initValue, min, max }) => {
             <Slider
                 classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
                 orientation={small ? 'horizontal' : 'vertical'}
-                value={innerMax}
+                value={value}
                 max={100}
                 min={0}
-                onChangeCommitted={handleChange(true)}
-                onChange={handleChange(false)}
+                onChangeCommitted={onChange(true)}
+                onChange={onChange(false)}
                 aria-labelledby="range-slider"
             />
             <ZoomOut fontSize="small" />
