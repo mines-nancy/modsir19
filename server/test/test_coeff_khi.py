@@ -36,13 +36,13 @@ class testKhiGeneration(unittest.TestCase) :
         self.assertAlmostEqual(sum(khi_tab), 1)
         self.assertAlmostEqual(compute_expectation(khi_tab), 5)
     
-    def test_binom_khi_1(self) :
+    def test_exp_khi_2(self) :
         
         khi_tab = compute_khi_binom(15, 21)
         self.assertAlmostEqual(sum(khi_tab), 1)
         self.assertAlmostEqual(compute_expectation(khi_tab), 15)
     
-    def test_binom_khi_2(self) :
+    def test_exp_khi_3(self) :
         
         khi_tab = compute_khi_binom(25, 37)
         self.assertAlmostEqual(sum(khi_tab), 1)
