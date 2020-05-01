@@ -2,7 +2,7 @@ from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
-from models.components.utils import compute_khi_exp, compute_khi_binom, compute_delay_ki
+from models.components.utils import compute_khi_exp, compute_khi_binom, compute_khi_delay
 from operator import add
 
 
@@ -14,7 +14,7 @@ class State:
         self._boxes = {
             'SE': BoxSource('SE'),
             # 'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
-            'INCUB': BoxConvolution('INCUB', compute_delay_ki(self.delay('dm_incub'))),
+            'INCUB': BoxConvolution('INCUB', compute_khi_delay(self.delay('dm_incub'))),
 
             'IR': BoxConvolution('IR', compute_khi_exp(self.delay('dm_r'))),
             'IH': BoxConvolution('IH', compute_khi_exp(self.delay('dm_h'))),
@@ -90,7 +90,7 @@ class State:
                 compute_khi_exp(self.delay(field_name)))
         elif field_name in ['dm_incub']:
             self.box(box_to_update[field_name]).set_output_coefficients(
-                compute_delay_ki(self.delay(field_name)))
+                compute_khi_delay(self.delay(field_name)))
         elif field_name in ['dm_si']:
             print(f'no update for: {field_name}')
 
