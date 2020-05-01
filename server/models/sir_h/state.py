@@ -2,7 +2,7 @@ from models.components.box import BoxSource, BoxTarget
 from models.components.box_dms import BoxDms
 from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
-from models.components.utils import compute_exp_ki, compute_delay_ki
+from models.components.utils import compute_khi_exp, compute_khi_binom, compute_khi_delay
 from operator import add
 
 
@@ -14,13 +14,13 @@ class State:
         self._boxes = {
             'SE': BoxSource('SE'),
             # 'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
-            'INCUB': BoxConvolution('INCUB', compute_delay_ki(self.delay('dm_incub'))),
+            'INCUB': BoxConvolution('INCUB', compute_khi_delay(self.delay('dm_incub'))),
 
-            'IR': BoxConvolution('IR', compute_exp_ki(self.delay('dm_r'))),
-            'IH': BoxConvolution('IH', compute_exp_ki(self.delay('dm_h'))),
-            'SM': BoxConvolution('SM', compute_exp_ki(self.delay('dm_sm'))),
+            'IR': BoxConvolution('IR', compute_khi_exp(self.delay('dm_r'))),
+            'IH': BoxConvolution('IH', compute_khi_exp(self.delay('dm_h'))),
+            'SM': BoxConvolution('SM', compute_khi_exp(self.delay('dm_sm'))),
             'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
-            'SS': BoxConvolution('SS', compute_exp_ki(self.delay('dm_ss'))),
+            'SS': BoxConvolution('SS', compute_khi_exp(self.delay('dm_ss'))),
 
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
@@ -87,10 +87,10 @@ class State:
                          'dm_ss': 'SS'}
         if field_name in ['dm_r', 'dm_h', 'dm_sm', 'dm_ss']:
             self.box(box_to_update[field_name]).set_output_coefficients(
-                compute_exp_ki(self.delay(field_name)))
+                compute_khi_exp(self.delay(field_name)))
         elif field_name in ['dm_incub']:
             self.box(box_to_update[field_name]).set_output_coefficients(
-                compute_delay_ki(self.delay(field_name)))
+                compute_khi_delay(self.delay(field_name)))
         elif field_name in ['dm_si']:
             print(f'no update for: {field_name}')
 

@@ -1,59 +1,29 @@
 from scipy.optimize import fsolve
+from scipy.special import binom
 
 
-def compute_ratio(dms, max_days):
-    def f(q):
-        return (1 / 2) * (1 - q ** max_days) * (1 + q) / (1 - q) - dms
+def compute_khi_binom(dms, max_days=21):
+    param = (dms - 1) / (max_days - 1) if max_days > 1 else 1
+    return [binom(max_days - 1, k) * param ** k * (1 - param) ** (max_days - 1 - k) for k in range(max_days)]
 
+
+def compute_khi_exp(dms, max_days=21):
+    def f(x):
+        return (1 - x ** (max_days)) / (1 - x) - dms
     solutions = fsolve(f, 5)
-    ratio = solutions[0]
-    return ratio
+    param = solutions[0]
+    return [param ** k * (1 - param) for k in range(max_days-1)] + [param ** (max_days - 1)]
 
 
-def compute_residuals(dms, max_days):
-    ratio = compute_ratio(dms, max_days)
-    residuals = [ratio ** i for i in range(max_days + 1)]
-    return residuals
-
-
-def compute_khi(residuals):
-    max_days = len(residuals) - 1
-    khi = [residuals[i] - residuals[i + 1] for i in range(max_days)]
-    proba_tot = sum(khi)
-
-    for i in range(max_days):
-        khi[i] /= proba_tot
-
-    return khi
-
-
-def compute_exp_ki(duration, max_days=21):
-    return compute_khi(compute_residuals(duration, max_days))
-
-
-def compute_delay_ki(duration):
+def compute_khi_delay(duration):
     if duration <= 1:
         return [1]
     else:
         return [0]*(duration-2) + [0.5, 0.5]
 
 
-def compute_area(dms, max_days):
-
-    residuals = compute_residuals(dms, max_days)
-    khi = compute_khi(residuals)
-
-    area = 0
-    for k in range(max_days):
-        area += (residuals[k] + residuals[k + 1]) / 2
-
-    sum_khi = sum(khi)
-
-    return area, sum_khi
-
-
-# area, sum_khi = compute_area(5, 10)
-
-# print('khi = ' + str(compute_khi(compute_residuals(5, 21))))
-# print('area = ' + str(area))
-# print('sum(khi) = ' + str(sum_khi))
+def compute_residuals(khi_tab):
+    residuals = [1]
+    for k in range(len(khi_tab)):
+        residuals.append(residuals[k] - khi_tab[k])
+    return residuals
