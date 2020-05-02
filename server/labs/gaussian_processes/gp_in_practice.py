@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 # The code on gaussian processes gas been adapted from Imperial College's CO493
-# "Probabilistic Inferrence" lead by Dr. Mark Van der Wilk
+# "Probabilistic Inference" lead by Dr. Mark Van der Wilk
 
-''' this is an ugly hack to be removed and integrated in proper Python package management if ever needed '''
+''' Invoke as python -m labs.gaussian_process.gp_in_practice [options] from the server directory to run the simulator
+'''
+
+''' this is an ugly hack to be removed and integrated in proper Python package management if ever needed
 if __name__ == '__main__' and __package__ is None:
     import sys
     from os import path
     sys.path.append( path.dirname( path.dirname( path.dirname( path.abspath(__file__) ) ) ) )
-''' end ugly hack '''
+end ugly hack '''
 
 
 import matplotlib.pyplot as plt

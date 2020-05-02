@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-''' this is an ugly hack to be removed and integrated in proper Python package management if ever needed '''
+''' Invoke as python -m labs.model_fitter [options] from the server directory to run the simulator
+'''
+''' this is an ugly hack to be removed and integrated in proper Python package management if ever needed
 if __name__ == '__main__' and __package__ is None:
     import sys
     from os import path
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-''' end ugly hack '''
+end ugly hack '''
 
 from models.sir_h.simulator import run_sir_h
 from scipy.optimize import minimize

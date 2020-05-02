@@ -1,6 +1,6 @@
 ''' This is mainly demo code showing how to invoke the MODSIR19 simulator with
     default parameters
-    python -m labs.run_simulator [file] tu run the simulator
+    python -m labs.run_simulator [options] from the server directory to run the simulator
 '''
 import numpy as np
 import matplotlib.pyplot as plt
