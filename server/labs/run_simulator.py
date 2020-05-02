@@ -32,10 +32,8 @@ import os.path
 '''
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        prog="python run_simulator.py",
-        description='Run MODSIR-19 simulator on provided parameter sets.')
-    parser.add_argument('files', metavar='file', type=str, nargs='*',
+    parser = argparse.ArgumentParser(prog="python run_simulator.py", description='Run MODSIR-19 simulator on provided parameter sets.')
+    parser.add_argument('-p', '--params', metavar='file', type=str, nargs='*',
                    help='pathname to parameter set (JSON)')
     parser.add_argument('-o', metavar='curve', type=str, nargs='+',
                    help="list of curve identifiers to output (in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
@@ -61,30 +59,38 @@ if __name__ == "__main__":
     data_day0 = {date-day0: data_chu[date]
                  for date in data_chu}
 
-    SI = series['SI']
-    x = np.linspace(0, len(SI), len(SI))
+    if args.o :
+        curve_list = args.o
+    else :
+        curve_list = ['SI']
+
+    x = np.linspace(0, parameters['lim_time'], parameters['lim_time'])
 
     if not args.noplot :
-        plt.plot(x, SI, label="Baseline Soins Intensifs")
-        plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x',  label="Data CHU")
-
-    for f in args.files :
-        parameters, rules, other = defaults.import_json(f)
-        f_base = os.path.splitext(os.path.basename(f))[0]
-        series = run_sir_h(parameters, rules)
-
-        for curve in args.o :
+        for curve in curve_list :
             c = series[curve]
-            if not args.noplot :
-                min_size = min(len(x),len(c))
-                plt.plot(x[:min_size], c[:min_size], label=curve + " " + f_base)
-            if args.save :
-                with open(args.save[0]+curve+"_"+f_base+".csv", mode='w') as output_file:
-                    output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            plt.plot(x, c, label="Baseline "+curve)
+        ''' @TODO allow for other reference data to be plotted '''
+        plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x',  label="Data CHU SI")
 
-                    '''  @TODO check if numbering starts from 1 or from 0 '''
-                    for item in zip(range(len(c)),c) :
-                        output_writer.writerow(item)
+    if args.params :
+        for f in args.params :
+            parameters, rules, other = defaults.import_json(f)
+            f_base = os.path.splitext(os.path.basename(f))[0]
+            series = run_sir_h(parameters, rules)
+
+            for curve in curve_list :
+                c = series[curve]
+                if not args.noplot :
+                    min_size = min(len(x),len(c))
+                    plt.plot(x[:min_size], c[:min_size], label=curve + " " + f_base)
+                if args.save :
+                    with open(args.save[0]+curve+"_"+f_base+".csv", mode='w') as output_file:
+                        output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+                        '''  @TODO check if numbering starts from 1 or from 0 '''
+                        for item in zip(range(len(c)),c) :
+                            output_writer.writerow(item)
 
     if not args.noplot :
         plt.legend(loc='upper right')
