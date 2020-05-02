@@ -215,12 +215,12 @@ if __name__ == "__main__":
 
         print(res.x)
         print(f"Optimal parameters for run {k}")
-        print(f" - beta_pre: {beta_pre} ({default_parameters[0]})")
-        print(f" - beta_post:{beta_post} ({default_parameters[1]})")
+        print(f" - beta_pre: {beta_pre} ({default_variables[0]})")
+        print(f" - beta_post:{beta_post} ({default_variables[1]})")
         print(f" - r0_pre:   {round(r0_pre, 3)}")
         print(f" - r0_post:  {round(r0_post, 3)}")
-        print(f" - patient0: {round(patient0, 3)} ({default_parameters[2]})")
-        print(f" - dm_h: {round(dm_h, 3)} ({default_parameters[3]})")
+        print(f" - patient0: {round(patient0, 3)} ({default_variables[2]})")
+        print(f" - dm_h: {round(dm_h, 3)} ({default_variables[3]})")
 
         print(" ### ### ### ###")
         print(f" - spike_height: {round(spike_height, 3)} (target: {round(target_height, 3)})")
