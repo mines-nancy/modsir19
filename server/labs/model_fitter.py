@@ -20,6 +20,9 @@ import matplotlib.pyplot as plt
 
 import defaults
 import datetime
+import argparse
+import csv
+import os.path
 
 """
 Objectif: ajuster la courbe prédite par SIR+H pour coller au mieux aux données observées en réa
@@ -100,6 +103,19 @@ def optimize2(init_parameters, parameter_bounds, target) :
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(prog="python model_fitter.py", description='Fit MODSIR-19 simulator parameters on provided measured data.')
+    parser.add_argument('-p', '--params', metavar='parameters', type=str, nargs=1,
+                   help='pathname to initial parameter set (JSON)')
+    parser.add_argument('-i', '--in', metavar='input', type=str, nargs=1,
+                   help='input file containing measured parameters (CSV format)')
+    parser.add_argument('-d', '--data', metavar='data', type=str, nargs=1,
+                   help="identification of measured data used for optimization (in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
+    parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
+    parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs=1,
+                   help='filename prefix to output obtained curve points in .csv file format')
+
+    args = parser.parse_args()
+
     default_model_params = defaults.get_default_params()
     day0 = default_model_params['data']['day0']
     data_chu = default_model_params['data']['data_chu_rea']
@@ -122,24 +138,24 @@ if __name__ == "__main__":
         default_model_params['parameters']['dm_h']])
     #print(parameters)
     base = run_model(default_parameters)
-    plt.plot(range(200),base[2], label="Baseline")
+    plt.plot(range(len(base[2])),base[2], label="Baseline")
 
     boundmargin = 0.3
     auto_infbounds = [ (1-boundmargin)*p for p in default_parameters]
     auto_supbounds = [ (1+boundmargin)*p for p in default_parameters]
     auto_bounds = Bounds(auto_infbounds, auto_supbounds)
 
-    manual_infbounds = [3.0/9, 0.1/9, 0, 0]
-    manual_supbounds = [4.0/9, 2.0/9, 200, 10]
+    manual_infbounds = [1.0/9, 0.1/9, 0, 0]
+    manual_supbounds = [5.0/9, 2.0/9, 200, 10]
     manual_bounds = Bounds(manual_infbounds, manual_supbounds)
 
     results = {}
 
     #results['auto1'] = optimize(default_parameters, auto_bounds, targets)
-    results['auto2'] = optimize2(default_parameters, auto_bounds, data_chu)
+    #results['auto2'] = optimize2(default_parameters, auto_bounds, data_chu)
     results['manual1'] = optimize(manual_parameters, manual_bounds, targets)
     '''@BUG following line of code produces failed assertion at runtime '''
-    #results['manual2'] = optimize2(manual_parameters, manual_bounds, data_chu)
+    results['manual2'] = optimize2(manual_parameters, manual_bounds, data_chu)
 
     outputdir = "./outputs/"
     if not os.path.exists(outputdir) :
@@ -190,7 +206,7 @@ if __name__ == "__main__":
 
         ''' Plot output
         '''
-        plt.plot(range(200),full, label="Optimized "+k)
+        plt.plot(range(len(full)),full, label="Optimized "+k)
 
 
     data_day0 = {date-day0: data_chu[date] for date in data_chu }
