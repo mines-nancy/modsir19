@@ -5,7 +5,7 @@
 ''' Invoke as python -m labs.gaussian_process.gp_in_practice [options] from the server directory to run the simulator
 '''
 
-''' this is an ugly hack to be removed and integrated in proper Python package management if ever needed
+'''this is an ugly hack to be removed and integrated in proper Python package management if ever needed
 if __name__ == '__main__' and __package__ is None:
     import sys
     from os import path
@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Dict, Tuple, Sequence
 
-from gaussian_process import GaussianProcess
-from kernels.gaussian_kernel import GaussianKernel
+from .gaussian_process import GaussianProcess
+from .kernels.gaussian_kernel import GaussianKernel
 
 import argparse
 import os.path
@@ -44,7 +44,7 @@ def continuous_from_array(xs: np.ndarray, array: [float]) -> np.ndarray:
     interpolation = list()
 
     for x in list(xs.flatten()):
-        x -= décalage
+        x -= decalage
         x_idx = int(x)
         if x_idx >= len(array)-1:
             interpolation.append(array[-1] + (array[-1] - array[-2]) * (x - len(array) + 1))
@@ -165,9 +165,10 @@ if __name__ == '__main__':
         read_prior_values = pd.read_csv(args.prior[0],sep=',').to_numpy()
         read_prior_values=list(map(tuple, read_prior_values))
         read_prior_values.sort()
-
-    décalage = 47
-    prior_values = [4.384111622443432, 4.899085274608397, 5.474291047003429, 6.116708882883491, 6.833931204693223,
+        prior_values = read_prior_values
+    else :
+        decalage = 47
+        default_prior_values = [4.384111622443432, 4.899085274608397, 5.474291047003429, 6.116708882883491, 6.833931204693223,
                     7.634518709361278, 8.52824228405142, 9.526120152948556, 10.64039878809136, 11.884619945765644,
                     13.273804084051704, 14.824702321405983, 16.556037715697617, 18.488710600262863, 20.645997234605222,
                     23.05378251293296, 25.740848051372865, 28.739206692744098, 32.08446400456186, 35.81619769044761,
@@ -179,10 +180,11 @@ if __name__ == '__main__':
                     167.22105614564794, 164.72243635566969, 161.98582417820387, 159.05878729814492, 155.98265793944518,
                     152.79310353072083, 149.52079933343614, 146.19203813547034, 142.82925462148987, 139.4514863496153,
                     136.0747885821544, 132.712614060573, 129.3761574889298, 126.07466307459195, 122.81569592779188]
+        prior_values = [ (x, y) for (x, y) in zip(range(0+decalage, len(default_prior_values)+decalage), default_prior_values) ]
 
 
-    prior_mean_2D = lambda x: continuous_from_array_2D(x, read_prior_values)
-    prior_mean = lambda x: continuous_from_array(x, prior_values)
+    prior_mean_2D = lambda x: continuous_from_array_2D(x, prior_values)
+    #prior_mean = lambda x: continuous_from_array(x, default_prior_values)
 
     #sys.exit()
     ''' Version Initiale '''
@@ -193,7 +195,7 @@ if __name__ == '__main__':
     opt_params = gp_orig.optimise_parameters().x
     gp_orig.set_kernel_parameters(*opt_params)
 
-    plot_range = np.arange(0+décalage, 70+décalage, 0.1)
+    plot_range = np.arange(0+decalage, 70+decalage, 0.1)
     gp_orig_mean = gp_orig.mean(plot_range).flatten()
     gp_orig_std = gp_orig.std(plot_range).flatten()
 
@@ -219,10 +221,9 @@ if __name__ == '__main__':
     #plt.legend()
     '''
     ''' Nouvelle Version '''
-    #read_prior_values = [ (x, y) for (x, y) in zip(range(0+décalage, 70+décalage), prior_values) ]
 
     gp = GaussianProcess(kernel, target_x_train, target_y_train, prior_mean=(lambda x: x))
-    gp.prior_mean = lambda x: continuous_from_array_2D(x, read_prior_values)
+    gp.prior_mean = lambda x: continuous_from_array_2D(x, prior_values)
     opt_params = gp.optimise_parameters().x
     gp.set_kernel_parameters(*opt_params)
 

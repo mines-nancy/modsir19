@@ -9,7 +9,7 @@ import numpy as np
 import scipy.optimize
 from scipy.stats import norm, multivariate_normal
 
-from kernels.abstract_kernel import Kernel
+from .kernels.abstract_kernel import Kernel
 #from objective_functions.abstract_objective_function import ObjectiveFunction
 
 

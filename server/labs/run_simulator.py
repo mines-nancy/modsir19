@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from models.sir_h.state import State
 from models.sir_h.simulator import run_sir_h
 from models.rule import RuleChangeField, RuleEvacuation
-from labs.defaults import get_default_params, import_json, export_json
+from .defaults import get_default_params, import_json, export_json
 import argparse
 import csv
 import os.path

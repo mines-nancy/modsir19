@@ -20,7 +20,7 @@ from os import mkdir
 from models.rule import RuleChangeField
 import matplotlib.pyplot as plt
 
-import defaults
+from .defaults import get_default_params, import_json, export_json
 import datetime
 import argparse
 import csv
@@ -50,7 +50,7 @@ def run_model(variables: [float], model_parameters, model_rules):
                        'dm_h': dm_h})
 
     # Changement par rapport à la version de PEM en reprenant l'ensemble des règles du confinement
-    confinement = defaults.get_default_params()['other']['confinement']
+    confinement = get_default_params()['other']['confinement']
 
     rules = [RuleChangeField(confinement,  'beta',  beta_post),
              RuleChangeField(confinement,  'r',  1.0)]
@@ -79,7 +79,7 @@ def obj_func2(model_variables, targets, model_parameters, model_rules):
     pred_height, pred_date, full = run_model(model_variables, model_parameters, model_rules)
 
     value = 0.0
-    day0 = defaults.get_default_params()['data']['day0']
+    day0 = get_default_params()['data']['day0']
 
     def f( row ):
         return abs(row[1]-full[math.floor(row[0]-day0)])
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    default_model_params = defaults.get_default_params()
+    default_model_params = get_default_params()
     day0 = default_model_params['data']['day0']
 
     read_target = None
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     target_goals = np.array([target_height, target_date])
 
     if args.params :
-        model_parameters, model_rules, other = defaults.import_json(args.params[0])
+        model_parameters, model_rules, other = import_json(args.params[0])
     else :
         model_parameters = default_model_params['parameters']
         model_rules = default_model_params['rules']
@@ -213,7 +213,7 @@ if __name__ == "__main__":
         other['r0_confinement'] = r0_post
 
         filename = "_".join([basename, k, "params"])+".json"
-        defaults.export_json(filename, parameters, rules, other)
+        export_json(filename, parameters, rules, other)
 
         print(res.x)
         print(f"Optimal parameters for run {k}")

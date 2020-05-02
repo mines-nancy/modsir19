@@ -4,7 +4,7 @@
 
 import numpy as np
 
-from kernels.abstract_kernel import Kernel
+from .abstract_kernel import Kernel
 
 
 class GaussianKernel(Kernel):
