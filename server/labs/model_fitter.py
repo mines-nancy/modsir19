@@ -22,6 +22,8 @@ import defaults
 import datetime
 import argparse
 import csv
+import math
+import pandas as pd
 import os.path
 
 """
@@ -35,11 +37,11 @@ Parametres ajustables: @TODO compléter la descritpion obsolète
     - pc_ih
 """
 
-def run_model(params: [float]):
+def run_model(variables: [float], model_parameters, model_rules):
 
-    parameters = defaults.get_default_params()['parameters']
+    parameters = model_parameters
 
-    beta_pre, beta_post, patient0, dm_h = params
+    beta_pre, beta_post, patient0, dm_h = variables
     #print(f'beta_pre={beta_pre} beta_post={beta_post}')
     parameters.update({'patient0': patient0,
                        'beta': beta_pre,
@@ -59,8 +61,8 @@ def run_model(params: [float]):
     return spike_height, spike_date, lists["SI"]
 
 ''' objective function minimising weighted distance between peak and height of peak '''
-def obj_func(model_parameters, targets):
-    pred_height, pred_date, full = run_model(model_parameters)
+def obj_func(model_variables, targets, model_parameters, model_rules):
+    pred_height, pred_date, full = run_model(model_variables, model_parameters, model_rules)
     target_height, target_date = targets
 
     date_weight = 0.999
@@ -71,34 +73,35 @@ def obj_func(model_parameters, targets):
     return (1-date_weight) * (pred_height/target_height - 1)**2 + date_weight * ((pred_date-target_date)/200)**2
 
 ''' objective function minimising SSD between sample points '''
-def obj_func2(model_parameters, targets):
-    pred_height, pred_date, full = run_model(model_parameters)
+def obj_func2(model_variables, targets, model_parameters, model_rules):
+    pred_height, pred_date, full = run_model(model_variables, model_parameters, model_rules)
 
     value = 0.0
     day0 = defaults.get_default_params()['data']['day0']
 
-    for k,v in targets.items():
-        if v :
-            value += (v-full[k-day0])**2
+    def f( row ):
+        return abs(row[1]-full[math.floor(row[0]-day0)])
+
+    value = np.sum(np.apply_along_axis(f, axis=1, arr=targets ))
 
     return value
 
-def optimize(init_parameters, parameter_bounds, target) :
+def optimize(init_variables, variable_bounds, target, model_parameters, model_rules) :
 
-    res = minimize(fun=(lambda model_parameters: obj_func(model_parameters, target)), x0=init_parameters,
-                       method='trust-constr', bounds=parameter_bounds,
+    res = minimize(fun=(lambda model_variables: obj_func(model_variables, target, model_parameters, model_rules)), x0=init_variables,
+                       method='trust-constr', bounds=variable_bounds,
                        options={})
 
-    spike_height, spike_date, full = run_model(res.x)
+    spike_height, spike_date, full = run_model(res.x, model_parameters, model_rules)
     return res, spike_height, spike_date, full
 
-def optimize2(init_parameters, parameter_bounds, target) :
+def optimize2(init_variables, variable_bounds, target, model_parameters, model_rules) :
 
-    res = minimize(fun=(lambda model_parameters: obj_func2(model_parameters, target)), x0=init_parameters,
-                       method='trust-constr', bounds=parameter_bounds,
+    res = minimize(fun=(lambda model_variables: obj_func2(model_variables, target, model_parameters, model_rules)), x0=init_variables,
+                       method='trust-constr', bounds=variable_bounds,
                        options={})
 
-    spike_height, spike_date, full = run_model(res.x)
+    spike_height, spike_date, full = run_model(res.x, model_parameters, model_rules)
     return res, spike_height, spike_date, full
 
 if __name__ == "__main__":
@@ -106,7 +109,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python model_fitter.py", description='Fit MODSIR-19 simulator parameters on provided measured data.')
     parser.add_argument('-p', '--params', metavar='parameters', type=str, nargs=1,
                    help='pathname to initial parameter set (JSON)')
-    parser.add_argument('-i', '--in', metavar='input', type=str, nargs=1,
+    parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
                    help='input file containing measured parameters (CSV format)')
     parser.add_argument('-d', '--data', metavar='data', type=str, nargs=1,
                    help="identification of measured data used for optimization (in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
@@ -114,35 +117,52 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs=1,
                    help='filename prefix to output obtained curve points in .csv file format')
 
+    ''' @TODO take into account current passed arguments.
+        Current behaviour is to take default parameters and to optimise for 'SI'
+    '''
+
     args = parser.parse_args()
 
     default_model_params = defaults.get_default_params()
     day0 = default_model_params['data']['day0']
-    data_chu = default_model_params['data']['data_chu_rea']
+
+    read_target = None
+    if args.input :
+        read_target = pd.read_csv(args.input[0],sep=';').to_numpy()
+        target = read_target
+    else :
+        default_data = default_model_params['data']['data_chu_rea']
+        target = np.array([ [x-day0,y]  for (x,y) in default_data.items() if y  ]).reshape([-1,2])
 
     ''' Compute default target values (peak target_height and target_date)
     '''
-    target_height = max([ v if v else 0 for v in data_chu.values()])
-    index = list(data_chu.values()).index(target_height)
-    indexvalue = list(data_chu.keys())[index]
-    target_date = indexvalue-day0
+    target_height = max(target[:,1])
+    index = np.argmax(target[:,1])
+    target_date = target[index,0]-day0
 
-    targets = np.array([target_height, target_date])
+    target_goals = np.array([target_height, target_date])
+
+    if args.params :
+        model_parameters, model_rules, other = defaults.import_json(args.params[0])
+    else :
+        model_parameters = default_model_params['parameters']
+        model_rules = default_model_params['rules']
 
     # parameters: beta_pre, beta_post, patient0, dm_h
-    manual_parameters = np.array([3.31/9, 0.4/9, 40, 6])
+    manual_variables = np.array([3.31/9, 0.4/9, 40, 6])
 
-    default_parameters = np.array([default_model_params['parameters']['beta'],
+    default_variables = np.array([default_model_params['parameters']['beta'],
         default_model_params['other']['r0_confinement']/default_model_params['parameters']['dm_r'],
         default_model_params['parameters']['patient0'],
         default_model_params['parameters']['dm_h']])
     #print(parameters)
-    base = run_model(default_parameters)
-    plt.plot(range(len(base[2])),base[2], label="Baseline")
+    base = run_model(default_variables, model_parameters, model_rules)
+    if not args.noplot :
+        plt.plot(range(len(base[2])),base[2], label="Baseline")
 
     boundmargin = 0.3
-    auto_infbounds = [ (1-boundmargin)*p for p in default_parameters]
-    auto_supbounds = [ (1+boundmargin)*p for p in default_parameters]
+    auto_infbounds = [ (1-boundmargin)*p for p in default_variables]
+    auto_supbounds = [ (1+boundmargin)*p for p in default_variables]
     auto_bounds = Bounds(auto_infbounds, auto_supbounds)
 
     manual_infbounds = [1.0/9, 0.1/9, 0, 0]
@@ -151,16 +171,19 @@ if __name__ == "__main__":
 
     results = {}
 
-    #results['auto1'] = optimize(default_parameters, auto_bounds, targets)
-    #results['auto2'] = optimize2(default_parameters, auto_bounds, data_chu)
-    results['manual1'] = optimize(manual_parameters, manual_bounds, targets)
+    #results['auto1'] = optimize(default_variables, auto_bounds, target_goals, model_parameters, model_rules)
+    #results['auto2'] = optimize2(default_variables, auto_bounds, data_chu, model_parameters, model_rules)
+    results['manual1'] = optimize(manual_variables, manual_bounds, target_goals, model_parameters, model_rules)
     '''@BUG following line of code produces failed assertion at runtime '''
-    results['manual2'] = optimize2(manual_parameters, manual_bounds, data_chu)
+    results['manual2'] = optimize2(manual_variables, manual_bounds, target, model_parameters, model_rules)
 
     outputdir = "./outputs/"
     if not os.path.exists(outputdir) :
         os.mkdir(outputdir)
-    basename = outputdir+"commando-covid"
+
+    timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
+
+    basename = outputdir+timestamp+"commando-covid"
 
 
     parameters = default_model_params['parameters']
@@ -187,8 +210,7 @@ if __name__ == "__main__":
         other['r0'] = r0_pre
         other['r0_confinement'] = r0_post
 
-        suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-        filename = "_".join([basename, k, "params", suffix])+".json"
+        filename = "_".join([basename, k, "params"])+".json"
         defaults.export_json(filename, parameters, rules, other)
 
         print(res.x)
@@ -206,13 +228,13 @@ if __name__ == "__main__":
 
         ''' Plot output
         '''
-        plt.plot(range(len(full)),full, label="Optimized "+k)
+        if not args.noplot :
+            plt.plot(range(len(full)),full, label="Optimized "+k)
 
+    if not args.noplot :
+        plt.plot(target[:,0], target[:,1], 'x',  label="Data CHU")
+        plt.legend(loc='upper right')
 
-    data_day0 = {date-day0: data_chu[date] for date in data_chu }
-    plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x',  label="Data CHU")
-    plt.legend(loc='upper right')
-
-    filename = "_".join([basename, suffix])
-    plt.savefig(filename)
-    plt.show()
+        filename = "_".join([basename])
+        plt.savefig(filename)
+        plt.show()
