@@ -65,29 +65,29 @@ if __name__ == "__main__":
     SI = series['SI']
     x = np.linspace(0, len(SI), len(SI))
 
-    if not vars(args)['noplot'] :
+    if not args.noplot :
         plt.plot(x, SI, label="Baseline Soins Intensifs")
         plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x',  label="Data CHU")
 
-    for f in vars(args)['files'] :
+    for f in args.files :
         parameters, rules, other = defaults.import_json(f)
         f_base = os.path.splitext(os.path.basename(f))[0]
         series = run_sir_h(parameters, rules)
 
-        for curve in vars(args)['o'] :
+        for curve in args.o :
             c = series[curve]
-            if not vars(args)['noplot'] :
+            if not args.noplot :
                 min_size = min(len(x),len(c))
                 plt.plot(x[:min_size], c[:min_size], label=curve + " " + f_base)
-            if vars(args)['save'] :
-                with open(vars(args)['save'][0]+curve+"_"+f_base+".csv", mode='w') as output_file:
+            if args.save :
+                with open(args.save[0]+curve+"_"+f_base+".csv", mode='w') as output_file:
                     output_writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
                     '''  @TODO check if numbering starts from 1 or from 0 '''
                     for item in zip(range(len(c)),c) :
                         output_writer.writerow(item)
 
-    if not vars(args)['noplot'] :
+    if not args.noplot :
         plt.legend(loc='upper right')
         plt.show()
 
