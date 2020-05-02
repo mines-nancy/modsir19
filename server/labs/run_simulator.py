@@ -9,6 +9,8 @@ from models.sir_h.simulator import run_sir_h
 from models.rule import RuleChangeField, RuleEvacuation
 from labs.defaults import get_default_params, import_json, export_json
 import argparse
+import csv
+import os.path
 
 import csv
 import os.path
@@ -57,7 +59,7 @@ if __name__ == "__main__":
     day0 = data['day0']
     data_chu = data['data_chu_rea']
     data_day0 = {date-day0: data_chu[date]
-                 for date in data_chu}
+                 for date in data_chu }
 
     if args.o :
         curve_list = args.o
