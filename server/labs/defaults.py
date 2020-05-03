@@ -3,6 +3,8 @@ import json
 import re
 import importlib
 
+version = '0.1'  # Version of the json file content
+
 def export_json(filename, parameters = None, rules = None, others = None ) :
 
     ''' @TODO eventually this should be part of the Rule class '''
@@ -10,6 +12,7 @@ def export_json(filename, parameters = None, rules = None, others = None ) :
         return { 'type' : str(type(rule)), 'vars' : vars(rule) }
 
     data = dict()
+    data['version'] = version
     data['parameters'] = parameters
     data['rules'] = [ serialise_rule(r) for r in rules ]
     data['others'] = others
@@ -52,6 +55,18 @@ def import_json(filename) :
 
     return parameters, rules, others
 
+''' @TODO it would be interesting to have a function comparing two sets of parameters '''
+def diff_params(p1, p2) :
+
+    def diff_dict( d1, d2) :
+        return { k : d2[k] for k in set(d2) - set(d1) }
+
+    result = dict()
+
+    for k1, v1 in p1.items():
+        pass
+
+    ''' incomplete code ... to be done '''
 
 def get_default_params() :
     r0 = 3.31
@@ -68,8 +83,8 @@ def get_default_params() :
     # pc_si = 0.228
     # pc_sm_si = 0.256
     parameters = {'population': 1000000,
-                  'patient0': 90,
-                  'lim_time': 200,
+                  'patient0': 40,
+                  'lim_time': 250,
                   'r': 1.0,
                   'beta': r0 / dm_r,
                   'kpe': 1.0,
