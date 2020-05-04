@@ -22,6 +22,14 @@ def compute_khi_delay(duration):
         return [0]*(duration-2) + [0.5, 0.5]
 
 
+def compute_khi_linear(duration):
+    n = 2*duration-1
+    delta = 1/n
+    res = (n-1)*[delta]
+    res = res + [1-sum(res)]
+    return res
+
+
 def compute_residuals(khi_tab):
     residuals = [1]
     for k in range(len(khi_tab)):
