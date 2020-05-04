@@ -10,11 +10,13 @@ import {
     CardContent,
     Tooltip,
     CardHeader,
+    Button,
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { format, addDays, differenceInDays } from 'date-fns';
-import { InfoOutlined } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
+import { InfoOutlined, ArrowBackIos } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
@@ -57,27 +59,42 @@ const useStyles = makeStyles((theme) => ({
         flex: '0 0 200px',
     },
     legend: {
+        position: 'absolute',
+        [theme.breakpoints.down('sm')]: {
+            top: 10,
+            width: '100%',
+            textAlign: 'center',
+        },
         [theme.breakpoints.up('sm')]: {
-            position: 'absolute',
-            right: 20,
             top: 20,
-            left: 20,
+            right: 20,
+            left: -50, // Zoom handler width
             height: 350,
             zIndex: 999,
             pointerEvents: 'none',
         },
     },
+    backButton: {
+        pointerEvents: 'all',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+    },
     legendTitle: {
+        position: 'absolute',
+        top: 0,
+        width: '100%',
         textAlign: 'center',
     },
     legendBlockContainer: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
         display: 'flex',
+        width: 350,
         flexDirection: 'column',
         alignItems: 'flex-end',
-        width: 350,
-        marginLeft: 'auto',
         pointerEvents: 'none',
-        marginTop: '-54px',
     },
     blockRow: {
         display: 'flex',
@@ -142,6 +159,9 @@ const useStyles = makeStyles((theme) => ({
     formCard: {
         minWidth: 300,
         position: 'relative',
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+        },
     },
     formCardHeader: {
         paddingBottom: 0,
@@ -201,6 +221,18 @@ const straightLine = (name, options = {}) => ({
     },
 });
 
+const BackButton = ({ onClick }) => (
+    <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        startIcon={<ArrowBackIos />}
+        onClick={onClick}
+    >
+        Retour
+    </Button>
+);
+
 const Legend = ({
     date: { date, index },
     values,
@@ -211,6 +243,7 @@ const Legend = ({
     total,
 }) => {
     const classes = useStyles();
+    const history = useHistory();
 
     const addMouseProps = (key, ids) => ({
         onMouseEnter: () => onLegendEnter(ids),
@@ -218,8 +251,20 @@ const Legend = ({
         onClick: () => onLegendClick(key),
     });
 
-    if (!values || mobile) {
+    const handleGoBack = () => {
+        history.push('/');
+    };
+
+    if (!values) {
         return null;
+    }
+
+    if (mobile) {
+        return (
+            <div className={classes.legend}>
+                <BackButton onClick={handleGoBack} />
+            </div>
+        );
     }
 
     const i = index || values.R.length - 1;
@@ -232,6 +277,9 @@ const Legend = ({
 
     return (
         <GraphProvider>
+            <div className={classes.backButton}>
+                <BackButton onClick={handleGoBack} />
+            </div>
             <div className={classes.legendTitle}>
                 {!date ? (
                     <>
