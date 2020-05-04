@@ -1,5 +1,5 @@
 import unittest
-from models.components.utils import compute_residuals, compute_khi_exp, compute_khi_binom, compute_khi_delay
+from models.components.utils import *
 
 
 def compute_expectation(khi_tab):
@@ -33,6 +33,12 @@ class testKhiGeneration(unittest.TestCase):
             khi_tab = compute_khi_delay(dms)
             self.assertAlmostEqual(sum(khi_tab), 1)
             self.assertAlmostEqual(compute_expectation(khi_tab), dms-0.5)
+
+    def test_khi_linear(self):
+        for dms in range(3, 25):
+            khi_tab = compute_khi_linear(dms)
+            self.assertAlmostEqual(sum(khi_tab), 1)
+            self.assertAlmostEqual(compute_expectation(khi_tab), dms)
 
 
 if __name__ == '__main__':

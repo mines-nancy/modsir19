@@ -162,17 +162,19 @@ class State:
                 self.move(src_name, dest_name, to_move[i])
 
     def step_exposed(self):
-        se = self.box('SE').output(1)
+        # remove elements which have been removed since t-1
+        se = self.box('SE').output(1) - self.box('SE').removed(1)
         incub = self.box('INCUB').full_size(1)
         ir = self.box('IR').full_size(1)
         ih = self.box('IH').full_size(1)
         r = self.box('R').full_size(1)
         n = se + incub + ir + ih + r
-        delta = self.coefficient(
-            'r') * self.coefficient('beta') * se * (ir+ih) / n if n > 0 else 0
-        # print(f'ir={ir} ih={ih} delta={delta}')
+        r_beta = self.coefficient('r') * self.coefficient('beta')
+        delta = r_beta * (se+incub) * (ir+ih) / n if n > 0 else 0
+
         if self._integer:
             delta = int(delta)
+
         assert delta >= 0
 
         self.move('SE', 'INCUB', delta)
