@@ -141,6 +141,18 @@ const Chart = React.forwardRef(
             return `${y}-${m}-${d}`;
         });
 
+        const onMouseOver = () => {
+            const eventGroup = document.querySelector('.c3-event-rects');
+
+            if (eventGroup) {
+                // C3.js adds a 'ew-resize' cursor on the mouse hover, if we enable the zoom
+                // We want the zoom but we find the cursor confusing,
+                // and C3 do not provide a way to remove it, so here we go
+                // @see https://github.com/c3js/c3/blob/59ca1630ee922004d0056d2f2b8086e771b1756b/c3.js#L8786
+                eventGroup.style.cursor = 'inherit';
+            }
+        };
+
         const config = merge(
             {
                 padding: {
@@ -226,6 +238,7 @@ const Chart = React.forwardRef(
                         value: (value) => Math.round((value + Number.EPSILON) * 100) / 100,
                     },
                 },
+                onmouseover: onMouseOver,
             },
             customConfig,
         );
