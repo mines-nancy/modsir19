@@ -8,19 +8,19 @@ from operator import add
 
 class State:
     def __init__(self, parameters):
+        self._integer = False
 
         self._parameters = dict(parameters)  # to not modify parameters
 
         self._boxes = {
             'SE': BoxSource('SE'),
-            # 'INCUB': BoxQueue('INCUB', self.delay('dm_incub')),
-            'INCUB': BoxConvolution('INCUB', compute_khi_delay(self.delay('dm_incub'))),
+            'INCUB': BoxConvolution('INCUB', compute_khi_delay(self.delay('dm_incub')), self._integer),
 
-            'IR': BoxConvolution('IR', compute_khi_exp(self.delay('dm_r'))),
-            'IH': BoxConvolution('IH', compute_khi_exp(self.delay('dm_h'))),
-            'SM': BoxConvolution('SM', compute_khi_exp(self.delay('dm_sm'))),
-            'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]),
-            'SS': BoxConvolution('SS', compute_khi_exp(self.delay('dm_ss'))),
+            'IR': BoxConvolution('IR', compute_khi_exp(self.delay('dm_r')), self._integer),
+            'IH': BoxConvolution('IH', compute_khi_exp(self.delay('dm_h')), self._integer),
+            'SM': BoxConvolution('SM', compute_khi_exp(self.delay('dm_sm')), self._integer),
+            'SI': BoxConvolution('SI', [0, 0.03, 0.03, 0.04, 0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02], self._integer),
+            'SS': BoxConvolution('SS', compute_khi_exp(self.delay('dm_ss')), self._integer),
 
             'R': BoxTarget('R'),
             'DC': BoxTarget('DC')
@@ -36,8 +36,9 @@ class State:
                 return lambda: self.coefficient(a)*self.coefficient(b)
 
         self._moves = {
-            'INCUB': [('IR', lambda_coefficient('pc_ir')),
-                      ('IH', lambda_coefficient('pc_ih'))],
+            'INCUB': [('IH', lambda_coefficient('pc_ih')),
+                      ('IR', lambda_coefficient('pc_ir'))
+                      ],
             'IR': [('R', lambda_coefficient(1))],
             'IH': [('SM', lambda_coefficient('pc_sm')),
                    ('SI', lambda_coefficient('pc_si'))],
@@ -52,16 +53,32 @@ class State:
         }
 
         self.time = -1  # first step should be t=0
-        self.e0 = self.coefficient('kpe') * self.constant('population')
+        self.e0 = int(self.constant('population') * self.coefficient('kpe'))
         self.box('SE').add(self.e0 - self.constant('patient0'))
         self.box('INCUB').add(self.constant('patient0'))
 
     def __str__(self):
         pop = sum([box.full_size() for box in self.boxes()])
-        return f't={self.time} {self.box("SE")} {self.box("INCUB")}' +\
+        return f't={self.time} {self.box("SE")} {self.box("INCUB")}' + \
             f'\n    {self.box("IR")} {self.box("IH")}' + \
-            f'\n    {self.box("SM")} {self.box("SI")} {self.box("SS")}' +\
+            f'\n    {self.box("SM")} {self.box("SI")} {self.box("SS")}' + \
             f'\n    {self.box("R")} {self.box("DC")} POP={round(pop,2)}'
+
+    def split(self, value, coefficients):
+        '''Split a value into n values, according to n coefficients
+        value -- should be positive
+        coefficients -- positive numbers such that sum(coefficients)==1
+        '''
+        res = [value*c for c in coefficients]
+
+        if self._integer:
+            res_int = [int(v) for v in res]
+            if len(res_int) >= 1:
+                res_int[-1] += (int(value-sum(res_int)))
+            assert sum(res_int) == value
+            return res_int
+        else:
+            return res
 
     def constant(self, name):
         return int(self.parameter(name))
@@ -98,6 +115,7 @@ class State:
             f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
     def evacuation(self, src, dest, value):
+        """value should be positive"""
         self.box(src).force_output(value)
         max_value = min(self.box(src).output(), value)
         self.move(src, dest, max_value)
@@ -113,6 +131,7 @@ class State:
         return self.box(name).output(past)
 
     def move(self, src_name, dest_name, delta):
+        """delta should be positive"""
         if delta <= 0:
             return
 
@@ -135,8 +154,12 @@ class State:
     def generic_steps(self, moves):
         for src_name in moves.keys():
             output = self.output(src_name)
-            for dest_name, lambda_coefficient in moves[src_name]:
-                self.move(src_name, dest_name, lambda_coefficient() * output)
+            if self._integer:
+                assert int(output) == output
+            to_move = self.split(
+                output, [lambda_coefficient() for dest, lambda_coefficient in moves[src_name]])
+            for i, (dest_name, _) in enumerate(moves[src_name]):
+                self.move(src_name, dest_name, to_move[i])
 
     def step_exposed(self):
         se = self.box('SE').output(1)
@@ -147,10 +170,11 @@ class State:
         n = se + incub + ir + ih + r
         delta = self.coefficient(
             'r') * self.coefficient('beta') * se * (ir+ih) / n if n > 0 else 0
-
-        if delta < 0:
-            delta = 0
+        # print(f'ir={ir} ih={ih} delta={delta}')
+        if self._integer:
+            delta = int(delta)
         assert delta >= 0
+
         self.move('SE', 'INCUB', delta)
 
     def extract_series(self):
