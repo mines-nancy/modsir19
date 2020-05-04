@@ -5,6 +5,7 @@ import Layout from '../../components/Layout';
 import diagram from './diagram.png';
 import Acknowledgments from './Acknowledgments';
 import { useHistory } from 'react-router-dom';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme) => ({
     layout: {
@@ -36,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     start: {
         backgroundColor: 'white',
         color: theme.palette.primary.main,
+    },
+    warning: {
+        margin: `0 ${theme.spacing(2)}`,
     },
 }));
 
@@ -84,11 +88,11 @@ const Home = () => {
                         <li>
                             <strong>M&nbsp;:</strong> ensemble des sujets malades porteurs du virus
                             et potentiellement contaminants. Environ 98% des sujets contaminés vont
-                            guérir spontanément en 9 jours sans trop de complications et vont donc
-                            passer dans le compartiment <strong>G</strong> (Guéris). 2% des sujets
-                            infectés vont développer des complications (le plus souvent
-                            respiratoires) qui vont nécessiter une hospitalisation. Ils passent donc
-                            dans le compartiment H (Hospitalisés)
+                            guérir spontanément en 9 jours sans complications et vont donc passer
+                            dans le compartiment <strong>G</strong> (Guéris). 2% des sujets infectés
+                            vont développer des complications (le plus souvent respiratoires) qui
+                            vont nécessiter une hospitalisation. Ils passent donc dans le
+                            compartiment H (Hospitalisés)
                         </li>
                         <li>
                             <strong>G&nbsp;:</strong> ensemble des sujets ayant été malades, guéris
@@ -97,9 +101,9 @@ const Home = () => {
                         <li>
                             <strong>H&nbsp;:</strong> ensemble des patients en hospitalisation pour
                             traitement des complications de la maladie soit en hospitalisation
-                            classique, soit en soins intensifs ou réanimation. Environ 85% des
+                            classique, soit en soins intensifs ou réanimation. Environ 75% des
                             patients hospitalisés vont guérir et rejoindre le compartiment{' '}
-                            <strong>G</strong>. Malheureusement, environ 15% vont décéder au cours
+                            <strong>G</strong>. Malheureusement, environ 25% vont décéder au cours
                             de leur hospitalisation et sont comptabilisés dans le compartiment{' '}
                             <strong>DC</strong>
                         </li>
@@ -118,10 +122,10 @@ const Home = () => {
                     <ul className={classes.noliststyle}>
                         <li>Si R0 est inférieur à 1 l’épidémie va s’éteindre spontanément</li>
                         <li>
-                            Si R0 est compris entre 1 et 1,2 l’épidémie progresse relativement
+                            Si R0 est compris entre 1 et 1,5 l’épidémie progresse relativement
                             lentement
                         </li>
-                        <li>Si R0 est supérieur à 1,3 l’épidémie progresse rapidement</li>
+                        <li>Si R0 est supérieur à 1,5 l’épidémie progresse rapidement</li>
                     </ul>
                     <p>
                         Pour maitriser une épidémie il faut donc arriver à faire baisser R0 en
@@ -164,6 +168,22 @@ const Home = () => {
                         confinement / déconfinement en fonction de leur date et de leur
                         «&nbsp;rigueur&nbsp;» exprimée par la valeur de R0.
                     </p>
+                    <Alert severity="warning">
+                        <p>
+                            Cette modélisation est à visée exclusivement{' '}
+                            <strong>pédagogique</strong>. Elle est basée sur des hypothèses très
+                            simplifiées.
+                        </p>
+                        <p>
+                            Elle n’est pas le reflet de la réalité de l’épidémie actuelle.
+                            <br />
+                            Elle ne peut en aucun cas servir d’outil de prévision ou d’aide à la
+                            prise de décision.
+                            <br />
+                            Les auteurs déclinent toute responsabilité d’un mésusage de ce logiciel
+                            pédagogique.
+                        </p>
+                    </Alert>
                     <Acknowledgments />
                 </div>
             </div>

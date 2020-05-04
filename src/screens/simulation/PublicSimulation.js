@@ -15,6 +15,7 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { format, addDays, differenceInDays } from 'date-fns';
 import { InfoOutlined } from '@material-ui/icons';
+import Alert from '@material-ui/lab/Alert';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
@@ -200,8 +201,6 @@ const straightLine = (name, options = {}) => ({
     },
 });
 
-const percent = (value, total) => Math.round((value / total + Number.EPSILON) * 100) || 0;
-
 const Legend = ({
     date: { date, index },
     values,
@@ -230,7 +229,6 @@ const Legend = ({
     const DC = Math.round(values.DC[i]);
     const SE = Math.round(values.SE[i]);
     const M = Math.round(values.I[i] + values.INCUB[i]);
-    const percentImmunised = percent(R, total);
 
     return (
         <GraphProvider>
@@ -239,13 +237,9 @@ const Legend = ({
                     <>
                         <strong>Population impactée</strong>
                         <br />
-                        <span>
-                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
-                            <br />
-                            <Typography color="textSecondary" gutterBottom>
-                                Déplacez la souris sur le graph pour suivre l'évolution
-                            </Typography>
-                        </span>
+                        <Typography color="textSecondary" gutterBottom>
+                            Déplacez la souris sur le graph pour suivre l'évolution
+                        </Typography>
                     </>
                 ) : (
                     <>
@@ -255,13 +249,9 @@ const Legend = ({
                                 : 'Population impactée '}
                             <br />
                         </strong>
-                        <span>
+                        <Typography color="textSecondary" gutterBottom>
                             sur un échantillon de {Intl.NumberFormat().format(total)} individus
-                            <br />
-                            <Typography color="textSecondary" gutterBottom>
-                                dont {percentImmunised}% sont considérés immunisés
-                            </Typography>
-                        </span>
+                        </Typography>
                     </>
                 )}
             </div>
@@ -546,6 +536,10 @@ const PublicSimulation = () => {
     return (
         <>
             <div className={classes.root}>
+                <Alert severity="warning">
+                    Pour usage pédagogique uniquement. Non destiné à servir de prévision ou d’aide à
+                    la décision.
+                </Alert>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
                         <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
