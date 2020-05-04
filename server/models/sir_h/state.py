@@ -8,7 +8,7 @@ from operator import add
 
 class State:
     def __init__(self, parameters):
-        self._integer = False
+        self._integer = True
 
         self._parameters = dict(parameters)  # to not modify parameters
 
