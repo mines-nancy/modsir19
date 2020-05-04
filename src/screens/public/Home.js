@@ -83,9 +83,9 @@ const Home = () => {
                         </li>
                         <li>
                             <strong>M&nbsp;:</strong> ensemble des sujets malades porteurs du virus
-                            et potentiellement contaminants. Environ 85% des sujets contaminés vont
+                            et potentiellement contaminants. Environ 98% des sujets contaminés vont
                             guérir spontanément en 9 jours sans trop de complications et vont donc
-                            passer dans le compartiment <strong>G</strong> (Guéris). 15% des sujets
+                            passer dans le compartiment <strong>G</strong> (Guéris). 2% des sujets
                             infectés vont développer des complications (le plus souvent
                             respiratoires) qui vont nécessiter une hospitalisation. Ils passent donc
                             dans le compartiment H (Hospitalisés)
