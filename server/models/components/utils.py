@@ -35,3 +35,25 @@ def compute_residuals(khi_tab):
     for k in range(len(khi_tab)):
         residuals.append(residuals[k] - khi_tab[k])
     return residuals
+
+
+def compute_remove_delta(array, value):
+    """
+    given an array of integers, remove value in a uniform way
+    we assume 0 <= value <= sum(array)
+    return an array of values to remove to each element of array
+    """
+    size = sum(array)
+    ratio_to_remove = value / size
+    delta_to_remove = []
+    to_remove = 0
+    for i in range(len(array)):
+        to_remove += array[i] * ratio_to_remove
+        epsilon = 0.01
+        if to_remove >= 1-epsilon and int(to_remove+epsilon) <= array[i]:
+            delta = int(to_remove+epsilon)
+            delta_to_remove.append(delta)
+            to_remove -= delta
+        else:
+            delta_to_remove.append(0)
+    return delta_to_remove
