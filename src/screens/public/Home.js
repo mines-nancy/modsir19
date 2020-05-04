@@ -39,7 +39,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main,
     },
     warning: {
-        margin: `0 ${theme.spacing(2)}`,
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
     },
 }));
 
@@ -168,7 +169,7 @@ const Home = () => {
                         confinement / déconfinement en fonction de leur date et de leur
                         «&nbsp;rigueur&nbsp;» exprimée par la valeur de R0.
                     </p>
-                    <Alert severity="warning">
+                    <Alert severity="warning" className={classes.warning}>
                         <p>
                             Cette modélisation est à visée exclusivement{' '}
                             <strong>pédagogique</strong>. Elle est basée sur des hypothèses très
