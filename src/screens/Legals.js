@@ -51,7 +51,7 @@ const Legals = () => {
                     <br />
                     Tel : 07.62.64.72.97
                     <br />
-                    Mail : Informatique@1179111.admin.sd5.gpaas.net
+                    Mail : informatique@nancyclotep.com
                     <br />
                 </p>
                 <p>Directeur de la publication : Gilles Karcher</p>
