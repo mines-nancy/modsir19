@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Slider, makeStyles, TextField, InputAdornment } from '@material-ui/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     formControl: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -18,7 +18,11 @@ const useStyles = makeStyles({
     number: {
         width: 65,
     },
-});
+    disabledNumber: {
+        color: ({ forceDisabledColor }) =>
+            forceDisabledColor ? theme.palette.text.primary : undefined,
+    },
+}));
 
 const ProportionField = ({
     label,
@@ -29,9 +33,11 @@ const ProportionField = ({
     min = '0',
     max = '100',
     step = '1',
+    forceDisabledColor,
+    helpText,
     ...props
 }) => {
-    const classes = useStyles();
+    const classes = useStyles({ forceDisabledColor });
 
     const handleSliderChange = (evt, value) => {
         onChange(value);
@@ -42,41 +48,41 @@ const ProportionField = ({
     };
 
     return (
-        <div className={classes.formControl}>
-            <div className={classes.slider}>
-                <Typography gutterBottom>{label}</Typography>
-                <Slider
-                    {...props}
-                    {...restInput}
-                    {...inputProps}
-                    value={value}
-                    min={parseInt(min, 10)}
-                    max={parseInt(max, 10)}
-                    step={parseFloat(step)}
-                    onChange={handleSliderChange}
-                />
+        <div>
+            <div className={classes.formControl}>
+                <div className={classes.slider}>
+                    <Typography gutterBottom>{label}</Typography>
+                    <Slider
+                        {...props}
+                        {...restInput}
+                        {...inputProps}
+                        value={value}
+                        min={parseInt(min, 10)}
+                        max={parseInt(max, 10)}
+                        step={parseFloat(step)}
+                        onChange={handleSliderChange}
+                    />
+                </div>
+                <div className={classes.numberContainer}>
+                    <TextField
+                        {...props}
+                        inputProps={{ ...restInput, min, max, step }}
+                        name={name}
+                        value={value}
+                        onChange={handleTextFieldChange}
+                        type="number"
+                        label={numberInputLabel}
+                        className={classes.number}
+                        InputProps={{
+                            classes: { disabled: classes.disabledNumber },
+                            endAdornment: unit ? (
+                                <InputAdornment position="end">{unit}</InputAdornment>
+                            ) : undefined,
+                        }}
+                    />
+                </div>
             </div>
-            <div className={classes.numberContainer}>
-                <TextField
-                    {...props}
-                    inputProps={{ ...restInput, min, max, step }}
-                    name={name}
-                    value={value}
-                    onChange={handleTextFieldChange}
-                    type="number"
-                    label={numberInputLabel}
-                    className={classes.number}
-                    InputProps={
-                        unit
-                            ? {
-                                  endAdornment: (
-                                      <InputAdornment position="end">{unit}</InputAdornment>
-                                  ),
-                              }
-                            : {}
-                    }
-                />
-            </div>
+            {helpText && <Typography variant="caption">{helpText}</Typography>}
         </div>
     );
 };

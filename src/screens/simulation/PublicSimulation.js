@@ -8,13 +8,15 @@ import {
     useTheme,
     Paper,
     CardContent,
-    Tooltip,
     CardHeader,
+    Button,
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
 import { format, addDays, differenceInDays } from 'date-fns';
-import { InfoOutlined } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
+import { InfoOutlined, ArrowBackIos } from '@material-ui/icons';
+import Alert from '@material-ui/lab/Alert';
 
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
@@ -37,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
+        background: '#eee',
     },
     chartViewContainer: {
         flex: 1,
@@ -52,31 +55,43 @@ const useStyles = makeStyles((theme) => ({
             padding: '0 12px',
         },
     },
-    formContainer: {
-        flex: '0 0 200px',
-    },
     legend: {
+        position: 'absolute',
+        zIndex: 999,
+        [theme.breakpoints.down('sm')]: {
+            top: 10,
+            width: '100%',
+            textAlign: 'center',
+        },
         [theme.breakpoints.up('sm')]: {
-            position: 'absolute',
-            right: 20,
             top: 20,
-            left: 20,
+            right: 20,
+            left: -50, // Zoom handler width
             height: 350,
-            zIndex: 999,
             pointerEvents: 'none',
         },
     },
+    backButton: {
+        pointerEvents: 'all',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+    },
     legendTitle: {
+        position: 'absolute',
+        top: 0,
+        width: '100%',
         textAlign: 'center',
     },
     legendBlockContainer: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
         display: 'flex',
+        width: 350,
         flexDirection: 'column',
         alignItems: 'flex-end',
-        width: 350,
-        marginLeft: 'auto',
         pointerEvents: 'none',
-        marginTop: '-54px',
     },
     blockRow: {
         display: 'flex',
@@ -115,32 +130,37 @@ const useStyles = makeStyles((theme) => ({
         color: '#888',
     },
     form: {
-        marginTop: 16,
+        padding: '0 30px',
+        marginTop: 32,
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column',
+            padding: 0,
         },
     },
     formControl: {
-        flex: '1 0 0',
+        flex: '2 0 0',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
         '& > *': {
-            alignItems: 'center',
             minWidth: 200,
             marginBottom: 12,
         },
         '&:nth-child(3)': {
-            flex: '2 0 0',
+            flex: '3 0 0',
+            alignItems: 'flex-end',
         },
     },
     formCard: {
-        minWidth: 300,
+        minWidth: 310,
         position: 'relative',
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+        },
     },
     formCardHeader: {
         paddingBottom: 0,
@@ -158,7 +178,7 @@ const useStyles = makeStyles((theme) => ({
     toggle: {
         position: 'absolute',
         top: 12,
-        right: 0,
+        right: 8,
     },
 }));
 
@@ -200,7 +220,17 @@ const straightLine = (name, options = {}) => ({
     },
 });
 
-const percent = (value, total) => Math.round((value / total + Number.EPSILON) * 100) || 0;
+const BackButton = ({ onClick }) => (
+    <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        startIcon={<ArrowBackIos />}
+        onClick={onClick}
+    >
+        Retour
+    </Button>
+);
 
 const Legend = ({
     date: { date, index },
@@ -212,6 +242,7 @@ const Legend = ({
     total,
 }) => {
     const classes = useStyles();
+    const history = useHistory();
 
     const addMouseProps = (key, ids) => ({
         onMouseEnter: () => onLegendEnter(ids),
@@ -219,8 +250,20 @@ const Legend = ({
         onClick: () => onLegendClick(key),
     });
 
-    if (!values || mobile) {
+    const handleGoBack = () => {
+        history.push('/');
+    };
+
+    if (!values) {
         return null;
+    }
+
+    if (mobile) {
+        return (
+            <div className={classes.legend}>
+                <BackButton onClick={handleGoBack} />
+            </div>
+        );
     }
 
     const i = index || values.R.length - 1;
@@ -230,22 +273,20 @@ const Legend = ({
     const DC = Math.round(values.DC[i]);
     const SE = Math.round(values.SE[i]);
     const M = Math.round(values.I[i] + values.INCUB[i]);
-    const percentImmunised = percent(R, total);
 
     return (
         <GraphProvider>
+            <div className={classes.backButton}>
+                <BackButton onClick={handleGoBack} />
+            </div>
             <div className={classes.legendTitle}>
                 {!date ? (
                     <>
                         <strong>Population impactée</strong>
                         <br />
-                        <span>
-                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
-                            <br />
-                            <Typography color="textSecondary" gutterBottom>
-                                Déplacez la souris sur le graph pour suivre l'évolution
-                            </Typography>
-                        </span>
+                        <Typography color="textSecondary" gutterBottom>
+                            Déplacez la souris sur le graph pour suivre l'évolution
+                        </Typography>
                     </>
                 ) : (
                     <>
@@ -255,13 +296,9 @@ const Legend = ({
                                 : 'Population impactée '}
                             <br />
                         </strong>
-                        <span>
+                        <Typography color="textSecondary" gutterBottom>
                             sur un échantillon de {Intl.NumberFormat().format(total)} individus
-                            <br />
-                            <Typography color="textSecondary" gutterBottom>
-                                dont {percentImmunised}% sont considérés immunisés
-                            </Typography>
-                        </span>
+                        </Typography>
                     </>
                 )}
             </div>
@@ -546,6 +583,10 @@ const PublicSimulation = () => {
     return (
         <>
             <div className={classes.root}>
+                <Alert severity="warning">
+                    Pour usage pédagogique uniquement. Non destiné à servir de prévision ou d’aide à
+                    la décision.
+                </Alert>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
                         <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
@@ -589,134 +630,128 @@ const PublicSimulation = () => {
                         </div>
                     </div>
                 </div>
-                <div className={classes.formContainer}>
-                    <Form
-                        subscription={{}}
-                        onSubmit={() => {
-                            /* Useless since we use a listener on autosave */
-                        }}
-                        initialValues={initialValues}
-                        render={({ form }) => {
-                            const { values } = form.getState();
+                <Form
+                    subscription={{}}
+                    onSubmit={() => {
+                        /* Useless since we use a listener on autosave */
+                    }}
+                    initialValues={initialValues}
+                    render={({ form }) => {
+                        const { values } = form.getState();
 
-                            return (
-                                <div className={classes.form}>
-                                    <AutoSave save={handleSubmit} debounce={200} />
-                                    <div className={classes.formControl}>
-                                        <Card className={classes.formCard}>
-                                            <CardHeader
-                                                className={classes.formCardHeader}
-                                                title="Avant confinement"
-                                            />
-                                            <CardContent className={classes.formCardContent}>
-                                                <Typography color="textSecondary" gutterBottom>
-                                                    A partir du{' '}
-                                                    {format(
-                                                        values.initial_start_date,
-                                                        'dd/MM/yyyy',
-                                                    )}
-                                                </Typography>
-                                                <div className={classes.formSlider}>
-                                                    <Field
-                                                        name="initial_r0"
-                                                        label="R0"
-                                                        component={ProportionField}
-                                                        unit=""
-                                                        max="5"
-                                                        step={0.1}
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                    <div className={classes.formControl}>
-                                        <Card className={classes.formCard}>
-                                            <CardHeader
-                                                className={classes.formCardHeader}
-                                                title={
-                                                    <Typography variant="h5" component="h2">
-                                                        Confinement
-                                                    </Typography>
-                                                }
-                                                action={
-                                                    <Tooltip title="Activer / Désactiver">
-                                                        <Field
-                                                            className={classes.toggle}
-                                                            name="lockdown_enabled"
-                                                            component={SwitchField}
-                                                            type="checkbox"
-                                                        />
-                                                    </Tooltip>
-                                                }
-                                            />
-                                            <CardContent className={classes.formCardContent}>
-                                                <Typography color="textSecondary" gutterBottom>
-                                                    A partir du{' '}
-                                                    {format(
-                                                        values.lockdown_start_date,
-                                                        'dd/MM/yyyy',
-                                                    )}
-                                                </Typography>
-                                                <div className={classes.formSlider}>
-                                                    <Field
-                                                        name="lockdown_r0"
-                                                        label="R0"
-                                                        component={ProportionField}
-                                                        unit=""
-                                                        max="5"
-                                                        step={0.1}
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                    <div className={classes.formControl}>
-                                        <Card className={classes.formCard}>
-                                            <CardHeader
-                                                className={classes.formCardHeader}
-                                                title="Déconfinement"
-                                                action={
-                                                    <Tooltip title="Activer / Désactiver">
-                                                        <Field
-                                                            className={classes.toggle}
-                                                            name="deconfinement_enabled"
-                                                            component={SwitchField}
-                                                            type="checkbox"
-                                                        />
-                                                    </Tooltip>
-                                                }
-                                            />
-                                            <CardContent className={classes.formCardContent}>
-                                                <div className={classes.formSliderDeconfinement}>
-                                                    <Field
-                                                        className="small-margin-bottom"
-                                                        name="deconfinement_start_date"
-                                                        label="Début"
-                                                        component={DateField}
-                                                        minDate={addDays(
-                                                            values.lockdown_start_date,
-                                                            1,
-                                                        )}
-                                                    />
-                                                    <Field
-                                                        name="deconfinement_r0"
-                                                        label={R0HelpIcon}
-                                                        component={ProportionField}
-                                                        unit=""
-                                                        max="5"
-                                                        step={0.1}
-                                                    />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
+                        return (
+                            <div className={classes.form}>
+                                <AutoSave save={handleSubmit} debounce={200} />
+                                <div className={classes.formControl}>
+                                    <Card className={classes.formCard} elevation={2}>
+                                        <CardHeader
+                                            className={classes.formCardHeader}
+                                            title="Avant confinement"
+                                        />
+                                        <CardContent className={classes.formCardContent}>
+                                            <Typography color="textSecondary" gutterBottom>
+                                                A partir du{' '}
+                                                {format(values.initial_start_date, 'dd/MM/yyyy')}
+                                            </Typography>
+                                            <div className={classes.formSlider}>
+                                                <Field
+                                                    name="initial_r0"
+                                                    label="R0"
+                                                    component={ProportionField}
+                                                    unit=""
+                                                    max="5"
+                                                    step={0.1}
+                                                    disabled
+                                                    forceDisabledColor
+                                                />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
                                 </div>
-                            );
-                        }}
-                    />
-                </div>
+                                <div className={classes.formControl}>
+                                    <Card className={classes.formCard} elevation={2}>
+                                        <CardHeader
+                                            className={classes.formCardHeader}
+                                            title={
+                                                <Typography variant="h5" component="h2">
+                                                    Confinement
+                                                </Typography>
+                                            }
+                                            action={
+                                                <Field
+                                                    className={classes.toggle}
+                                                    name="lockdown_enabled"
+                                                    component={SwitchField}
+                                                    type="checkbox"
+                                                    onLabel="Avec"
+                                                    offLabel="Sans"
+                                                    tooltip="Active ou désactive le confinement"
+                                                />
+                                            }
+                                        />
+                                        <CardContent className={classes.formCardContent}>
+                                            <Typography color="textSecondary" gutterBottom>
+                                                A partir du{' '}
+                                                {format(values.lockdown_start_date, 'dd/MM/yyyy')}
+                                            </Typography>
+                                            <div className={classes.formSlider}>
+                                                <Field
+                                                    name="lockdown_r0"
+                                                    label="R0"
+                                                    component={ProportionField}
+                                                    unit=""
+                                                    max="5"
+                                                    step={0.1}
+                                                    disabled
+                                                    forceDisabledColor
+                                                />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                                <div className={classes.formControl}>
+                                    <Card className={classes.formCard} elevation={2}>
+                                        <CardHeader
+                                            className={classes.formCardHeader}
+                                            title="Déconfinement"
+                                            action={
+                                                <Field
+                                                    className={classes.toggle}
+                                                    name="deconfinement_enabled"
+                                                    component={SwitchField}
+                                                    type="checkbox"
+                                                    onLabel="Avec"
+                                                    offLabel="Sans"
+                                                    tooltip="Active ou désactive le déconfinement"
+                                                />
+                                            }
+                                        />
+                                        <CardContent className={classes.formCardContent}>
+                                            <div className={classes.formSliderDeconfinement}>
+                                                <Field
+                                                    className="small-margin-bottom"
+                                                    name="deconfinement_start_date"
+                                                    label="Début"
+                                                    component={DateField}
+                                                    minDate={addDays(values.lockdown_start_date, 1)}
+                                                />
+                                                <Field
+                                                    name="deconfinement_r0"
+                                                    label={R0HelpIcon}
+                                                    component={ProportionField}
+                                                    unit=""
+                                                    max="5"
+                                                    step={0.1}
+                                                    helpText="Faites varier le R0 pour en voir l'impact"
+                                                />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </div>
+                        );
+                    }}
+                />
             </div>
             <Footer />
         </>

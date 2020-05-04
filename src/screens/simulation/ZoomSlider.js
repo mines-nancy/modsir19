@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { makeStyles, Slider, useMediaQuery, useTheme } from '@material-ui/core';
+import { makeStyles, Slider, useMediaQuery, useTheme, Tooltip } from '@material-ui/core';
 import { ZoomIn, ZoomOut } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
@@ -62,7 +62,9 @@ export const ZoomSlider = ({ onChange, value }) => {
 
     return (
         <div className={classes.zoom}>
-            <ZoomIn fontSize="small" />
+            <Tooltip title="Réduire la mise à l'échelle">
+                <ZoomIn fontSize="small" />
+            </Tooltip>
             <Slider
                 classes={{ root: classes.zoomSlider, vertical: classes.zoomSlider }}
                 orientation={small ? 'horizontal' : 'vertical'}
@@ -73,7 +75,9 @@ export const ZoomSlider = ({ onChange, value }) => {
                 onChange={onChange(false)}
                 aria-labelledby="range-slider"
             />
-            <ZoomOut fontSize="small" />
+            <Tooltip title="Augmenter la mise à l'échelle">
+                <ZoomOut fontSize="small" />
+            </Tooltip>
         </div>
     );
 };
