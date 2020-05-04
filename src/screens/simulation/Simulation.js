@@ -216,6 +216,9 @@ const Simulation = () => {
         axis: {
             y: { type: yType, max: zoom },
         },
+        subchart: {
+            show: true,
+        },
     };
 
     return (
