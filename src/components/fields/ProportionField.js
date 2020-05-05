@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     slider: {
-        flex: 'O 0 auto',
+        flex: '1 0 0',
         minWidth: 100,
     },
     numberContainer: {

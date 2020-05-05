@@ -54,7 +54,7 @@ const Color = ({ name, children }) => {
 
 const InstructionsButton = () => {
     const classes = useStyles();
-    const [open, setOpen] = useState(true /*debug*/);
+    const [open, setOpen] = useState(false);
 
     const handleButtonClick = () => {
         setOpen(true);
