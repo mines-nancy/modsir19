@@ -8,9 +8,8 @@ from operator import add
 
 class State:
     def __init__(self, parameters):
-        self._integer = True
-
         self._parameters = dict(parameters)  # to not modify parameters
+        self._integer = parameters['integer_flux']
 
         self._boxes = {
             'SE': BoxSource('SE'),
@@ -111,8 +110,7 @@ class State:
         elif field_name in ['dm_si']:
             print(f'no update for: {field_name}')
 
-        print(
-            f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
+        #print(f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
     def evacuation(self, src, dest, value):
         """value should be positive"""
@@ -175,6 +173,8 @@ class State:
         if self._integer:
             delta = int(delta)
 
+        if delta < 0 and delta > -1 :
+            delta = 0
         assert delta >= 0
 
         self.move('SE', 'INCUB', delta)
