@@ -26,7 +26,8 @@ def get_default_parameters() :
                   'pc_sm': 1 - pc_si, 'pc_si': pc_si,
                   'pc_sm_si': pc_sm_si, 'pc_sm_dc': (1-pc_sm_si) * 0.25, 'pc_sm_out': (1-pc_sm_si) * 0.75,
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
-                  'pc_h_ss': 0.2, 'pc_h_r': 0.8})
+                  'pc_h_ss': 0.2, 'pc_h_r': 0.8,
+                  'integer_flux': False})
 
     return parameters
 
