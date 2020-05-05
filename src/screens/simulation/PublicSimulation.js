@@ -138,8 +138,7 @@ const useStyles = makeStyles((theme) => ({
         color: '#888',
     },
     form: {
-        padding: '0 30px',
-        marginTop: 32,
+        padding: '16px 30px 8px 30px',
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column',
@@ -166,8 +165,10 @@ const useStyles = makeStyles((theme) => ({
     formCard: {
         minWidth: 310,
         position: 'relative',
+        marginBottom: 0,
         [theme.breakpoints.down('sm')]: {
             width: '100%',
+            marginBottom: theme.spacing(2),
         },
     },
     formCardHeader: {
@@ -643,8 +644,9 @@ const PublicSimulation = () => {
                                         : {
                                               height:
                                                   windowHeight -
-                                                  200 /* form */ -
-                                                  32 /* footer */ -
+                                                  36 /* alert header */ -
+                                                  250 /* form */ -
+                                                  36 /* footer */ -
                                                   54 /* legend */,
                                               width: windowWidth - 100,
                                           }

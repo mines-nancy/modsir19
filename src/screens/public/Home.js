@@ -57,7 +57,19 @@ const Home = () => {
     };
 
     return (
-        <Layout className={classes.layout}>
+        <Layout
+            className={classes.layout}
+            actions={
+                <Button
+                    className={classes.start}
+                    variant="contained"
+                    color="inherit"
+                    onClick={start}
+                >
+                    Commencer
+                </Button>
+            }
+        >
             <div className={classes.container}>
                 <div className={classes.home}>
                     <FormattedText>

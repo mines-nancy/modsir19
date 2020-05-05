@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 export const Footer = () => {
     const classes = useStyles();
     return (
-        <AppBar position="relative" className={classes.footer}>
+        <AppBar position="relative" className={classes.footer} component="footer">
             <Toolbar classes={{ root: classes.toolbar }}>
                 <Link to="/mentions-legales">
                     <Typography className={classes.link} variant="subtitle2">
