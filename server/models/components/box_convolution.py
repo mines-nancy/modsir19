@@ -1,6 +1,7 @@
 import math
-from models.components.box import Box
 from collections import deque
+from models.components.box import Box
+from models.components.utils import compute_remove_delta
 
 
 class BoxConvolution(Box):
@@ -93,23 +94,28 @@ class BoxConvolution(Box):
             self.set_size(0)
             self.set_output(current_output + current_size)
             current_queue.clear()
+            return
+
+        # default case: remove value in a uniform way
+        if self._integer:
+            to_remove_array = compute_remove_delta(
+                [r for v, r in current_queue], value)
         else:
-            to_remove = value
-            new_output = 0
-            for i in range(len(current_queue)-1, -1, -1):
-                if to_remove > 0:
-                    v, r = current_queue[i]
-                    delta = min(r, to_remove)
-                    current_queue[i] = (v, r - delta)
-                    to_remove -= delta
-                    new_output += delta
+            ratio_to_remove = value / current_size
+            to_remove_array = [r * ratio_to_remove for v, r in current_queue]
 
-            self.set_size(current_size - new_output)
-            self.set_output(current_output + new_output)
+        new_output = 0
+        for i in range(len(current_queue)):
+            v, r = current_queue[i]
+            current_queue[i] = (v, r - to_remove_array[i])
+            new_output += to_remove_array[i]
 
-            if self._integer:
-                assert math.fabs(self.size() + value - current_size) == 0
-                assert math.fabs(new_output - value) == 0
-            else:
-                assert math.fabs(self.size() + value - current_size) < 0.1
-                assert math.fabs(new_output - value) < 0.1
+        self.set_size(current_size - new_output)
+        self.set_output(current_output + new_output)
+
+        if self._integer:
+            assert math.fabs(self.size() + value - current_size) == 0
+            assert math.fabs(new_output - value) == 0
+        else:
+            assert math.fabs(self.size() + value - current_size) < 0.1
+            assert math.fabs(new_output - value) < 0.1
