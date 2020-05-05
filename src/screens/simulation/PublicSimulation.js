@@ -7,10 +7,10 @@ import {
     Typography,
     useMediaQuery,
     useTheme,
-    Paper,
     CardContent,
     CardHeader,
     Button,
+    Tooltip,
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
@@ -33,7 +33,6 @@ import AutoSave from '../../components/fields/AutoSave';
 import colors from './colors';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
-import { PopoverInfo } from '../../components/PopoverInfo';
 import InstructionsButton from './InstructionsButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -460,14 +459,7 @@ const R0HelpIcon = (
     <div style={{ display: 'flex', alignItems: 'center' }}>
         <div>R0</div>
         <div>
-            <PopoverInfo
-                content={
-                    <Paper style={{ padding: 10 }}>
-                        R0 correspond au nombre moyen de personnes infectées par une personne
-                        contaminée.
-                    </Paper>
-                }
-            >
+            <Tooltip title="R0 correspond au nombre moyen de personnes infectées par une personne contaminée.">
                 <InfoOutlined
                     style={{
                         marginBottom: -5,
@@ -475,7 +467,7 @@ const R0HelpIcon = (
                     }}
                     fontSize="small"
                 />
-            </PopoverInfo>
+            </Tooltip>
         </div>
     </div>
 );
