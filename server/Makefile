@@ -7,7 +7,7 @@ install:
 	pip install -r requirements.txt
 
 start:
-	python3 app.py
+	python3 -O app.py
 
 unit:
 	python3 -m unittest discover -v
