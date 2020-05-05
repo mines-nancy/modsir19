@@ -8,6 +8,8 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 from scipy.integrate import odeint
 
+from labs.defaults import get_default_params
+
 def deriv(compartiments, t, beta, gamma, parameters):
     '''
         I = IR + IH - infectés
@@ -82,7 +84,7 @@ def deriv(compartiments, t, beta, gamma, parameters):
 
     return dSdt, dEdt, dIdt, dMdt, dCdt, dRdt, dDdt
 
-def Model(parameters, **kwargs):
+def model_diff(parameters, **kwargs):
     t_confinement = 70
     t_end = 126
 
@@ -93,9 +95,14 @@ def Model(parameters, **kwargs):
     #del other_arguments['parameters']
     parameters.update(other_arguments)
 
+    if not 'beta_post' in parameters.keys() :
+        parameters['beta_post'] = get_default_params()['other']['r0_confinement']/parameters['dm_r']
+    if not 'beta_end' in parameters.keys() :
+        parameters['beta_end'] = 1.2/parameters['dm_r']
+
     R0_start = parameters['beta']*parameters['dm_r'] if not 'R0_start' in parameters.keys() else parameters['R0_start']
-    R0_confinement = 0.6 if not 'R0_confinement' in parameters.keys() else parameters['R0_confinement']
-    R0_end = 1.2 if not 'R0_end' in parameters.keys() else parameters['R0_end']
+    R0_confinement = parameters['beta_post']*parameters['dm_r']if not 'R0_confinement' in parameters.keys() else parameters['R0_confinement']
+    R0_end = parameters['beta_end']*parameters['dm_r'] if not 'R0_end' in parameters.keys() else parameters['R0_end']
 
     gamma = 1.0/parameters['dm_r'] # dmg dm_IR
 

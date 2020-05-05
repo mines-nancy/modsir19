@@ -32,7 +32,7 @@ from .ModelDiscr import model_disc
 import warnings
 warnings.filterwarnings('ignore')
 
-def initial_code(data, model, model_parameters, model_rules) :
+def initial_code(data, model, series, model_parameters, model_rules) :
 
     def plotter(t, S, E, I, M, C, R, D, R_0, S_1=None, S_2=None, x_ticks=None):
         if S_1 is not None and S_2 is not None:
@@ -220,14 +220,8 @@ def initial_code(data, model, model_parameters, model_rules) :
     ''' fitter for differential model '''
     def fitter(x, **kwargs):
         ret = Model(model_parameters, **kwargs)
-        return ret[4][x]
+        return ret[series][x]
 
-    ''' fitter for discrete model '''
-    def fitter2(x, **kwargs):
-        ret = model_disc(model_params={ 'parameters': model_parameters, 'rules' : model_rules}, **kwargs)
-        return ret[4][x]
-
-    #result2 = optimize(x_data, y_data, fitter2)
     result = optimize(x_data, y_data, fitter)
 
     full_days = model_parameters['lim_time']
@@ -236,8 +230,8 @@ def initial_code(data, model, model_parameters, model_rules) :
     x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
 
     plotter(*Model(model_parameters, **result.best_values), x_ticks=x_ticks)
-    #plotter(*model_disc({'parameters':model_parameters, 'rules':model_rules}, **result2.best_values), x_ticks=x_ticks)
 
+    return Model(model_parameters, **result.best_values)
 
 if __name__ == "__main__":
 
@@ -246,15 +240,15 @@ if __name__ == "__main__":
                    help='pathname to initial parameter set (JSON)')
     parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
                    help='input file containing measured parameters (CSV format)')
-    parser.add_argument('-d', '--data', metavar='data', choices=['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC'], nargs=1,
+    parser.add_argument('-d', '--data', metavar='data', choices=['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC'], nargs=1, default=['SI'],
                    help="identification of measured data used for optimization ('data' value in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
-    parser.add_argument('-m', '--model', metavar='model', choices=['diff', 'disc_int', 'disc'], nargs=1, default='disc',
+    parser.add_argument('-m', '--model', metavar='model', choices=['diff', 'disc_int', 'disc'], nargs=1, default=['disc'],
                    help="Simulator model to use : differential, discrete state with integer flux, discrete state with continuous flux ('model' value in 'diff', 'disc', 'disc_int')")
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
     parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs=1,
                    help='filename prefix to output obtained curve points in .csv file format')
 
-    ''' @TODO take into account current passed arguments.
+    ''' @TODO take into account --noplot and --save arguments.
         Current behaviour is to take default parameters and to optimise for 'SI'
     '''
 
@@ -269,7 +263,7 @@ if __name__ == "__main__":
         target = read_target
     else :
         default_data = default_model_params['data']['data_chu_rea']
-        target = np.array([ [x-day0,y]  for (x,y) in default_data.items() if y  ]).reshape([-1,2])
+        target = np.array([[0.0, 0.0] for i in range (day0,min(default_data.keys()))] + [ [x-day0,y]  for (x,y) in default_data.items() if y  ]).reshape([-1,2])
 
     if args.params :
         model_parameters, model_rules, other = import_json(args.params[0])
@@ -280,4 +274,9 @@ if __name__ == "__main__":
     if args.model[0] == 'disc_int' :
         model_parameters['integer_flux'] = True
 
-    initial_code(target[:,1], args.model[0], model_parameters, model_rules)
+    ''' @TODO the following hack is ugly and requires models to return data at the
+        sames positions as those indexed below ... it would be better if models returned
+        their data as a dictionary '''
+    series = { 'SE': 1, 'INCUB': 2, 'I': 3, 'SM': 4, 'SI': 5, 'R': 6, 'DC': 7}
+
+    initial_code(target[:,1], args.model[0], series[args.data[0]], model_parameters, model_rules)
