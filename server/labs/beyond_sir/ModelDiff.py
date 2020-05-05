@@ -82,7 +82,7 @@ def deriv(compartiments, t, beta, gamma, parameters):
 
     return dSdt, dEdt, dIdt, dMdt, dCdt, dRdt, dDdt
 
-def Model(days, parameters, **kwargs):
+def Model(parameters, **kwargs):
     t_confinement = 70
     t_end = 126
 
@@ -114,7 +114,7 @@ def Model(days, parameters, **kwargs):
     N = parameters['population']
 
     y0 = N-parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
-    t = np.linspace(0, days, days)
+    t = np.linspace(0, parameters['lim_time'], parameters['lim_time'])
 
     ret = odeint(deriv, y0, t, args=(beta, gamma, parameters))
     SE, INCUB, I, SM, SI, R, DC = ret.T
