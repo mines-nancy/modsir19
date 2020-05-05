@@ -497,6 +497,12 @@ const PublicSimulation = () => {
     const chartRef = useRef(null);
     const [showAlert, setShowAlert] = React.useState(true);
 
+    useEffect(() => {
+        if (!showAlert) {
+            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+        }
+    }, [showAlert]);
+
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -611,7 +617,13 @@ const PublicSimulation = () => {
         <>
             <div className={classes.root}>
                 {showAlert && (
-                    <Alert severity="warning" onClose={() => setShowAlert(false)}>
+                    <Alert
+                        severity="warning"
+                        onClose={() => {
+                            setShowAlert(false);
+                            window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+                        }}
+                    >
                         <strong>
                             Pour usage pédagogique uniquement. Non destiné à servir de prévision ou
                             d’aide à la décision.
