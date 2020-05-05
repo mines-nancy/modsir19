@@ -469,6 +469,15 @@ const R0HelpIcon = (
                 />
             </Tooltip>
         </div>
+        <Typography
+            style={{
+                paddingLeft: 20,
+            }}
+            color="textSecondary"
+            gutterBottom
+        >
+            Faites varier le R0 pour en voir l'impact
+        </Typography>
     </div>
 );
 
@@ -486,6 +495,7 @@ const PublicSimulation = () => {
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentDate, setCurrentDate] = useState({});
     const chartRef = useRef(null);
+    const [showAlert, setShowAlert] = React.useState(true);
 
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('md'));
@@ -600,17 +610,19 @@ const PublicSimulation = () => {
     return (
         <>
             <div className={classes.root}>
-                <Alert severity="warning">
-                    <strong>
-                        Pour usage pédagogique uniquement. Non destiné à servir de prévision ou
-                        d’aide à la décision.
-                    </strong>
-                </Alert>
+                {showAlert && (
+                    <Alert severity="warning" onClose={() => setShowAlert(false)}>
+                        <strong>
+                            Pour usage pédagogique uniquement. Non destiné à servir de prévision ou
+                            d’aide à la décision.
+                        </strong>
+                    </Alert>
+                )}
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
                         <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
                     </div>
-                    <div style={{ flex: 1, position: 'relative', paddingTop: small ? 0 : 50 }}>
+                    <div style={{ flex: 1, position: 'relative' }}>
                         <div className={classes.legend}>
                             <Legend
                                 date={currentDate}
@@ -636,9 +648,9 @@ const PublicSimulation = () => {
                                         : {
                                               height:
                                                   windowHeight -
-                                                  36 /* alert header */ -
-                                                  250 /* form */ -
-                                                  36 /* footer */ -
+                                                  (showAlert ? 48 : 0) /* alert header */ -
+                                                  172 -
+                                                  /* form */ 36 /* footer */ -
                                                   54 /* legend */,
                                               width: windowWidth - 100,
                                           }
@@ -763,7 +775,6 @@ const PublicSimulation = () => {
                                                     unit=""
                                                     max="5"
                                                     step={0.1}
-                                                    helpText="Faites varier le R0 pour en voir l'impact"
                                                 />
                                             </div>
                                         </CardContent>
