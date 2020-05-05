@@ -4,6 +4,7 @@ from models.components.box_queue import BoxQueue
 from models.components.box_convolution import BoxConvolution
 from models.components.utils import compute_khi_exp, compute_khi_binom, compute_khi_delay
 from operator import add
+from random import randint
 
 
 class State:
@@ -74,7 +75,8 @@ class State:
         if self._integer:
             res_int = [int(v) for v in res]
             if len(res_int) >= 1:
-                res_int[-1] += (int(value-sum(res_int)))
+                i = 0  # randint(0, len(res_int)-1)
+                res_int[i] += (int(value-sum(res_int)))
             assert sum(res_int) == value
             return res_int
         else:
@@ -195,7 +197,6 @@ class State:
             for serie in lists:
                 res = list(map(positive_or_zero, map(add, serie, res)))
             return res
-
 
         lists = dict()
         for key in sizes.keys():

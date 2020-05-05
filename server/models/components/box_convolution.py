@@ -67,7 +67,9 @@ class BoxConvolution(Box):
             if self._output_coefficients[i] * v > r:
                 delta = r
             elif self._integer:
-                delta = math.floor(self._output_coefficients[i] * v)
+                delta = round(self._output_coefficients[i] * v)
+                if delta > r:
+                    delta -= 1
             else:
                 delta = self._output_coefficients[i] * v
             new_list.append((v, r - delta))
