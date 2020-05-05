@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
+import createDecorator from 'final-form-calculate';
 import {
     makeStyles,
     Card,
@@ -397,7 +398,7 @@ const initialValues = {
     lockdown_r0: 0.6,
     lockdown_enabled: true,
     deconfinement_start_date: new Date('2020-05-11'),
-    deconfinement_r0: 1.1,
+    deconfinement_r0: 2.1,
     deconfinement_enabled: true,
 };
 
@@ -433,9 +434,22 @@ const getTimeframesFromValues = ({
         start_date: deconfinement_start_date,
         name: 'Déconfinement',
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: lockdown_enabled && deconfinement_enabled,
+        enabled: deconfinement_enabled,
     },
 ];
+
+const decorator = createDecorator({
+    field: 'lockdown_enabled',
+    updates: {
+        deconfinement_enabled: (lockdown_enabled, { deconfinement_enabled }) => {
+            if (!lockdown_enabled && deconfinement_enabled) {
+                return false;
+            }
+
+            return deconfinement_enabled;
+        },
+    },
+});
 
 const R0HelpIcon = (
     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -460,6 +474,12 @@ const R0HelpIcon = (
         </div>
     </div>
 );
+
+const removeNegativeValues = (data) =>
+    Object.keys(data).reduce((acc, key) => {
+        acc[key] = data[key].map((value) => Math.max(0, value));
+        return acc;
+    }, {});
 
 const PublicSimulation = () => {
     const classes = useStyles();
@@ -497,7 +517,7 @@ const PublicSimulation = () => {
                     formatParametersForModel(parameters, timeframes[0].start_date),
                 ),
             );
-            setValues(data);
+            setValues(removeNegativeValues(data));
             setGraphTimeframes(extractGraphTimeframes(timeframes));
             setLoading(false);
         })();
@@ -584,8 +604,10 @@ const PublicSimulation = () => {
         <>
             <div className={classes.root}>
                 <Alert severity="warning">
-                    Pour usage pédagogique uniquement. Non destiné à servir de prévision ou d’aide à
-                    la décision.
+                    <strong>
+                        Pour usage pédagogique uniquement. Non destiné à servir de prévision ou
+                        d’aide à la décision.
+                    </strong>
                 </Alert>
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
@@ -636,6 +658,7 @@ const PublicSimulation = () => {
                         /* Useless since we use a listener on autosave */
                     }}
                     initialValues={initialValues}
+                    decorators={[decorator]}
                     render={({ form }) => {
                         const { values } = form.getState();
 
