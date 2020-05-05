@@ -5,11 +5,13 @@ from frozendict import frozendict
 
 
 def run_sir_h(parameters, rules, data_chu=frozendict()):
-    return cached_run_sir_h(frozendict(parameters), tuple(rules), data_chu)
+    """ can be called with mutable parameters"""
+    return cached_run_sir_h(frozendict(parameters), tuple(rules), frozendict(data_chu))
 
 
 @lru_cache(maxsize=128)
 def cached_run_sir_h(parameters, rules, data_chu=frozendict()):
+    """ should be called with hashable parameters, such as frozeindict and tuple"""
     print(parameters)
     state = State(parameters)
     lim_time = state.parameter('lim_time')
