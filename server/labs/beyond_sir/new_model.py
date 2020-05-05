@@ -171,7 +171,7 @@ def initial_code(data, model, series, model_parameters, model_rules) :
     #plotter(*Model(parameters=model_parameters))
     if model == 'diff' :
         Model = lambda p, **kwargs : model_diff(p, **kwargs)
-    elif model == 'disc' :
+    elif model == 'disc' or model == 'disc_int':
         Model = lambda p, **kwargs : model_disc({'parameters': p, 'rules': model_rules}, **kwargs)
     else :
         Model = None
