@@ -294,9 +294,9 @@ def initial_code(data, model_parameters) :
 
         N = sum(agegroups)
 
-        y0 = N-1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0
+        y0 = N-parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
         t = np.linspace(0, days, days)
-        print(parameters)
+
         ret = odeint(deriv, y0, t, args=(beta, gamma, sigma, dm_EI, parameters))
         SE, INCUB, I, SM, SI, R, DC = ret.T
         R0_over_time = [beta(i)/gamma for i in range(len(t))]
