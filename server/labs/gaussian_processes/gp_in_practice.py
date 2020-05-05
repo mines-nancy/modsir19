@@ -96,7 +96,8 @@ if __name__ == '__main__':
                    help='pathname to prior data point set (CSV format)')
     parser.add_argument('-i', '--input', metavar='datafile', type=str, nargs=1,
                    help="pathname to observed data point set (CSV format)")
-    parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
+    parser.add_argument('--noplot', action='store_true', help="do not compute plots obtained curves")
+    parser.add_argument('--silentplot', action='store_true', help="do not display obtained curves")
     parser.add_argument('--beautify', action='store_true', help="display beautified version of curves")
     parser.add_argument('-n', metavar='points', type=int, nargs=1, help="number of data points to consider for training")
     parser.add_argument('-t', metavar='days', type=int, nargs=1, help="number of days to predict")
@@ -272,7 +273,7 @@ if __name__ == '__main__':
                 s=(30,),
                 label="Observations")
 
-        #plt.ylim(-1, 200)
+        plt.ylim(-1, 1.2*np.max(target[:,1]))
         plt.xlabel("Jours")
         plt.ylabel("Nombre de patients")
         plt.title("Prédiction avec processus gaussien")
@@ -280,7 +281,8 @@ if __name__ == '__main__':
 
         if save_output :
             plt.savefig(basename)
-        plt.show()
+        if not args.silentplot :
+            plt.show()
 
     if save_output :
         results = pd.DataFrame({ 'date' : target[:,0], 'value' : target[:,1]})
