@@ -184,19 +184,14 @@ const InstructionsButton = () => {
                                 </li>
                                 <li>
                                     <strong>
-                                        Que se passe-t-il si le confinement s'arrête plus tôt, sans
-                                        mesures particulières ?
+                                        Que se passe-t-il si le confinement s'arrête sans mesures
+                                        particulières ?
                                     </strong>
                                     <ul>
                                         <li>
                                             Configurer le <i>RO</i> du «&nbsp;
                                             <strong>Déconfinement</strong>&nbsp;» à une valeur de{' '}
-                                            <strong>3,1</strong>
-                                        </li>
-                                        <li>
-                                            Changer la date du «&nbsp;
-                                            <strong>Déconfinement</strong>&nbsp;» au{' '}
-                                            <strong>30 Avril</strong>
+                                            <strong>3,3</strong>
                                         </li>
                                         <li>
                                             Zoomer sur la courbe des patients en cliquant sur la
