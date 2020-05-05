@@ -441,13 +441,8 @@ const getTimeframesFromValues = ({
 const decorator = createDecorator({
     field: 'lockdown_enabled',
     updates: {
-        deconfinement_enabled: (lockdown_enabled, { deconfinement_enabled }) => {
-            if (!lockdown_enabled && deconfinement_enabled) {
-                return false;
-            }
-
-            return deconfinement_enabled;
-        },
+        deconfinement_enabled: (lockdown_enabled, { deconfinement_enabled }) =>
+            lockdown_enabled && deconfinement_enabled,
     },
 });
 
