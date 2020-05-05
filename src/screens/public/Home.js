@@ -1,4 +1,5 @@
 import React from 'react';
+import { format, parseISO } from 'date-fns';
 import { makeStyles, Typography, Button } from '@material-ui/core';
 
 import Layout from '../../components/Layout';
@@ -6,6 +7,8 @@ import diagram from './diagram.png';
 import Acknowledgments from './Acknowledgments';
 import { useHistory } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
+
+const buildDate = process.env.REACT_APP_BUILD_DATE;
 
 const useStyles = makeStyles((theme) => ({
     layout: {
@@ -34,6 +37,21 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: theme.spacing(1),
         },
     },
+    callToAction: {
+        textAlign: 'right',
+        backgroundColor: theme.palette.primary.main,
+        borderRadius: 4,
+        margin: `${theme.spacing(4)}px 0`,
+        color: 'white',
+        padding: theme.spacing(2, 1),
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        '& p': {
+            margin: `0 ${theme.spacing(1)}px 0 0`,
+            flex: '0 0 auto',
+        },
+    },
     start: {
         backgroundColor: 'white',
         color: theme.palette.primary.main,
@@ -53,21 +71,14 @@ const Home = () => {
     };
 
     return (
-        <Layout
-            className={classes.layout}
-            actions={
-                <Button
-                    className={classes.start}
-                    variant="contained"
-                    color="inherit"
-                    onClick={start}
-                >
-                    Commencer
-                </Button>
-            }
-        >
+        <Layout className={classes.layout}>
             <div className={classes.container}>
                 <div className={classes.home}>
+                    {buildDate && (
+                        <Typography variant="body2" gutterBottom>
+                            Version du {format(parseISO(buildDate), 'dd/MM/yyyy')}
+                        </Typography>
+                    )}
                     <p>
                         Ce simulateur permet de comprendre comment évolue une épidémie, et en
                         particulier l’épidémie COVID19, et de visualiser les effets des mesures
@@ -93,7 +104,7 @@ const Home = () => {
                             dans le compartiment <strong>G</strong> (Guéris). 2% des sujets infectés
                             vont développer des complications (le plus souvent respiratoires) qui
                             vont nécessiter une hospitalisation. Ils passent donc dans le
-                            compartiment H (Hospitalisés)
+                            compartiment <strong>H</strong> (Hospitalisés)
                         </li>
                         <li>
                             <strong>G&nbsp;:</strong> ensemble des sujets ayant été malades, guéris
@@ -117,9 +128,11 @@ const Home = () => {
                     </div>
                     <p>
                         Le nombre de nouveaux contaminés, et donc la vitesse de propagation de
-                        l’épidémie dépend directement du paramètre R0 (taux de reproduction). On
-                        peut montrer (et la simulation ci-dessous vous le visualisera) que :
+                        l’épidémie dépend directement du paramètre R0 (taux de reproduction). R0
+                        représente en effet le nombre de personnes saines qu’un sujet infecté peut
+                        contaminer.
                     </p>
+                    <p>On peut montrer (et la simulation ci-dessous vous le visualisera) que :</p>
                     <ul className={classes.noliststyle}>
                         <li>Si R0 est inférieur à 1 l’épidémie va s’éteindre spontanément</li>
                         <li>
@@ -151,8 +164,8 @@ const Home = () => {
                         <li>
                             <strong>β</strong> est la probabilité qu’un contact entre un sujet sain
                             et un sujet contaminé provoque la contamination du sujet sain. Par
-                            exemple si β = 0,5 un contact sur 2 est contaminant&nbsp;; si β = 0,01
-                            un contact sur 10 est contaminant. L’objectif des «&nbsp;gestes
+                            exemple si β = 0,5 un contact sur 2 est contaminant&nbsp;; si β = 0,1 un
+                            contact sur 10 est contaminant. L’objectif des «&nbsp;gestes
                             barrières&nbsp;» et des mesures de protection individuelles est de
                             diminuer β
                         </li>
@@ -162,13 +175,26 @@ const Home = () => {
                         de gestes barrières soient efficaces pour maitriser une épidémie il faut
                         qu’elles soient suffisamment rigoureuses et respectées pour que R0 devienne
                         inférieur à 1. C’est toute la difficulté de l’équilibre à trouver entre
-                        maitrise de l’épidémie et contraintes sociales et économiques.
+                        maitrise de l’épidémie, et contraintes sociales et économiques.
                     </p>
                     <p>
                         La simulation ci-dessous vous permettra de simuler les effets des mesures de
                         confinement / déconfinement en fonction de leur date et de leur
                         «&nbsp;rigueur&nbsp;» exprimée par la valeur de R0.
                     </p>
+                    <div className={classes.callToAction}>
+                        <p>Accéder à la simulation</p>
+                        <p>
+                            <Button
+                                className={classes.start}
+                                variant="contained"
+                                color="inherit"
+                                onClick={start}
+                            >
+                                Commencer
+                            </Button>
+                        </p>
+                    </div>
                     <Alert severity="warning" className={classes.warning}>
                         <p>
                             Cette modélisation est à visée exclusivement{' '}
