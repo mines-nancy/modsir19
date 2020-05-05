@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
     disabledNumber: {
         color: ({ forceDisabledColor }) =>
-            forceDisabledColor ? theme.palette.text.primary : undefined,
+            !!forceDisabledColor ? theme.palette.text.primary : theme.palette.text.disabled,
     },
 }));
 

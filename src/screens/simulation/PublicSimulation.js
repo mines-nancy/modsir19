@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { format, addDays, differenceInDays } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { useHistory } from 'react-router-dom';
 import { InfoOutlined, ArrowBackIos } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
@@ -26,7 +26,6 @@ import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
-import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import SwitchField from '../../components/fields/SwitchField';
 import AutoSave from '../../components/fields/AutoSave';
@@ -178,10 +177,6 @@ const useStyles = makeStyles((theme) => ({
     },
     formSlider: {
         marginTop: theme.spacing(2),
-    },
-    formSliderDeconfinement: {
-        marginTop: theme.spacing(1),
-        minWidth: 350,
     },
     toggle: {
         position: 'absolute',
@@ -402,7 +397,7 @@ const Legend = ({
 
 const initialValues = {
     initial_start_date: new Date('2020-01-06'),
-    initial_r0: 3.1,
+    initial_r0: 3.3,
     lockdown_start_date: new Date('2020-03-17'),
     lockdown_r0: 0.6,
     lockdown_enabled: true,
@@ -417,9 +412,9 @@ const getTimeframesFromValues = ({
     lockdown_start_date,
     lockdown_r0,
     lockdown_enabled,
-    deconfinement_start_date,
     deconfinement_r0,
     deconfinement_enabled,
+    deconfinement_start_date,
 }) => [
     {
         ...defaultParameters,
@@ -661,8 +656,8 @@ const PublicSimulation = () => {
                                               height:
                                                   windowHeight -
                                                   (showAlert ? 48 : 0) /* alert header */ -
-                                                  172 -
-                                                  /* form */ 36 /* footer */ -
+                                                  140 /* form */ -
+                                                  36 /* footer */ -
                                                   54 /* legend */,
                                               width: windowWidth - 100,
                                           }
@@ -748,7 +743,7 @@ const PublicSimulation = () => {
                                                     max="5"
                                                     step={0.1}
                                                     disabled
-                                                    forceDisabledColor
+                                                    forceDisabledColor={values.lockdown_enabled}
                                                 />
                                             </div>
                                         </CardContent>
@@ -772,14 +767,14 @@ const PublicSimulation = () => {
                                             }
                                         />
                                         <CardContent className={classes.formCardContent}>
-                                            <div className={classes.formSliderDeconfinement}>
-                                                <Field
-                                                    className="small-margin-bottom"
-                                                    name="deconfinement_start_date"
-                                                    label="Début"
-                                                    component={DateField}
-                                                    minDate={addDays(values.lockdown_start_date, 1)}
-                                                />
+                                            <Typography color="textSecondary" gutterBottom>
+                                                A partir du{' '}
+                                                {format(
+                                                    values.deconfinement_start_date,
+                                                    'dd/MM/yyyy',
+                                                )}
+                                            </Typography>
+                                            <div className={classes.formSlider}>
                                                 <Field
                                                     name="deconfinement_r0"
                                                     label={R0HelpIcon}
@@ -787,6 +782,7 @@ const PublicSimulation = () => {
                                                     unit=""
                                                     max="5"
                                                     step={0.1}
+                                                    disabled={!values.deconfinement_enabled}
                                                 />
                                             </div>
                                         </CardContent>
