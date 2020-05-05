@@ -18,7 +18,7 @@ class RuleChangeField(Rule):
         state.change_value(self._field, self._value)
 
 
-class RuleEvacuation(Rule):
+class RuleForceMove(Rule):
     def __init__(self, date, src, dest, value):
         Rule.__init__(self, date)
         self._src = src
@@ -26,7 +26,7 @@ class RuleEvacuation(Rule):
         self._value = value
 
     def apply(self, state):
-        state.evacuation(self._src, self._dest, self._value)
+        state.force_move(self._src, self._dest, self._value)
 
 
 def apply_rules(state, rules):
@@ -35,9 +35,13 @@ def apply_rules(state, rules):
         rule.apply(state)
 
 
-def apply_evacuations(state, src, dest, data_chu):
+def apply_force_move(state, src, dest, data_chu):
     date = state.time
     if date in data_chu and data_chu[date] != None:
         delta = state.box(src).size() - data_chu[date]
-        rule = RuleEvacuation(date, src, dest, delta)
-        rule.apply(state)
+        if delta > 0:
+            rule = RuleForceMove(date, src, dest, delta)
+            rule.apply(state)
+        elif delta < 0:
+            rule = RuleForceMove(date, dest, src, 0-delta)
+            rule.apply(state)

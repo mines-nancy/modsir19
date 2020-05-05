@@ -1,5 +1,5 @@
 from models.sir_h.state import State
-from models.rule import apply_rules, apply_evacuations
+from models.rule import apply_rules, apply_force_move
 
 
 def run_sir_h(parameters, rules, data_chu=dict()):
@@ -10,7 +10,7 @@ def run_sir_h(parameters, rules, data_chu=dict()):
 
     for i in range(lim_time):
         apply_rules(state, rules)
-        apply_evacuations(state, 'SI', 'R', data_chu)
+        apply_force_move(state, 'SI', 'SE', data_chu)
 
         state.step()
         # print(state)
