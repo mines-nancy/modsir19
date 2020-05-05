@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
         '& li': {
             marginBottom: theme.spacing(1),
         },
+        '& ol > li': {
+            paddingTop: theme.spacing(1),
+        },
         '& h6:not(:first-child)': {
             paddingTop: theme.spacing(2),
         },

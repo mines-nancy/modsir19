@@ -126,7 +126,7 @@ const InstructionsButton = () => {
                             </Typography>
                             <p>
                                 L’interrupteur «&nbsp;<strong>Confinement</strong>&nbsp;» active ou
-                                désactive la période de confinement du 16 MARS 2020. (en cas de
+                                désactive la période de confinement du 16 Mars 2020. (En cas de
                                 désactivation, la période de «&nbsp;<strong>Déconfinement</strong>
                                 &nbsp;» est alors également désactivée).
                             </p>
@@ -146,34 +146,65 @@ const InstructionsButton = () => {
                             <Typography variant="h6">EXEMPLES DE SCENARII</Typography>
                             <ol>
                                 <li>
-                                    <strong>Activer / désactiver la période de confinement</strong>
+                                    <strong>
+                                        Comment le confinement impact le nombre de patients
+                                        hospitalisés ?
+                                    </strong>
                                     <ul>
                                         <li>
-                                            Vérifier l’effet sur la courbe des patients hospitalisés
-                                            en cliquant sur{' '}
-                                            <Color name="intensive_care">Hospitalisés</Color>
+                                            Zoomer sur la courbe d'hospitalisés en cliquant sur la
+                                            case <Color name="intensive_care">Hospitalisés</Color>
                                         </li>
                                         <li>
-                                            Vérifier l’effet sur la courge des patients guéris en
-                                            cliquant
+                                            Cliquer sur l’interrupteur «&nbsp;
+                                            <strong>Confinement</strong>&nbsp;» pour le désactiver
+                                        </li>
+                                        <li>
+                                            Vérifier l’effet sur la courbe des patients hospitalisés
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
                                     <strong>
-                                        Activer le confinement du 16 Mars et le déconfinement du 11
-                                        Mai
+                                        Quel est le risque d'une seconde vague si les gestes
+                                        barrières sont respectés ?
                                     </strong>
                                     <ul>
                                         <li>
-                                            Sélectionner la courbe des patients hospitalisés en
-                                            cliquant sur{' '}
-                                            <Color name="intensive_care">Hospitalisés</Color>
+                                            Configurer le <i>RO</i> du «&nbsp;
+                                            <strong>Déconfinement</strong>&nbsp;» à une valeur de{' '}
+                                            <strong>1,5</strong>
                                         </li>
                                         <li>
-                                            Faites varier <i>R0</i> pour en voir l’effet sur le
-                                            nombre de patients hospitalisés (hauteur et date du pic
-                                            des hospitalisations)
+                                            Zoomer sur la courbe des madales en cliquant sur la case{' '}
+                                            <Color name="infected">Malades</Color>
+                                        </li>
+                                        <li>Vérifier l’effet sur la courbe des malades</li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <strong>
+                                        Que se passe-t-il si le confinement s'arrête plus tôt, sans
+                                        mesures particulières ?
+                                    </strong>
+                                    <ul>
+                                        <li>
+                                            Configurer le <i>RO</i> du «&nbsp;
+                                            <strong>Déconfinement</strong>&nbsp;» à une valeur de{' '}
+                                            <strong>3,1</strong>
+                                        </li>
+                                        <li>
+                                            Changer la date du «&nbsp;
+                                            <strong>Déconfinement</strong>&nbsp;» au{' '}
+                                            <strong>30 Avril</strong>
+                                        </li>
+                                        <li>
+                                            Zoomer sur la courbe des patients en cliquant sur la
+                                            case <Color name="intensive_care">Hospitalisés</Color>
+                                        </li>
+                                        <li>
+                                            Vérifier l’effet sur les courbes des patients et des
+                                            décès
                                         </li>
                                     </ul>
                                 </li>
