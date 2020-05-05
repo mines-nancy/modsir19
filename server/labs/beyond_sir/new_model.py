@@ -22,49 +22,16 @@ import math
 import pandas as pd
 import os.path
 
-import pandas as pd
-pd.options.mode.chained_assignment = None  # default='warn'
-
 import matplotlib.dates as mdates
-from scipy.integrate import odeint
+
 import lmfit
 from lmfit.lineshapes import gaussian, lorentzian
+from .ModelDiff import Model
 
 import warnings
 warnings.filterwarnings('ignore')
 
 def initial_code(data, model_parameters) :
-
-    ''' The following code are just examples on how to use lmfit
-
-    np.random.seed(42)
-    x = np.linspace(0, 20.0, 1001)
-
-    data = (gaussian(x, 21, 6.1, 1.2) + np.random.normal(scale=0.1, size=x.size))  # normal distr. with some noise
-    plt.plot(x, data)
-
-    def f(x, a, b, c):
-        return gaussian(x, a, b, c)
-
-    mod = lmfit.Model(f)
-    # we set the parameters (and some initial parameter guesses)
-    mod.set_param_hint("a", value=10.0, vary=True)
-    mod.set_param_hint("b", value=10.0, vary=True)
-    mod.set_param_hint("c", value=10.0, vary=True)
-
-    params = mod.make_params()
-
-    result = mod.fit(data, params, method="leastsq", x=x)  # fitting
-
-    plt.figure(figsize=(8,4))
-    result.plot_fit(datafmt="-")
-    result.best_values
-
-    result
-
-
-    plt.gcf().subplots_adjust(bottom=0.15)
-    '''
 
     def plotter(t, S, E, I, M, C, R, D, R_0, S_1=None, S_2=None, x_ticks=None):
         if S_1 is not None and S_2 is not None:
@@ -124,6 +91,8 @@ def initial_code(data, model_parameters) :
             ax.spines[spine].set_visible(False)
 
         # sp2
+        sigma = 1.0/get_default_params()['parameters']['dm_incub']
+
         ax2 = f.add_subplot(142)
         total_CFR = [0] + [100 * D[i] / sum(sigma*E[:i]) if sum(sigma*E[:i])>0 else 0 for i in range(1, len(t))]
         daily_CFR = [0] + [100 * ((D[i]-D[i-1]) / ((R[i]-R[i-1]) + (D[i]-D[i-1]))) if max((R[i]-R[i-1]), (D[i]-D[i-1]))>10 else 0 for i in range(1, len(t))]
@@ -198,121 +167,17 @@ def initial_code(data, model_parameters) :
 
         plt.show()
 
-    def deriv(compartiments, t, beta, gamma, sigma, dm_EI, parameters):
-        '''
-            I = IR + IH - infectés
-            M = IH ???
-        '''
-        SE, INCUB, I, SM, SI, R, DC = compartiments
 
-        # dm_EI = 2.9 # incubation
-        #dm_IR = 9.0 # infectés rétablis (non utilisé ??)
-        '''
-            Le modèle semble plus fin que le SIR+H dans la mesure où il prend en compte des
-            durées moyennes de transition différentes entre l'infection et l'admission en
-            médecine ou réa, ou de transition médecine vers réa, etc...
-        '''
-        dm_IC = parameters['dm_h'] # infectés vers hospitalisés critiques
-        dm_IM = parameters['dm_h'] # infectés vers hospitalisés médicalisés
-
-        ''' On considère ici que les temps de séjour en médecine sont indépendants
-            de l'évolution du patient vers d'autres services ou vers la sortie
-        '''
-        dm_MC = parameters['dm_sm']
-        dm_MR = parameters['dm_sm']
-        dm_MD = parameters['dm_sm']
-
-        ''' On considère ici que les temps de séjour en réa sont indépendants
-             de l'évolution du patient vers d'autres services ou vers la sortie
-        '''
-        dm_CD = parameters['dm_si']
-        dm_CR = parameters['dm_si']
-
-        pc_IR = parameters['pc_ir']
-        pc_HC = parameters['pc_si']
-        pc_IM = (1 - pc_IR) * (1 - pc_HC)
-        np.testing.assert_almost_equal(pc_IM, parameters['pc_ih'] * parameters['pc_sm'])
-        pc_IC = (1 - pc_IR) * pc_HC
-        np.testing.assert_almost_equal(pc_IC, parameters['pc_ih'] * parameters['pc_si'])
-
-        #pc_MC = 0 #0.21
-        #pc_MD = (1 - pc_MC) * 0.25
-        #pc_MR = (1 - pc_MC) * 0.75
-        pc_MC = parameters['pc_sm_si']
-        pc_MD = parameters['pc_sm_dc']
-        pc_MR = parameters['pc_sm_out']
-        np.testing.assert_almost_equal(pc_MC + pc_MD + pc_MR, 1.0)
-        #pc_CD = 0.40
-        #pc_CR = 1 - pc_CD
-        pc_CD = parameters['pc_si_dc']
-        pc_CR = parameters['pc_si_out']
-        np.testing.assert_almost_equal(pc_CD + pc_CR, 1.0)
-
-        N = SE + INCUB + I + R
-        # print(f'pc_IM={pc_IM} pc_IC={pc_IC} pc_MD={pc_MD} pc_MR={pc_MR}')
-        # print(f't={t} M={M} R0={beta(t)/gamma}')
-
-        assert pc_IR + pc_IC + pc_IM == 1.0
-        assert pc_MD + pc_MC + pc_MR == 1.0
-        assert pc_CD + pc_CR == 1.0
-
-        dSdt = -beta(t) * I * SE / N
-
-        dEdt =  beta(t) * I * SE / N - 1/dm_EI * INCUB
-
-        dIdt = 1/dm_EI * INCUB - gamma * pc_IR * I - 1/dm_IC * pc_IC * I - 1/dm_IM * pc_IM * I
-
-        dMdt = 1/dm_IM * pc_IM * I - 1/dm_MD * pc_MD * SM - 1/dm_MC * pc_MC * SM - 1/dm_MR * pc_MR * SM
-
-        dCdt = 1/dm_IC * pc_IC * I + 1/dm_MC * pc_MC * SM - 1/dm_CD * pc_CD * SI - 1/dm_CR * pc_CR * SI
-
-        dRdt = gamma * pc_IR * I + 1/dm_CR * pc_CR * SI + 1/dm_MR * pc_MR * SM
-
-        dDdt = 1/dm_CD * pc_CD * SI + 1/dm_MD * pc_MD * SM
-
-        return dSdt, dEdt, dIdt, dMdt, dCdt, dRdt, dDdt
-
-    gamma = 1.0/9.0 # dmg dm_IR
-    sigma = 1.0/3.0 # incubation
-
-    def Model(days, agegroups, parameters, R0_start = 3.31, R0_confinement = 0.6, R0_end = 1.2, dm_EI = 3.0):
-        t_confinement = 70
-        t_end = 126
-
-        def R0(t, k, R0_start, t_confinement, R0_confinement, t_end, R0_end):
-
-            # return 3.31
-            # return R0_start if t < t_confinement else R0_confinement
-            # if t<(t_confinement + t_end)/2:
-            return (R0_start-R0_confinement) / (1 + np.exp(-k*(-t + t_confinement))) + R0_confinement
-            # else:
-              # return (R0_confinement-R0_end) / (1 + np.exp(-k*(-t + t_end))) + R0_end
-
-        def beta(t):
-            k = 1.0
-            return R0(t, k, R0_start, t_confinement, R0_confinement, t_end, R0_end) * gamma
-
-        N = sum(agegroups)
-
-        y0 = N-parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
-        t = np.linspace(0, days, days)
-
-        ret = odeint(deriv, y0, t, args=(beta, gamma, sigma, dm_EI, parameters))
-        SE, INCUB, I, SM, SI, R, DC = ret.T
-        R0_over_time = [beta(i)/gamma for i in range(len(t))]
-
-        return t, SE, INCUB, I, SM, SI, R, DC, R0_over_time, dm_EI
-
-    plotter(*Model(days=model_parameters['lim_time'], agegroups=[model_parameters['population']], parameters=model_parameters))
+    plotter(*Model(days=model_parameters['lim_time'], parameters=model_parameters))
 
     # parameters
     # data = sortie SM (=SM+SI+SS) de notre modele
 
-    agegroups = [model_parameters['population']]
+    ''' the labels of the following dictionary will appear with the same name in **kwargs
+        passed to Model() '''
     params_init_min_max = {"R0_start": (3.0, 2.0, 5.0),
                            "R0_confinement": (0.6, 0.3, 2.0),
-                           "R0_end": (0.9, 0.3, 3.5),
-                           "dm_EI": (3.0, 2.0, 6.0),
+                           "R0_end": (0.9, 0.3, 3.5)
                            }  # form: {parameter: (initial guess, minimum value, max value)}
 
     days = len(data)
@@ -322,8 +187,9 @@ def initial_code(data, model_parameters) :
     #print(list(x_data))
     #print(len(x_data), len(y_data))
 
-    def fitter(x, R0_start, R0_confinement, R0_end, dm_EI):
-        ret = Model(days, agegroups, model_parameters, R0_start, R0_confinement, R0_end, dm_EI)
+    #def fitter(x, R0_start, R0_confinement, R0_end):
+    def fitter(x, **kwargs):
+        ret = Model(days=days, parameters=model_parameters, **kwargs)
         return ret[4][x]
 
     mod = lmfit.Model(fitter)
@@ -345,8 +211,8 @@ def initial_code(data, model_parameters) :
     first_date=np.datetime64('2020-01-06')
     x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
     print("Prediction for France")
-    #plotter(*Model(full_days, agegroup_lookup["France"], **result.best_values), x_ticks=x_ticks)
-    plotter(*Model(full_days, agegroups, model_parameters, **result.best_values), x_ticks=x_ticks)
+
+    plotter(*Model(days=full_days, parameters=model_parameters, **result.best_values), x_ticks=x_ticks)
 
 """
 Objectif: ajuster la courbe prédite par SIR+H pour coller au mieux aux données observées en réa
