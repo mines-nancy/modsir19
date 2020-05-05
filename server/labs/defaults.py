@@ -1,4 +1,6 @@
 from models.rule import RuleChangeField, RuleEvacuation
+from models.sir_h.simulator import get_default_parameters
+
 import json
 import re
 import importlib
@@ -69,19 +71,14 @@ def diff_params(p1, p2) :
     ''' incomplete code ... to be done '''
 
 def get_default_params() :
+    '''
     r0 = 3.31
-    r0_confinement = 0.4
     pc_ih = 0.02
     pc_si = 0.16
     pc_sm_si = 0.21
 
-    day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
     dm_r = 9
-    # r0 = 2.799
-    # r0_confinement = 1.205
-    # pc_ih = 0.067
-    # pc_si = 0.228
-    # pc_sm_si = 0.256
+
     parameters = {'population': 1000000,
                   'patient0': 40,
                   'lim_time': 250,
@@ -95,7 +92,16 @@ def get_default_params() :
                   'pc_sm': 1 - pc_si, 'pc_si': pc_si,
                   'pc_sm_si': pc_sm_si, 'pc_sm_dc': (1-pc_sm_si) * 0.25, 'pc_sm_out': (1-pc_sm_si) * 0.75,
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
-                  'pc_h_ss': 0.2, 'pc_h_r': 0.8}
+                  'pc_h_ss': 0.2, 'pc_h_r': 0.8,
+                  'integer_flux': False}
+    '''
+    parameters = get_default_parameters()
+    day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
+
+    dm_r = parameters['dm_r']
+    r0 = parameters['beta']*dm_r
+    r0_confinement = 0.532
+
 
     # number of days since 01/01/2020 -> number of residents in SI
     data_chu_rea = {46: 1.5, 47: None, 48: None, 49: None,
