@@ -34,6 +34,7 @@ import colors from './colors';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
 import { PopoverInfo } from '../../components/PopoverInfo';
+import InstructionsButton from './InstructionsButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,6 +64,9 @@ const useStyles = makeStyles((theme) => ({
             top: 10,
             width: '100%',
             textAlign: 'center',
+            '& > *': {
+                marginRight: theme.spacing(1),
+            },
         },
         [theme.breakpoints.up('sm')]: {
             top: 20,
@@ -72,11 +76,14 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'none',
         },
     },
-    backButton: {
+    legendActions: {
         pointerEvents: 'all',
         position: 'absolute',
         top: 0,
         left: 0,
+        '& > *': {
+            marginRight: theme.spacing(1),
+        },
     },
     legendTitle: {
         position: 'absolute',
@@ -263,6 +270,7 @@ const Legend = ({
         return (
             <div className={classes.legend}>
                 <BackButton onClick={handleGoBack} />
+                <InstructionsButton />
             </div>
         );
     }
@@ -277,8 +285,9 @@ const Legend = ({
 
     return (
         <GraphProvider>
-            <div className={classes.backButton}>
+            <div className={classes.legendActions}>
                 <BackButton onClick={handleGoBack} />
+                <InstructionsButton />
             </div>
             <div className={classes.legendTitle}>
                 {!date ? (
