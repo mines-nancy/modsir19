@@ -27,11 +27,12 @@ import matplotlib.dates as mdates
 import lmfit
 from lmfit.lineshapes import gaussian, lorentzian
 from .ModelDiff import Model
+from .ModelDiscr import Model2
 
 import warnings
 warnings.filterwarnings('ignore')
 
-def initial_code(data, model_parameters) :
+def initial_code(data, model_parameters, model_rules) :
 
     def plotter(t, S, E, I, M, C, R, D, R_0, S_1=None, S_2=None, x_ticks=None):
         if S_1 is not None and S_2 is not None:
@@ -94,7 +95,7 @@ def initial_code(data, model_parameters) :
         sigma = 1.0/get_default_params()['parameters']['dm_incub']
 
         ax2 = f.add_subplot(142)
-        total_CFR = [0] + [100 * D[i] / sum(sigma*E[:i]) if sum(sigma*E[:i])>0 else 0 for i in range(1, len(t))]
+        total_CFR = [0] + [100 * D[i] / (sigma*sum(E[:i])) if sum(E[:i])>0 else 0 for i in range(1, len(t))]
         daily_CFR = [0] + [100 * ((D[i]-D[i-1]) / ((R[i]-R[i-1]) + (D[i]-D[i-1]))) if max((R[i]-R[i-1]), (D[i]-D[i-1]))>10 else 0 for i in range(1, len(t))]
         if x_ticks is None:
             ax2.plot(t, total_CFR, 'r--', alpha=0.7, linewidth=2, label='total')
@@ -168,7 +169,9 @@ def initial_code(data, model_parameters) :
         plt.show()
 
 
-    plotter(*Model(days=model_parameters['lim_time'], parameters=model_parameters))
+    plotter(*Model(parameters=model_parameters))
+    plotter(*Model2(parameters=model_parameters, rules=model_rules))
+
 
     # parameters
     # data = sortie SM (=SM+SI+SS) de notre modele
@@ -181,6 +184,7 @@ def initial_code(data, model_parameters) :
                            }  # form: {parameter: (initial guess, minimum value, max value)}
 
     days = len(data)
+    model_parameters['lim_time'] = days
     y_data = np.array(data)
 
     x_data = np.linspace(0, days - 1, days, dtype=int)  # x_data is just [0, 1, ..., max_days] array
@@ -189,7 +193,7 @@ def initial_code(data, model_parameters) :
 
     #def fitter(x, R0_start, R0_confinement, R0_end):
     def fitter(x, **kwargs):
-        ret = Model(days=days, parameters=model_parameters, **kwargs)
+        ret = Model(parameters=model_parameters, **kwargs)
         return ret[4][x]
 
     mod = lmfit.Model(fitter)
@@ -212,7 +216,7 @@ def initial_code(data, model_parameters) :
     x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
     print("Prediction for France")
 
-    plotter(*Model(days=full_days, parameters=model_parameters, **result.best_values), x_ticks=x_ticks)
+    plotter(*Model(parameters=model_parameters, **result.best_values), x_ticks=x_ticks)
 
 """
 Objectif: ajuster la courbe prédite par SIR+H pour coller au mieux aux données observées en réa
@@ -338,7 +342,7 @@ if __name__ == "__main__":
         model_rules = default_model_params['rules']
 
     if not args.old :
-        initial_code(target[:,1], model_parameters)
+        initial_code(target[:,1], model_parameters, model_rules)
         os.sys.exit()
 
     ''' executing old version '''
