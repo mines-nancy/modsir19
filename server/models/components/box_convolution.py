@@ -1,7 +1,50 @@
 import math
 from collections import deque
 from models.components.box import Box
-from models.components.utils import compute_remove_delta
+
+
+def compute_remove_values(array, values_to_remove, integer_values):
+    """
+    given an array of values, remove values according to values_to_remove
+    in integer mode, rounds value to remove to the closest integer
+    return an array of values to remove, according to initial array
+    cannot remove more than initial value
+    """
+    assert sum(values_to_remove) <= sum(array)
+    delta_to_remove = []
+    to_remove = 0
+    for i in range(len(array)):
+        to_remove += values_to_remove[i]
+
+        if not integer_values:
+            if to_remove <= array[i]:
+                delta_to_remove.append(to_remove)
+                to_remove = 0
+            else:
+                delta_to_remove.append(array[i])
+                to_remove -= array[i]
+        else:
+            round_to_remove = round(to_remove)
+            if round_to_remove > 0 and round_to_remove <= array[i]:
+                delta_to_remove.append(round_to_remove)
+                to_remove -= round_to_remove
+            elif round_to_remove > 0 and round_to_remove > array[i] > 0:
+                delta_to_remove.append(array[i])
+                to_remove -= array[i]
+            else:
+                delta_to_remove.append(0)
+    return delta_to_remove
+
+
+def compute_remove_delta(array, value):
+    """
+    given an array of integers, remove value in a uniform way
+    we assume 0 <= value <= sum(array)
+    return an array of values to remove to each element of array
+    """
+    ratio = value/sum(array)
+    values_to_remove = [ratio * element for element in array]
+    return compute_remove_values(array, values_to_remove, True)
 
 
 class BoxConvolution(Box):
@@ -61,19 +104,18 @@ class BoxConvolution(Box):
         # transition step for all elements
         #   (v,r) -> (v, r-ki*v)
         #   output += ki*v
+        float_values_to_remove = []
+        for i in range(len(current_queue)):
+            v, r = current_queue[i]
+            float_values_to_remove.append(self._output_coefficients[i] * v)
+        values_to_remove = compute_remove_values(
+            [r for v, r in current_queue], float_values_to_remove, self._integer)
+
         new_list = []
         for i in range(len(current_queue)):
             v, r = current_queue[i]
-            if self._output_coefficients[i] * v > r:
-                delta = r
-            elif self._integer:
-                delta = round(self._output_coefficients[i] * v)
-                if delta > r:
-                    delta -= 1
-            else:
-                delta = self._output_coefficients[i] * v
-            new_list.append((v, r - delta))
-            new_output += delta
+            new_list.append((v, r - values_to_remove[i]))
+            new_output += values_to_remove[i]
 
         self._queue.append(deque(new_list))
         new_size -= new_output
