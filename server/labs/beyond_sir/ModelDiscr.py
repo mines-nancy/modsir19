@@ -8,12 +8,20 @@ from models.rule import RuleChangeField
 from labs.defaults import get_default_params
 
 def model_disc(model_params, **kwargs):
-    t_confinement = get_default_params()['other']['confinement']
-    t_end = 126
 
     parameters = dict(model_params['parameters'])
     other_arguments = dict(kwargs)
     parameters.update(other_arguments)
+
+    if not 't_confinement' in parameters.keys() :
+        t_confinement = get_default_params()['other']['confinement']
+    else :
+        t_confinement = parameters['t_confinement']
+
+    if not 't_end' in parameters.keys() :
+        t_end = get_default_params()['other']['deconfinement']
+    else :
+        t_end = parameters['t_end']
 
     if not 'beta_post' in parameters.keys() :
         parameters['beta_post'] = get_default_params()['other']['r0_confinement']/parameters['dm_r']

@@ -1,5 +1,4 @@
 from models.rule import RuleChangeField, RuleEvacuation
-from models.sir_h.simulator import get_default_parameters
 
 import json
 import re
@@ -16,7 +15,11 @@ def export_json(filename, parameters = None, rules = None, others = None ) :
     data = dict()
     data['version'] = version
     data['parameters'] = parameters
-    data['rules'] = [ serialise_rule(r) for r in rules ]
+    data['rules'] = [ serialise_rule(r) for r in rules ] if rules else None
+
+    ''' @TODO potential source of @BUG: 'others' contains initial values of
+        'R0' and 'R0_confinement' which may not be coherent with 'beta' and 'beta_post'
+        values in 'parameters' '''
     data['others'] = others
 
     with open(filename, 'w') as json_file:
@@ -43,8 +46,8 @@ def import_json(filename) :
         m = re.search(r"<class '(\w+\.)*(\w+)'>", r['type'])
         rule_module = m.group(1)
         rule_type = m.group(2)
-        print(rule_type, r['vars'])
-        print(rule_module)
+        #print(rule_type, r['vars'])
+        #print(rule_module)
 
         module = importlib.import_module("models.rule")
         class_type = getattr(module, rule_type)
@@ -71,15 +74,18 @@ def diff_params(p1, p2) :
     ''' incomplete code ... to be done '''
 
 def get_default_params() :
-    '''
-    r0 = 3.31
-    pc_ih = 0.02
-    pc_si = 0.16
-    pc_sm_si = 0.21
+    # r0 = 3.31
+    # pc_ih = 0.02
+    # pc_si = 0.16
+    # pc_sm_si = 0.21
 
     dm_r = 9
-
-    parameters = {'population': 1000000,
+    r0 = 2.85
+    r0_confinement = 0.532
+    pc_ih = 0.03
+    pc_si = 0.154
+    pc_sm_si = 0.207
+    parameters = dict({'population': 1000000,
                   'patient0': 40,
                   'lim_time': 250,
                   'r': 1.0,
@@ -93,9 +99,8 @@ def get_default_params() :
                   'pc_sm_si': pc_sm_si, 'pc_sm_dc': (1-pc_sm_si) * 0.25, 'pc_sm_out': (1-pc_sm_si) * 0.75,
                   'pc_si_dc': 0.4, 'pc_si_out': 0.6,
                   'pc_h_ss': 0.2, 'pc_h_r': 0.8,
-                  'integer_flux': False}
-    '''
-    parameters = get_default_parameters()
+                  'integer_flux': False})
+
     day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
 
     dm_r = parameters['dm_r']

@@ -10,12 +10,14 @@ from scipy.integrate import odeint
 
 from labs.defaults import get_default_params
 
-def deriv(compartiments, t, beta, gamma, parameters):
+def deriv(compartiments, t, beta, parameters):
     '''
         I = IR + IH - infectés
         M = IH ???
     '''
     SE, INCUB, I, SM, SI, R, DC = compartiments
+
+    gamma = 1.0/parameters['dm_r']
 
     dm_EI = parameters['dm_incub']
     #dm_IR = 9.0 # infectés rétablis (non utilisé ??)
@@ -46,6 +48,7 @@ def deriv(compartiments, t, beta, gamma, parameters):
     np.testing.assert_almost_equal(pc_IM, parameters['pc_ih'] * parameters['pc_sm'])
     pc_IC = (1 - pc_IR) * pc_HC
     np.testing.assert_almost_equal(pc_IC, parameters['pc_ih'] * parameters['pc_si'])
+    np.testing.assert_almost_equal(pc_IR + pc_IC + pc_IM, 1.0)
 
     #pc_MC = 0 #0.21
     #pc_MD = (1 - pc_MC) * 0.25
@@ -64,9 +67,6 @@ def deriv(compartiments, t, beta, gamma, parameters):
     # print(f'pc_IM={pc_IM} pc_IC={pc_IC} pc_MD={pc_MD} pc_MR={pc_MR}')
     # print(f't={t} M={M} R0={beta(t)/gamma}')
 
-    assert pc_IR + pc_IC + pc_IM == 1.0
-    assert pc_MD + pc_MC + pc_MR == 1.0
-    assert pc_CD + pc_CR == 1.0
 
     dSdt = -beta(t) * I * SE / N
 
@@ -85,8 +85,6 @@ def deriv(compartiments, t, beta, gamma, parameters):
     return dSdt, dEdt, dIdt, dMdt, dCdt, dRdt, dDdt
 
 def model_diff(parameters, **kwargs):
-    t_confinement = 70
-    t_end = 126
 
     model_args = argparse.Namespace(**kwargs)
     parameters = dict(parameters)
@@ -94,6 +92,16 @@ def model_diff(parameters, **kwargs):
     other_arguments = dict(kwargs)
     #del other_arguments['parameters']
     parameters.update(other_arguments)
+
+    if not 't_confinement' in parameters.keys() :
+        t_confinement = get_default_params()['other']['confinement']
+    else :
+        t_confinement = parameters['t_confinement']
+
+    if not 't_end' in parameters.keys() :
+        t_end = get_default_params()['other']['deconfinement']
+    else :
+        t_end = parameters['t_end']
 
     if not 'beta_post' in parameters.keys() :
         parameters['beta_post'] = get_default_params()['other']['r0_confinement']/parameters['dm_r']
@@ -123,7 +131,7 @@ def model_diff(parameters, **kwargs):
     y0 = N-parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
     t = np.linspace(0, parameters['lim_time'], parameters['lim_time'])
 
-    ret = odeint(deriv, y0, t, args=(beta, gamma, parameters))
+    ret = odeint(deriv, y0, t, args=(beta, parameters))
     SE, INCUB, I, SM, SI, R, DC = ret.T
     R0_over_time = [beta(i)/gamma for i in range(len(t))]
 
