@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from models.sir_h.state import State
 from models.sir_h.simulator import run_sir_h
-from models.rule import RuleChangeField
 from .defaults import get_default_params, import_json, export_json
 import argparse
 import csv
@@ -58,22 +57,21 @@ if __name__ == "__main__":
     ''' default parameters also contain reference data '''
     day0 = data['day0']
     data_chu = data['data_chu_rea']
-    data_day0 = {date-day0: data_chu[date]
-                 for date in data_chu }
+    data_day0 = np.array( [[date-day0, data_chu[date]] for date in data_chu ])
 
     if args.o :
         curve_list = args.o
     else :
         curve_list = ['SI']
 
-    x = np.linspace(0, parameters['lim_time'], parameters['lim_time'])
+    x = np.linspace(day0, day0+parameters['lim_time']-1, parameters['lim_time'])
 
     if not args.noplot :
         for curve in curve_list :
             c = series[curve]
             plt.plot(x, c, label="Baseline "+curve)
         ''' @TODO allow for other reference data to be plotted '''
-        plt.plot(list(data_day0.keys()), list(data_day0.values()), 'x',  label="Data CHU SI")
+        plt.plot(data_day0[:,0], data_day0[:,1], 'x',  label="Data CHU SI")
 
     if args.params :
         for f in args.params :
