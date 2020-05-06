@@ -9,7 +9,7 @@
     "deconfinement_r0": 2.1,
     "lockdown_enabled": true,
     "deconfinement_enabled": true,
-    "initial_tooltip": "R0 correspond au nombre moyen de personnes infectées par une personne contaminée.",
-    "lockdown_tooltip": "Cette valeur dépend de la rigueur du confinement. Elle est, selon les territoires, estimées entre 0.4 et 0.8.",
-    "deconfinement_tooltip": "Cette valeur, que vous pouvez faire varier, devrait être comprise entre 1.5 et 3."
+    "initial_tooltip": "La valeur R0 initiale dépend fortement du territoire, les estimations sont habituellement entre 2 et 4.",
+    "lockdown_tooltip": "La valeur de R0 pendant le confinement dépend de la rigueur du confinement. Elle est estimée entre 0.4 et 0.8 selon les territoires.",
+    "deconfinement_tooltip": "La valeur R0 &laquo; post confinement &raquo;, va dépendre du respect des règles collectives. Elle devrait être comprise entre 1.5 et 3. Vous pouvez la faire varier pour en voir l'impact sur les courbes."
 }
