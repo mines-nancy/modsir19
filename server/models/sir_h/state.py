@@ -114,12 +114,15 @@ class State:
         print(
             f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
-    def evacuation(self, src, dest, value):
-        """value should be positive"""
-        self.box(src).force_output(value)
-        max_value = min(self.box(src).output(), value)
-        self.move(src, dest, max_value)
-        print(f'evacuation time = {self.time} delta {max_value}')
+    def force_move(self, src, dest, value):
+        if value <= 0:
+            return
+
+        to_output = min(self.box(src).size(), value)
+        self.box(src).force_output(to_output)
+        to_move = min(self.box(src).output(), value)
+        self.move(src, dest, to_move)
+        print(f'force_move time = {self.time} delta {to_move}')
 
     def boxes(self):
         return self._boxes.values()
