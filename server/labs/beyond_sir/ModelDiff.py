@@ -129,7 +129,7 @@ def model_diff(parameters, **kwargs):
     N = parameters['population']
 
     y0 = N-parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
-    t = np.linspace(0, parameters['lim_time'], parameters['lim_time'])
+    t = np.linspace(0, parameters['lim_time']-1, parameters['lim_time'])
 
     ret = odeint(deriv, y0, t, args=(beta, parameters))
     SE, INCUB, I, SM, SI, R, DC = ret.T
