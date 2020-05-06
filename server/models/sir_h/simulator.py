@@ -1,5 +1,5 @@
 from models.sir_h.state import State
-from models.rule import apply_rules, apply_evacuations
+from models.rule import apply_rules, apply_force_move
 from functools import lru_cache
 from frozendict import frozendict
 
