@@ -161,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     formControl: {
-        flex: '2 0 0',
+        flex: '2 0 auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -173,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: 12,
         },
         '&:nth-child(3)': {
-            flex: '3 0 0',
+            flex: '3 0 auto',
             alignItems: 'flex-end',
         },
     },
