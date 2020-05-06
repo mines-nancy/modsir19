@@ -398,7 +398,7 @@ const Legend = ({
 const initialValues = {
     initial_start_date: new Date('2020-01-06'),
     initial_r0: 3.3,
-    lockdown_start_date: new Date('2020-03-17'),
+    lockdown_start_date: new Date('2020-03-16'),
     lockdown_r0: 0.6,
     lockdown_enabled: true,
     deconfinement_start_date: new Date('2020-05-11'),
