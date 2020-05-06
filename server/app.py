@@ -29,6 +29,7 @@ def extract_from_parameters(parameters):
                        'pc_h_ss', 'pc_h_r']
 
     parameters = {key: parameters[key] for key in parameters_name}
+    parameters['integer_flux'] = False
     return start_time, frozendict(parameters)
 
 
