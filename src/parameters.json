@@ -9,7 +9,7 @@
     "deconfinement_r0": 2.1,
     "lockdown_enabled": true,
     "deconfinement_enabled": true,
-    "initial_tooltip": "Info R0 confinement : Cette valeur dépend de la rigueur du confinement. Elle est, selon les territoires, estimées entre 0.4 et 0.8",
-    "lockdown_tooltip": "Info R0 déconfinement : Cette valeur, que vous pouvez faire varier, devrait être comprise entre 1.5 et 3.",
-    "deconfinement_tooltip": "R0 correspond au nombre moyen de personnes infectées par une personne contaminée."
+    "initial_tooltip": "R0 correspond au nombre moyen de personnes infectées par une personne contaminée.",
+    "lockdown_tooltip": "Cette valeur dépend de la rigueur du confinement. Elle est, selon les territoires, estimées entre 0.4 et 0.8.",
+    "deconfinement_tooltip": "Cette valeur, que vous pouvez faire varier, devrait être comprise entre 1.5 et 3."
 }

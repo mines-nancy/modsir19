@@ -468,17 +468,19 @@ const decorator = createDecorator({
 const HelpIcon = ({ title, description, children }) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
         <div>{title}</div>
-        <div>
-            <Tooltip title={description}>
-                <InfoOutlined
-                    style={{
-                        marginBottom: -5,
-                        paddingLeft: 10,
-                    }}
-                    fontSize="small"
-                />
-            </Tooltip>
-        </div>
+        {description && (
+            <div>
+                <Tooltip title={description}>
+                    <InfoOutlined
+                        style={{
+                            marginBottom: -5,
+                            paddingLeft: 10,
+                        }}
+                        fontSize="small"
+                    />
+                </Tooltip>
+            </div>
+        )}
         {children}
     </div>
 );
