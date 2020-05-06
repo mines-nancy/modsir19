@@ -11,6 +11,7 @@ import {
     CardHeader,
     Button,
     Tooltip,
+    CircularProgress,
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
@@ -19,6 +20,7 @@ import { useHistory } from 'react-router-dom';
 import { InfoOutlined, ArrowBackIos } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
 
+import config from '../../parameters.json';
 import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
 import Chart from './Chart';
@@ -35,6 +37,14 @@ import { Footer } from '../../components/Footer';
 import InstructionsButton from './InstructionsButton';
 
 const useStyles = makeStyles((theme) => ({
+    loader: {
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#eee',
+    },
     root: {
         position: 'relative',
         display: 'flex',
@@ -395,16 +405,15 @@ const Legend = ({
     );
 };
 
-const initialValues = {
-    initial_start_date: new Date('2020-01-06'),
-    initial_r0: 3.3,
-    lockdown_start_date: new Date('2020-03-17'),
-    lockdown_r0: 0.6,
-    lockdown_enabled: true,
-    deconfinement_start_date: new Date('2020-05-11'),
-    deconfinement_r0: 2.1,
-    deconfinement_enabled: true,
-};
+const initialValues = Object.keys(config).reduce((acc, key) => {
+    if (key.endsWith('_date')) {
+        acc[key] = new Date(config[key]);
+    } else {
+        acc[key] = config[key];
+    }
+
+    return acc;
+}, {});
 
 const getTimeframesFromValues = ({
     initial_start_date,
@@ -418,6 +427,8 @@ const getTimeframesFromValues = ({
 }) => [
     {
         ...defaultParameters,
+        population: initialValues.population,
+        patient0: initialValues.patient0,
         r0: initial_r0,
         start_date: initial_start_date,
         name: '', // Before lockdown
@@ -426,6 +437,8 @@ const getTimeframesFromValues = ({
     },
     {
         ...defaultParameters,
+        population: initialValues.population,
+        patient0: initialValues.patient0,
         r0: lockdown_r0,
         start_date: lockdown_start_date,
         name: 'Confinement',
@@ -434,6 +447,8 @@ const getTimeframesFromValues = ({
     },
     {
         ...defaultParameters,
+        population: initialValues.population,
+        patient0: initialValues.patient0,
         r0: deconfinement_r0,
         start_date: deconfinement_start_date,
         name: 'Déconfinement',
@@ -450,11 +465,11 @@ const decorator = createDecorator({
     },
 });
 
-const R0HelpIcon = (
+const HelpIcon = ({ title, description, children }) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div>R0</div>
+        <div>{title}</div>
         <div>
-            <Tooltip title="R0 correspond au nombre moyen de personnes infectées par une personne contaminée.">
+            <Tooltip title={description}>
                 <InfoOutlined
                     style={{
                         marginBottom: -5,
@@ -464,15 +479,7 @@ const R0HelpIcon = (
                 />
             </Tooltip>
         </div>
-        <Typography
-            style={{
-                paddingLeft: 20,
-            }}
-            color="textSecondary"
-            gutterBottom
-        >
-            Faites varier le R0 pour en voir l'impact
-        </Typography>
+        {children}
     </div>
 );
 
@@ -553,7 +560,11 @@ const PublicSimulation = () => {
     }, [chartRef]);
 
     if (!values) {
-        return null;
+        return (
+            <div className={classes.loader}>
+                <CircularProgress />
+            </div>
+        );
     }
 
     const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
@@ -579,7 +590,7 @@ const PublicSimulation = () => {
         setTimeframes(getTimeframesFromValues(values));
     };
 
-    const config = {
+    const chartConfig = {
         zoom: { enabled: true, rescale: true },
         legend: {
             show: false,
@@ -662,7 +673,7 @@ const PublicSimulation = () => {
                                               width: windowWidth - 100,
                                           }
                                 }
-                                customConfig={config}
+                                customConfig={chartConfig}
                                 ref={chartRef}
                                 style={{ padding: 0 }}
                             />
@@ -696,7 +707,12 @@ const PublicSimulation = () => {
                                             <div className={classes.formSlider}>
                                                 <Field
                                                     name="initial_r0"
-                                                    label="R0"
+                                                    label={
+                                                        <HelpIcon
+                                                            title="R0"
+                                                            description={config.initial_tooltip}
+                                                        />
+                                                    }
                                                     component={ProportionField}
                                                     unit=""
                                                     max="5"
@@ -737,7 +753,12 @@ const PublicSimulation = () => {
                                             <div className={classes.formSlider}>
                                                 <Field
                                                     name="lockdown_r0"
-                                                    label="R0"
+                                                    label={
+                                                        <HelpIcon
+                                                            title="R0"
+                                                            description={config.lockdown_tooltip}
+                                                        />
+                                                    }
                                                     component={ProportionField}
                                                     unit=""
                                                     max="5"
@@ -777,7 +798,25 @@ const PublicSimulation = () => {
                                             <div className={classes.formSlider}>
                                                 <Field
                                                     name="deconfinement_r0"
-                                                    label={R0HelpIcon}
+                                                    label={
+                                                        <HelpIcon
+                                                            title="R0"
+                                                            description={
+                                                                config.deconfinement_tooltip
+                                                            }
+                                                        >
+                                                            <Typography
+                                                                style={{
+                                                                    paddingLeft: 20,
+                                                                }}
+                                                                color="textSecondary"
+                                                                gutterBottom
+                                                            >
+                                                                Faites varier le R0 pour en voir
+                                                                l'impact
+                                                            </Typography>
+                                                        </HelpIcon>
+                                                    }
                                                     component={ProportionField}
                                                     unit=""
                                                     max="5"
