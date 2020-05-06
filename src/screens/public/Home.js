@@ -79,9 +79,19 @@ const Home = () => {
                             </Typography>
                         )}
                         <p>
-                            Ce simulateur permet de comprendre comment évolue une épidémie, et en
-                            particulier l’épidémie COVID19, et de visualiser les effets des mesures
-                            collectives prises pour la maitriser.
+                            Ce simulateur a pour but de montrer les princiaux facteurs influant 
+                            sur l’évolution d’une épidémie en prenant comme exemple d’illustration 
+                            l’épidémie de COVID19.
+                        </p>
+                        <p>
+                            Les dates sont réalistes mais les paramètres utilisés sont des valeurs
+                            arbitraires choisies pour les besoins de la démonstration.
+                        </p>
+                        <p>
+                            Les résultats de cette simulation n’ont donc qu’une valeur pédagogique
+                            pour aider à comprendre les mécanismes, et ne sont en auncun cas le
+                            reflet de la réalité, ni au niveau d’un territoire, ni au niveau
+                            national.
                         </p>
                         <p>
                             Pour modéliser cette épidémie, on utilise le principe de l’analyse
@@ -207,7 +217,7 @@ const Home = () => {
                             simplifiées.
                         </p>
                         <p>
-                            Elle n’est pas le reflet de la réalité de l’épidémie actuelle.
+                            Elle n’est pas le reflet de la réalité de l’épidémie actuelle et n’est pas applicable à un territoire particulier.
                             <br />
                             Elle ne peut en aucun cas servir d’outil de prévision ou d’aide à la
                             prise de décision.
