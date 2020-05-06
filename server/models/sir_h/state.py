@@ -73,10 +73,9 @@ class State:
         res = [value*c for c in coefficients]
 
         if self._integer:
+            assert value == int(value)
             res_int = [int(v) for v in res]
-            if len(res_int) >= 1:
-                i = 0  # randint(0, len(res_int)-1)
-                res_int[i] += (int(value-sum(res_int)))
+            res_int[0] += (value-sum(res_int))
             assert sum(res_int) == value
             return res_int
         else:
