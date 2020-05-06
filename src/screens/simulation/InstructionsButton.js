@@ -126,7 +126,7 @@ const InstructionsButton = () => {
                             </Typography>
                             <p>
                                 L’interrupteur «&nbsp;<strong>Confinement</strong>&nbsp;» active ou
-                                désactive la période de confinement du 16 Mars 2020. (En cas de
+                                désactive la période de confinement du 17 Mars 2020. (En cas de
                                 désactivation, la période de «&nbsp;<strong>Déconfinement</strong>
                                 &nbsp;» est alors également désactivée).
                             </p>
@@ -140,14 +140,14 @@ const InstructionsButton = () => {
                             </p>
                             <p>
                                 Le curseur <i>R0</i> modifie la valeur du <i>R0</i> en phase de
-                                déconfinement ce qui permet de visualiser l’effet de mesures
+                                déconfinement, ce qui permet de visualiser l’effet de mesures
                                 collectives de précaution sur l’évolution de l’épidémie.
                             </p>
                             <Typography variant="h6">EXEMPLES DE SCENARII</Typography>
                             <ol>
                                 <li>
                                     <strong>
-                                        Comment le confinement impact le nombre de patients
+                                        Comment le confinement impacte le nombre de patients
                                         hospitalisés ?
                                     </strong>
                                     <ul>
