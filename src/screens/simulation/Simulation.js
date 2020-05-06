@@ -40,7 +40,7 @@ const useStyles = makeStyles(() => ({
     chartContainer: {
         position: 'fixed',
         left: 0,
-        flex: 1,
+        flex: '1 0 0',
         display: 'flex',
         flexDirection: 'column',
     },

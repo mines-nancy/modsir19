@@ -11,13 +11,13 @@ import { useTranslate } from 'react-polyglot';
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
-            flexGrow: 1,
+            flex: '1 0 0',
         },
         appBar: {
             zIndex: theme.zIndex.drawer + 1,
         },
         title: {
-            flexGrow: 1,
+            flex: '1 0 0',
         },
         menuButton: {
             marginRight: theme.spacing(1),

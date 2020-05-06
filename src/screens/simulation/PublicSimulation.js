@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
         background: '#eee',
     },
     chartViewContainer: {
-        flex: 1,
+        flex: '1 0 0',
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column-reverse',
@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
             padding: '0 12px',
         },
     },
+    legendContainer: { flex: '1 0 0', position: 'relative' },
     legend: {
         position: 'absolute',
         zIndex: 999,
@@ -148,6 +149,7 @@ const useStyles = makeStyles((theme) => ({
     form: {
         padding: '16px 30px 8px 30px',
         display: 'flex',
+        justifyContent: 'space-between',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column',
             padding: 0,
@@ -642,7 +644,7 @@ const PublicSimulation = () => {
                     <div className={classes.rangeSlider}>
                         <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
                     </div>
-                    <div style={{ flex: 1, position: 'relative' }}>
+                    <div className={classes.legendContainer}>
                         <div className={classes.legend}>
                             <Legend
                                 date={currentDate}
