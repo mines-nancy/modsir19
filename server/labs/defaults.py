@@ -1,4 +1,4 @@
-from models.rule import RuleChangeField, RuleEvacuation
+from models.rule import RuleChangeField
 
 import json
 import re
