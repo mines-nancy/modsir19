@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
     zoom: {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        height: '95%',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'row-reverse',
         },

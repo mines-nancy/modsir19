@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     slider: {
-        flex: 'O 0 auto',
+        flex: '1 0 0',
         minWidth: 100,
     },
     numberContainer: {
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
     disabledNumber: {
         color: ({ forceDisabledColor }) =>
-            forceDisabledColor ? theme.palette.text.primary : undefined,
+            !!forceDisabledColor ? theme.palette.text.primary : theme.palette.text.disabled,
     },
 }));
 

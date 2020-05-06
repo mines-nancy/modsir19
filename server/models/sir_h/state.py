@@ -190,11 +190,15 @@ class State:
         outputs = {'SE': ['SE'],  'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                    'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], }
 
+        def positive_or_zero(x):
+            return x if x >= 0 else 0
+
         def sum_lists(lists):
             res = [0] * len(lists[0])
             for serie in lists:
-                res = list(map(add, serie, res))
+                res = list(map(positive_or_zero, map(add, serie, res)))
             return res
+
 
         lists = dict()
         for key in sizes.keys():

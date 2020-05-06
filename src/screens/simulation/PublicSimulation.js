@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
+import createDecorator from 'final-form-calculate';
 import {
     makeStyles,
     Card,
     Typography,
     useMediaQuery,
     useTheme,
-    Paper,
     CardContent,
     CardHeader,
     Button,
+    Tooltip,
 } from '@material-ui/core';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { debounce } from 'lodash';
-import { format, addDays, differenceInDays } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 import { useHistory } from 'react-router-dom';
 import { InfoOutlined, ArrowBackIos } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
@@ -25,14 +26,13 @@ import { useWindowSize } from '../../utils/useWindowSize';
 import { GraphProvider } from '../../components/Graph/GraphProvider';
 import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
-import DateField from '../../components/fields/DateField';
 import ProportionField from '../../components/fields/ProportionField';
 import SwitchField from '../../components/fields/SwitchField';
 import AutoSave from '../../components/fields/AutoSave';
 import colors from './colors';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
-import { PopoverInfo } from '../../components/PopoverInfo';
+import InstructionsButton from './InstructionsButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -62,6 +62,9 @@ const useStyles = makeStyles((theme) => ({
             top: 10,
             width: '100%',
             textAlign: 'center',
+            '& > *': {
+                marginRight: theme.spacing(1),
+            },
         },
         [theme.breakpoints.up('sm')]: {
             top: 20,
@@ -71,11 +74,14 @@ const useStyles = makeStyles((theme) => ({
             pointerEvents: 'none',
         },
     },
-    backButton: {
+    legendActions: {
         pointerEvents: 'all',
         position: 'absolute',
         top: 0,
         left: 0,
+        '& > *': {
+            marginRight: theme.spacing(1),
+        },
     },
     legendTitle: {
         position: 'absolute',
@@ -130,8 +136,7 @@ const useStyles = makeStyles((theme) => ({
         color: '#888',
     },
     form: {
-        padding: '0 30px',
-        marginTop: 32,
+        padding: '16px 30px 8px 30px',
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column',
@@ -158,8 +163,10 @@ const useStyles = makeStyles((theme) => ({
     formCard: {
         minWidth: 310,
         position: 'relative',
+        marginBottom: 0,
         [theme.breakpoints.down('sm')]: {
             width: '100%',
+            marginBottom: theme.spacing(2),
         },
     },
     formCardHeader: {
@@ -170,10 +177,6 @@ const useStyles = makeStyles((theme) => ({
     },
     formSlider: {
         marginTop: theme.spacing(2),
-    },
-    formSliderDeconfinement: {
-        marginTop: theme.spacing(1),
-        minWidth: 350,
     },
     toggle: {
         position: 'absolute',
@@ -262,6 +265,7 @@ const Legend = ({
         return (
             <div className={classes.legend}>
                 <BackButton onClick={handleGoBack} />
+                <InstructionsButton />
             </div>
         );
     }
@@ -276,8 +280,9 @@ const Legend = ({
 
     return (
         <GraphProvider>
-            <div className={classes.backButton}>
+            <div className={classes.legendActions}>
                 <BackButton onClick={handleGoBack} />
+                <InstructionsButton />
             </div>
             <div className={classes.legendTitle}>
                 {!date ? (
@@ -392,12 +397,12 @@ const Legend = ({
 
 const initialValues = {
     initial_start_date: new Date('2020-01-06'),
-    initial_r0: 3.1,
+    initial_r0: 3.3,
     lockdown_start_date: new Date('2020-03-17'),
     lockdown_r0: 0.6,
     lockdown_enabled: true,
     deconfinement_start_date: new Date('2020-05-11'),
-    deconfinement_r0: 1.1,
+    deconfinement_r0: 2.1,
     deconfinement_enabled: true,
 };
 
@@ -407,9 +412,9 @@ const getTimeframesFromValues = ({
     lockdown_start_date,
     lockdown_r0,
     lockdown_enabled,
-    deconfinement_start_date,
     deconfinement_r0,
     deconfinement_enabled,
+    deconfinement_start_date,
 }) => [
     {
         ...defaultParameters,
@@ -433,22 +438,23 @@ const getTimeframesFromValues = ({
         start_date: deconfinement_start_date,
         name: 'Déconfinement',
         lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: lockdown_enabled && deconfinement_enabled,
+        enabled: deconfinement_enabled,
     },
 ];
+
+const decorator = createDecorator({
+    field: 'lockdown_enabled',
+    updates: {
+        deconfinement_enabled: (lockdown_enabled, { deconfinement_enabled }) =>
+            lockdown_enabled && deconfinement_enabled,
+    },
+});
 
 const R0HelpIcon = (
     <div style={{ display: 'flex', alignItems: 'center' }}>
         <div>R0</div>
         <div>
-            <PopoverInfo
-                content={
-                    <Paper style={{ padding: 10 }}>
-                        R0 correspond au nombre moyen de personnes infectées par une personne
-                        contaminée.
-                    </Paper>
-                }
-            >
+            <Tooltip title="R0 correspond au nombre moyen de personnes infectées par une personne contaminée.">
                 <InfoOutlined
                     style={{
                         marginBottom: -5,
@@ -456,10 +462,25 @@ const R0HelpIcon = (
                     }}
                     fontSize="small"
                 />
-            </PopoverInfo>
+            </Tooltip>
         </div>
+        <Typography
+            style={{
+                paddingLeft: 20,
+            }}
+            color="textSecondary"
+            gutterBottom
+        >
+            Faites varier le R0 pour en voir l'impact
+        </Typography>
     </div>
 );
+
+const removeNegativeValues = (data) =>
+    Object.keys(data).reduce((acc, key) => {
+        acc[key] = data[key].map((value) => Math.max(0, value));
+        return acc;
+    }, {});
 
 const PublicSimulation = () => {
     const classes = useStyles();
@@ -469,6 +490,13 @@ const PublicSimulation = () => {
     const { width: windowWidth, height: windowHeight } = useWindowSize();
     const [currentDate, setCurrentDate] = useState({});
     const chartRef = useRef(null);
+    const [showAlert, setShowAlert] = React.useState(true);
+
+    useEffect(() => {
+        if (!showAlert) {
+            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+        }
+    }, [showAlert]);
 
     const theme = useTheme();
     const small = useMediaQuery(theme.breakpoints.down('md'));
@@ -497,7 +525,7 @@ const PublicSimulation = () => {
                     formatParametersForModel(parameters, timeframes[0].start_date),
                 ),
             );
-            setValues(data);
+            setValues(removeNegativeValues(data));
             setGraphTimeframes(extractGraphTimeframes(timeframes));
             setLoading(false);
         })();
@@ -583,15 +611,25 @@ const PublicSimulation = () => {
     return (
         <>
             <div className={classes.root}>
-                <Alert severity="warning">
-                    Pour usage pédagogique uniquement. Non destiné à servir de prévision ou d’aide à
-                    la décision.
-                </Alert>
+                {showAlert && (
+                    <Alert
+                        severity="warning"
+                        onClose={() => {
+                            setShowAlert(false);
+                            window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+                        }}
+                    >
+                        <strong>
+                            Pour usage pédagogique uniquement. Non destiné à servir de prévision ou
+                            d’aide à la décision.
+                        </strong>
+                    </Alert>
+                )}
                 <div className={classes.chartViewContainer}>
                     <div className={classes.rangeSlider}>
                         <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
                     </div>
-                    <div style={{ flex: 1, position: 'relative', paddingTop: small ? 0 : 50 }}>
+                    <div style={{ flex: 1, position: 'relative' }}>
                         <div className={classes.legend}>
                             <Legend
                                 date={currentDate}
@@ -617,8 +655,9 @@ const PublicSimulation = () => {
                                         : {
                                               height:
                                                   windowHeight -
-                                                  200 /* form */ -
-                                                  32 /* footer */ -
+                                                  (showAlert ? 48 : 0) /* alert header */ -
+                                                  140 /* form */ -
+                                                  36 /* footer */ -
                                                   54 /* legend */,
                                               width: windowWidth - 100,
                                           }
@@ -636,6 +675,7 @@ const PublicSimulation = () => {
                         /* Useless since we use a listener on autosave */
                     }}
                     initialValues={initialValues}
+                    decorators={[decorator]}
                     render={({ form }) => {
                         const { values } = form.getState();
 
@@ -703,7 +743,7 @@ const PublicSimulation = () => {
                                                     max="5"
                                                     step={0.1}
                                                     disabled
-                                                    forceDisabledColor
+                                                    forceDisabledColor={values.lockdown_enabled}
                                                 />
                                             </div>
                                         </CardContent>
@@ -727,14 +767,14 @@ const PublicSimulation = () => {
                                             }
                                         />
                                         <CardContent className={classes.formCardContent}>
-                                            <div className={classes.formSliderDeconfinement}>
-                                                <Field
-                                                    className="small-margin-bottom"
-                                                    name="deconfinement_start_date"
-                                                    label="Début"
-                                                    component={DateField}
-                                                    minDate={addDays(values.lockdown_start_date, 1)}
-                                                />
+                                            <Typography color="textSecondary" gutterBottom>
+                                                A partir du{' '}
+                                                {format(
+                                                    values.deconfinement_start_date,
+                                                    'dd/MM/yyyy',
+                                                )}
+                                            </Typography>
+                                            <div className={classes.formSlider}>
                                                 <Field
                                                     name="deconfinement_r0"
                                                     label={R0HelpIcon}
@@ -742,7 +782,7 @@ const PublicSimulation = () => {
                                                     unit=""
                                                     max="5"
                                                     step={0.1}
-                                                    helpText="Faites varier le R0 pour en voir l'impact"
+                                                    disabled={!values.deconfinement_enabled}
                                                 />
                                             </div>
                                         </CardContent>

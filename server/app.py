@@ -4,8 +4,10 @@
 from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 
-from models.sir_h.simulator import run_sir_h
+from models.sir_h.simulator import cached_run_sir_h
 from models.rule import RuleChangeField
+from functools import lru_cache
+from frozendict import frozendict
 
 
 app = Flask(__name__)
@@ -13,6 +15,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+@lru_cache(maxsize=128)
 def extract_from_parameters(parameters):
     start_time = int(parameters['start_time'])
 
@@ -26,9 +29,10 @@ def extract_from_parameters(parameters):
                        'pc_h_ss', 'pc_h_r']
 
     parameters = {key: parameters[key] for key in parameters_name}
-    return start_time, parameters
+    return start_time, frozendict(parameters)
 
 
+@lru_cache(maxsize=128)
 def build_rules_from_parameters(parameters_list):
     rules = []
     for index, parameters_timeframe in enumerate(parameters_list):
@@ -37,7 +41,7 @@ def build_rules_from_parameters(parameters_list):
                 parameters_timeframe)
             for key in parameters:
                 rules.append(RuleChangeField(start_time, key, parameters[key]))
-    return rules
+    return tuple(rules)
 
 # SIR+H model with timeframe
 # parameters= {list:[{start_time:xxx, population:xxx, patient0:xxx, ...}]}
@@ -46,12 +50,13 @@ def build_rules_from_parameters(parameters_list):
 def get_sir_h_timeframe():
     request_parameters = json.loads(request.args.get('parameters'))
     # print('get_sir_h_timeframe parameters', request_parameters)
-    parameters_list = request_parameters['list']
+    parameters_list = tuple([frozendict(d)
+                             for d in request_parameters['list']])
 
     rules = build_rules_from_parameters(parameters_list)
     start_time, parameters = extract_from_parameters(parameters_list[0])
 
-    lists = run_sir_h(parameters, rules)
+    lists = cached_run_sir_h(parameters, rules)
     return jsonify(lists)
 
 
