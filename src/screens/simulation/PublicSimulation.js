@@ -36,6 +36,8 @@ import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
 import InstructionsButton from './InstructionsButton';
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 const useStyles = makeStyles((theme) => ({
     loader: {
         width: '100vw',
@@ -52,7 +54,10 @@ const useStyles = makeStyles((theme) => ({
         background: '#eee',
     },
     chartViewContainer: {
-        flex: 1,
+        // Safari understands flex-basis: 0 as height: auto
+        // Since the chart is absolute, its parent have 0 height
+        // Removing flex-basis fix the issue
+        flex: isSafari ? '1 0' : '1 0 0',
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column-reverse',
@@ -65,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
             padding: '0 12px',
         },
     },
+    legendContainer: { flex: '1 0 0', position: 'relative' },
     legend: {
         position: 'absolute',
         zIndex: 999,
@@ -148,13 +154,14 @@ const useStyles = makeStyles((theme) => ({
     form: {
         padding: '16px 30px 8px 30px',
         display: 'flex',
+        justifyContent: 'space-between',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column',
             padding: 0,
         },
     },
     formControl: {
-        flex: '2 0 0',
+        flex: '2 0 auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -166,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
             marginBottom: 12,
         },
         '&:nth-child(3)': {
-            flex: '3 0 0',
+            flex: '3 0 auto',
             alignItems: 'flex-end',
         },
     },
@@ -642,7 +649,7 @@ const PublicSimulation = () => {
                     <div className={classes.rangeSlider}>
                         <ZoomSlider onChange={handleZoomChange} value={zoomInnerValue} />
                     </div>
-                    <div style={{ flex: 1, position: 'relative' }}>
+                    <div className={classes.legendContainer}>
                         <div className={classes.legend}>
                             <Legend
                                 date={currentDate}
