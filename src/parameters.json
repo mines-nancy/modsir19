@@ -6,10 +6,10 @@
     "deconfinement_start_date": "2020-05-11",
     "initial_r0": 3,
     "lockdown_r0": 0.6,
-    "deconfinement_r0": 2.1,
+    "deconfinement_r0": 1.4,
     "lockdown_enabled": true,
     "deconfinement_enabled": true,
     "initial_tooltip": "La valeur R0 initiale dépend fortement du territoire, les estimations sont habituellement entre 2 et 4.",
     "lockdown_tooltip": "La valeur de R0 pendant le confinement dépend de la rigueur du confinement. Elle est estimée entre 0.4 et 0.8 selon les territoires.",
-    "deconfinement_tooltip": "La valeur R0 &laquo; post confinement &raquo;, va dépendre du respect des règles collectives. Elle devrait être comprise entre 1.5 et 3. Vous pouvez la faire varier pour en voir l'impact sur les courbes."
+    "deconfinement_tooltip": "La valeur R0 &laquo; post confinement &raquo;, va dépendre du respect des règles collectives. Elle devrait être comprise entre 1.2 et 2. Vous pouvez la faire varier pour en voir l'impact sur les courbes."
 }
