@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     if args.params :
         for f in args.params :
-            parameters, rules, other = defaults.import_json(f)
+            parameters, rules, other = import_json(f)
             f_base = os.path.splitext(os.path.basename(f))[0]
             series = run_sir_h(parameters, rules)
 
