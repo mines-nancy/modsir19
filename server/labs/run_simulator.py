@@ -37,7 +37,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python run_simulator.py", description='Run MODSIR-19 simulator on provided parameter sets.')
     parser.add_argument('-p', '--params', metavar='file', type=str, nargs='*',
                    help='pathname to parameter set (JSON)')
-    parser.add_argument('-o', metavar='curve', type=str, nargs='+',
+    parser.add_argument('-o', metavar='curve', choices=['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC'], nargs='+',
                    help="list of curve identifiers to output (in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
     parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs=1,
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     if args.params :
         for f in args.params :
-            parameters, rules, other = defaults.import_json(f)
+            parameters, rules, other = import_json(f)
             f_base = os.path.splitext(os.path.basename(f))[0]
             series = run_sir_h(parameters, rules)
 
