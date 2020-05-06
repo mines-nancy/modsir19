@@ -19,7 +19,7 @@ def cached_run_sir_h(parameters, rules, data_chu=frozendict()):
 
     for i in range(lim_time):
         apply_rules(state, rules)
-        apply_force_move(state, 'SI', 'SE', data_chu)
+        apply_evacuations(state, 'SI', 'R', data_chu)
 
         state.step()
         # print(state)
