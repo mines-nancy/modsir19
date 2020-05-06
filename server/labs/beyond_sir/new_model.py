@@ -71,6 +71,7 @@ def initial_code(data, model, series, model_parameters, model_rules) :
 
         plt.show()
 
+        '''
         f = plt.figure(figsize=(20,4))
         # sp1
         ax1 = f.add_subplot(141)
@@ -167,6 +168,7 @@ def initial_code(data, model, series, model_parameters, model_rules) :
         # f.tight_layout()  # otherwise the right y-label is slightly clipped
 
         plt.show()
+        '''
 
     #plotter(*Model(parameters=model_parameters))
     if model == 'diff' :
@@ -189,6 +191,8 @@ def initial_code(data, model, series, model_parameters, model_rules) :
                            "R0_end": (0.9, 0.3, 3.5)
                            }  # form: {parameter: (initial guess, minimum value, max value)}
     '''
+    ''' @TODO allow passing these parameters and values as a .json input field and add computation of
+        proportional default min/max values if non provided '''
     params_init_min_max = {"beta": (3.31/9, 2.0/9, 5.0/9),
                            "beta_post": (0.4/9, 0.1/9, 2.0/9),
                            "patient0": (40, 1, 100),
@@ -208,21 +212,47 @@ def initial_code(data, model, series, model_parameters, model_rules) :
         params = mod.make_params()
         result = mod.fit(y_data, params, method="least_squares", x=x_data)
         #result = mod.fit(y_data, params, method='trust-constr', x=x_data)
-        print(result.fit_report())
-
-        result.plot_fit(datafmt="-")
-
-        print(result.best_values)
 
         return result
 
-
-    ''' fitter for differential model '''
     def fitter(x, **kwargs):
         ret = Model(model_parameters, **kwargs)
         return ret[series][x]
 
     result = optimize(x_data, y_data, fitter)
+
+    opt_parameters = dict(model_parameters)
+    opt_parameters.update(result.best_values)
+
+    if save_output :
+        f = open(basename+'.res', 'w')
+        f.write(result.fit_report())
+        f.write('\n\n')
+        f.write(f'Optimal values : {result.best_values}')
+        f.close()
+
+        ''' @TODO find a way to better integrate pre-existing rules and possible other
+            confinement dates than the default ones '''
+        opt_rules = [ r for r in model_rules]
+        try :
+            t_confinement = get_default_params()['other']['confinement']
+            opt_rules += [RuleChangeField(t_confinement,  'beta',  opt_parameters['beta_post'])]
+        except :
+            pass
+
+        try :
+            t_deconfinement = get_default_params()['other']['deconfinement']
+            opt_rules += [RuleChangeField(t_deconfinement,  'beta',  parameters['beta_end'])]
+        except :
+            pass
+
+        export_json(basename+'.json',opt_parameters,opt_rules)
+    else :
+        print(result.fit_report())
+        print('========')
+        print(result.best_values)
+
+    result.plot_fit(datafmt="-")
 
     full_days = model_parameters['lim_time']
     #first_date = np.datetime64(covid_data.Date.min()) - np.timedelta64(outbreak_shift,'D')
@@ -245,8 +275,10 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--model', metavar='model', choices=['diff', 'disc_int', 'disc'], nargs=1, default=['disc'],
                    help="Simulator model to use : differential, discrete state with integer flux, discrete state with continuous flux ('model' value in 'diff', 'disc', 'disc_int')")
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
-    parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs=1,
+    parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs='?',
                    help='filename prefix to output obtained curve points in .csv file format')
+    parser.add_argument('--path', metavar='pathname', type=str, nargs=1,
+                   help='to be used with -s, --save parameter. Saves output files to provided path')
 
     ''' @TODO take into account --noplot and --save arguments.
         Current behaviour is to take default parameters and to optimise for 'SI'
@@ -278,5 +310,26 @@ if __name__ == "__main__":
         sames positions as those indexed below ... it would be better if models returned
         their data as a dictionary '''
     series = { 'SE': 1, 'INCUB': 2, 'I': 3, 'SM': 4, 'SI': 5, 'R': 6, 'DC': 7}
+
+    if args.path :
+        outputdir = args.path[0]+'/'
+    else :
+        outputdir = "./outputs/"
+
+    if 'save' in vars(args).keys() :
+        save_output = True
+    else :
+        save_output = False
+
+    if save_output :
+        if not os.path.exists(outputdir) :
+            os.mkdir(outputdir)
+
+        timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
+
+        if args.save :
+            basename = outputdir+timestamp+args.save
+        else :
+            basename = outputdir+timestamp+'commando_covid_fit'
 
     initial_code(target[:,1], args.model[0], series[args.data[0]], model_parameters, model_rules)
