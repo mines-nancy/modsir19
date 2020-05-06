@@ -36,6 +36,8 @@ import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
 import InstructionsButton from './InstructionsButton';
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 const useStyles = makeStyles((theme) => ({
     loader: {
         width: '100vw',
@@ -52,7 +54,10 @@ const useStyles = makeStyles((theme) => ({
         background: '#eee',
     },
     chartViewContainer: {
-        flex: '1 0 0',
+        // Safari understands flex-basis: 0 as height: auto
+        // Since the chart is absolute, its parent have 0 height
+        // Removing flex-basis fix the issue
+        flex: isSafari ? '1 0' : '1 0 0',
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             flexDirection: 'column-reverse',
