@@ -15,6 +15,7 @@ import { HelpOutline, Close } from '@material-ui/icons';
 
 import FormattedText from './FormattedText';
 import colors from './colors';
+import { useLocalStorage } from '../../utils/useLocalStorage';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -36,9 +37,9 @@ const useStyles = makeStyles((theme) => ({
             padding: theme.spacing(3),
         },
     },
-    actions: {
-        justifyContent: 'flex-end',
-    },
+    actions: ({ spaceBetweenActions }) => ({
+        justifyContent: !spaceBetweenActions ? 'flex-end' : 'space-between',
+    }),
     color: {
         backgroundColor: ({ name }) => (colors[name] || {}).light,
         display: 'inline-block',
@@ -53,15 +54,16 @@ const Color = ({ name, children }) => {
 };
 
 const InstructionsButton = () => {
-    const classes = useStyles();
-    const [open, setOpen] = useState(false);
+    const [openOnMount, setOpenOnMount] = useLocalStorage('open-simulation-instructions', true);
+    const classes = useStyles({ spaceBetweenActions: openOnMount });
+    const [open, setOpen] = useState(openOnMount);
 
-    const handleButtonClick = () => {
-        setOpen(true);
-    };
+    const handleButtonClick = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
-    const handleClose = () => {
+    const handleCloseAndDisableOpenOnMount = () => {
         setOpen(false);
+        setOpenOnMount(false);
     };
 
     return (
@@ -207,6 +209,15 @@ const InstructionsButton = () => {
                         </FormattedText>
                     </CardContent>
                     <CardActions className={classes.actions}>
+                        {openOnMount && (
+                            <Button
+                                variant="text"
+                                color="primary"
+                                onClick={handleCloseAndDisableOpenOnMount}
+                            >
+                                Ne plus afficher
+                            </Button>
+                        )}
                         <Button variant="outlined" color="primary" onClick={handleClose}>
                             Fermer
                         </Button>
