@@ -1,31 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form } from 'react-final-form';
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 
-import {
-    makeStyles,
-    CardContent,
-    Hidden,
-    Drawer,
-    Toolbar,
-    AppBar,
-    Typography,
-    CircularProgress,
-} from '@material-ui/core';
+import { makeStyles, Toolbar, AppBar, Typography, CircularProgress } from '@material-ui/core';
 
 import './Simulation.css';
-import AutoSave from '../../components/fields/AutoSave';
 import { formatParametersForModel, defaultParameters as defaultParametersValues } from './common';
-import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
-import Diagram from './Diagram';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
+import ConfigurationDrawer from './ConfigurationDrawer';
 
 const getModel = async (parameters) => {
     const { data } = await api.get('/get_sir_h_timeframe', {
@@ -44,12 +32,6 @@ const drawerWidth = 700;
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
-    },
-    drawer: {
-        [theme.breakpoints.up('lg')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
     },
     appBar: {
         [theme.breakpoints.up('lg')]: {
@@ -89,14 +71,6 @@ const useStyles = makeStyles((theme) => ({
     },
     // necessary for content to be below app bar
     toolbar: theme.mixins.toolbar,
-    drawerPaper: {
-        paddingTop: 100,
-        zIndex: 'initial',
-        width: drawerWidth,
-        [theme.breakpoints.up('lg')]: {
-            paddingTop: 0,
-        },
-    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
@@ -177,59 +151,6 @@ const Simulation = () => {
         },
     };
 
-    const container = window !== undefined ? () => window.document.body : undefined;
-
-    const drawer = (
-        <Form
-            subscription={{}}
-            onSubmit={() => {
-                /* Useless since we use a listener on autosave */
-            }}
-            initialValues={parameters}
-            render={() => (
-                <div>
-                    <AutoSave save={handleSubmit} debounce={200} />
-                    <div>
-                        <Diagram
-                            blocks={{
-                                totalPopulation: (
-                                    <TotalPopulationBlock
-                                        expanded={expanded}
-                                        setExpanded={setExpanded}
-                                    />
-                                ),
-                                exposedPopulation: <ExposedPopulationBlock />,
-                                incubation: (
-                                    <AverageDurationBlock name="dm_incub" label="Incubation" />
-                                ),
-                                spontaneousRecovery: (
-                                    <AverageDurationBlock
-                                        name="dm_r"
-                                        label="Rétablissement spontané"
-                                    />
-                                ),
-                                hospitalisation: (
-                                    <AverageDurationBlock name="dm_h" label="Hospitalisation" />
-                                ),
-                                medicalCare: (
-                                    <AverageDurationBlock name="dm_sm" label="Soins médicaux" />
-                                ),
-                                intensiveCare: (
-                                    <AverageDurationBlock name="dm_si" label="Soins intensifs" />
-                                ),
-                                followUpCare: (
-                                    <AverageDurationBlock name="dm_ss" label="Soins de suite" />
-                                ),
-                                death: <CardContent>Décès</CardContent>,
-                                recovery: <CardContent>Guérison</CardContent>,
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
-        />
-    );
-
     return (
         <div className={classes.root}>
             <AppBar position="fixed" className={classes.appBar}>
@@ -283,34 +204,15 @@ const Simulation = () => {
                 )}
             </main>
 
-            <nav className={classes.drawer} style={{ position: 'relative' }}>
-                <Hidden smUp implementation="css">
-                    <Drawer
-                        PaperProps={{ onScroll: refreshLines }}
-                        container={container}
-                        variant="temporary"
-                        anchor={'right'}
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}
-                        classes={{ paper: classes.drawerPaper }}
-                    >
-                        {drawer}
-                    </Drawer>
-                </Hidden>
-                <Hidden mdDown implementation="css">
-                    <div>
-                        <Drawer
-                            PaperProps={{ onScroll: refreshLines }}
-                            classes={{ paper: classes.drawerPaper }}
-                            anchor="right"
-                            variant="permanent"
-                            open
-                        >
-                            {drawer}
-                        </Drawer>
-                    </div>
-                </Hidden>
-            </nav>
+            <ConfigurationDrawer
+                refreshLines={refreshLines}
+                mobileOpen={mobileOpen}
+                handleDrawerToggle={handleDrawerToggle}
+                parameters={parameters}
+                handleSubmit={handleSubmit}
+                expanded={expanded}
+                setExpanded={setExpanded}
+            />
         </div>
     );
 };
