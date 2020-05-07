@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { addDays, isSameDay } from 'date-fns';
+import { isSameDay } from 'date-fns';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -21,7 +21,6 @@ import {
 import './Simulation.css';
 import AutoSave from '../../components/fields/AutoSave';
 import { formatParametersForModel, defaultTimeframes, extractGraphTimeframes } from './common';
-import TimeframeStepper from './TimeframeStepper';
 import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
 import Diagram from './Diagram';
 import api from '../../api';
@@ -175,80 +174,6 @@ const Simulation = () => {
 
     const handleYTypeToggle = () => setYType((type) => (type === 'linear' ? 'log' : 'linear'));
 
-    const handleAddTimeframe = () => {
-        setTimeframes((list) => {
-            const lastItem = list[list.length - 1];
-            const startDate = addDays(lastItem.start_date, 1);
-
-            return [
-                ...list,
-                {
-                    ...lastItem,
-                    start_date: startDate,
-                    name: 'Nouvelle période',
-                    enabled: true,
-                },
-            ];
-        });
-
-        setSelectedTimeframeIndex(timeframes.length);
-
-        if (expanded) {
-            refreshLines();
-        } else {
-            setExpanded(true);
-        }
-    };
-
-    const handleRemoveTimeframe = (index) => {
-        // Reset index if current index is deleted
-        if (selectedTimeframeIndex === index) {
-            setSelectedTimeframeIndex(index - 1);
-        }
-
-        setTimeframes((list) => {
-            // Can't remove if there's only 1 parameter
-            if (list.length === 1) {
-                return;
-            }
-
-            const newList = [...list];
-            newList.splice(index, 1);
-            return newList;
-        });
-
-        refreshLines();
-    };
-
-    const handleDateChange = (index) => {
-        if (selectedTimeframeIndex !== index) {
-            setSelectedTimeframeIndex(index);
-        }
-
-        if (!expanded) {
-            setExpanded(true);
-        }
-
-        const EXPAND_OPEN_ANIMATION_TIME = 250;
-        setTimeout(() => {
-            const dateInput = document.querySelector('#date-picker-inline');
-
-            if (dateInput) {
-                dateInput.click();
-            }
-        }, EXPAND_OPEN_ANIMATION_TIME);
-    };
-
-    const handleToggleTimeframe = (index) => {
-        setTimeframes((list) => {
-            const timeframe = list[index];
-
-            const newList = [...list];
-            newList[index] = { ...timeframe, enabled: !timeframe.enabled };
-            return newList;
-        });
-    };
-
     useEffect(() => {
         (async () => {
             setLoading(true);
@@ -282,71 +207,57 @@ const Simulation = () => {
     const container = window !== undefined ? () => window.document.body : undefined;
 
     const drawer = (
-        <>
-            <TimeframeStepper
-                timeframes={timeframes}
-                selectedTimeframeIndex={selectedTimeframeIndex}
-                setSelectedTimeframeIndex={setSelectedTimeframeIndex}
-                onAddTimeframe={handleAddTimeframe}
-                onRemoveTimeframe={handleRemoveTimeframe}
-                onDateChange={handleDateChange}
-                onToggle={handleToggleTimeframe}
-            />
-            <Form
-                // Reset the form at each timeframe change
-                key={timeframes[selectedTimeframeIndex].start_date}
-                subscription={{}}
-                onSubmit={() => {
-                    /* Useless since we use a listener on autosave */
-                }}
-                initialValues={timeframes[selectedTimeframeIndex]}
-                render={() => (
+        <Form
+            // Reset the form at each timeframe change
+            key={timeframes[selectedTimeframeIndex].start_date}
+            subscription={{}}
+            onSubmit={() => {
+                /* Useless since we use a listener on autosave */
+            }}
+            initialValues={timeframes[selectedTimeframeIndex]}
+            render={() => (
+                <div>
+                    <AutoSave save={handleSubmit} debounce={200} />
                     <div>
-                        <AutoSave save={handleSubmit} debounce={200} />
-                        <div>
-                            <Diagram
-                                blocks={{
-                                    totalPopulation: (
-                                        <TotalPopulationBlock
-                                            expanded={expanded}
-                                            setExpanded={setExpanded}
-                                            hideInitialInfected={selectedTimeframeIndex > 0}
-                                        />
-                                    ),
-                                    exposedPopulation: <ExposedPopulationBlock />,
-                                    incubation: (
-                                        <AverageDurationBlock name="dm_incub" label="Incubation" />
-                                    ),
-                                    spontaneousRecovery: (
-                                        <AverageDurationBlock
-                                            name="dm_r"
-                                            label="Rétablissement spontané"
-                                        />
-                                    ),
-                                    hospitalisation: (
-                                        <AverageDurationBlock name="dm_h" label="Hospitalisation" />
-                                    ),
-                                    medicalCare: (
-                                        <AverageDurationBlock name="dm_sm" label="Soins médicaux" />
-                                    ),
-                                    intensiveCare: (
-                                        <AverageDurationBlock
-                                            name="dm_si"
-                                            label="Soins intensifs"
-                                        />
-                                    ),
-                                    followUpCare: (
-                                        <AverageDurationBlock name="dm_ss" label="Soins de suite" />
-                                    ),
-                                    death: <CardContent>Décès</CardContent>,
-                                    recovery: <CardContent>Guérison</CardContent>,
-                                }}
-                            />
-                        </div>
+                        <Diagram
+                            blocks={{
+                                totalPopulation: (
+                                    <TotalPopulationBlock
+                                        expanded={expanded}
+                                        setExpanded={setExpanded}
+                                        hideInitialInfected={selectedTimeframeIndex > 0}
+                                    />
+                                ),
+                                exposedPopulation: <ExposedPopulationBlock />,
+                                incubation: (
+                                    <AverageDurationBlock name="dm_incub" label="Incubation" />
+                                ),
+                                spontaneousRecovery: (
+                                    <AverageDurationBlock
+                                        name="dm_r"
+                                        label="Rétablissement spontané"
+                                    />
+                                ),
+                                hospitalisation: (
+                                    <AverageDurationBlock name="dm_h" label="Hospitalisation" />
+                                ),
+                                medicalCare: (
+                                    <AverageDurationBlock name="dm_sm" label="Soins médicaux" />
+                                ),
+                                intensiveCare: (
+                                    <AverageDurationBlock name="dm_si" label="Soins intensifs" />
+                                ),
+                                followUpCare: (
+                                    <AverageDurationBlock name="dm_ss" label="Soins de suite" />
+                                ),
+                                death: <CardContent>Décès</CardContent>,
+                                recovery: <CardContent>Guérison</CardContent>,
+                            }}
+                        />
                     </div>
-                )}
-            />
-        </>
+                </div>
+            )}
+        />
     );
 
     return (
