@@ -9,7 +9,7 @@ def remove_values_from_array(array: List[int], remove: List[float]) -> List[int]
     array =  [a1,...,an]
     remove = [r1,...rn] such that ri <= ai
     returns [v1,...,vn]
-    such that   floor(sum(remove)) <= sum([v1,...,vn]) <= floor(1+sum(remove))
+    such that   floor(sum(remove)) <= sum([v1,...,vn]) <= 1+floor(sum(remove))
                 vi <= ri+1
     """
     assert len(array) == len(remove)
@@ -20,20 +20,18 @@ def remove_values_from_array(array: List[int], remove: List[float]) -> List[int]
     for i in range(len(array)):
         to_remove += remove[i]
         round_to_remove = round(to_remove)
-        if round_to_remove > 0 and round_to_remove <= array[i]:
+        if round_to_remove <= array[i]:
             values_to_remove.append(round_to_remove)
             to_remove -= round_to_remove
-        elif round_to_remove > array[i] > 0:
+        else:
             # since all(remove[i] <= array[i])
             # this case occurs only when to_remove accumulates deltas
             values_to_remove.append(array[i])
             to_remove -= array[i]
-        else:
-            values_to_remove.append(0)
     assert to_remove < 1
     assert all([v < r+1 for v, r in zip(values_to_remove, remove)])
     assert math.floor(sum(remove)) <= sum(
-        values_to_remove) <= math.floor(1+sum(remove))
+        values_to_remove) <= 1+math.floor(sum(remove))
     return values_to_remove
 
 
