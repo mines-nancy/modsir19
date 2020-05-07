@@ -176,19 +176,15 @@ class State:
         if self._integer:
             delta = int(delta)
 
-        if delta < 0 and delta > -1 :
+        if delta < 0 and delta > -1:
             delta = 0
         assert delta >= 0
 
         self.move('SE', 'INCUB', delta)
 
-    def extract_series(self):
-        sizes = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
-                 'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
-        inputs = {'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
+    def extract_series(self, names=['SE', 'R', 'INCUB', 'I', 'SM',  'SI', 'SS', 'DC']):
+        series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
-        outputs = {'SE': ['SE'],  'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
-                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], }
 
         def positive_or_zero(x):
             return x if x >= 0 else 0
@@ -200,13 +196,11 @@ class State:
             return res
 
         lists = dict()
-        for key in sizes.keys():
+        for key in names:
             lists[key] = sum_lists(
-                [self.box(name).get_size_history()[1:] for name in sizes[key]])
-        for key in inputs.keys():
+                [self.box(name).get_size_history()[1:] for name in series[key]])
             lists['input_' + key] = sum_lists(
-                [self.box(name).get_input_history()[1:] for name in inputs[key]])
-        for key in outputs.keys():
+                [self.box(name).get_input_history()[1:] for name in series[key]])
             lists['output_' + key] = sum_lists(
-                [self.box(name).get_removed_history()[1:] for name in outputs[key]])
+                [self.box(name).get_removed_history()[1:] for name in series[key]])
         return lists

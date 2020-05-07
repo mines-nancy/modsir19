@@ -20,6 +20,14 @@ const getModel = async (parameters) => {
         params: { parameters: { list: [parameters] } },
     });
 
+    // example:
+    // const res = await api.get('/get_sir_h_rules', {
+    //     params: {
+    //         parameters: { ...timeframes[0] },
+    //         rules: { list: [{ date: 12, type: 'change_field', field: 'beta', value: 0.5 }] },
+    //     },
+    // });
+
     return data;
 };
 
