@@ -211,11 +211,11 @@ const InstructionsButton = () => {
                     <CardActions className={classes.actions}>
                         {openOnMount && (
                             <Button
-                                variant="outlined"
+                                variant="text"
                                 color="primary"
                                 onClick={handleCloseAndDisableOpenOnMount}
                             >
-                                Fermer &amp; Ne plus afficher
+                                Ne plus afficher
                             </Button>
                         )}
                         <Button variant="outlined" color="primary" onClick={handleClose}>
