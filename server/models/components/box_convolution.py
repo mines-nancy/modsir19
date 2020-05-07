@@ -1,7 +1,50 @@
 import math
 from collections import deque
 from models.components.box import Box
-from models.components.utils import compute_remove_delta
+from typing import List
+
+
+def remove_values_from_array(array: List[int], remove: List[float]) -> List[int]:
+    """
+    array =  [a1,...,an]
+    remove = [r1,...rn] such that ri <= ai
+    returns [v1,...,vn]
+    such that   floor(sum(remove)) <= sum([v1,...,vn]) <= 1+floor(sum(remove))
+                vi <= ri+1
+    """
+    assert len(array) == len(remove)
+    assert all([0 <= r <= a for a, r in zip(array, remove)])
+
+    values_to_remove = []
+    to_remove = 0
+    for i in range(len(array)):
+        to_remove += remove[i]
+        round_to_remove = round(to_remove)
+        if round_to_remove <= array[i]:
+            values_to_remove.append(round_to_remove)
+            to_remove -= round_to_remove
+        else:
+            # since all(remove[i] <= array[i])
+            # this case occurs only when to_remove accumulates deltas
+            values_to_remove.append(array[i])
+            to_remove -= array[i]
+    assert to_remove < 1
+    assert all([v < r+1 for v, r in zip(values_to_remove, remove)])
+    assert math.floor(sum(remove)) <= sum(
+        values_to_remove) <= 1+math.floor(sum(remove))
+    return values_to_remove
+
+
+def compute_remove_delta(array: List[int], value: float) -> List[int]:
+    """
+    given an array of integers, remove value in a uniform way
+    we assume 0 <= value <= sum(array)
+    return an array of values to remove to each element of array
+    """
+    assert(0 <= value <= sum(array))
+    ratio = value/sum(array)
+    values_to_remove = [ratio * element for element in array]
+    return remove_values_from_array(array, values_to_remove)
 
 
 class BoxConvolution(Box):
@@ -51,6 +94,8 @@ class BoxConvolution(Box):
             return
 
         new_size = previous_size + previous_input
+
+        # insert new element
         current_queue.appendleft((previous_input, previous_input))
 
         # remove extra elements
@@ -61,18 +106,20 @@ class BoxConvolution(Box):
         # transition step for all elements
         #   (v,r) -> (v, r-ki*v)
         #   output += ki*v
-        new_list = []
-        for i in range(len(current_queue)):
-            v, r = current_queue[i]
-            if self._output_coefficients[i] * v > r:
-                delta = r
-            elif self._integer:
-                delta = math.floor(self._output_coefficients[i] * v)
-            else:
-                delta = self._output_coefficients[i] * v
-            new_list.append((v, r - delta))
-            new_output += delta
+        float_values_to_remove = [
+            min(v*c, r) for (v, r), c in zip(current_queue, self._output_coefficients)]
 
+        if self._integer:
+            array = [r for (_, r) in current_queue]
+            values_to_remove = remove_values_from_array(
+                array, float_values_to_remove)
+        else:
+            values_to_remove = float_values_to_remove
+
+        new_list = [(v, r - remove)
+                    for (v, r), remove in zip(current_queue, values_to_remove)]
+
+        new_output += sum(values_to_remove)
         self._queue.append(deque(new_list))
         new_size -= new_output
         self.set_output(previous_output + new_output)
@@ -98,17 +145,17 @@ class BoxConvolution(Box):
 
         # default case: remove value in a uniform way
         if self._integer:
-            to_remove_array = compute_remove_delta(
+            values_to_remove = compute_remove_delta(
                 [r for v, r in current_queue], value)
         else:
             ratio_to_remove = value / current_size
-            to_remove_array = [r * ratio_to_remove for v, r in current_queue]
+            values_to_remove = [r * ratio_to_remove for v, r in current_queue]
 
         new_output = 0
         for i in range(len(current_queue)):
             v, r = current_queue[i]
-            current_queue[i] = (v, r - to_remove_array[i])
-            new_output += to_remove_array[i]
+            current_queue[i] = (v, r - values_to_remove[i])
+            new_output += values_to_remove[i]
 
         self.set_size(current_size - new_output)
         self.set_output(current_output + new_output)

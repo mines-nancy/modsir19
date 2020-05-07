@@ -87,14 +87,14 @@ class TestBoxFixedDelay(unittest.TestCase):
             box.add(inputs[i])
             box.step()
             box.remove(box.output())
-        self.assertAlmostEqual(box.size(), r[3])
-        self.assertAlmostEqual(box.output(), 0)
+        self.assertEqual(box.size(), r[3])
+        self.assertEqual(box.output(), 0)
 
         box.force_output(10)
-        self.assertAlmostEqual(box.size(), 15-10)
+        self.assertEqual(box.size(), 15-10)
 
         box.force_output(10)
-        self.assertAlmostEqual(box.size(), 0)
+        self.assertEqual(box.size(), 0)
 
 
 if __name__ == '__main__':

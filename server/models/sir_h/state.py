@@ -71,9 +71,9 @@ class State:
         res = [value*c for c in coefficients]
 
         if self._integer:
+            assert value == int(value)
             res_int = [int(v) for v in res]
-            if len(res_int) >= 1:
-                res_int[-1] += (int(value-sum(res_int)))
+            res_int[0] += (value-sum(res_int))
             assert sum(res_int) == value
             return res_int
         else:
@@ -198,7 +198,6 @@ class State:
             for serie in lists:
                 res = list(map(positive_or_zero, map(add, serie, res)))
             return res
-
 
         lists = dict()
         for key in sizes.keys():
