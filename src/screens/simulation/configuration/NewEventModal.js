@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const parameters = {
+export const parameterLabels = {
     patient0: 'Patients infectés à J-0',
     kpe: 'Taux de population exposée',
     r0: 'Nombre de Reproduction de Base (R0)',
@@ -61,7 +61,7 @@ const parameters = {
     dm_ss: 'Durée moyenne des soins de suite',
 };
 
-const NewEventModal = ({ open, onClose }) => {
+const NewEventModal = ({ open, onClose, onNewEvent, initialDate }) => {
     const classes = useStyles();
     const [expanded, setExpanded] = useState('parameter');
 
@@ -72,7 +72,7 @@ const NewEventModal = ({ open, onClose }) => {
     return (
         <Modal open={open} onClose={onClose} className={classes.modal}>
             <Form
-                onSubmit={console.log}
+                onSubmit={onNewEvent}
                 initialValues={{ date: new Date() }}
                 render={({ handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
@@ -84,6 +84,7 @@ const NewEventModal = ({ open, onClose }) => {
                                     name="date"
                                     label="Date de l'évènement"
                                     component={DateField}
+                                    minDate={initialDate}
                                 />
                                 <ExpansionPanel
                                     expanded={expanded === 'parameter'}
@@ -94,7 +95,7 @@ const NewEventModal = ({ open, onClose }) => {
                                     </ExpansionPanelSummary>
                                     <ExpansionPanelDetails>
                                         <FormGroup>
-                                            {Object.keys(parameters).map((name) => (
+                                            {Object.keys(parameterLabels).map((name) => (
                                                 <FormControlLabel
                                                     key={name}
                                                     control={
@@ -104,7 +105,7 @@ const NewEventModal = ({ open, onClose }) => {
                                                             type="checkbox"
                                                         />
                                                     }
-                                                    label={parameters[name]}
+                                                    label={parameterLabels[name]}
                                                 />
                                             ))}
                                         </FormGroup>

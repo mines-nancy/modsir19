@@ -56,32 +56,36 @@ const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) 
                 /* Useless since we use a listener on autosave */
             }}
             initialValues={parameters}
-            render={() => (
-                <div>
-                    <AutoSave save={handleSubmit} debounce={200} />
+            render={({ form }) => {
+                const { values } = form.getState();
+
+                return (
                     <div>
-                        <AppBar position="relative" className={classes.appBar}>
-                            <Tabs
-                                value={tab}
-                                onChange={handleTabChange}
-                                variant="fullWidth"
-                                classes={{
-                                    root: classes.tabs,
-                                    flexContainer: classes.tabsFlexContainer,
-                                    indicator: classes.tabsIndicator,
-                                }}
-                            >
-                                <Tab label="Configuration" />
-                                <Tab label="Evènements" />
-                            </Tabs>
-                        </AppBar>
-                        {tab === 0 && (
-                            <ParametersDiagram expanded={expanded} setExpanded={setExpanded} />
-                        )}
-                        {tab === 1 && <EventsList />}
+                        <AutoSave save={handleSubmit} debounce={200} />
+                        <div>
+                            <AppBar position="relative" className={classes.appBar}>
+                                <Tabs
+                                    value={tab}
+                                    onChange={handleTabChange}
+                                    variant="fullWidth"
+                                    classes={{
+                                        root: classes.tabs,
+                                        flexContainer: classes.tabsFlexContainer,
+                                        indicator: classes.tabsIndicator,
+                                    }}
+                                >
+                                    <Tab label="Configuration" />
+                                    <Tab label="Evènements" />
+                                </Tabs>
+                            </AppBar>
+                            {tab === 0 && (
+                                <ParametersDiagram expanded={expanded} setExpanded={setExpanded} />
+                            )}
+                            {tab === 1 && <EventsList initialDate={values.start_date} />}
+                        </div>
                     </div>
-                </div>
-            )}
+                );
+            }}
         />
     );
 };
