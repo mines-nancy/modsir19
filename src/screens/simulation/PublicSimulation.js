@@ -21,7 +21,7 @@ import { InfoOutlined, ArrowBackIos } from '@material-ui/icons';
 import Alert from '@material-ui/lab/Alert';
 
 import config from '../../parameters.json';
-import { formatParametersForModel, defaultParameters, extractGraphTimeframes } from './common';
+import { formatTimeframesForModel, defaultParameters, extractGraphTimeframes } from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
@@ -538,7 +538,7 @@ const PublicSimulation = () => {
             setLoading(true);
             const data = await getModelDebounced(
                 timeframes.map((parameters) =>
-                    formatParametersForModel(parameters, timeframes[0].start_date),
+                    formatTimeframesForModel(parameters, timeframes[0].start_date),
                 ),
             );
             setValues(removeNegativeValues(data));
