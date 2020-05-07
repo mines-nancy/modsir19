@@ -81,8 +81,8 @@ const ConfigurationForm = ({
                                         indicator: classes.tabsIndicator,
                                     }}
                                 >
-                                    <Tab label="Configuration" />
-                                    <Tab label="Evènements" />
+                                    <Tab label="configuration" />
+                                    <Tab label="évènements" />
                                 </Tabs>
                             </AppBar>
                             {tab === 0 && (

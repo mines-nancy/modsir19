@@ -14,6 +14,7 @@ import {
     Typography,
     Tooltip,
     IconButton,
+    Grid,
 } from '@material-ui/core';
 import { DeleteForever } from '@material-ui/icons';
 
@@ -48,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
     },
     eventChangeCard: {
         marginBottom: theme.spacing(1),
+    },
+    empty: {
+        marginTop: theme.spacing(10),
     },
 }));
 
@@ -96,11 +100,47 @@ const Event = ({ event, onDelete }) => {
     );
 };
 
+const NewEventButton = (props) => (
+    <Button variant="outlined" color="primary" size="small" {...props}>
+        Ajouter un évènement
+    </Button>
+);
+
+const EmptyState = ({ onClick }) => {
+    const classes = useStyles();
+
+    return (
+        <Grid container justify="center" alignItems="center" className={classes.empty}>
+            <Grid
+                item
+                direction="column"
+                container
+                alignItems="center"
+                justify="space-between"
+                spacing={2}
+            >
+                <Grid item>
+                    <Typography variant="h5">{"Il n'y a pas encore d'évènement"}</Typography>
+                </Grid>
+                <Grid item>
+                    <Typography variant="body2" gutterBottom>
+                        Ajouter un évènement pour créer une nouvelle période sur le graphe
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <NewEventButton onClick={onClick} size="medium" variant="contained" />
+                </Grid>
+            </Grid>
+        </Grid>
+    );
+};
+
 const orderByDate = ([_1, a], [_2, b]) => a.date - b.date;
 
 const EventsList = ({ events, setEvents, initialDate }) => {
     const classes = useStyles();
     const [newEventModalOpen, setNewEventModalOpen] = useState(false);
+    const isEmpty = Object.keys(events).length === 0;
 
     const handleModalOpen = () => {
         setNewEventModalOpen(true);
@@ -149,18 +189,19 @@ const EventsList = ({ events, setEvents, initialDate }) => {
 
     return (
         <div className={classes.container}>
-            <div className={classes.actions}>
-                <Button variant="outlined" color="primary" size="small" onClick={handleModalOpen}>
-                    Ajouter un évènement
-                </Button>
-            </div>
+            {!isEmpty && (
+                <div className={classes.actions}>
+                    <NewEventButton onClick={handleModalOpen} />
+                </div>
+            )}
             <NewEventModal
                 open={newEventModalOpen}
                 onClose={handleModalClose}
                 onNewEvent={handleNewEvent}
                 initialDate={initialDate}
             />
-            {Object.keys(events).length > 0 && (
+            {isEmpty && <EmptyState onClick={handleModalOpen} />}
+            {!isEmpty && (
                 <Stepper
                     orientation="vertical"
                     connector={<StepConnector />}
