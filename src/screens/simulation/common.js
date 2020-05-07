@@ -1,3 +1,4 @@
+import { differenceInDays, startOfDay, endOfDay } from 'date-fns';
 import config from '../../parameters.json';
 
 const round = (x) => Math.round(x * 100) / 100;
@@ -36,6 +37,14 @@ export const defaultParameters = {
     lim_time: 250,
     start_date: new Date(config.initial_start_date),
 };
+
+export const formatTimeframesForModel = ({ start_date, ...timeframes }, firstTimeframeStartDate) =>
+    removeMedicalCareSplit({
+        ...timeframes,
+        ...computeRBetaFromR0(timeframes),
+        ...mapObject(timeframes, percentFields, (x) => round(x / 100)),
+        start_time: differenceInDays(endOfDay(start_date), startOfDay(firstTimeframeStartDate)),
+    });
 
 export const formatParametersForModel = ({ start_date, ...parameters }) =>
     removeMedicalCareSplit({
