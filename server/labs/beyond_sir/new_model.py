@@ -2,6 +2,10 @@
 ''' Invoke as python -m labs.beyond_sir.new_model [options] from the server directory to run the simulator
 '''
 
+import warnings
+#warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 from models.sir_h.simulator import run_sir_h
 
 from scipy.optimize import minimize
@@ -29,8 +33,6 @@ from lmfit.lineshapes import gaussian, lorentzian
 from .ModelDiff import model_diff
 from .ModelDiscr import model_disc
 
-import warnings
-warnings.filterwarnings('ignore')
 
 def initial_code(data, model, series, model_parameters, model_rules) :
 
@@ -170,7 +172,6 @@ def initial_code(data, model, series, model_parameters, model_rules) :
         plt.show()
         '''
 
-    #plotter(*Model(parameters=model_parameters))
     if model == 'diff' :
         Model = lambda p, **kwargs : model_diff(p, **kwargs)
     elif model == 'disc' or model == 'disc_int':
@@ -178,7 +179,8 @@ def initial_code(data, model, series, model_parameters, model_rules) :
     else :
         Model = None
 
-    plotter(*Model(model_parameters))
+    if not args.noplot :
+        plotter(*Model(model_parameters))
 
     # parameters
     # data = sortie SM (=SM+SI+SS) de notre modele
@@ -200,9 +202,12 @@ def initial_code(data, model, series, model_parameters, model_rules) :
                            }  # form: {parameter: (initial guess, minimum value, max value)}
 
     days = len(data)
-    model_parameters['lim_time'] = days
-    y_data = np.array(data)
-    x_data = np.linspace(0, days - 1, days, dtype=int)  # x_data is just [0, 1, ..., max_days] array
+    #model_parameters['lim_time'] = days
+    #y_data = np.array(data)
+    #x_data = np.linspace(0, days - 1, days, dtype=int)  # x_data is just [0, 1, ..., max_days] array
+    ''' @TODO we are currently assuming x_data goes by integer increments/values. This need not be true '''
+    x_data = np.array(data[:,0], dtype=int)
+    y_data = data[:,1]
 
     def optimize(x_data, y_data, fitter_function) :
         mod = lmfit.Model(fitter_function)
@@ -210,13 +215,16 @@ def initial_code(data, model, series, model_parameters, model_rules) :
             mod.set_param_hint(str(kwarg), value=init, min=mini, max=maxi, vary=True)
 
         params = mod.make_params()
-        result = mod.fit(y_data, params, method="least_squares", x=x_data)
+        result = mod.fit(y_data, params, method=optim, x=x_data)
         #result = mod.fit(y_data, params, method='trust-constr', x=x_data)
 
         return result
 
+    #x_convert = lambda x : np.where(x_data == x)
+
     def fitter(x, **kwargs):
         ret = Model(model_parameters, **kwargs)
+        #return ret[series][x_convert(x)]
         return ret[series][x]
 
     result = optimize(x_data, y_data, fitter)
@@ -252,20 +260,21 @@ def initial_code(data, model, series, model_parameters, model_rules) :
         print('========')
         print(result.best_values)
 
-    result.plot_fit(datafmt="-")
+    if not args.noplot :
+        result.plot_fit(datafmt="-")
 
-    full_days = model_parameters['lim_time']
-    #first_date = np.datetime64(covid_data.Date.min()) - np.timedelta64(outbreak_shift,'D')
-    first_date=np.datetime64('2020-01-06')
-    x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
+        full_days = model_parameters['lim_time']
+        #first_date = np.datetime64(covid_data.Date.min()) - np.timedelta64(outbreak_shift,'D')
+        first_date=np.datetime64('2020-01-06')
+        x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
 
-    plotter(*Model(model_parameters, **result.best_values), x_ticks=x_ticks)
+        plotter(*Model(model_parameters, **result.best_values), x_ticks=x_ticks)
 
     return Model(model_parameters, **result.best_values)
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(prog="python model_fitter.py", description='Fit MODSIR-19 simulator parameters on provided measured data.')
+    parser = argparse.ArgumentParser(prog="python -m new_model", description='Fit MODSIR-19 simulator parameters on provided measured data.')
     parser.add_argument('-p', '--params', metavar='parameters', type=str, nargs=1,
                    help='pathname to initial parameter set (JSON)')
     parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
@@ -274,13 +283,16 @@ if __name__ == "__main__":
                    help="identification of measured data used for optimization ('data' value in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
     parser.add_argument('-m', '--model', metavar='model', choices=['diff', 'disc_int', 'disc'], nargs=1, default=['disc'],
                    help="Simulator model to use : differential, discrete state with integer flux, discrete state with continuous flux ('model' value in 'diff', 'disc', 'disc_int')")
+    parser.add_argument('--opt', metavar='optimiser', choices=['least-squares', 'trust-constr'], nargs=1, default=['least-squares'],
+                   help="Simulator model to use : differential, discrete state with integer flux, discrete state with continuous flux ('model' value in 'diff', 'disc', 'disc_int')")
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
     parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs='?',
                    help='filename prefix to output obtained curve points in .csv file format')
+    parser.add_argument('-n', metavar='points', type=int, nargs=1, help="number of data points to consider for training")
     parser.add_argument('--path', metavar='pathname', type=str, nargs=1,
                    help='to be used with -s, --save parameter. Saves output files to provided path')
 
-    ''' @TODO take into account --noplot and --save arguments.
+    ''' @TODO take into account --path arguments.
         Current behaviour is to take default parameters and to optimise for 'SI'
     '''
 
@@ -295,7 +307,11 @@ if __name__ == "__main__":
         target = read_target
     else :
         default_data = default_model_params['data']['data_chu_rea']
-        target = np.array([[0.0, 0.0] for i in range (day0,min(default_data.keys()))] + [ [x-day0,y]  for (x,y) in default_data.items() if y  ]).reshape([-1,2])
+        #target = np.array([[0.0, 0.0] for i in range (day0,min(default_data.keys()))] + [ [x-day0,y]  for (x,y) in default_data.items() if y  ]).reshape([-1,2])
+        target = np.array([ [x-day0,y]  for (x,y) in default_data.items() if y  ]).reshape([-1,2])
+
+    if args.n :
+        target = target[:args.n[0],]
 
     if args.params :
         model_parameters, model_rules, other = import_json(args.params[0])
@@ -305,6 +321,8 @@ if __name__ == "__main__":
 
     if args.model[0] == 'disc_int' :
         model_parameters['integer_flux'] = True
+
+    optim = args.opt[0]
 
     ''' @TODO the following hack is ugly and requires models to return data at the
         sames positions as those indexed below ... it would be better if models returned
@@ -330,6 +348,6 @@ if __name__ == "__main__":
         if args.save :
             basename = outputdir+timestamp+args.save
         else :
-            basename = outputdir+timestamp+'commando_covid_fit'
+            basename = outputdir+timestamp+'commando_covid_fit_' + args.model[0] + '_' + optim
 
-    initial_code(target[:,1], args.model[0], series[args.data[0]], model_parameters, model_rules)
+    initial_code(target, args.model[0], series[args.data[0]], model_parameters, model_rules)
