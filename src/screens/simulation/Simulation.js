@@ -281,13 +281,6 @@ const Simulation = () => {
 
     const container = window !== undefined ? () => window.document.body : undefined;
 
-    const desktopDrawerRef = useRef();
-    useEffect(() => {
-        if (desktopDrawerRef.current) {
-            desktopDrawerRef.current.firstChild.addEventListener('scroll', refreshLines, false);
-        }
-    }, []);
-
     const drawer = (
         <>
             <TimeframeStepper
@@ -437,6 +430,7 @@ const Simulation = () => {
             <nav className={classes.drawer} style={{ position: 'relative' }}>
                 <Hidden smUp implementation="css">
                     <Drawer
+                        PaperProps={{ onScroll: refreshLines }}
                         container={container}
                         variant="temporary"
                         anchor={'right'}
@@ -450,11 +444,11 @@ const Simulation = () => {
                 <Hidden mdDown implementation="css">
                     <div>
                         <Drawer
+                            PaperProps={{ onScroll: refreshLines }}
                             classes={{ paper: classes.drawerPaper }}
                             anchor="right"
                             variant="permanent"
                             open
-                            ref={desktopDrawerRef}
                         >
                             {drawer}
                         </Drawer>
