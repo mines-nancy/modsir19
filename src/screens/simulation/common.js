@@ -1,5 +1,3 @@
-import { differenceInDays, startOfDay, endOfDay } from 'date-fns';
-
 const round = (x) => Math.round(x * 100) / 100;
 
 const mapObject = (obj, keys, fn) =>
@@ -37,12 +35,12 @@ export const defaultParameters = {
     start_date: new Date(2020, 0, 6),
 };
 
-export const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
+export const formatParametersForModel = ({ start_date, ...parameters }) =>
     removeMedicalCareSplit({
         ...parameters,
         ...computeRBetaFromR0(parameters),
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
-        start_time: differenceInDays(endOfDay(start_date), startOfDay(firstTimeframeStartDate)),
+        start_time: 0,
     });
 
 export const percentFields = [

@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form } from 'react-final-form';
 
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
-import { isSameDay } from 'date-fns';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -20,7 +19,7 @@ import {
 
 import './Simulation.css';
 import AutoSave from '../../components/fields/AutoSave';
-import { formatParametersForModel, defaultTimeframes, extractGraphTimeframes } from './common';
+import { formatParametersForModel, defaultParameters as defaultParametersValues } from './common';
 import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
 import Diagram from './Diagram';
 import api from '../../api';
@@ -29,15 +28,13 @@ import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 
-const getModel = async (timeframes) => {
+const getModel = async (parameters) => {
     const { data } = await api.get('/get_sir_h_timeframe', {
-        params: { parameters: { list: timeframes.filter((timeframe) => timeframe.enabled) } },
+        params: { parameters: { list: [parameters] } },
     });
 
     return data;
 };
-
-const checkHasSameDate = (date) => ({ start_date }) => isSameDay(start_date, date);
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
@@ -117,56 +114,41 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const defaultParameters = {
+    ...defaultParametersValues,
+    start_time: 0,
+    name: 'Période initiale',
+    enabled: true,
+};
+
 const Simulation = () => {
     const chartRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
     const { width: windowWidth } = useWindowSize();
-    const [selectedTimeframeIndex, setSelectedTimeframeIndex] = useState(0);
     const [yType, setYType] = useState('linear');
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const classes = useStyles();
+
+    const [parameters, setParameters] = useState(defaultParameters);
+
+    const { zoom, value: zoomInnerValue, handleChange: handleZoomChange } = useZoom({
+        min: 300,
+        max: parameters.population,
+    });
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    const [graphTimeframes, setGraphTimeframes] = useState(
-        extractGraphTimeframes(defaultTimeframes),
-    );
-
-    const [timeframes, setTimeframes] = useState(defaultTimeframes);
-    const { zoom, value: zoomInnerValue, handleChange: handleZoomChange } = useZoom({
-        min: 300,
-        max: timeframes[0].population,
-    });
-
-    const handleSubmit = useCallback(
-        (values) => {
-            const timeframesWithoutCurrent = [...timeframes];
-            timeframesWithoutCurrent.splice(selectedTimeframeIndex, 1);
-
-            if (timeframesWithoutCurrent.some(checkHasSameDate(values.start_date))) {
-                return;
-            }
-
-            setTimeframes((list) => {
-                const newList = [...list];
-                newList[selectedTimeframeIndex] = values;
-                newList.sort((a, b) => a.start_date - b.start_date);
-                setSelectedTimeframeIndex(
-                    newList.findIndex((timeframe) => timeframe.start_date === values.start_date),
-                );
-                return newList;
-            });
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [selectedTimeframeIndex],
-    );
+    const handleSubmit = (values) => {
+        setParameters(values);
+    };
 
     const refreshLines = () => {
         window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+
         setTimeout(() => {
             window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
         }, 16);
@@ -177,17 +159,12 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             setLoading(true);
-            const data = await getModelDebounced(
-                timeframes.map((parameters) =>
-                    formatParametersForModel(parameters, timeframes[0].start_date),
-                ),
-            );
+            const data = await getModelDebounced(formatParametersForModel(parameters));
             setValues(data);
-            setGraphTimeframes(extractGraphTimeframes(timeframes));
             setLoading(false);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [JSON.stringify(timeframes)]);
+    }, [JSON.stringify(parameters)]);
 
     const chartSize = windowWidth
         ? windowWidth < 1280 // lg
@@ -208,13 +185,11 @@ const Simulation = () => {
 
     const drawer = (
         <Form
-            // Reset the form at each timeframe change
-            key={timeframes[selectedTimeframeIndex].start_date}
             subscription={{}}
             onSubmit={() => {
                 /* Useless since we use a listener on autosave */
             }}
-            initialValues={timeframes[selectedTimeframeIndex]}
+            initialValues={parameters}
             render={() => (
                 <div>
                     <AutoSave save={handleSubmit} debounce={200} />
@@ -225,7 +200,6 @@ const Simulation = () => {
                                     <TotalPopulationBlock
                                         expanded={expanded}
                                         setExpanded={setExpanded}
-                                        hideInitialInfected={selectedTimeframeIndex > 0}
                                     />
                                 ),
                                 exposedPopulation: <ExposedPopulationBlock />,
@@ -276,8 +250,8 @@ const Simulation = () => {
                     <Typography variant="h6" noWrap style={{ flexGrow: 1 }}>
                         Projet MODSIR19
                     </Typography>
-                    <ExportButton timeframes={timeframes} />
-                    <ImportButton setTimeframes={setTimeframes} />
+                    <ExportButton parameters={parameters} />
+                    <ImportButton setParameters={setParameters} />
                     {typeof loading !== 'undefined' && (
                         <div className={classes.loadingContainer}>
                             {loading && (
@@ -299,8 +273,7 @@ const Simulation = () => {
                             <div>
                                 <Chart
                                     values={values}
-                                    startDate={timeframes[0].start_date}
-                                    timeframes={graphTimeframes}
+                                    startDate={parameters.start_date}
                                     size={{
                                         height: chartSize * CHART_HEIGHT_RATIO,
                                         width: chartSize,
