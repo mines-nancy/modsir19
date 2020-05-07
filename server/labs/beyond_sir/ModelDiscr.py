@@ -48,7 +48,7 @@ def model_disc(model_params, **kwargs):
              RuleChangeField(t_end,  'beta',  parameters['beta_end']),]
 
     lists = run_sir_h(parameters, rules)
-    t = np.linspace(0, parameters['lim_time'], parameters['lim_time'])
+    t = np.linspace(0, parameters['lim_time']-1, parameters['lim_time'])
 
     def R0(t, k = 1.0, R0_start = R0_start,
         t_confinement = t_confinement, R0_confinement = R0_confinement,
