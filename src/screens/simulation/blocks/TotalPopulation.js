@@ -5,7 +5,6 @@ import ExpandableNumberField from '../../../components/fields/ExpandableNumberFi
 import NumberField from '../../../components/fields/NumberField';
 import ProportionField from '../../../components/fields/ProportionField';
 import DateField from '../../../components/fields/DateField';
-import TextField from '../../../components/fields/TextField';
 
 export default ({ expanded, setExpanded }) => {
     const handleExpansionChange = (evt, value) => setExpanded(value);
@@ -19,12 +18,6 @@ export default ({ expanded, setExpanded }) => {
             onChange={handleExpansionChange}
             step="100000"
         >
-            <Field
-                classes={{ root: 'small-margin-bottom' }}
-                name="name"
-                label="Nom de la période"
-                component={TextField}
-            />
             <Field
                 className="small-margin-bottom"
                 name="start_date"

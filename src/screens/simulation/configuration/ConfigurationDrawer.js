@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Form } from 'react-final-form';
-import { Hidden, Drawer, CardContent, makeStyles, Tabs, Tab, AppBar } from '@material-ui/core';
+import { Hidden, Drawer, makeStyles, Tabs, Tab, AppBar } from '@material-ui/core';
 
-import AutoSave from '../../components/fields/AutoSave';
-import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
-import Diagram from './Diagram';
+import AutoSave from '../../../components/fields/AutoSave';
+import ParametersDiagram from './ParametersDiagram';
+import EventsList from './EventsList';
 
 const DRAWER_WIDTH = 700;
 
@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     appBar: {
-        width: DRAWER_WIDTH,
         height: 64,
     },
     tabs: {
@@ -77,44 +76,9 @@ const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) 
                             </Tabs>
                         </AppBar>
                         {tab === 0 && (
-                            <Diagram
-                                blocks={{
-                                    totalPopulation: (
-                                        <TotalPopulationBlock
-                                            expanded={expanded}
-                                            setExpanded={setExpanded}
-                                        />
-                                    ),
-                                    exposedPopulation: <ExposedPopulationBlock />,
-                                    incubation: (
-                                        <AverageDurationBlock name="dm_incub" label="Incubation" />
-                                    ),
-                                    spontaneousRecovery: (
-                                        <AverageDurationBlock
-                                            name="dm_r"
-                                            label="Rétablissement spontané"
-                                        />
-                                    ),
-                                    hospitalisation: (
-                                        <AverageDurationBlock name="dm_h" label="Hospitalisation" />
-                                    ),
-                                    medicalCare: (
-                                        <AverageDurationBlock name="dm_sm" label="Soins médicaux" />
-                                    ),
-                                    intensiveCare: (
-                                        <AverageDurationBlock
-                                            name="dm_si"
-                                            label="Soins intensifs"
-                                        />
-                                    ),
-                                    followUpCare: (
-                                        <AverageDurationBlock name="dm_ss" label="Soins de suite" />
-                                    ),
-                                    death: <CardContent>Décès</CardContent>,
-                                    recovery: <CardContent>Guérison</CardContent>,
-                                }}
-                            />
+                            <ParametersDiagram expanded={expanded} setExpanded={setExpanded} />
                         )}
+                        {tab === 1 && <EventsList />}
                     </div>
                 </div>
             )}

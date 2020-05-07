@@ -13,7 +13,7 @@ import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
-import ConfigurationDrawer from './ConfigurationDrawer';
+import ConfigurationDrawer from './configuration/ConfigurationDrawer';
 
 const getModel = async (parameters) => {
     const { data } = await api.get('/get_sir_h_timeframe', {
