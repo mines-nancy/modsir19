@@ -7,7 +7,6 @@ import ProHome from './screens/pro/Home';
 import Legals from './screens/Legals';
 import NotFound from './screens/NotFound';
 import PublicHome from './screens/public/Home';
-import ProSimulation from './screens/simulation/Simulation';
 import PublicSimulation from './screens/simulation/PublicSimulation';
 import { ThemeProvider } from '@material-ui/core';
 
@@ -15,6 +14,10 @@ import theme from './theme';
 
 const Experiments = lazy(() =>
     import(/* webpackChunkName: "experiments" */ './screens/experiments/Experiments'),
+);
+
+const ProSimulation = lazy(() =>
+    import(/* webpackChunkName: "ProSimulation" */ './screens/simulation/Simulation'),
 );
 
 const basename = process.env.REACT_APP_BASENAME || '/';

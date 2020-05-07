@@ -15,6 +15,7 @@ import { HelpOutline, Close } from '@material-ui/icons';
 
 import FormattedText from './FormattedText';
 import colors from './colors';
+import { useLocalStorage } from '../../utils/useLocalStorage';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -54,14 +55,15 @@ const Color = ({ name, children }) => {
 
 const InstructionsButton = () => {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
+    const [openOnMount, setOpenOnMount] = useLocalStorage('open-simulation-instructions', true);
+    const [open, setOpen] = useState(openOnMount);
 
-    const handleButtonClick = () => {
-        setOpen(true);
-    };
+    const handleButtonClick = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
-    const handleClose = () => {
+    const handleCloseAndDisableOpenOnMount = () => {
         setOpen(false);
+        setOpenOnMount(false);
     };
 
     return (
@@ -207,6 +209,15 @@ const InstructionsButton = () => {
                         </FormattedText>
                     </CardContent>
                     <CardActions className={classes.actions}>
+                        {openOnMount && (
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={handleCloseAndDisableOpenOnMount}
+                            >
+                                Fermer &amp; Ne plus afficher
+                            </Button>
+                        )}
                         <Button variant="outlined" color="primary" onClick={handleClose}>
                             Fermer
                         </Button>
