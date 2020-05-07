@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form } from 'react-final-form';
-import { Hidden, Drawer, CardContent, makeStyles, Tabs, Tab } from '@material-ui/core';
+import { Hidden, Drawer, CardContent, makeStyles, Tabs, Tab, AppBar } from '@material-ui/core';
 
 import AutoSave from '../../components/fields/AutoSave';
 import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
@@ -20,16 +20,30 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerPaper: {
         backgroundColor: '#eee',
-        paddingTop: 100,
+        paddingTop: 64,
         zIndex: 'initial',
         width: DRAWER_WIDTH,
         [theme.breakpoints.up('lg')]: {
             paddingTop: 0,
         },
     },
+    appBar: {
+        width: DRAWER_WIDTH,
+        height: 64,
+    },
+    tabs: {
+        height: '100%',
+    },
+    tabsFlexContainer: {
+        height: '100%',
+    },
+    tabsIndicator: {
+        backgroundColor: 'white',
+    },
 }));
 
 const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) => {
+    const classes = useStyles();
     const [tab, setTab] = useState(0);
 
     const handleTabChange = (evt, value) => {
@@ -47,16 +61,21 @@ const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) 
                 <div>
                     <AutoSave save={handleSubmit} debounce={200} />
                     <div>
-                        <Tabs
-                            value={tab}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            onChange={handleTabChange}
-                            variant="fullWidth"
-                        >
-                            <Tab label="Configuration" />
-                            <Tab label="Evènements" />
-                        </Tabs>
+                        <AppBar position="relative" className={classes.appBar}>
+                            <Tabs
+                                value={tab}
+                                onChange={handleTabChange}
+                                variant="fullWidth"
+                                classes={{
+                                    root: classes.tabs,
+                                    flexContainer: classes.tabsFlexContainer,
+                                    indicator: classes.tabsIndicator,
+                                }}
+                            >
+                                <Tab label="Configuration" />
+                                <Tab label="Evènements" />
+                            </Tabs>
+                        </AppBar>
                         {tab === 0 && (
                             <Diagram
                                 blocks={{
