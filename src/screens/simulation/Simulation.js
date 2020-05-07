@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import {
     makeStyles,
     CardContent,
-    Switch,
     Hidden,
     Drawer,
     Toolbar,
@@ -127,7 +126,6 @@ const Simulation = () => {
     const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
     const { width: windowWidth } = useWindowSize();
-    const [yType, setYType] = useState('linear');
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const classes = useStyles();
 
@@ -154,8 +152,6 @@ const Simulation = () => {
         }, 16);
     };
 
-    const handleYTypeToggle = () => setYType((type) => (type === 'linear' ? 'log' : 'linear'));
-
     useEffect(() => {
         (async () => {
             setLoading(true);
@@ -174,7 +170,7 @@ const Simulation = () => {
 
     const customConfig = {
         axis: {
-            y: { type: yType, max: zoom },
+            y: { max: zoom },
         },
         subchart: {
             show: true,
@@ -281,30 +277,6 @@ const Simulation = () => {
                                     ref={chartRef}
                                     customConfig={customConfig}
                                 />
-                            </div>
-                        </div>
-                        <div className={classes.chartActions}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <div
-                                    style={{
-                                        color: yType === 'log' ? '#888' : 'black',
-                                    }}
-                                >
-                                    Échelle linéaire
-                                </div>
-                                <div>
-                                    <Switch
-                                        checked={yType === 'log'}
-                                        onChange={handleYTypeToggle}
-                                    />
-                                </div>
-                                <div
-                                    style={{
-                                        color: yType === 'linear' ? '#888' : 'black',
-                                    }}
-                                >
-                                    Échelle logarithmique
-                                </div>
                             </div>
                         </div>
                     </div>
