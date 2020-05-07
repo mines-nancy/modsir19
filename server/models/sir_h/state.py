@@ -182,7 +182,7 @@ class State:
 
         self.move('SE', 'INCUB', delta)
 
-    def extract_series(self, names=['SE', 'R', 'INCUB', 'I', 'IH', 'SM',  'SI', 'SS', 'DC']):
+    def extract_series(self, names=['SE', 'R', 'INCUB', 'I', 'SM',  'SI', 'SS', 'DC']):
         series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
                   'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
 

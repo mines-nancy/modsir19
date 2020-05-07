@@ -35,10 +35,13 @@ const getModel = async (timeframes) => {
         params: { parameters: { list: timeframes.filter((timeframe) => timeframe.enabled) } },
     });
 
-    const res = await api.get('/get_sir_h_rules', {
-        params: { parameters: { ...timeframes[0] }, rules: [{ date: 12 }] },
-    });
-    console.log({ res });
+    // example:
+    // const res = await api.get('/get_sir_h_rules', {
+    //     params: {
+    //         parameters: { ...timeframes[0] },
+    //         rules: { list: [{ date: 12, type: 'change_field', field: 'beta', value: 0.5 }] },
+    //     },
+    // });
 
     return data;
 };

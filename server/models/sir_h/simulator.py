@@ -28,7 +28,7 @@ def run_sir_h(parameters, rules, data_chu=dict(), specific_series=None):
 @lru_cache(maxsize=128)
 def cached_run_sir_h(parameters, rules, data_chu=frozendict()):
     """ should be called with hashable parameters, such as frozeidict and tuple"""
-    print(parameters)
+    print(f'parameters={parameters} rules={rules}')
     state = State(parameters)
     lim_time = state.parameter('lim_time')
 

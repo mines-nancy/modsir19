@@ -14,6 +14,9 @@ class RuleChangeField(Rule):
         self._field = field
         self._value = value
 
+    def __repr__(self):
+        return f'ChangeField at t={self._date} {self._field}={self._value}'
+
     def apply(self, state):
         state.change_value(self._field, self._value)
 
@@ -24,6 +27,9 @@ class RuleForceMove(Rule):
         self._src = src
         self._dest = dest
         self._value = value
+
+    def __repr__(self):
+        return f'ForceMove at t={self._date} {self._src}->{self._dest}={self._value}'
 
     def apply(self, state):
         state.force_move(self._src, self._dest, self._value)
