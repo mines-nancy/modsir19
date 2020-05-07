@@ -1,4 +1,4 @@
-import { differenceInDays, startOfDay, endOfDay } from 'date-fns';
+import config from '../../parameters.json';
 
 const round = (x) => Math.round(x * 100) / 100;
 
@@ -11,10 +11,10 @@ const mapObject = (obj, keys, fn) =>
         : {};
 
 export const defaultParameters = {
-    population: 1000000,
-    patient0: 40,
+    population: config.population,
+    patient0: config.patient0,
     kpe: 100,
-    r0: 3.31,
+    r0: config.initial_r0,
     dm_incub: 4,
     dm_r: 9,
     dm_h: 6,
@@ -34,15 +34,15 @@ export const defaultParameters = {
     pc_h_ss: 20,
     pc_h_r: round(100 - 20),
     lim_time: 250,
-    start_date: new Date(2020, 0, 6),
+    start_date: new Date(config.initial_start_date),
 };
 
-export const formatParametersForModel = ({ start_date, ...parameters }, firstTimeframeStartDate) =>
+export const formatParametersForModel = ({ start_date, ...parameters }) =>
     removeMedicalCareSplit({
         ...parameters,
         ...computeRBetaFromR0(parameters),
         ...mapObject(parameters, percentFields, (x) => round(x / 100)),
-        start_time: differenceInDays(endOfDay(start_date), startOfDay(firstTimeframeStartDate)),
+        start_time: 0,
     });
 
 export const percentFields = [
@@ -59,24 +59,6 @@ export const percentFields = [
     'pc_si_out',
     'pc_h_ss',
     'pc_h_r',
-];
-
-export const defaultTimeframes = [
-    { ...defaultParameters, start_time: 0, name: 'Période initiale', enabled: true },
-    {
-        ...defaultParameters,
-        r0: 0.4,
-        start_date: new Date(2020, 2, 16),
-        name: 'Confinement',
-        enabled: true,
-    },
-    {
-        ...defaultParameters,
-        r0: 1.1,
-        start_date: new Date(2020, 4, 11),
-        name: 'Déconfinement',
-        enabled: true,
-    },
 ];
 
 export const removeMedicalCareSplit = ({ pc_sm_other, ...parameters }) => ({

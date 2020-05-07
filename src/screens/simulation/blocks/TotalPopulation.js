@@ -7,7 +7,7 @@ import ProportionField from '../../../components/fields/ProportionField';
 import DateField from '../../../components/fields/DateField';
 import TextField from '../../../components/fields/TextField';
 
-export default ({ expanded, setExpanded, hideInitialInfected }) => {
+export default ({ expanded, setExpanded }) => {
     const handleExpansionChange = (evt, value) => setExpanded(value);
 
     return (
@@ -31,7 +31,7 @@ export default ({ expanded, setExpanded, hideInitialInfected }) => {
                 label="Début"
                 component={DateField}
             />
-            <span style={{ display: hideInitialInfected ? 'none' : 'block' }}>
+            <div>
                 <Field
                     className="small-margin-bottom"
                     name="patient0"
@@ -44,7 +44,7 @@ export default ({ expanded, setExpanded, hideInitialInfected }) => {
                     numberInputLabel="Kpe"
                     component={ProportionField}
                 />
-            </span>
+            </div>
         </Field>
     );
 };

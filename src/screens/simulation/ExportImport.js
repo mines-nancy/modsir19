@@ -18,13 +18,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ExportButton = ({ timeframes }) => {
+export const ExportButton = ({ parameters }) => {
     const classes = useStyles();
 
     const handleExport = () => {
         const json = JSON.stringify({
             version: 1,
-            data: timeframes,
+            data: parameters,
         });
 
         const el = document.createElement('a');
@@ -51,9 +51,9 @@ export const ExportButton = ({ timeframes }) => {
     );
 };
 
-const parseDate = (timeframe) => ({ ...timeframe, start_date: new Date(timeframe.start_date) });
+const parseDate = (parameters) => ({ ...parameters, start_date: new Date(parameters.start_date) });
 
-export const ImportButton = ({ setTimeframes }) => {
+export const ImportButton = ({ setParameters }) => {
     const classes = useStyles();
     const [error, setError] = useState(false);
 
@@ -70,7 +70,7 @@ export const ImportButton = ({ setTimeframes }) => {
                 reader.onload = (evt) => {
                     try {
                         const content = evt.target.result;
-                        setTimeframes(JSON.parse(content).data.map(parseDate));
+                        setParameters(parseDate(JSON.parse(content).data));
                     } catch (e) {
                         setError(true);
                     }
