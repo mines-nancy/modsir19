@@ -8,9 +8,13 @@ allowing to conveniently interact with the simulator.py code.
 
 ## Scripts
 
-All scripts are supposed to be auto-documented and may have corresponding README files.
+All scripts are supposed to be auto-documented and may have corresponding README files. 
 
-Every script can be invoked with the ```--help``` command-line parameter. 
+Every script can be invoked with the ```--help``` command-line parameter. Please note scripts should be run using the ```-m``` flag, like this:
+```
+python3 -m labs.script
+```
+ 
 Also, most scripts will run without any command-line parameters and instead use default values to execute.
 
 A continuous effort is made to maintain command-line parameter options as coherent and similar 
