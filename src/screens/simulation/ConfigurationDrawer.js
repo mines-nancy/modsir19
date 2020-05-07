@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form } from 'react-final-form';
-import { Hidden, Drawer, CardContent, makeStyles } from '@material-ui/core';
+import { Hidden, Drawer, CardContent, makeStyles, Tabs, Tab } from '@material-ui/core';
 
 import AutoSave from '../../components/fields/AutoSave';
 import { TotalPopulationBlock, ExposedPopulationBlock, AverageDurationBlock } from './blocks';
@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     drawerPaper: {
+        backgroundColor: '#eee',
         paddingTop: 100,
         zIndex: 'initial',
         width: DRAWER_WIDTH,
@@ -29,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) => {
+    const [tab, setTab] = useState(0);
+
+    const handleTabChange = (evt, value) => {
+        setTab(value);
+    };
+
     return (
         <Form
             subscription={{}}
@@ -40,40 +47,55 @@ const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) 
                 <div>
                     <AutoSave save={handleSubmit} debounce={200} />
                     <div>
-                        <Diagram
-                            blocks={{
-                                totalPopulation: (
-                                    <TotalPopulationBlock
-                                        expanded={expanded}
-                                        setExpanded={setExpanded}
-                                    />
-                                ),
-                                exposedPopulation: <ExposedPopulationBlock />,
-                                incubation: (
-                                    <AverageDurationBlock name="dm_incub" label="Incubation" />
-                                ),
-                                spontaneousRecovery: (
-                                    <AverageDurationBlock
-                                        name="dm_r"
-                                        label="Rétablissement spontané"
-                                    />
-                                ),
-                                hospitalisation: (
-                                    <AverageDurationBlock name="dm_h" label="Hospitalisation" />
-                                ),
-                                medicalCare: (
-                                    <AverageDurationBlock name="dm_sm" label="Soins médicaux" />
-                                ),
-                                intensiveCare: (
-                                    <AverageDurationBlock name="dm_si" label="Soins intensifs" />
-                                ),
-                                followUpCare: (
-                                    <AverageDurationBlock name="dm_ss" label="Soins de suite" />
-                                ),
-                                death: <CardContent>Décès</CardContent>,
-                                recovery: <CardContent>Guérison</CardContent>,
-                            }}
-                        />
+                        <Tabs
+                            value={tab}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            onChange={handleTabChange}
+                            variant="fullWidth"
+                        >
+                            <Tab label="Configuration" />
+                            <Tab label="Evènements" />
+                        </Tabs>
+                        {tab === 0 && (
+                            <Diagram
+                                blocks={{
+                                    totalPopulation: (
+                                        <TotalPopulationBlock
+                                            expanded={expanded}
+                                            setExpanded={setExpanded}
+                                        />
+                                    ),
+                                    exposedPopulation: <ExposedPopulationBlock />,
+                                    incubation: (
+                                        <AverageDurationBlock name="dm_incub" label="Incubation" />
+                                    ),
+                                    spontaneousRecovery: (
+                                        <AverageDurationBlock
+                                            name="dm_r"
+                                            label="Rétablissement spontané"
+                                        />
+                                    ),
+                                    hospitalisation: (
+                                        <AverageDurationBlock name="dm_h" label="Hospitalisation" />
+                                    ),
+                                    medicalCare: (
+                                        <AverageDurationBlock name="dm_sm" label="Soins médicaux" />
+                                    ),
+                                    intensiveCare: (
+                                        <AverageDurationBlock
+                                            name="dm_si"
+                                            label="Soins intensifs"
+                                        />
+                                    ),
+                                    followUpCare: (
+                                        <AverageDurationBlock name="dm_ss" label="Soins de suite" />
+                                    ),
+                                    death: <CardContent>Décès</CardContent>,
+                                    recovery: <CardContent>Guérison</CardContent>,
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
             )}
