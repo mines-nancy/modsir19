@@ -108,7 +108,7 @@ def optimize2(init_variables, variable_bounds, target, model_parameters, model_r
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(prog="python model_fitter.py", description='Fit MODSIR-19 simulator parameters on provided measured data.')
+    parser = argparse.ArgumentParser(prog="python model_fitter.py", description='Fit MODSIR-19 simulator parameters on provided measured data. *OBSOLETE* Please use labs.beyond_sir.new_model instead.')
     parser.add_argument('-p', '--params', metavar='parameters', type=str, nargs=1,
                    help='pathname to initial parameter set (JSON)')
     parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
@@ -118,6 +118,9 @@ if __name__ == "__main__":
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
     parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs=1,
                    help='filename prefix to output obtained curve points in .csv file format')
+
+    print("This code is obsolete, please use labs.beyond_sir.new_model instead")
+    os.sys.exit()
 
     ''' @TODO take into account current passed arguments.
         Current behaviour is to take default parameters and to optimise for 'SI'
