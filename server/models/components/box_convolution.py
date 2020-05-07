@@ -1,20 +1,19 @@
 import math
 from collections import deque
 from models.components.box import Box
+from typing import List
 
 
-def remove_values_from_array(array, remove, integer_values):
+def remove_values_from_array(array: List[int], remove: List[float]) -> List[int]:
     """
-    given an array of values, remove values according to values_to_remove
-    in integer mode, rounds value to remove to the closest integer
-    return an array of values to remove, according to initial array
-    cannot remove more than initial value
+    array =  [a1,...,an]
+    remove = [r1,...rn] such that ri <= ai
+    returns [v1,...,vn]
+    such that   floor(sum(remove)) <= sum([v1,...,vn]) <= floor(1+sum(remove))
+                vi <= ri+1
     """
-    assert sum(remove) <= sum(array)
-
-    if not integer_values:
-        values_to_remove = [r if r <= a else a for a, r in zip(array, remove)]
-        return values_to_remove
+    assert len(array) == len(remove)
+    assert all([0 <= r <= a for a, r in zip(array, remove)])
 
     values_to_remove = []
     to_remove = 0
@@ -24,23 +23,30 @@ def remove_values_from_array(array, remove, integer_values):
         if round_to_remove > 0 and round_to_remove <= array[i]:
             values_to_remove.append(round_to_remove)
             to_remove -= round_to_remove
-        elif round_to_remove > 0 and round_to_remove > array[i] > 0:
+        elif round_to_remove > array[i] > 0:
+            # since all(remove[i] <= array[i])
+            # this case occurs only when to_remove accumulates deltas
             values_to_remove.append(array[i])
-            to_remove = 0  # similarly to the float case, surplus is erased
+            to_remove -= array[i]
         else:
             values_to_remove.append(0)
+    assert to_remove < 1
+    assert all([v < r+1 for v, r in zip(values_to_remove, remove)])
+    assert math.floor(sum(remove)) <= sum(
+        values_to_remove) <= math.floor(1+sum(remove))
     return values_to_remove
 
 
-def compute_remove_delta(array, value):
+def compute_remove_delta(array: List[int], value: float) -> List[int]:
     """
     given an array of integers, remove value in a uniform way
     we assume 0 <= value <= sum(array)
     return an array of values to remove to each element of array
     """
+    assert(0 <= value <= sum(array))
     ratio = value/sum(array)
     values_to_remove = [ratio * element for element in array]
-    return remove_values_from_array(array, values_to_remove, True)
+    return remove_values_from_array(array, values_to_remove)
 
 
 class BoxConvolution(Box):
@@ -90,6 +96,8 @@ class BoxConvolution(Box):
             return
 
         new_size = previous_size + previous_input
+
+        # insert new element
         current_queue.appendleft((previous_input, previous_input))
 
         # remove extra elements
@@ -101,10 +109,14 @@ class BoxConvolution(Box):
         #   (v,r) -> (v, r-ki*v)
         #   output += ki*v
         float_values_to_remove = [
-            v*c for (v, _), c in zip(current_queue, self._output_coefficients)]
+            min(v*c, r) for (v, r), c in zip(current_queue, self._output_coefficients)]
 
-        values_to_remove = remove_values_from_array(
-            [r for (_, r) in current_queue], float_values_to_remove, self._integer)
+        if self._integer:
+            array = [r for (_, r) in current_queue]
+            values_to_remove = remove_values_from_array(
+                array, float_values_to_remove)
+        else:
+            values_to_remove = float_values_to_remove
 
         new_list = [(v, r - remove)
                     for (v, r), remove in zip(current_queue, values_to_remove)]

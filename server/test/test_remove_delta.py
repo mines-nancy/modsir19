@@ -1,5 +1,31 @@
 import unittest
-from models.components.box_convolution import compute_remove_delta
+from models.components.box_convolution import compute_remove_delta, remove_values_from_array
+
+
+class testRemoveValuesFromArray(unittest.TestCase):
+
+    def test_remove_delta1(self):
+        self.assertEqual(remove_values_from_array([1], [0]), [0])
+        self.assertEqual(remove_values_from_array([1], [0.4]), [0])
+        self.assertEqual(remove_values_from_array([1], [0.5]), [0])
+        self.assertEqual(remove_values_from_array([1], [0.6]), [1])
+        self.assertEqual(remove_values_from_array([1], [1]), [1])
+
+    def test_remove_delta2(self):
+        self.assertEqual(remove_values_from_array(
+            [10, 10], [2.6, 5.6]), [3, 5])
+        self.assertEqual(remove_values_from_array(
+            [10, 10], [2.3, 5.3]), [2, 6])
+        self.assertEqual(remove_values_from_array(
+            [10, 10], [2.5, 5.5]), [2, 6])
+
+    def test_remove_delta3(self):
+        self.assertEqual(remove_values_from_array(
+            [10, 0, 10], [2.6, 0, 5.6]), [3, 0, 5])
+        self.assertEqual(remove_values_from_array(
+            [10, 10, 10], [2.3, 2.2, 2.1]), [2, 2, 3])
+        self.assertEqual(remove_values_from_array(
+            [10, 10, 10], [2.8, 2.8, 2]), [3, 3, 2])
 
 
 class testRemoveDelta(unittest.TestCase):
