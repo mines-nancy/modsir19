@@ -11,6 +11,7 @@ from models.sir_h.simulator import run_sir_h
 from scipy.optimize import minimize
 from scipy.optimize import Bounds
 import numpy as np
+import json
 import csv
 
 import os.path
@@ -201,6 +202,12 @@ def initial_code(data, model, series, model_parameters, model_rules) :
                            "dm_h" : (6, 3, 8)
                            }  # form: {parameter: (initial guess, minimum value, max value)}
 
+    if args.variables :
+        with open(args.variables[0]) as json_file:
+            opt_variables = json.load(json_file)
+            json_file.close()
+        params_init_min_max = opt_variables
+
     days = len(data)
     #model_parameters['lim_time'] = days
     #y_data = np.array(data)
@@ -238,6 +245,10 @@ def initial_code(data, model, series, model_parameters, model_rules) :
         f.write('\n\n')
         f.write(f'Optimal values : {result.best_values}')
         f.close()
+
+        with open(basename+'_opt.json', 'w') as json_file:
+            json.dump(result.best_values, json_file)
+            json_file.close()
 
         ''' @TODO find a way to better integrate pre-existing rules and possible other
             confinement dates than the default ones '''
@@ -277,6 +288,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="python -m new_model", description='Fit MODSIR-19 simulator parameters on provided measured data.')
     parser.add_argument('-p', '--params', metavar='parameters', type=str, nargs=1,
                    help='pathname to initial parameter set (JSON)')
+    parser.add_argument('-v', '--variables', metavar='variables', type=str, nargs=1,
+                   help='pathname to variable parameter set with bounds (JSON) on which to optimise the fitting data')
     parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
                    help='input file containing measured parameters (CSV format)')
     parser.add_argument('-d', '--data', metavar='data', choices=['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC'], nargs=1, default=['SI'],
