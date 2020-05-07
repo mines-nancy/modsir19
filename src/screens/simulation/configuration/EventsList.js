@@ -98,18 +98,9 @@ const Event = ({ event, onDelete }) => {
 
 const orderByDate = ([_1, a], [_2, b]) => a.date - b.date;
 
-const EventsList = ({ initialDate }) => {
+const EventsList = ({ events, setEvents, initialDate }) => {
     const classes = useStyles();
     const [newEventModalOpen, setNewEventModalOpen] = useState(false);
-    /**
-     * Parameters changes normalized by day
-     * @example
-     * {
-     *   '2020-03-16': { name: 'Déconfinement', changes: ['r0'] },
-     *   '2020-05-11': { name: 'Déconfinement', changes: ['r0'] },
-     * }
-     */
-    const [events, setEvents] = useState([]);
 
     const handleModalOpen = () => {
         setNewEventModalOpen(true);

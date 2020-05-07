@@ -41,7 +41,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) => {
+const ConfigurationForm = ({
+    parameters,
+    handleSubmit,
+    expanded,
+    setExpanded,
+    events,
+    setEvents,
+}) => {
     const classes = useStyles();
     const [tab, setTab] = useState(0);
 
@@ -81,7 +88,13 @@ const ConfigurationForm = ({ parameters, handleSubmit, expanded, setExpanded }) 
                             {tab === 0 && (
                                 <ParametersDiagram expanded={expanded} setExpanded={setExpanded} />
                             )}
-                            {tab === 1 && <EventsList initialDate={values.start_date} />}
+                            {tab === 1 && (
+                                <EventsList
+                                    events={events}
+                                    setEvents={setEvents}
+                                    initialDate={values.start_date}
+                                />
+                            )}
                         </div>
                     </div>
                 );
@@ -98,6 +111,8 @@ const ConfigurationDrawer = ({
     refreshLines,
     mobileOpen,
     handleDrawerToggle,
+    events,
+    setEvents,
 }) => {
     const classes = useStyles();
 
@@ -118,6 +133,8 @@ const ConfigurationDrawer = ({
                         handleSubmit={handleSubmit}
                         expanded={expanded}
                         setExpanded={setExpanded}
+                        events={events}
+                        setEvents={setEvents}
                     />
                 </Drawer>
             </Hidden>
@@ -135,6 +152,8 @@ const ConfigurationDrawer = ({
                             handleSubmit={handleSubmit}
                             expanded={expanded}
                             setExpanded={setExpanded}
+                            events={events}
+                            setEvents={setEvents}
                         />
                     </Drawer>
                 </div>
