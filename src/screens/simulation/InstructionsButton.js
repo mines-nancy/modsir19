@@ -37,9 +37,9 @@ const useStyles = makeStyles((theme) => ({
             padding: theme.spacing(3),
         },
     },
-    actions: {
-        justifyContent: 'flex-end',
-    },
+    actions: ({ spaceBetweenActions }) => ({
+        justifyContent: !spaceBetweenActions ? 'flex-end' : 'space-between',
+    }),
     color: {
         backgroundColor: ({ name }) => (colors[name] || {}).light,
         display: 'inline-block',
@@ -54,8 +54,8 @@ const Color = ({ name, children }) => {
 };
 
 const InstructionsButton = () => {
-    const classes = useStyles();
     const [openOnMount, setOpenOnMount] = useLocalStorage('open-simulation-instructions', true);
+    const classes = useStyles({ spaceBetweenActions: openOnMount });
     const [open, setOpen] = useState(openOnMount);
 
     const handleButtonClick = () => setOpen(true);
