@@ -19,10 +19,10 @@ def run_sir_h(parameters, rules, data_chu=dict(), specific_series=None):
         apply_force_move(state, 'SI', 'SE', data_chu)
         state.step()
 
-        if specific_series == None:
-            return state.extract_series()
-        else:
-            return state.extract_series(specific_series)
+    if specific_series == None:
+        return state.extract_series()
+    else:
+        return state.extract_series(specific_series)
 
 
 @lru_cache(maxsize=128)

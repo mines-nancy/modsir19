@@ -30,3 +30,6 @@ __pycache__
 .idea
 .vscode
 tags
+
+#labs outputs
+server/outputs

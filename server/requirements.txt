@@ -5,3 +5,5 @@ numpy==1.18.3
 scipy==1.4.1
 matplotlib
 frozendict
+pandas
+lmfit
