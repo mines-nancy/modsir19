@@ -28,8 +28,9 @@ def remove_values_from_array(array: List[int], remove: List[float]) -> List[int]
             # this case occurs only when to_remove accumulates deltas
             values_to_remove.append(array[i])
             to_remove -= array[i]
+
     assert to_remove < 1
-    assert all([v < r+1 for v, r in zip(values_to_remove, remove)])
+    assert all([v <= r+1 for v, r in zip(values_to_remove, remove)])
     assert math.floor(sum(remove)) <= sum(
         values_to_remove) <= 1+math.floor(sum(remove))
     return values_to_remove
