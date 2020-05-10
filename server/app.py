@@ -100,17 +100,21 @@ def get_sir_h_timeframe():
     return jsonify(lists)
 
 # SIR+H model with rules
-# parameters = { parameters: {start_time:xxx, population:xxx, patient0:xxx, ...}
-# rules = { list: [{type: 'change_field', field: 'beta', value: 0.5 },...] }
+# parameters = { start_time:xxx, population:xxx, patient0:xxx, ...}
+# rules = { list: [{type: 'change_field', date:70, field: 'beta', value: 0.5 },...] }
 @app.route('/get_sir_h_rules', methods=["GET"])
 def get_sir_h_rules():
     request_parameters = json.loads(request.args.get('parameters'))
     request_rules = json.loads(request.args.get('rules'))
+    print(
+        f'request_parameters={request_parameters} request_rules={request_rules}')
 
     start_time, parameters = extract_from_parameters(
         frozendict(request_parameters))
     rules = extract_from_rules(
         tuple([frozendict(rule) for rule in request_rules['list']]))
+
+    print(f'parameters={parameters} rules={rules}')
 
     lists = cached_run_sir_h(parameters, rules)
     return jsonify(lists)
