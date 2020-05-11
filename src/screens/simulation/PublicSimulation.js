@@ -30,11 +30,14 @@ import { Node } from '../../components/Graph/Node';
 import { Edges } from '../../components/Graph/Edges';
 import ProportionField from '../../components/fields/ProportionField';
 import SwitchField from '../../components/fields/SwitchField';
+
 import AutoSave from '../../components/fields/AutoSave';
 import colors from './colors';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
 import InstructionsButton from './InstructionsButton';
+import R0Button from './R0Button';
+import ManualButton from './ManualButton';
 
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
@@ -300,6 +303,8 @@ const Legend = ({
             <div className={classes.legendActions}>
                 <BackButton onClick={handleGoBack} />
                 <InstructionsButton />
+                <R0Button />
+                <ManualButton />
             </div>
             <div className={classes.legendTitle}>
                 {!date ? (
