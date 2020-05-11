@@ -160,6 +160,7 @@ if __name__ == "__main__":
     else:
         save_output = False
 
+    basename = None
     if save_output:
         if not os.path.exists(outputdir):
             os.mkdir(outputdir)
