@@ -200,8 +200,9 @@ const EventsList = ({ events, setEvents, initialDate }) => {
                 onNewEvent={handleNewEvent}
                 initialDate={initialDate}
             />
-            {isEmpty && <EmptyState onClick={handleModalOpen} />}
-            {!isEmpty && (
+            {isEmpty ? (
+                <EmptyState onClick={handleModalOpen} />
+            ) : (
                 <Stepper
                     orientation="vertical"
                     connector={<StepConnector />}
