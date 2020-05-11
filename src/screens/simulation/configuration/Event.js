@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import ContentEditable from 'react-contenteditable';
 import sanitizeHtml from 'sanitize-html';
@@ -16,8 +16,7 @@ import {
 } from '@material-ui/core';
 import { DeleteForever, Edit, Save, Cancel } from '@material-ui/icons';
 
-import { parameterLabels } from './NewEventModal';
-import { useCallback } from 'react';
+import { parametersEditableInEvents } from '../../../parameters.json';
 
 const useStyles = makeStyles((theme) => ({
     stepIcon: {
@@ -161,7 +160,7 @@ const Event = ({ event, onDelete, onRename }) => {
                 {event.changes.map((change) => (
                     <Card key={change} className={classes.eventChangeCard}>
                         <CardHeader
-                            title={<Typography>{parameterLabels[change]}</Typography>}
+                            title={<Typography>{parametersEditableInEvents[change]}</Typography>}
                             action={
                                 <Tooltip title="Supprimer l'évènement">
                                     <IconButton onClick={onDelete(change)}>

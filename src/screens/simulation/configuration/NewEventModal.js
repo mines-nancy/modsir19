@@ -20,6 +20,8 @@ import { ExpandMore } from '@material-ui/icons';
 import DateField from '../../../components/fields/DateField';
 import CheckboxField from '../../../components/fields/CheckboxField';
 
+import { parametersEditableInEvents } from '../../../parameters.json';
+
 const useStyles = makeStyles((theme) => ({
     modal: {
         display: 'flex',
@@ -49,17 +51,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const parameterLabels = {
-    patient0: 'Patients infectés à J-0',
-    kpe: 'Taux de population exposée',
-    r0: 'Nombre de Reproduction de Base (R0)',
-    dm_incub: "Durée moyenne d'incubation",
-    dm_r: 'Durée moyenne de rétablissement spontané',
-    dm_h: "Durée moyenne jusqu'à hospitalisation",
-    dm_sm: 'Durée moyenne des soins médicaux',
-    dm_si: 'Durée moyenne des soins intensifs',
-    dm_ss: 'Durée moyenne des soins de suite',
-};
+const availableParameters = [
+    'patient0',
+    'kpe',
+    'r0',
+    'dm_incub',
+    'dm_r',
+    'dm_h',
+    'dm_sm',
+    'dm_si',
+    'dm_ss',
+];
 
 const NewEventModal = ({ open, onClose, onNewEvent, initialDate }) => {
     const classes = useStyles();
@@ -95,19 +97,21 @@ const NewEventModal = ({ open, onClose, onNewEvent, initialDate }) => {
                                     </ExpansionPanelSummary>
                                     <ExpansionPanelDetails>
                                         <FormGroup>
-                                            {Object.keys(parameterLabels).map((name) => (
-                                                <FormControlLabel
-                                                    key={name}
-                                                    control={
-                                                        <Field
-                                                            name={name}
-                                                            component={CheckboxField}
-                                                            type="checkbox"
-                                                        />
-                                                    }
-                                                    label={parameterLabels[name]}
-                                                />
-                                            ))}
+                                            {Object.keys(parametersEditableInEvents)
+                                                .filter((key) => availableParameters.includes(key))
+                                                .map((name) => (
+                                                    <FormControlLabel
+                                                        key={name}
+                                                        control={
+                                                            <Field
+                                                                name={name}
+                                                                component={CheckboxField}
+                                                                type="checkbox"
+                                                            />
+                                                        }
+                                                        label={parametersEditableInEvents[name]}
+                                                    />
+                                                ))}
                                         </FormGroup>
                                     </ExpansionPanelDetails>
                                 </ExpansionPanel>
