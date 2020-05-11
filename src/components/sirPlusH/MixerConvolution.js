@@ -18,8 +18,14 @@ import { SelectFieldWithDate } from './SelectFieldWithDate';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
+import { Form, Field } from 'react-final-form';
 import RemoveCoefficient from '@material-ui/icons/RemoveOutlined';
 import AddCoefficient from '@material-ui/icons/AddOutlined';
+import ProportionField from '../fields/ProportionField';
+import AutoSave from '../fields/AutoSave';
+import createDecorator from 'final-form-calculate';
+import arrayMutators from 'final-form-arrays';
+import { FieldArray } from 'react-final-form-arrays';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -47,8 +53,23 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
+const valuetext = (value) => `${value}`;
 const VerticalSlider = ({ index, value, min, max, step, onSliderChange }) => {
     const classes = useStyles();
+
+    const marks = [
+        {
+            value: 0,
+            label: '0%',
+        },
+        {
+            value: 20,
+        },
+        {
+            value: 100,
+            label: '100%',
+        },
+    ];
     return (
         <Slider
             orientation="vertical"
@@ -62,6 +83,8 @@ const VerticalSlider = ({ index, value, min, max, step, onSliderChange }) => {
                 onSliderChange(event, newValue, index);
             }}
             aria-labelledby="input-slider"
+            valueLabelDisplay="auto"
+            getAriaValueText={valuetext}
         />
     );
 };
@@ -71,10 +94,10 @@ const stateReducer = (state, action) => {
     switch (action.type) {
         case 'SET_VALUE':
             const { index, value } = action.payload;
-            const newCoeffcients = state.coefficients.map((ki, i) =>
+            const newCoefficients = state.coefficients.map((ki, i) =>
                 i < index ? Math.max(ki, value) : i === index ? value : Math.min(ki, value),
             );
-            return { ...state, coefficients: newCoeffcients };
+            return { ...state, coefficients: newCoefficients };
 
         case 'ADD_COEFFICIENT':
             return {
@@ -99,7 +122,22 @@ const stateReducer = (state, action) => {
 
 const initialState = {
     coefficients: Array.from({ length: 5 }, (v, i) => 100),
+    // for final-form
+    coefficient: Array.from({ length: 5 }, (v, i) => 100),
+    dms: 9,
 };
+
+const decorator = createDecorator({
+    field: /coefficient\[\d+\]/, // when a field matching this pattern changes...
+    updates: (value, field, allValues) => {
+        // console.log({ value, field, allValues });
+        const index = parseFloat(field.substring('coefficient['.length, field.length - 1), 10);
+        const newCoefficients = allValues.coefficient.map((ki, i) =>
+            i < index ? Math.max(ki, value) : i === index ? value : Math.min(ki, value),
+        );
+        return { coefficient: newCoefficients };
+    },
+});
 
 const MixerConvolution = ({ onChange }) => {
     const classes = useStyles();
@@ -126,7 +164,8 @@ const MixerConvolution = ({ onChange }) => {
         dispatch({ type: 'REMOVE_COEFFICIENT' });
     }, []);
 
-    const valuetext = (value) => `${value}`;
+    const handleSubmit = (values) => {};
+
     return (
         <div>
             <div className={classes.root}>
@@ -138,8 +177,6 @@ const MixerConvolution = ({ onChange }) => {
                         min={0}
                         max={100}
                         step={1}
-                        valueLabelDisplay="auto"
-                        getAriaValueText={valuetext}
                         onSliderChange={handleSliderChange}
                     />
                 ))}
@@ -149,7 +186,7 @@ const MixerConvolution = ({ onChange }) => {
                     aria-label="delete"
                     color="primary"
                     disabled={coefficients.length <= 1}
-                    onClick={() => handleDeleteCoefficient()}
+                    onClick={() => dispatch({ type: 'REMOVE_COEFFICIENT' })}
                 >
                     <RemoveCoefficient />
                 </IconButton>
@@ -157,10 +194,86 @@ const MixerConvolution = ({ onChange }) => {
                     aria-label="add"
                     color="primary"
                     disabled={coefficients.length >= 21}
-                    onClick={() => handleAddCoefficient()}
+                    onClick={() => dispatch({ type: 'ADD_COEFFICIENT' })}
                 >
                     <AddCoefficient />
                 </IconButton>
+            </div>
+            <div>
+                <Form
+                    subscription={{}}
+                    onSubmit={() => {
+                        /* Useless since we use a listener on autosave */
+                    }}
+                    initialValues={initialState}
+                    decorators={[decorator]}
+                    mutators={{ ...arrayMutators }}
+                    render={({ form }) => {
+                        const { values } = form.getState();
+
+                        return (
+                            <div className={classes.form}>
+                                <AutoSave save={handleSubmit} debounce={200} />
+                                <FieldArray name="customers">
+                                    {({ fields }) => (
+                                        <>
+                                            <div>
+                                                {fields.map((v, i) => (
+                                                    <Field
+                                                        name={`coefficient-${i}`}
+                                                        component={ProportionField}
+                                                        unit=""
+                                                        max="100"
+                                                        step={1}
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div>
+                                                <IconButton
+                                                    aria-label="delete"
+                                                    color="primary"
+                                                    disabled={coefficients.length <= 1}
+                                                    onClick={() => fields.pop()}
+                                                >
+                                                    <RemoveCoefficient />
+                                                </IconButton>
+                                                <IconButton
+                                                    aria-label="add"
+                                                    color="primary"
+                                                    disabled={coefficients.length >= 21}
+                                                    onClick={() => fields.push(0)}
+                                                >
+                                                    <AddCoefficient />
+                                                </IconButton>
+                                            </div>
+                                        </>
+                                    )}
+                                </FieldArray>
+
+                                {/* <div className={classes.root}>
+                                    {values.coefficient.map((v, i) => (
+                                        <Field
+                                            name={`coefficient[${i}]`}
+                                            component={ProportionField}
+                                            unit=""
+                                            max="100"
+                                            step={1}
+                                        />
+                                    ))}
+                                </div> */}
+
+                                <Field
+                                    name="dms"
+                                    label="Durée moyenne de séjour"
+                                    component={ProportionField}
+                                    unit=""
+                                    max="21"
+                                    step={0.1}
+                                />
+                            </div>
+                        );
+                    }}
+                />
             </div>
         </div>
     );
