@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { Form } from 'react-final-form';
-import { Hidden, Drawer, makeStyles, Tabs, Tab, AppBar } from '@material-ui/core';
+import { Drawer, makeStyles, Tabs, Tab, AppBar, useTheme, useMediaQuery } from '@material-ui/core';
 
 import AutoSave from '../../../components/fields/AutoSave';
 import ParametersDiagram from './ParametersDiagram';
@@ -103,49 +103,35 @@ const ConfigurationForm = ({
     );
 };
 
-const ConfigurationDrawer = ({
-    parameters,
-    handleSubmit,
-    expanded,
-    setExpanded,
-    refreshLines,
-    mobileOpen,
-    handleDrawerToggle,
-    events,
-    setEvents,
-}) => {
-    const classes = useStyles();
+const ConfigurationDrawer = forwardRef(
+    (
+        {
+            parameters,
+            handleSubmit,
+            expanded,
+            setExpanded,
+            mobileOpen,
+            handleDrawerToggle,
+            events,
+            setEvents,
+        },
+        ref,
+    ) => {
+        const classes = useStyles();
+        const theme = useTheme();
+        const small = useMediaQuery(theme.breakpoints.down('sm'));
 
-    return (
-        <aside className={classes.drawer}>
-            <Hidden smUp implementation="css">
-                <Drawer
-                    PaperProps={{ onScroll: refreshLines }}
-                    container={container}
-                    variant="temporary"
-                    anchor="right"
-                    open={mobileOpen}
-                    onClose={handleDrawerToggle}
-                    classes={{ paper: classes.drawerPaper }}
-                >
-                    <ConfigurationForm
-                        parameters={parameters}
-                        handleSubmit={handleSubmit}
-                        expanded={expanded}
-                        setExpanded={setExpanded}
-                        events={events}
-                        setEvents={setEvents}
-                    />
-                </Drawer>
-            </Hidden>
-            <Hidden mdDown implementation="css">
-                <div>
+        return (
+            <aside className={classes.drawer}>
+                {small ? (
                     <Drawer
-                        PaperProps={{ onScroll: refreshLines }}
-                        classes={{ paper: classes.drawerPaper }}
+                        container={container}
+                        variant="temporary"
                         anchor="right"
-                        variant="permanent"
-                        open
+                        open={mobileOpen}
+                        onClose={handleDrawerToggle}
+                        classes={{ paper: classes.drawerPaper }}
+                        ref={ref}
                     >
                         <ConfigurationForm
                             parameters={parameters}
@@ -156,10 +142,29 @@ const ConfigurationDrawer = ({
                             setEvents={setEvents}
                         />
                     </Drawer>
-                </div>
-            </Hidden>
-        </aside>
-    );
-};
+                ) : (
+                    <div>
+                        <Drawer
+                            classes={{ paper: classes.drawerPaper }}
+                            anchor="right"
+                            variant="permanent"
+                            open
+                            ref={ref}
+                        >
+                            <ConfigurationForm
+                                parameters={parameters}
+                                handleSubmit={handleSubmit}
+                                expanded={expanded}
+                                setExpanded={setExpanded}
+                                events={events}
+                                setEvents={setEvents}
+                            />
+                        </Drawer>
+                    </div>
+                )}
+            </aside>
+        );
+    },
+);
 
 export default ConfigurationDrawer;

@@ -26,14 +26,15 @@ export const Edge = ({
                 );
 
                 let isTransitionFinished = true;
-                const start = () =>
-                    window.requestAnimationFrame(() => {
-                        line && line.position();
+                const start = () => {
+                    line && line.position();
 
-                        if (line && !isTransitionFinished) {
+                    window.requestAnimationFrame(() => {
+                        if (!isTransitionFinished) {
                             start();
                         }
                     });
+                };
 
                 window.addEventListener('graph:refresh:start', () => {
                     isTransitionFinished = false;
