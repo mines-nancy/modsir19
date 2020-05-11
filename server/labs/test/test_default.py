@@ -21,12 +21,25 @@ class TestDefault(unittest.TestCase):
         tmp_file = NamedTemporaryFile(delete=False)
         export_json(tmp_file.name, params['parameters'], params['rules'], params['other'])
         read_params = import_json(tmp_file.name)
+        tmp_file.close()
+        remove(tmp_file.name)
+
         self.assertEqual(read_params[0], params['parameters'])
         # self.assertEqual(read_params[1], params['rules'])
         self.assertEqual(set([str(x) for x in read_params[1]]), set([str(x) for x in params['rules']]))
         self.assertEqual(read_params[2], params['other'])
+
+    def test_model_execution(self):
+        params = get_default_params()
+        series1 = run_sir_h(params['parameters'], params['rules'])
+
+        tmp_file = NamedTemporaryFile()
+        export_json(tmp_file.name, params['parameters'], params['rules'], params['other'])
+        read_params = import_json(tmp_file.name)
         tmp_file.close()
-        remove(tmp_file.name)
+        series2 = run_sir_h(read_params[0], read_params[1])
+
+        self.assertEqual(series1, series2)
 
 
 if __name__ == '__main__':
