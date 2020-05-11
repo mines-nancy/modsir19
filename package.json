@@ -27,11 +27,13 @@
         "react": "^16.13.1",
         "react-app-polyfill": "^1.0.6",
         "react-chartjs-2": "^2.9.0",
+        "react-contenteditable": "^3.3.4",
         "react-dom": "^16.13.1",
         "react-final-form": "^6.4.0",
         "react-polyglot": "^0.6.1",
         "react-router-dom": "^5.1.2",
-        "react-scripts": "3.4.1"
+        "react-scripts": "3.4.1",
+        "sanitize-html": "^1.23.0"
     },
     "scripts": {
         "start": "REACT_APP_BUILD_DATE=`date --iso-8601=seconds` react-app-rewired start",
