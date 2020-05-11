@@ -1,15 +1,5 @@
-from models.components.utils import compute_residuals, compute_khi_exp, compute_khi_binom, compute_khi_linear, compute_khi_delay
+from models.components.utils import compute_residuals, compute_area_and_expectation, compute_khi_exp, compute_khi_binom, compute_khi_linear, compute_khi_delay
 import matplotlib.pyplot as plt
-
-
-def compute_area_and_expectation(khi_tab, residuals):
-    area = 0
-    expectations = []
-    for k in range(len(khi_tab)):
-        area += (residuals[k] + residuals[k + 1]) / 2
-        expectations.append((k + 1) * khi_tab[k])
-
-    return area, sum(expectations), sum(khi_tab)
 
 
 dms = 6

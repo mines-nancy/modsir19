@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 
 from models.sir_h.simulator import cached_run_sir_h
 from models.rule import RuleChangeField, RuleForceMove
+from models.components.utils import compute_residuals, compute_area_and_expectation
 from functools import lru_cache
 from frozendict import frozendict
 
@@ -118,6 +119,19 @@ def get_sir_h_rules():
 
     lists = cached_run_sir_h(parameters, rules)
     return jsonify(lists)
+
+
+# parameters = { coefficients: [] }
+@app.route('/get_ki_analysis', methods=["GET"])
+def get_ki_analysis():
+    request_parameters = json.loads(request.args.get('parameters'))
+    print(f'request_parameters={request_parameters}')
+
+    ki = request_parameters['coefficients']
+    residuals = compute_residuals(ki)
+    area, expectation, sum_khi = compute_area_and_expectation(ki, residuals)
+    res = {'area': area}
+    return jsonify(res)
 
 
 if __name__ == "__main__":
