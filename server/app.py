@@ -3,10 +3,11 @@
 
 from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
+import numpy as np
 
 from models.sir_h.simulator import cached_run_sir_h
 from models.rule import RuleChangeField, RuleForceMove
-from models.components.utils import compute_residuals, compute_area_and_expectation
+from models.components.utils import compute_residuals, compute_area_and_expectation, compute_khi_delay, compute_khi_exp, compute_khi_binom
 from functools import lru_cache
 from frozendict import frozendict
 
@@ -121,16 +122,40 @@ def get_sir_h_rules():
     return jsonify(lists)
 
 
-# parameters = { coefficients: [] }
+# parameters = { ki: [] }
 @app.route('/get_ki_analysis', methods=["GET"])
 def get_ki_analysis():
     request_parameters = json.loads(request.args.get('parameters'))
-    print(f'request_parameters={request_parameters}')
 
-    ki = request_parameters['coefficients']
+    ki = request_parameters['ki']
     residuals = compute_residuals(ki)
     area, expectation, sum_khi = compute_area_and_expectation(ki, residuals)
-    res = {'area': area}
+    res = {'area': area, 'expectation': expectation}
+    return jsonify(res)
+
+# parameters = { schema:'Retard', duration, max_days }
+@app.route('/get_ki_from_schema', methods=["GET"])
+def get_ki_from_schema():
+    request_parameters = json.loads(request.args.get('parameters'))
+    print(f'request_parameters={request_parameters}')
+
+    schema = request_parameters['schema']
+    duration = request_parameters['duration']
+    max_days = request_parameters['max_days']
+
+    print(f'duration={duration} max={max_days}')
+    if schema == 'Retard':
+        ki = compute_khi_delay(np.ceil(duration))
+    elif schema == 'Exponentielle':
+        ki = compute_khi_exp(duration, max_days)
+    elif schema == 'Binomiale':
+        ki = compute_khi_binom(duration, max_days)
+    else:
+        ki = max_days*[0]
+
+    residuals = compute_residuals(ki)
+    area, expectation, sum_khi = compute_area_and_expectation(ki, residuals)
+    res = {'ki': ki, 'area': area, 'expectation': expectation}
     return jsonify(res)
 
 
