@@ -12,7 +12,7 @@ import {
     CardActions,
 } from '@material-ui/core';
 import { HelpOutline, Close } from '@material-ui/icons';
-
+import diagram from '../public/diagram.png';
 import FormattedText from './FormattedText';
 import colors from './colors';
 import { useLocalStorage } from '../../utils/useLocalStorage';
@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
             maxHeight: '90%',
             padding: theme.spacing(3),
         },
+    },
+    warning: {
+        fontStyle: 'italic'
     },
     actions: ({ spaceBetweenActions }) => ({
         justifyContent: !spaceBetweenActions ? 'flex-end' : 'space-between',
@@ -75,12 +78,12 @@ const InstructionsButton = () => {
                 startIcon={<HelpOutline />}
                 onClick={handleButtonClick}
             >
-                Comment ça marche ?
+                Principe de modélisation
             </Button>
             <Modal open={open} onClose={handleClose} className={classes.modal}>
                 <Card className={classes.card}>
                     <CardHeader
-                        title="Utilisation du simulateur MODSIR19"
+                        title="Principe de modélisation"
                         action={
                             <Tooltip title="Fermer la fenêtre">
                                 <IconButton
@@ -97,115 +100,56 @@ const InstructionsButton = () => {
                     />
                     <CardContent>
                         <FormattedText>
-                            <Typography variant="h6">ACTIONS SUR LE GRAPHE</Typography>
-                            <p>
-                                En cliquant sur l’un des compartiments{' '}
-                                <Color name="exposed">Sains</Color>,{' '}
-                                <Color name="infected">Malades</Color>,{' '}
-                                <Color name="intensive_care">Hospitalisés</Color>,{' '}
-                                <Color name="recovered">Guéris</Color> et{' '}
-                                <Color name="death">Décédés</Color>, vous pouvez focaliser sur la
-                                courbe correspondante avec mise à l’échelle du graphe.
+                            <h2 className={classes.warning}>ATTENTION</h2>
+                            <p className={classes.warning}>
+                                Les paramètres utilisés sont des valeurs arbitraires choisies pour les besoins
+                                de la démonstration. Les résultats de cette simulation n’ont donc qu’une valeur
+                                pédagogique pour aider à comprendre les mécanismes d’une épidémie, et ne sont en
+                                aucun cas le reflet de la réalité, ni au niveau d’un territoire, ni au niveau national.
                             </p>
+                            <h2>Principe :</h2>
                             <p>
-                                Le curseur à gauche du graphe permet également d’ajuster la mise à
-                                l’échelle du graphe en fonction des courbes qui vous intéressent.
+                                Pour modéliser cette épidémie, on utilise le principe de l’analyse compartimentale.
+                                L’ensemble de la population d’un territoire est répartie en 5 « compartiments ».
                             </p>
-                            <p>
-                                Le survol du graphe par la souris affiche les effectifs de chaque
-                                compartiment à la date correspondante.
-                            </p>
-                            <p>
-                                La roulette de la souris permet un zoom temporel (horizontal) des
-                                courbes.
-                            </p>
-                            <p>
-                                Maintenir le clic gauche permet de déplacer les courbes zoomées de
-                                droite à gauche.
-                            </p>
-                            <Typography variant="h6">
-                                ACTION SUR LE SCENARIO DE LA SIMULATION
-                            </Typography>
-                            <p>
-                                L’interrupteur «&nbsp;<strong>Confinement</strong>&nbsp;» active ou
-                                désactive la période de confinement du 17 Mars 2020. (En cas de
-                                désactivation, la période de «&nbsp;<strong>Déconfinement</strong>
-                                &nbsp;» est alors également désactivée).
-                            </p>
-                            <p>
-                                L’interrupteur «&nbsp;<strong>Déconfinement</strong>
-                                &nbsp;» active ou désactive la période de déconfinement
-                            </p>
-                            <p>
-                                Le champ «&nbsp;date&nbsp;» permet de modifier la date du
-                                déconfinement.
-                            </p>
-                            <p>
-                                Le curseur <i>R0</i> modifie la valeur du <i>R0</i> en phase de
-                                déconfinement, ce qui permet de visualiser l’effet de mesures
-                                collectives de précaution sur l’évolution de l’épidémie.
-                            </p>
-                            <Typography variant="h6">EXEMPLES DE SCENARII</Typography>
-                            <ol>
+                            <ul>
                                 <li>
-                                    <strong>
-                                        Comment le confinement impacte le nombre de patients
-                                        hospitalisés ?
-                                    </strong>
-                                    <ul>
-                                        <li>
-                                            Zoomer sur la courbe d'hospitalisés en cliquant sur la
-                                            case <Color name="intensive_care">Hospitalisés</Color>
-                                        </li>
-                                        <li>
-                                            Cliquer sur l’interrupteur «&nbsp;
-                                            <strong>Confinement</strong>&nbsp;» pour le désactiver
-                                        </li>
-                                        <li>
-                                            Vérifier l’effet sur la courbe des patients hospitalisés
-                                        </li>
-                                    </ul>
+                                    <strong>S&nbsp;:</strong> ensemble des sujets sains exposés et non
+                                    immunisés. Chaque jour, une partie des sujets sains est contaminée
+                                    par contact avec une personne malade et passe donc dans le
+                                    compartiment <strong>M</strong> (Malades) Ce nombre de
+                                    contaminations dépend d’un facteur <i>R0</i> (taux de reproduction)
+                                    expliqué plus bas.
                                 </li>
                                 <li>
-                                    <strong>
-                                        Quel est le risque d'une seconde vague si les gestes
-                                        barrières sont respectés ?
-                                    </strong>
-                                    <ul>
-                                        <li>
-                                            Configurer le <i>RO</i> du «&nbsp;
-                                            <strong>Déconfinement</strong>&nbsp;» à une valeur de{' '}
-                                            <strong>1,5</strong>
-                                        </li>
-                                        <li>
-                                            Zoomer sur la courbe des madales en cliquant sur la case{' '}
-                                            <Color name="infected">Malades</Color>
-                                        </li>
-                                        <li>Vérifier l’effet sur la courbe des malades</li>
-                                    </ul>
+                                    <strong>M&nbsp;:</strong> ensemble des sujets malades porteurs du
+                                    virus et potentiellement contaminants. Environ 98% des sujets
+                                    contaminés vont guérir spontanément en 9 jours sans complications et
+                                    vont donc passer dans le compartiment <strong>G</strong> (Guéris).
+                                    2% des sujets infectés vont développer des complications (le plus
+                                    souvent respiratoires) qui vont nécessiter une hospitalisation. Ils
+                                    passent donc dans le compartiment <strong>H</strong> (Hospitalisés)
                                 </li>
                                 <li>
-                                    <strong>
-                                        Que se passe-t-il si le confinement s'arrête sans mesures
-                                        particulières ?
-                                    </strong>
-                                    <ul>
-                                        <li>
-                                            Configurer le <i>RO</i> du «&nbsp;
-                                            <strong>Déconfinement</strong>&nbsp;» à une valeur de{' '}
-                                            <strong>3,3</strong>
-                                        </li>
-                                        <li>
-                                            Zoomer sur la courbe des patients en cliquant sur la
-                                            case <Color name="intensive_care">Hospitalisés</Color>
-                                        </li>
-                                        <li>
-                                            Vérifier l’effet sur les courbes des patients et des
-                                            décès
-                                        </li>
-                                    </ul>
+                                    <strong>G&nbsp;:</strong> ensemble des sujets ayant été malades,
+                                    guéris et supposés immunisés
                                 </li>
-                            </ol>
+                                <li>
+                                    <strong>H&nbsp;:</strong> ensemble des patients en hospitalisation
+                                    pour traitement des complications de la maladie soit en
+                                    hospitalisation classique, soit en soins intensifs ou réanimation.
+                                    Environ 75% des patients hospitalisés vont guérir et rejoindre le
+                                    compartiment <strong>G</strong>. Malheureusement, environ 25% vont
+                                    décéder au cours de leur hospitalisation et sont comptabilisés dans
+                                    le compartiment <strong>DC</strong>
+                                </li>
+                                <li>
+                                    <strong>DC&nbsp;:</strong> ensemble des patients décédés
+                                </li>
+                            </ul>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <img src={diagram} alt="Schéma du modèle SIR+H" />
+                            </div>
                         </FormattedText>
                     </CardContent>
                     <CardActions className={classes.actions}>
