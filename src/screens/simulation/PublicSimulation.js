@@ -565,7 +565,6 @@ const PublicSimulation = () => {
                     formatTimeframesForModel(parameters, timeframes[0].start_date),
                 ),
             );
-            setZoom(Math.max(...data.SI));
             setValues(removeNegativeValues(data));
             setGraphTimeframes(extractGraphTimeframes(timeframes));
             setLoading(false);
@@ -621,7 +620,7 @@ const PublicSimulation = () => {
     const handleLegendClick = (key) => {
         const max = Math.max(...mergedValues[key]);
         if (zoom === max) {
-            setZoom(Math.max(...mergedValues['SI']));
+            setZoom(timeframes[0].population);
         } else {
             setZoom(max);
         }
