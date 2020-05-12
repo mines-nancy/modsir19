@@ -114,8 +114,9 @@ const Simulation = () => {
     const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
     const { width: windowWidth } = useWindowSize();
-    const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
     const classes = useStyles();
+    const drawerRef = useRef();
 
     const [parameters, setParameters] = useState(defaultParameters);
     /**
@@ -141,13 +142,40 @@ const Simulation = () => {
         setParameters(values);
     };
 
-    const refreshLines = () => {
-        window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+    const refreshLines = (() => {
+        let refreshing = false;
+        let timeout;
 
-        setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
-        }, 16);
-    };
+        return () => {
+            if (!refreshing) {
+                window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+                refreshing = true;
+            }
+
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+
+            timeout = setTimeout(() => {
+                refreshing = false;
+                window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+            }, 200);
+        };
+    })();
+
+    useEffect(() => {
+        let drawer = drawerRef && drawerRef.current;
+
+        if (drawer) {
+            drawer.children[0].addEventListener('scroll', refreshLines);
+        }
+
+        return () => {
+            if (drawer) {
+                drawer.children[0].removeEventListener('scroll', refreshLines);
+            }
+        };
+    }, [drawerRef, refreshLines]);
 
     useEffect(() => {
         (async () => {
@@ -229,7 +257,6 @@ const Simulation = () => {
             </main>
 
             <ConfigurationDrawer
-                refreshLines={refreshLines}
                 mobileOpen={mobileOpen}
                 handleDrawerToggle={handleDrawerToggle}
                 parameters={parameters}
@@ -238,6 +265,7 @@ const Simulation = () => {
                 setExpanded={setExpanded}
                 events={events}
                 setEvents={setEvents}
+                ref={drawerRef}
             />
         </div>
     );
