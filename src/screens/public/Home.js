@@ -98,7 +98,6 @@ const Home = () => {
                         </div>
                     </FormattedText>
                     <div className={classes.callToAction}>
-                        <p>Accéder à la simulation</p>
                         <p>
                             <Button
                                 className={classes.start}
@@ -106,7 +105,7 @@ const Home = () => {
                                 color="inherit"
                                 onClick={start}
                             >
-                                Commencer
+                                Accéder à la simulation
                             </Button>
                         </p>
                     </div>
