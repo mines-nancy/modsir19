@@ -17,7 +17,7 @@ import createDecorator from 'final-form-calculate';
 import arrayMutators from 'final-form-arrays';
 import { FieldArray } from 'react-final-form-arrays';
 
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 import VerticalProportionField from './VerticalProportionField';
@@ -27,29 +27,8 @@ import api from '../../api';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
-        root: {
-            marginTop: 40,
-            height: 200,
-        },
-        longinput: {
-            width: 80,
-        },
-        input: {
-            width: 50,
-        },
         verticalSlider: {
             height: 200,
-        },
-        slider: {
-            width: 60,
-        },
-        sliderWithInput: {
-            height: 300,
-            margin: theme.spacing(2),
-        },
-        actions: {
-            float: 'left',
-            margin: theme.spacing(1),
         },
     }),
 );
@@ -64,12 +43,12 @@ const SelectField = ({
 
     return (
         <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Schéma</InputLabel>
+            <InputLabel id="select-shema-label">Schéma</InputLabel>
             <Select
                 {...props}
                 {...restInput}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="select-schema-label"
+                id="select-schema"
                 value={value}
                 onChange={onChange}
             >
@@ -142,12 +121,10 @@ const getKiFromSchema = async (parameters) => {
         params: { parameters },
     });
 };
-const getKiFromSchemaDebounced = AwesomeDebouncePromise(getKiFromSchema, 500);
 
 const decorator = createDecorator({
     field: /coefficients\[\d+\]/, // when a field matching this pattern changes...
     updates: (value, field, allValues) => {
-        // console.log({ value, field, allValues });
         const index = parseFloat(field.substring('coefficients['.length, field.length - 1), 10);
         const coefficients = allValues.coefficients;
         if (
@@ -180,7 +157,6 @@ const MixerConvolution = ({ onChange }) => {
     const [kiAnalysis, setKiAnalysis] = useState();
 
     const handleSubmit = async ({ coefficients, dms, schema, ...rest }) => {
-        // console.log({ coefficients, dms, schema, rest });
         if (schema === 'Libre') {
             setCoefficients(coefficients);
             const response = await getKiAnalysisDebounced({
@@ -188,12 +164,11 @@ const MixerConvolution = ({ onChange }) => {
             });
             setKiAnalysis(response.data);
         } else {
-            const response = await getKiFromSchemaDebounced({
+            const response = await getKiFromSchema({
                 schema,
                 duration: dms,
                 max_days: Math.min(21, Math.max(coefficients.length, 2 * Math.ceil(dms))),
             });
-            // console.log({ data: response.data });
             setCoefficients(kiToCoefficients(response.data.ki));
             setKiAnalysis(response.data);
             setInitialValues({
@@ -216,13 +191,11 @@ const MixerConvolution = ({ onChange }) => {
                 mutators={{ ...arrayMutators }}
                 render={({ form }) => {
                     const state = form.getState();
-                    // console.log({ state });
                     return (
                         <div className={classes.form}>
                             <AutoSave save={handleSubmit} debounce={200} />
                             <FieldArray name="coefficients">
                                 {({ fields }) => {
-                                    // console.log({ fields });
                                     return (
                                         <>
                                             <div className={classes.verticalSlider}>
