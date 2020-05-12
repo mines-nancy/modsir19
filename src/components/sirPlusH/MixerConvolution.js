@@ -144,13 +144,6 @@ const getKiFromSchema = async (parameters) => {
 };
 const getKiFromSchemaDebounced = AwesomeDebouncePromise(getKiFromSchema, 500);
 
-const initialDms = 6;
-const initialState = {
-    coefficients: Array.from({ length: initialDms }, (v, i) => (i < initialDms - 1 ? 100 : 0)),
-    dms: initialDms,
-    schema: 'Libre',
-};
-
 const decorator = createDecorator({
     field: /coefficients\[\d+\]/, // when a field matching this pattern changes...
     updates: (value, field, allValues) => {
@@ -172,14 +165,22 @@ const decorator = createDecorator({
     },
 });
 const round2digits = (x) => Math.round(x * 100) / 100;
+
+const initialDms = 6;
+const initialState = {
+    coefficients: Array.from({ length: initialDms }, (v, i) => (i < initialDms - 1 ? 100 : 0)),
+    dms: initialDms,
+    schema: 'Libre',
+};
 const MixerConvolution = ({ onChange }) => {
     const classes = useStyles();
 
+    const [initialValues, setInitialValues] = useState(initialState);
     const [coefficients, setCoefficients] = useState();
     const [kiAnalysis, setKiAnalysis] = useState();
 
-    const handleSubmit = async ({ coefficients, dms, schema }) => {
-        console.log({ coefficients, dms, schema });
+    const handleSubmit = async ({ coefficients, dms, schema, ...rest }) => {
+        // console.log({ coefficients, dms, schema, rest });
         if (schema === 'Libre') {
             setCoefficients(coefficients);
             const response = await getKiAnalysisDebounced({
@@ -190,11 +191,16 @@ const MixerConvolution = ({ onChange }) => {
             const response = await getKiFromSchemaDebounced({
                 schema,
                 duration: dms,
-                max_days: Math.max(coefficients.length, Math.ceil(dms)),
+                max_days: Math.min(21, Math.max(coefficients.length, 2 * Math.ceil(dms))),
             });
-            console.log({ data: response.data });
+            // console.log({ data: response.data });
             setCoefficients(kiToCoefficients(response.data.ki));
             setKiAnalysis(response.data);
+            setInitialValues({
+                coefficients: kiToCoefficients(response.data.ki).map((x) => round2digits(x)),
+                dms,
+                schema,
+            });
         }
     };
 
@@ -205,10 +211,12 @@ const MixerConvolution = ({ onChange }) => {
                 onSubmit={() => {
                     /* Useless since we use a listener on autosave */
                 }}
-                initialValues={initialState}
+                initialValues={initialValues}
                 decorators={[decorator]}
                 mutators={{ ...arrayMutators }}
                 render={({ form }) => {
+                    const state = form.getState();
+                    // console.log({ state });
                     return (
                         <div className={classes.form}>
                             <AutoSave save={handleSubmit} debounce={200} />
@@ -258,6 +266,7 @@ const MixerConvolution = ({ onChange }) => {
                                 unit=""
                                 max="21"
                                 step={0.1}
+                                disabled={state.values.schema === 'Libre'}
                             />
                             <Field
                                 name="schema"
