@@ -109,18 +109,10 @@ const options = {
     },
 };
 
-const getKiAnalysis = async (parameters) => {
-    return await api.get('/get_ki_analysis', {
-        params: { parameters },
-    });
-};
+const getKiAnalysis = (parameters) => api.get('/get_ki_analysis', { params: { parameters } });
 const getKiAnalysisDebounced = AwesomeDebouncePromise(getKiAnalysis, 500);
 
-const getKiFromSchema = async (parameters) => {
-    return await api.get('/get_ki_from_schema', {
-        params: { parameters },
-    });
-};
+const getKiFromSchema = (parameters) => api.get('/get_ki_from_schema', { params: { parameters } });
 
 const decorator = createDecorator({
     field: /coefficients\[\d+\]/, // when a field matching this pattern changes...
@@ -141,7 +133,7 @@ const decorator = createDecorator({
         return { coefficients };
     },
 });
-const round2digits = (x) => Math.round(x * 100) / 100;
+const round2digits = (value) => Math.round((value + Number.EPSILON) * 100) / 100;
 
 const initialDms = 6;
 const initialState = {
@@ -172,7 +164,7 @@ const MixerConvolution = ({ onChange }) => {
             setCoefficients(kiToCoefficients(response.data.ki));
             setKiAnalysis(response.data);
             setInitialValues({
-                coefficients: kiToCoefficients(response.data.ki).map((x) => round2digits(x)),
+                coefficients: kiToCoefficients(response.data.ki).map(round2digits),
                 dms,
                 schema,
             });
