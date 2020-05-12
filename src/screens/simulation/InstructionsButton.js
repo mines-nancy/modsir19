@@ -102,9 +102,9 @@ const InstructionsButton = () => {
                                 textColor="primary"
                                 onChange={handleChangeTab}
                             >
-                                <Tab label="Principe de modélisation" value={0} />
-                                <Tab label="Mode d'emploi" value={1} />
-                                <Tab label="Qu'est-ce que le R0 ?" value={2} />
+                                <Tab label={<strong>Principe de modélisation</strong>} value={0} />
+                                <Tab label={<strong>Qu'est-ce que le R0 ?</strong>} value={2} />
+                                <Tab label={<strong>Mode d'emploi</strong>} value={1} />
                             </Tabs>
                         }
                         action={
@@ -146,7 +146,7 @@ const InstructionsButton = () => {
                                         est contaminée par contact avec une personne malade et passe
                                         donc dans le compartiment <strong>M</strong> (Malades) Ce
                                         nombre de contaminations dépend d’un facteur <i>R0</i> (taux
-                                        de reproduction) expliqué plus bas.
+                                        de reproduction) expliqué dans l'onglet "Qu'est-ce que le R0 ?".
                                     </li>
                                     <li>
                                         <strong>M&nbsp;:</strong> ensemble des sujets malades
@@ -160,7 +160,7 @@ const InstructionsButton = () => {
                                         (Soins intensifs)
                                     </li>
                                     <li>
-                                        <strong>G&nbsp;:</strong> ensemble des sujets ayant été
+                                        <strong>G&nbsp;:</strong> cumul de l'ensemble des sujets ayant été
                                         malades, guéris et supposés immunisés
                                     </li>
                                     <li>
@@ -173,7 +173,7 @@ const InstructionsButton = () => {
                                         comptabilisés dans le compartiment <strong>DC</strong>
                                     </li>
                                     <li>
-                                        <strong>DC&nbsp;:</strong> ensemble des patients décédés
+                                        <strong>DC&nbsp;:</strong> cumul de l'ensemble des patients décédés
                                     </li>
                                 </ul>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -327,6 +327,17 @@ const InstructionsButton = () => {
                                 Ne plus afficher
                             </Button>
                         )}
+                        <Tabs
+                            value={tab}
+                            variant="fullWidth"
+                            indicatorColor="primary"
+                            textColor="primary"
+                            onChange={handleChangeTab}
+                        >
+                            <Tab label={<strong>Principe de modélisation</strong>} value={0} />
+                            <Tab label={<strong>Qu'est-ce que le R0 ?</strong>} value={2} />
+                            <Tab label={<strong>Mode d'emploi</strong>} value={1} />
+                        </Tabs>
                         <Button variant="outlined" color="primary" onClick={handleClose}>
                             Fermer
                         </Button>

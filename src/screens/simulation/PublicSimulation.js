@@ -619,7 +619,6 @@ const PublicSimulation = () => {
 
     const handleLegendClick = (key) => {
         const max = Math.max(...mergedValues[key]);
-
         if (zoom === max) {
             setZoom(timeframes[0].population);
         } else {
