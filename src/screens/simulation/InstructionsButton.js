@@ -124,7 +124,7 @@ const InstructionsButton = () => {
                     <CardContent>
                         {tab === 0 && (
                             <FormattedText>
-                                <h3 className={classes.warning}>ATTENTION</h3>
+                                <h2 className={classes.warning}>ATTENTION</h2>
                                 <p className={classes.warning}>
                                     Les paramètres utilisés sont des valeurs arbitraires choisies
                                     pour les besoins de la démonstration. Les résultats de cette
