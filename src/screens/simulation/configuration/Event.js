@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import ContentEditable from 'react-contenteditable';
 import sanitizeHtml from 'sanitize-html';
+import { Field } from 'react-final-form';
 import {
     makeStyles,
     Step,
@@ -16,7 +17,23 @@ import {
 } from '@material-ui/core';
 import { DeleteForever, Edit, Save, Cancel } from '@material-ui/icons';
 
+import ProportionField from '../../../components/fields/ProportionField';
+
 import { parametersEditableInEvents } from '../../../parameters.json';
+
+export const parametersControl = {
+    r0: {
+        component: ProportionField,
+        options: {
+            numberInputLabel: 'R0',
+            unit: null,
+            max: '5',
+            step: 0.1,
+        },
+    },
+};
+
+export const availableParameters = Object.keys(parametersControl);
 
 const useStyles = makeStyles((theme) => ({
     stepIcon: {
@@ -169,7 +186,13 @@ const Event = ({ event, onDelete, onRename }) => {
                                 </Tooltip>
                             }
                         />
-                        <CardContent>{/* TODO: Input */}</CardContent>
+                        <CardContent>
+                            <Field
+                                name={`${format(event.date, 'yyyy-MM-dd')}_${change}`}
+                                component={parametersControl[change].component}
+                                {...parametersControl[change].options}
+                            />
+                        </CardContent>
                     </Card>
                 ))}
             </StepContent>

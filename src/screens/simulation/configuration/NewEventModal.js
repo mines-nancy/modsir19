@@ -21,6 +21,7 @@ import DateField from '../../../components/fields/DateField';
 import CheckboxField from '../../../components/fields/CheckboxField';
 
 import { parametersEditableInEvents } from '../../../parameters.json';
+import { availableParameters } from './Event';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -50,18 +51,6 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
     },
 }));
-
-const availableParameters = [
-    'patient0',
-    'kpe',
-    'r0',
-    'dm_incub',
-    'dm_r',
-    'dm_h',
-    'dm_sm',
-    'dm_si',
-    'dm_ss',
-];
 
 const NewEventModal = ({ open, onClose, onNewEvent, initialDate }) => {
     const classes = useStyles();
