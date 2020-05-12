@@ -3,6 +3,9 @@ import { format } from 'date-fns';
 import ContentEditable from 'react-contenteditable';
 import sanitizeHtml from 'sanitize-html';
 import { Field } from 'react-final-form';
+import { DeleteForever, Edit, Save, Cancel } from '@material-ui/icons';
+import colors from '../colors';
+
 import {
     makeStyles,
     Step,
@@ -15,25 +18,10 @@ import {
     Tooltip,
     IconButton,
 } from '@material-ui/core';
-import { DeleteForever, Edit, Save, Cancel } from '@material-ui/icons';
 
 import ProportionField from '../../../components/fields/ProportionField';
-
 import { parametersEditableInEvents } from '../../../parameters.json';
-
-export const parametersControl = {
-    r0: {
-        component: ProportionField,
-        options: {
-            numberInputLabel: 'R0',
-            unit: null,
-            max: '5',
-            step: 0.1,
-        },
-    },
-};
-
-export const availableParameters = Object.keys(parametersControl);
+import { SwitchPercentField } from '../../../components/fields/SwitchPercentField';
 
 const useStyles = makeStyles((theme) => ({
     stepIcon: {
@@ -58,7 +46,72 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: `${theme.spacing(3)}px`,
         padding: theme.spacing(0, 1),
     },
+    configPercentSlider: {
+        width: '100%',
+        padding: 0,
+    },
 }));
+
+const pcAttributes = {
+    pc_ir: { label: 'Rétablissements', color: colors.recovered.main },
+    pc_ih: { label: 'Hospitalisations', color: colors.normal_care.main },
+    pc_sm: { label: 'Soins médicaux', color: colors.normal_care.main },
+    pc_si: { label: 'Soins intensifs', color: colors.intensive_care.main },
+    pc_sm_other: { label: 'Sortie ou Décès', color: 'grey' },
+    pc_sm_si: { label: 'Soins intensifs', color: colors.intensive_care.main },
+    pc_sm_out: { label: 'Sortie', color: colors.recovered.main },
+    pc_sm_dc: { label: 'Décès', color: colors.death.main },
+    pc_si_dc: { label: 'Décès', color: colors.death.main },
+    pc_si_out: { label: 'Sortie', color: colors.recovered.main },
+    pc_h_r: { label: 'Guérison', color: colors.recovered.main },
+    pc_h_ss: { label: 'Soins de suite', color: colors.following_care.main },
+};
+
+export const getControlField = (change, date, classes) => {
+    const controlDate = format(date, 'yyyy-MM-dd');
+
+    if (change === 'r0') {
+        return (
+            <Field
+                name={`${controlDate}_${change}`}
+                component={ProportionField}
+                numberInputLabel="R0"
+                unit={null}
+                max="5"
+                step={0.1}
+            />
+        );
+    }
+
+    if (change.startsWith('pcswitch_')) {
+        const [leftName, rightName] = change.replace('pcswitch_', '').split('-');
+
+        return (
+            <SwitchPercentField
+                classes={{ sliderLabels: classes.configPercentSlider }}
+                leftName={`${controlDate}_${leftName}`}
+                rightName={`${controlDate}_${rightName}`}
+                leftLabel={pcAttributes[leftName].label}
+                rightLabel={pcAttributes[rightName].label}
+                leftColor={pcAttributes[leftName].color}
+                rightColor={pcAttributes[rightName].color}
+                pieMode={false}
+            />
+        );
+    }
+
+    return null;
+};
+
+export const availableParameters = [
+    'r0',
+    'pcswitch_pc_ir-pc_ih',
+    'pcswitch_pc_sm-pc_si',
+    'pcswitch_pc_sm_other-pc_sm_si',
+    'pcswitch_pc_sm_out-pc_sm_dc',
+    'pcswitch_pc_si_dc-pc_si_out',
+    'pcswitch_pc_h_r-pc_h_ss',
+];
 
 const StepIcon = () => {
     const classes = useStyles();
@@ -186,13 +239,7 @@ const Event = ({ event, onDelete, onRename }) => {
                                 </Tooltip>
                             }
                         />
-                        <CardContent>
-                            <Field
-                                name={`${format(event.date, 'yyyy-MM-dd')}_${change}`}
-                                component={parametersControl[change].component}
-                                {...parametersControl[change].options}
-                            />
-                        </CardContent>
+                        <CardContent>{getControlField(change, event.date, classes)}</CardContent>
                     </Card>
                 ))}
             </StepContent>
