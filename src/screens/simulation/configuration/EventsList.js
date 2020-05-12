@@ -13,6 +13,7 @@ import {
 import NewEventModal from './NewEventModal';
 
 import Event from './Event';
+import { useForm } from 'react-final-form';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -77,6 +78,7 @@ const EventsList = ({ events, setEvents, initialDate }) => {
     const classes = useStyles();
     const [newEventModalOpen, setNewEventModalOpen] = useState(false);
     const isEmpty = Object.keys(events).length === 0;
+    const form = useForm();
 
     const handleModalOpen = () => setNewEventModalOpen(true);
     const handleModalClose = () => setNewEventModalOpen(false);
@@ -104,6 +106,16 @@ const EventsList = ({ events, setEvents, initialDate }) => {
     const handleEventDelete = (event) => (change) => () => {
         const key = format(event.date, 'yyyy-MM-dd');
         const newEvents = { ...events };
+
+        // We need to manually unregister values from previous event related field
+        // @TODO: Use a final-form array instead of this tricky field based rule system
+        form.batch(() => {
+            form.getRegisteredFields().forEach((fieldName) => {
+                if (fieldName.startsWith(`rule_${key}`)) {
+                    form.change(fieldName, undefined);
+                }
+            });
+        });
 
         if (event.changes.length === 1) {
             delete newEvents[key];

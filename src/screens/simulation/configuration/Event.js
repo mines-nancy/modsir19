@@ -68,12 +68,12 @@ const pcAttributes = {
 };
 
 export const getControlField = (change, date, classes) => {
-    const controlDate = format(date, 'yyyy-MM-dd');
+    const baseName = `rule_${format(date, 'yyyy-MM-dd')}`;
 
     if (change === 'r0') {
         return (
             <Field
-                name={`${controlDate}_${change}`}
+                name={`${baseName}_${change}`}
                 component={ProportionField}
                 numberInputLabel="R0"
                 unit={null}
@@ -89,8 +89,8 @@ export const getControlField = (change, date, classes) => {
         return (
             <SwitchPercentField
                 classes={{ sliderLabels: classes.configPercentSlider }}
-                leftName={`${controlDate}_${leftName}`}
-                rightName={`${controlDate}_${rightName}`}
+                leftName={`${baseName}_${leftName}`}
+                rightName={`${baseName}_${rightName}`}
                 leftLabel={pcAttributes[leftName].label}
                 rightLabel={pcAttributes[rightName].label}
                 leftColor={pcAttributes[leftName].color}

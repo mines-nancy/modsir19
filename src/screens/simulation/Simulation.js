@@ -14,19 +14,15 @@ import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import ConfigurationDrawer from './configuration/ConfigurationDrawer';
+import { differenceInDays, endOfDay, startOfDay } from 'date-fns';
 
-const getModel = async (parameters) => {
-    const { data } = await api.get('/get_sir_h_timeframe', {
-        params: { parameters: { list: [parameters] } },
+const getModel = async ({ rules, ...parameters }) => {
+    const { data } = await api.get('/get_sir_h_rules', {
+        params: {
+            parameters,
+            rules: { list: rules || {} },
+        },
     });
-
-    // example:
-    // const res = await api.get('/get_sir_h_rules', {
-    //     params: {
-    //         parameters: { ...timeframes[0] },
-    //         rules: { list: [{ date: 12, type: 'change_field', field: 'beta', value: 0.5 }] },
-    //     },
-    // });
 
     return data;
 };
@@ -108,6 +104,29 @@ const eventstoTimeframes = (events) =>
         label: event.name,
     }));
 
+const extractRulesFromValues = (values, startDate) =>
+    Object.keys(values).reduce(
+        (agg, key) => {
+            if (key.startsWith('rule_')) {
+                const [, date, ...field] = key.split('_');
+                const fieldName = field.join('_');
+                const dayDiff = differenceInDays(endOfDay(new Date(date)), startOfDay(startDate));
+
+                agg.rules.push({
+                    date: dayDiff,
+                    type: 'change_field',
+                    field: fieldName,
+                    value: values[key],
+                });
+            } else if (key !== 'rules') {
+                agg[key] = values[key];
+            }
+
+            return agg;
+        },
+        { rules: [] },
+    );
+
 const Simulation = () => {
     const chartRef = useRef(null);
     const [loading, setLoading] = useState(false);
@@ -181,7 +200,8 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             setLoading(true);
-            const data = await getModelDebounced(formatParametersForModel(parameters));
+            const parametersWithRules = extractRulesFromValues(parameters, parameters.start_date);
+            const data = await getModelDebounced(formatParametersForModel(parametersWithRules));
             const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
             setValues({ ...data, I });
             setLoading(false);
