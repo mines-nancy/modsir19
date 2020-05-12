@@ -78,13 +78,8 @@ const EventsList = ({ events, setEvents, initialDate }) => {
     const [newEventModalOpen, setNewEventModalOpen] = useState(false);
     const isEmpty = Object.keys(events).length === 0;
 
-    const handleModalOpen = () => {
-        setNewEventModalOpen(true);
-    };
-
-    const handleModalClose = () => {
-        setNewEventModalOpen(false);
-    };
+    const handleModalOpen = () => setNewEventModalOpen(true);
+    const handleModalClose = () => setNewEventModalOpen(false);
 
     const handleNewEvent = ({ date, ...formData }) => {
         setNewEventModalOpen(false);

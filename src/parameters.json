@@ -21,6 +21,12 @@
         "dm_h": "Durée moyenne jusqu'à hospitalisation",
         "dm_sm": "Durée moyenne des soins médicaux",
         "dm_si": "Durée moyenne des soins intensifs",
-        "dm_ss": "Durée moyenne des soins de suite"
+        "dm_ss": "Durée moyenne des soins de suite",
+        "pcswitch_pc_ir-pc_ih": "Répartition Rétablissements <> Hospitalisations",
+        "pcswitch_pc_sm-pc_si": "Répartition Soins médicaux <> Soins intensifs",
+        "pcswitch_pc_sm_other-pc_sm_si": "Répartition Sortie ou Décès <> Soins intensifs",
+        "pcswitch_pc_sm_out-pc_sm_dc": "Répartition Sortie <> Décès",
+        "pcswitch_pc_si_dc-pc_si_out": "Répartition Décès <> Sortie",
+        "pcswitch_pc_h_r-pc_h_ss": "Répartition Guérison <> Soins de suite"
     }
 }
