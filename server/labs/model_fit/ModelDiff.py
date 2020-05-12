@@ -67,13 +67,13 @@ def deriv(compartiments, t, beta, parameters: Dict[str, any]) -> tuple:
     pc_CR = parameters['pc_si_out']
     np.testing.assert_almost_equal(pc_CD + pc_CR, 1.0)
 
-    N = SE + INCUB + I + R
+    total_nb = SE + INCUB + I + R
     # print(f'pc_IM={pc_IM} pc_IC={pc_IC} pc_MD={pc_MD} pc_MR={pc_MR}')
     # print(f't={t} M={M} R0={beta(t)/gamma}')
 
-    dSdt = -beta(t) * I * SE / N
+    dSdt = -beta(t) * I * SE / total_nb
 
-    dEdt = beta(t) * I * SE / N - 1 / dm_EI * INCUB
+    dEdt = beta(t) * I * SE / total_nb - 1 / dm_EI * INCUB
 
     dIdt = 1 / dm_EI * INCUB - gamma * pc_IR * I - 1 / dm_IC * pc_IC * I - 1 / dm_IM * pc_IM * I
 

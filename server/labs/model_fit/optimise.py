@@ -2,13 +2,7 @@
 """ Invoke as python -m labs.model_fit.optimise [options] from the server directory to run the simulator
 """
 import re
-import warnings
-
-# warnings.filterwarnings('ignore')
 from typing import Dict
-
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -29,7 +23,6 @@ from .ModelDiscr import model_disc
 
 
 def plotter(time_indexes: np.ndarray, series: Dict[str, np.ndarray], x_ticks=None) -> None:
-
     series_label_base = {'SE': 'Susceptibles', 'INCUB': 'Incubés', 'I': 'Infectés', 'SI': 'Soins Intensifs',
                          'SM': 'Soins Médicaux', 'SS': 'Soins de Suite', 'R': 'Rétablis',
                          'DC': 'Décédés'}
@@ -94,10 +87,13 @@ if __name__ == "__main__":
                              'data')
     parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
                         help='input file containing measured parameters (CSV format)')
+
+    data_choice_options = ['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC']
+    data_choice_options += ['input_' + s for s in data_choice_options]
+
     parser.add_argument('-d', '--data', metavar='data',
-                        choices=['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC'], nargs=1, default=['SI'],
-                        help="identification of measured data used for optimization ('data' value in 'SE', 'INCUB', "
-                             "'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC')")
+                        choices=data_choice_options, nargs=1, default=['SI'],
+                        help=f'identification of measured data used for optimization (\'data\' value in {data_choice_options})')
     parser.add_argument('-m', '--model', metavar='model', choices=['diff', 'disc_int', 'disc'], nargs=1,
                         default=['disc'],
                         help="Simulator model to use : differential, discrete state with integer flux, discrete state "
@@ -107,7 +103,7 @@ if __name__ == "__main__":
                         help="Simulator model to use : differential, discrete state with integer flux, discrete state "
                              "with continuous flux ('model' value in 'diff', 'disc', 'disc_int')")
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
-    parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs='?',
+    parser.add_argument('-s', '--save', metavar='prefix', default='', type=str, nargs='?',
                         help='filename prefix to output obtained curve points in .csv file format')
     parser.add_argument('-n', metavar='points', type=int, nargs=1,
                         help="number of data points to consider for training")
@@ -125,6 +121,7 @@ if __name__ == "__main__":
 
     read_target = None
     if args.input:
+        """@TODO consider target dates to systematically start on 01/01/2020"""
         read_target = pd.read_csv(args.input[0], sep=';').to_numpy()
         target = read_target
     else:
@@ -155,7 +152,8 @@ if __name__ == "__main__":
     else:
         outputdir = "./outputs/"
 
-    if 'save' in vars(args).keys():
+    ''' following test is a hack due to weird choices in argparse defaulting to 'None' '''
+    if args.save is not '':
         save_output = True
     else:
         save_output = False
@@ -163,7 +161,7 @@ if __name__ == "__main__":
     basename = None
     if save_output:
         if not os.path.exists(outputdir):
-            os.mkdir(outputdir)
+            mkdir(outputdir)
 
         timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
 
@@ -202,9 +200,10 @@ if __name__ == "__main__":
     else:
         params_init_min_max = {"beta": (3.31 / 9, 2.0 / 9, 5.0 / 9),
                                "beta_post": (0.4 / 9, 0.1 / 9, 2.0 / 9),
-                               # "patient0": (40, 1, 100),
-                               "dm_h": (6, 4, 8),
-                               "dm_incub": (4, 5, 7)
+                               "patient0": (40, 1, 100),
+                               "dm_r": (9, 6, 21),
+                               "dm_incub": (4, 5, 7),
+                               # "m_factor": (1.0, 0.8, 1.2)
                                }  # form: {parameter: (initial guess, minimum value, max value)}
 
     ''' @TODO we are currently assuming x_data goes by integer increments/values. This need not be true '''
@@ -212,8 +211,6 @@ if __name__ == "__main__":
     y_data = target[:, 1]
 
     ''' defining the optimisation helper functions optimize() and fitter() '''
-
-
     def optimize(x_values, y_values, fitter_function):
         mod = lmfit.Model(fitter_function)
         for kwarg, (init, mini, maxi) in params_init_min_max.items():
