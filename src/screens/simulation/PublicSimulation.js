@@ -36,8 +36,6 @@ import colors from './colors';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import { Footer } from '../../components/Footer';
 import InstructionsButton from './InstructionsButton';
-import R0Button from './R0Button';
-import ManualButton from './ManualButton';
 
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
@@ -303,8 +301,6 @@ const Legend = ({
             <div className={classes.legendActions}>
                 <BackButton onClick={handleGoBack} />
                 <InstructionsButton />
-                <R0Button />
-                <ManualButton />
             </div>
             <div className={classes.legendTitle}>
                 {!date ? (
