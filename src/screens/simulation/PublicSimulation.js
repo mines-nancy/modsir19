@@ -294,7 +294,7 @@ const Legend = ({
     const i = index || values.R.length - 1;
 
     const R = Math.round(values.R[i], 0);
-    const H = Math.round(values.SM[i] + values.SI[i] + values.SS[i]);
+    const H = Math.round(values.SI[i]);
     const DC = Math.round(values.DC[i]);
     const SE = Math.round(values.SE[i]);
     const M = Math.round(values.I[i] + values.INCUB[i]);
@@ -606,7 +606,7 @@ const PublicSimulation = () => {
         DC: values.DC,
         R: values.R,
         I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
-        SI: zip([values.SM, values.SI, values.SS]).map(([a, b, c]) => a + b + c),
+        SI: values.SI
     };
 
     const handleLegendClick = (key) => {
