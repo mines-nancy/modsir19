@@ -27,7 +27,7 @@ const Legals = () => {
                 <ul>
                     <li>
                         Professeurs Gilles Karcher, Christian Rabaud (CHRU Nancy, Nancyclotep) et
-                        Pierre-Etienne Moreau (Mines Nancy)
+                        Pierre-Etienne Moreau, Bart Lamiroy (Mines Nancy)
                     </li>
                     <li>Steeven Frezier (Nancyclotep)</li>
                     <li>Paul Festor, Arnaud Mozziconacci, Romain Pajda (Élèves Mines Nancy)</li>
