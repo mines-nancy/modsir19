@@ -23,10 +23,12 @@ if __name__ == "__main__":
                                                                                  'parameter sets.')
     parser.add_argument('-p', '--params', metavar='file', type=str, nargs='*',
                         help='pathname to parameter set (JSON)')
-    parser.add_argument('-o', metavar='curve', choices=['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC'],
-                        nargs='+',
-                        help="list of curve identifiers to output (in 'SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', "
-                             "'R', 'DC')")
+
+    data_choice_options = ['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC']
+    data_choice_options += ['input_' + s for s in data_choice_options]
+    parser.add_argument('-o', metavar='curve', choices=data_choice_options, nargs='+', default=['SI'],
+                        help=f'list of curve identifiers to output (in  {data_choice_options})')
+
     parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
     parser.add_argument('-s', '--save', metavar='prefix', type=str, nargs='?',
                         help='filename prefix to output obtained curve points in .csv file format')

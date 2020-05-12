@@ -180,9 +180,11 @@ if __name__ == "__main__":
     else:
         simulator_model_func = None
 
+    simple_data_tokens = [p.split('_')[-1] for p in args.data]
+    full_data_tokens = args.data
     ''' plotting the baseline output of the simulator, before optimisation '''
     if not args.noplot:
-        plotter(*simulator_model_func(model_parameters, args.data).values())
+        plotter(*simulator_model_func(model_parameters, simple_data_tokens).values())
 
     ''' Setting up the variables on which the optimisation is to run.
     
@@ -211,6 +213,8 @@ if __name__ == "__main__":
     y_data = target[:, 1]
 
     ''' defining the optimisation helper functions optimize() and fitter() '''
+
+
     def optimize(x_values, y_values, fitter_function):
         mod = lmfit.Model(fitter_function)
         for kwarg, (init, mini, maxi) in params_init_min_max.items():
@@ -221,8 +225,8 @@ if __name__ == "__main__":
 
 
     def fitter(x, **kwargs):
-        ret = simulator_model_func(model_parameters, args.data, **kwargs)
-        return ret['series'][args.data[0]][x]
+        ret = simulator_model_func(model_parameters, simple_data_tokens, **kwargs)
+        return ret['series'][full_data_tokens[0]][x]
 
 
     ''' run the oprimisation '''
@@ -272,4 +276,4 @@ if __name__ == "__main__":
         first_date = np.datetime64('2020-01-06')
         x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
 
-        plotter(*simulator_model_func(model_parameters, args.data, **result.best_values).values(), x_ticks=x_ticks)
+        plotter(*simulator_model_func(model_parameters, simple_data_tokens, **result.best_values).values(), x_ticks=x_ticks)
