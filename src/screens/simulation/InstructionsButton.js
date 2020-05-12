@@ -188,7 +188,7 @@ const InstructionsButton = () => {
                                     En cliquant sur l’un des compartiments{' '}
                                     <Color name="exposed">Sains</Color>,{' '}
                                     <Color name="infected">Malades</Color>,{' '}
-                                    <Color name="intensive_care">Soins intensifs</Color>,{' '}
+                                    <Color name="intensive_care">Hospitalisés</Color>,{' '}
                                     <Color name="recovered">Guéris</Color> et{' '}
                                     <Color name="death">Décédés</Color>, vous pouvez focaliser sur
                                     la courbe correspondante avec mise à l’échelle du graphe.
