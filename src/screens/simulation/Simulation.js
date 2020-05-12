@@ -13,7 +13,7 @@ import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
-import ConfigurationDrawer from './ConfigurationDrawer';
+import ConfigurationDrawer from './configuration/ConfigurationDrawer';
 
 const getModel = async (parameters) => {
     const { data } = await api.get('/get_sir_h_timeframe', {
@@ -102,16 +102,32 @@ const defaultParameters = {
     enabled: true,
 };
 
+const eventstoTimeframes = (events) =>
+    Object.values(events).map((event) => ({
+        date: event.date,
+        label: event.name,
+    }));
+
 const Simulation = () => {
     const chartRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [values, setValues] = useState();
     const { width: windowWidth } = useWindowSize();
-    const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
     const classes = useStyles();
+    const drawerRef = useRef();
 
     const [parameters, setParameters] = useState(defaultParameters);
+    /**
+     * Parameters changes normalized by day
+     * @example
+     * {
+     *   '2020-03-16': { name: 'Déconfinement', changes: ['r0'] },
+     *   '2020-05-11': { name: 'Déconfinement', changes: ['r0'] },
+     * }
+     */
+    const [events, setEvents] = useState([]);
 
     const { zoom, value: zoomInnerValue, handleChange: handleZoomChange } = useZoom({
         min: 300,
@@ -126,13 +142,40 @@ const Simulation = () => {
         setParameters(values);
     };
 
-    const refreshLines = () => {
-        window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+    const refreshLines = (() => {
+        let refreshing = false;
+        let timeout;
 
-        setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
-        }, 16);
-    };
+        return () => {
+            if (!refreshing) {
+                window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+                refreshing = true;
+            }
+
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+
+            timeout = setTimeout(() => {
+                refreshing = false;
+                window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+            }, 200);
+        };
+    })();
+
+    useEffect(() => {
+        let drawer = drawerRef && drawerRef.current;
+
+        if (drawer) {
+            drawer.children[0].addEventListener('scroll', refreshLines);
+        }
+
+        return () => {
+            if (drawer) {
+                drawer.children[0].removeEventListener('scroll', refreshLines);
+            }
+        };
+    }, [drawerRef, refreshLines]);
 
     useEffect(() => {
         (async () => {
@@ -205,6 +248,7 @@ const Simulation = () => {
                                     }}
                                     ref={chartRef}
                                     customConfig={customConfig}
+                                    timeframes={eventstoTimeframes(events)}
                                 />
                             </div>
                         </div>
@@ -213,13 +257,15 @@ const Simulation = () => {
             </main>
 
             <ConfigurationDrawer
-                refreshLines={refreshLines}
                 mobileOpen={mobileOpen}
                 handleDrawerToggle={handleDrawerToggle}
                 parameters={parameters}
                 handleSubmit={handleSubmit}
                 expanded={expanded}
                 setExpanded={setExpanded}
+                events={events}
+                setEvents={setEvents}
+                ref={drawerRef}
             />
         </div>
     );

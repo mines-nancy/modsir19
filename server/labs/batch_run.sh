@@ -15,10 +15,12 @@ out_path="newrun"
 series="SI"
 measures="labs/data/Occupation_Rea_avril.csv"
 model="disc"
+algo="trust-constr"
+steps=1
 
-for i in $(seq 5 55);
+for i in $(seq 5 ${steps} 55);
 do
-  python3 -m labs.model_fit.optimise -d ${series} -i "${measures}" -m ${model} --noplot --path "${out_path}" -s datanum_$i -n $i;
+  python3 -m labs.model_fit.optimise -d ${series} -i "${measures}" -m ${model} --opt ${algo} --noplot --path "${out_path}" -s datanum_$i -n $i;
   python3 -m labs.run_simulator -o ${series} -p "${out_path}/"*datanum_"$i.json" -s datarun --noplot --path "${out_path}"
   python3 -m labs.gaussian_processes.gp_in_practice -i "${measures}" -n $i -p "${out_path}/datarun_${series}"_*_datanum_"$i.csv" --silentplot --beautify --path "${out_path}" -s prediction_$i &
   process_id=$!

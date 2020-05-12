@@ -59,10 +59,10 @@ const useStyles = makeStyles(() => ({
 
 export const SwitchPercentField = (props) => {
     const classes = useStyles(props);
-    const { leftName, rightName, leftLabel, rightLabel, leftColor, disabled } = props;
+    const { leftName, rightName, leftLabel, rightLabel, leftColor, disabled, pieMode } = props;
 
-    const { input: input1 } = useField(leftName);
-    const { input: input2 } = useField(rightName);
+    const { input: input1 } = useField(leftName, { initialValue: 50 });
+    const { input: input2 } = useField(rightName, { initialValue: 50 });
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [innerValue, setInnerValue] = React.useState(input1.value);
@@ -79,6 +79,33 @@ export const SwitchPercentField = (props) => {
     };
 
     const open = Boolean(anchorEl);
+
+    const slider = (
+        <div className={classes.sliderLabels}>
+            <div>
+                <span className={classes.sliderLeft}>
+                    {leftLabel}: <span class="colored">{innerValue}%</span>
+                </span>
+                <span className={classes.sliderRight}>
+                    {rightLabel}: <span class="colored">{100 - innerValue}%</span>
+                </span>
+            </div>
+            <Slider
+                classes={classes}
+                value={innerValue}
+                step={1}
+                min={0}
+                max={100}
+                onChangeCommitted={handleChangeCommitted}
+                onChange={handleChange}
+                track={!!leftColor}
+            />
+        </div>
+    );
+
+    if (!pieMode) {
+        return slider;
+    }
 
     return (
         <div>
@@ -108,28 +135,13 @@ export const SwitchPercentField = (props) => {
                         horizontal: 'center',
                     }}
                 >
-                    <div className={classes.sliderLabels}>
-                        <div>
-                            <span className={classes.sliderLeft}>
-                                {leftLabel}: <span class="colored">{innerValue}%</span>
-                            </span>
-                            <span className={classes.sliderRight}>
-                                {rightLabel}: <span class="colored">{100 - innerValue}%</span>
-                            </span>
-                        </div>
-                        <Slider
-                            classes={classes}
-                            value={innerValue}
-                            step={1}
-                            min={0}
-                            max={100}
-                            onChangeCommitted={handleChangeCommitted}
-                            onChange={handleChange}
-                            track={!!leftColor}
-                        />
-                    </div>
+                    {slider}
                 </Popover>
             )}
         </div>
     );
+};
+
+SwitchPercentField.defaultProps = {
+    pieMode: true,
 };

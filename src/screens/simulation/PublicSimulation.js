@@ -534,7 +534,7 @@ const PublicSimulation = () => {
 
     useEffect(() => {
         if (!showAlert) {
-            window.dispatchEvent(new CustomEvent('graph:refresh:stop'));
+            setTimeout(() => window.dispatchEvent(new CustomEvent('graph:refresh:stop')), 200);
         }
     }, [showAlert]);
 
@@ -573,6 +573,14 @@ const PublicSimulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
+    const [firstLoad, setFirstLoad] = useState(true);
+    useEffect(() => {
+        if (values && firstLoad) {
+            setZoom(Math.max(...values.SI));
+            setFirstLoad(false);
+        }
+    }, [values, firstLoad, setZoom]);
+
     const handleCaptureTooltipData = useCallback(
         debounce((data) => {
             const date = data.length > 0 ? { index: data[0].index, date: data[0].x } : {};
@@ -607,7 +615,7 @@ const PublicSimulation = () => {
         DC: values.DC,
         R: values.R,
         I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
-        SI: values.SI
+        SI: values.SI,
     };
 
     const handleLegendClick = (key) => {
@@ -659,8 +667,8 @@ const PublicSimulation = () => {
                     <Alert
                         severity="warning"
                         onClose={() => {
-                            setShowAlert(false);
                             window.dispatchEvent(new CustomEvent('graph:refresh:start'));
+                            setShowAlert(false);
                         }}
                     >
                         <strong>
