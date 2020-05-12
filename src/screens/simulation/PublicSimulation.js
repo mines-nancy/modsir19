@@ -122,9 +122,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         width: '100%',
-        '&:first-child': {
-            marginBottom: 48,
-        },
+        marginBottom: 48,
     },
     block: {
         pointerEvents: 'all',
@@ -330,6 +328,9 @@ const Legend = ({
                 )}
             </div>
             <div className={classes.legendBlockContainer}>
+                <Typography gutterBottom>
+                    Cliquez sur un boutton pour la mise à l'échelle
+                </Typography>
                 <div className={classes.blockRow}>
                     <Node
                         name="sain"
