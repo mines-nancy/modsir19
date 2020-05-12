@@ -203,6 +203,9 @@ const useStyles = makeStyles((theme) => ({
         top: 12,
         right: 8,
     },
+    legendPercent: {
+        fontSize: '0.9rem',
+    },
 }));
 
 const getModel = async (timeframes) => {
@@ -219,15 +222,19 @@ const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
 
 const EmptyBlock = () => <div style={{ padding: 8, width: 64, height: 64 }} />;
 
+const formatNumber = (value) => {
+    const intl = new Intl.NumberFormat();
+    return value ? intl.format(value) : value;
+};
+
 const Block = ({ children, label, value, ...props }) => {
     const classes = useStyles(props);
-    const intl = new Intl.NumberFormat();
 
     return (
         <Card className={classes.block} elevation={3} {...props}>
             <div>
                 <div className={classes.blockLabel}>{label}</div>
-                <div className={classes.blockValue}>{value ? intl.format(value) : value}</div>
+                <div className={classes.blockValue}>{value}</div>
             </div>
         </Card>
     );
@@ -273,9 +280,7 @@ const Legend = ({
         onClick: () => onLegendClick(key),
     });
 
-    const handleGoBack = () => {
-        history.push('/');
-    };
+    const handleGoBack = () => history.push('/');
 
     if (!values) {
         return null;
@@ -297,6 +302,9 @@ const Legend = ({
     const DC = Math.round(values.DC[i]);
     const SE = Math.round(values.SE[i]);
     const M = Math.round(values.I[i] + values.INCUB[i]);
+
+    const DCPercent = Math.round((DC / total) * 100);
+    const RPercent = Math.round((R / total) * 100);
 
     return (
         <GraphProvider>
@@ -343,7 +351,7 @@ const Legend = ({
                         <Block
                             {...addMouseProps('SE', ['Exposés'])}
                             label="Sains"
-                            value={SE || ''}
+                            value={Number.isInteger(SE) ? formatNumber(SE) : ''}
                             color={colors.exposed.bg}
                         />
                     </Node>
@@ -363,7 +371,7 @@ const Legend = ({
                         <Block
                             {...addMouseProps('I', ['Incubation', 'Infectés'])}
                             label="Malades"
-                            value={M}
+                            value={Number.isInteger(M) ? formatNumber(M) : M}
                             color={colors.infected.bg}
                         />
                     </Node>
@@ -371,7 +379,14 @@ const Legend = ({
                         <Block
                             {...addMouseProps('R', ['Guéris'])}
                             label="Guéris"
-                            value={R}
+                            value={
+                                <div>
+                                    <div>{`${Number.isInteger(R) ? formatNumber(R) : R}`}</div>
+                                    <div className={classes.legendPercent}>{`${
+                                        RPercent < 1 ? '< 1%' : `${RPercent}%`
+                                    }`}</div>
+                                </div>
+                            }
                             color={colors.recovered.bg}
                         />
                     </Node>
@@ -398,7 +413,7 @@ const Legend = ({
                                 'Soins medicaux',
                             ])}
                             label="Hospitalisés"
-                            value={H}
+                            value={Number.isInteger(H) ? formatNumber(H) : H}
                             color={colors.intensive_care.bg}
                         />
                     </Node>
@@ -406,7 +421,14 @@ const Legend = ({
                         <Block
                             {...addMouseProps('DC', ['Décédés'])}
                             label="Décédés"
-                            value={DC}
+                            value={
+                                <div>
+                                    <div>{`${Number.isInteger(DC) ? formatNumber(DC) : DC}`}</div>
+                                    <div className={classes.legendPercent}>{`${
+                                        DCPercent < 1 ? '< 1%' : `${DCPercent}%`
+                                    }`}</div>
+                                </div>
+                            }
                             color={colors.death.bg}
                         />
                     </Node>
