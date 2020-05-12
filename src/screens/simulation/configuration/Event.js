@@ -18,10 +18,14 @@ import {
 import { DeleteForever, Edit, Save, Cancel } from '@material-ui/icons';
 
 import ProportionField from '../../../components/fields/ProportionField';
+import DurationField from '../../../components/fields/DurationField';
 
 import { parametersEditableInEvents } from '../../../parameters.json';
 
 export const parametersControl = {
+    kpe: {
+        component: ProportionField,
+    },
     r0: {
         component: ProportionField,
         options: {
@@ -30,6 +34,24 @@ export const parametersControl = {
             max: '5',
             step: 0.1,
         },
+    },
+    dm_incub: {
+        component: DurationField,
+    },
+    dm_r: {
+        component: DurationField,
+    },
+    dm_h: {
+        component: DurationField,
+    },
+    dm_sm: {
+        component: DurationField,
+    },
+    dm_si: {
+        component: DurationField,
+    },
+    dm_ss: {
+        component: DurationField,
     },
 };
 
@@ -190,7 +212,7 @@ const Event = ({ event, onDelete, onRename }) => {
                             <Field
                                 name={`${format(event.date, 'yyyy-MM-dd')}_${change}`}
                                 component={parametersControl[change].component}
-                                {...parametersControl[change].options}
+                                {...(parametersControl[change].options || {})}
                             />
                         </CardContent>
                     </Card>
