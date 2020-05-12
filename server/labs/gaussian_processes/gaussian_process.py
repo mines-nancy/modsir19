@@ -143,7 +143,7 @@ class GaussianProcess(object):
 
         self.update_covariance_matrix()
 
-    def optimise_parameters(self, disp=True):
+    def optimise_parameters(self, disp=False):
         """
         Uses the BFGS algorithm to estimate the parameters of the kernel which minimise the
         :param disp: display some info regarding the optimisation performed by the BFGS algorithm
