@@ -157,7 +157,7 @@ const InstructionsButton = () => {
                                         infectés vont développer des complications (le plus souvent
                                         respiratoires) qui vont nécessiter une hospitalisation. Ils
                                         passent donc dans le compartiment <strong>H</strong>{' '}
-                                        (Hospitalisés)
+                                        (Soins intensifs)
                                     </li>
                                     <li>
                                         <strong>G&nbsp;:</strong> ensemble des sujets ayant été
@@ -165,9 +165,8 @@ const InstructionsButton = () => {
                                     </li>
                                     <li>
                                         <strong>H&nbsp;:</strong> ensemble des patients en
-                                        hospitalisation pour traitement des complications de la
-                                        maladie soit en hospitalisation classique, soit en soins
-                                        intensifs ou réanimation. Environ 75% des patients
+                                        soins intensifs pour traitement des complications de la
+                                        maladie. Environ 75% des patients
                                         hospitalisés vont guérir et rejoindre le compartiment{' '}
                                         <strong>G</strong>. Malheureusement, environ 25% vont
                                         décéder au cours de leur hospitalisation et sont
@@ -189,7 +188,7 @@ const InstructionsButton = () => {
                                     En cliquant sur l’un des compartiments{' '}
                                     <Color name="exposed">Sains</Color>,{' '}
                                     <Color name="infected">Malades</Color>,{' '}
-                                    <Color name="intensive_care">Hospitalisés</Color>,{' '}
+                                    <Color name="intensive_care">Soins intensifs</Color>,{' '}
                                     <Color name="recovered">Guéris</Color> et{' '}
                                     <Color name="death">Décédés</Color>, vous pouvez focaliser sur
                                     la courbe correspondante avec mise à l’échelle du graphe.
