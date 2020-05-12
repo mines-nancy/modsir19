@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ This is mainly demo code showing how to invoke the MODSIR19 simulator with
     default parameters
     python -m labs.run_simulator [options] from the server directory to run the simulator

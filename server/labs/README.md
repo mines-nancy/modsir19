@@ -34,7 +34,7 @@ Both scripts run the following tasks in sequence :
     * for a series of predetermined values `n`, estimate the optimal SIR+H model parameters given `n` observations if IC admissions;
     * generate model output for these parameters;
     * run gaussian process prediction using this output as *prior* and compare with remaining observations of IC admissions;
-    * generate animated `.gif` of computed curves.
+    * generate animated `.gif` of computed curves and consolidated statistics of the runs.
     
     These scripts take no parameters, but can be edited to adapt to specific configurations.
 
