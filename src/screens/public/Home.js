@@ -87,11 +87,11 @@ const Home = () => {
                             planète Terre, et peuplé d’1 millions d’habitants : les Covidiens.
                         </p>
                         <p>
-                            Les covidiens, par nature pu enclins à la discipline, sauront-ils respecter les « gestes barrières »
+                            Les Covidiens, par nature peu enclins à la discipline, sauront-ils respecter les « gestes barrières »
                             et se conformer à la réglementation covidienne, afin de maitriser le fameux R0, clef magique pour controler l’épidémie ?
                         </p>
                         <p>
-                            Toute ressemblance avec des personnes ou des événements existants ou ayant existé ne serait que pure coïncidence.
+                            Toute ressemblance avec des personnes ou des événements existants ou ayant existé ne serait que pure coïncidence...
                         </p>
                         <div style={{ display: 'flex', justifyContent: 'center' }}>
                             <img src={gestes} alt="Schéma du modèle SIR+H" />
