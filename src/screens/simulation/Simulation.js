@@ -128,7 +128,7 @@ const extractRulesFromValues = (values, parameters) =>
                 parameters,
             );
 
-            rulesToAdd.forEach((rule) => rules.push(rule));
+            return rules.concat(rulesToAdd);
         }
 
         return rules;
