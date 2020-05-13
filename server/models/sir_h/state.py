@@ -181,25 +181,16 @@ class State:
 
         self.move('SE', 'INCUB', delta)
 
-    def extract_series(self, names=['SE', 'R', 'INCUB', 'I', 'SM',  'SI', 'SS', 'DC']):
-        series = {'SE': ['SE'], 'R': ['R'], 'INCUB': ['INCUB'], 'I': ['IR', 'IH'],
-                  'SM': ['SM'],  'SI': ['SI'], 'SS': ['SS'], 'DC': ['DC'], }
-
+    def extract_series(self, names=['SE', 'R', 'INCUB', 'IR', 'IH', 'SM',  'SI', 'SS', 'DC']):
         def positive_or_zero(x):
             return x if x >= 0 else 0
 
-        def sum_lists(lists):
-            res = [0] * len(lists[0])
-            for serie in lists:
-                res = list(map(positive_or_zero, map(add, serie, res)))
-            return res
-
         lists = dict()
-        for key in names:
-            lists[key] = sum_lists(
-                [self.box(name).get_size_history()[1:] for name in series[key]])
-            lists['input_' + key] = sum_lists(
-                [self.box(name).get_input_history()[1:] for name in series[key]])
-            lists['output_' + key] = sum_lists(
-                [self.box(name).get_removed_history()[1:] for name in series[key]])
+        for name in names:
+            lists[name] = list(map(positive_or_zero, self.box(
+                name).get_size_history()[1:]))
+            lists['input_' + name] = list(map(positive_or_zero,
+                                              self.box(name).get_input_history()[1:]))
+            lists['output_' + name] = list(map(positive_or_zero,
+                                               self.box(name).get_removed_history()[1:]))
         return lists
