@@ -79,6 +79,10 @@ const InstructionsButton = () => {
         setTab(value);
     };
 
+    const handleNextTab = () => {
+        setTab(tab + 1);
+    };
+
     return (
         <>
             <Button
@@ -103,8 +107,8 @@ const InstructionsButton = () => {
                                 onChange={handleChangeTab}
                             >
                                 <Tab label={<strong>Principe de modélisation</strong>} value={0} />
-                                <Tab label={<strong>Qu'est-ce que le R0 ?</strong>} value={2} />
-                                <Tab label={<strong>Mode d'emploi</strong>} value={1} />
+                                <Tab label={<strong>Qu'est-ce que le R0 ?</strong>} value={1} />
+                                <Tab label={<strong>Mode d'emploi</strong>} value={2} />
                             </Tabs>
                         }
                         action={
@@ -182,58 +186,6 @@ const InstructionsButton = () => {
                             </FormattedText>
                         )}
                         {tab === 1 && (
-                            <FormattedText>
-                                <h2>ACTIONS SUR LE GRAPHE</h2>
-                                <p>
-                                    En cliquant sur l’un des compartiments{' '}
-                                    <Color name="exposed">Sains</Color>,{' '}
-                                    <Color name="infected">Malades</Color>,{' '}
-                                    <Color name="intensive_care">Hospitalisés</Color>,{' '}
-                                    <Color name="recovered">Guéris</Color> et{' '}
-                                    <Color name="death">Décédés</Color>, vous pouvez focaliser sur
-                                    la courbe correspondante avec mise à l’échelle du graphe.
-                                </p>
-                                <p>
-                                    Le curseur à gauche du graphe permet également d’ajuster la mise
-                                    à l’échelle du graphe en fonction des courbes qui vous
-                                    intéressent.
-                                </p>
-                                <p>
-                                    Le survol du graphe par la souris affiche les effectifs de
-                                    chaque compartiment à la date correspondante.
-                                </p>
-                                <p>
-                                    La roulette de la souris permet un zoom temporel (horizontal)
-                                    des courbes.
-                                </p>
-                                <p>
-                                    Maintenir le clic gauche permet de déplacer les courbes zoomées
-                                    de droite à gauche.
-                                </p>
-                                <h2>ACTION SUR LE SCENARIO DE LA SIMULATION</h2>
-                                <p>
-                                    L’interrupteur «&nbsp;<strong>Confinement</strong>&nbsp;» active
-                                    ou désactive la période de confinement du 17 Mars 2020. (En cas
-                                    de désactivation, la période de «&nbsp;
-                                    <strong>Déconfinement</strong>
-                                    &nbsp;» est alors également désactivée).
-                                </p>
-                                <p>
-                                    L’interrupteur «&nbsp;<strong>Déconfinement</strong>
-                                    &nbsp;» active ou désactive la période de déconfinement
-                                </p>
-                                <p>
-                                    Le champ «&nbsp;date&nbsp;» permet de modifier la date du
-                                    déconfinement.
-                                </p>
-                                <p>
-                                    Le curseur <i>R0</i> modifie la valeur du <i>R0</i> en phase de
-                                    déconfinement, ce qui permet de visualiser l’effet de mesures
-                                    collectives de précaution sur l’évolution de l’épidémie.
-                                </p>
-                            </FormattedText>
-                        )}
-                        {tab === 2 && (
                             <FormattedText>
                                 <h2 className={classes.warning}>ATTENTION</h2>
                                 <p className={classes.warning}>
@@ -316,6 +268,58 @@ const InstructionsButton = () => {
                                 </p>
                             </FormattedText>
                         )}
+                        {tab === 2 && (
+                            <FormattedText>
+                                <h2>ACTIONS SUR LE GRAPHE</h2>
+                                <p>
+                                    En cliquant sur l’un des compartiments{' '}
+                                    <Color name="exposed">Sains</Color>,{' '}
+                                    <Color name="infected">Malades</Color>,{' '}
+                                    <Color name="intensive_care">Hospitalisés</Color>,{' '}
+                                    <Color name="recovered">Guéris</Color> et{' '}
+                                    <Color name="death">Décédés</Color>, vous pouvez focaliser sur
+                                    la courbe correspondante avec mise à l’échelle du graphe.
+                                </p>
+                                <p>
+                                    Le curseur à gauche du graphe permet également d’ajuster la mise
+                                    à l’échelle du graphe en fonction des courbes qui vous
+                                    intéressent.
+                                </p>
+                                <p>
+                                    Le survol du graphe par la souris affiche les effectifs de
+                                    chaque compartiment à la date correspondante.
+                                </p>
+                                <p>
+                                    La roulette de la souris permet un zoom temporel (horizontal)
+                                    des courbes.
+                                </p>
+                                <p>
+                                    Maintenir le clic gauche permet de déplacer les courbes zoomées
+                                    de droite à gauche.
+                                </p>
+                                <h2>ACTION SUR LE SCENARIO DE LA SIMULATION</h2>
+                                <p>
+                                    L’interrupteur «&nbsp;<strong>Confinement</strong>&nbsp;» active
+                                    ou désactive la période de confinement du 17 Mars 2020. (En cas
+                                    de désactivation, la période de «&nbsp;
+                                    <strong>Déconfinement</strong>
+                                    &nbsp;» est alors également désactivée).
+                                </p>
+                                <p>
+                                    L’interrupteur «&nbsp;<strong>Déconfinement</strong>
+                                    &nbsp;» active ou désactive la période de déconfinement
+                                </p>
+                                <p>
+                                    Le champ «&nbsp;date&nbsp;» permet de modifier la date du
+                                    déconfinement.
+                                </p>
+                                <p>
+                                    Le curseur <i>R0</i> modifie la valeur du <i>R0</i> en phase de
+                                    déconfinement, ce qui permet de visualiser l’effet de mesures
+                                    collectives de précaution sur l’évolution de l’épidémie.
+                                </p>
+                            </FormattedText>
+                        )}
                     </CardContent>
                     <CardActions className={classes.actions}>
                         {openOnMount && (
@@ -327,20 +331,16 @@ const InstructionsButton = () => {
                                 Ne plus afficher
                             </Button>
                         )}
-                        <Tabs
-                            value={tab}
-                            variant="fullWidth"
-                            indicatorColor="primary"
-                            textColor="primary"
-                            onChange={handleChangeTab}
-                        >
-                            <Tab label={<strong>Principe de modélisation</strong>} value={0} />
-                            <Tab label={<strong>Qu'est-ce que le R0 ?</strong>} value={2} />
-                            <Tab label={<strong>Mode d'emploi</strong>} value={1} />
-                        </Tabs>
+                        {tab < 2 &&
+                            <Button variant="contained" color="primary" onClick={handleNextTab}>
+                                Suivant
+                            </Button>
+                        }
+                        {tab === 2 &&
                         <Button variant="outlined" color="primary" onClick={handleClose}>
                             Fermer
                         </Button>
+                        }
                     </CardActions>
                 </Card>
             </Modal>
