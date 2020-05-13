@@ -54,6 +54,33 @@ export const formatParametersForModel = ({ start_date, ...parameters }) =>
         start_time: 0,
     });
 
+export const formatRulesForModel = (rules = [], parameters) =>
+    rules.reduce((acc, rule) => {
+        if (percentFields.includes(rule.field)) {
+            acc.push({
+                ...rule,
+                value: round(rule.value / 100),
+            });
+        } else if (rule.field === 'r0') {
+            const { r, beta } = computeRBetaFromR0({ ...parameters, r0: rule.value });
+
+            acc.push({
+                ...rule,
+                field: 'r',
+                value: r,
+            });
+            acc.push({
+                ...rule,
+                field: 'beta',
+                value: beta,
+            });
+        } else {
+            acc.push(rule);
+        }
+
+        return acc;
+    }, []);
+
 export const percentFields = [
     'kpe',
     'pc_ir',

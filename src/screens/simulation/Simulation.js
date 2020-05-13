@@ -7,7 +7,11 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, Toolbar, AppBar, Typography, CircularProgress } from '@material-ui/core';
 
 import './Simulation.css';
-import { formatParametersForModel, defaultParameters as defaultParametersValues } from './common';
+import {
+    formatParametersForModel,
+    formatRulesForModel,
+    defaultParameters as defaultParametersValues,
+} from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
@@ -20,7 +24,7 @@ const getModel = async ({ rules, ...parameters }) => {
     const { data } = await api.get('/get_sir_h_rules', {
         params: {
             parameters,
-            rules: { list: rules || {} },
+            rules: { list: rules || [] },
         },
     });
 
@@ -105,27 +109,22 @@ const eventstoTimeframes = (events) =>
     }));
 
 const extractRulesFromValues = (values, startDate) =>
-    Object.keys(values).reduce(
-        (agg, key) => {
-            if (key.startsWith('rule_')) {
-                const [, date, ...field] = key.split('_');
-                const fieldName = field.join('_');
-                const dayDiff = differenceInDays(endOfDay(new Date(date)), startOfDay(startDate));
+    Object.keys(values).reduce((rules, key) => {
+        if (key.startsWith('rule_')) {
+            const [, date, ...field] = key.split('_');
+            const fieldName = field.join('_');
+            const dayDiff = differenceInDays(endOfDay(new Date(date)), startOfDay(startDate));
 
-                agg.rules.push({
-                    date: dayDiff,
-                    type: 'change_field',
-                    field: fieldName,
-                    value: values[key],
-                });
-            } else if (key !== 'rules') {
-                agg[key] = values[key];
-            }
+            rules.push({
+                date: dayDiff,
+                type: 'change_field',
+                field: fieldName,
+                value: values[key],
+            });
+        }
 
-            return agg;
-        },
-        { rules: [] },
-    );
+        return rules;
+    }, []);
 
 const Simulation = () => {
     const chartRef = useRef(null);
@@ -200,8 +199,11 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             setLoading(true);
-            const parametersWithRules = extractRulesFromValues(parameters, parameters.start_date);
-            const data = await getModelDebounced(formatParametersForModel(parametersWithRules));
+            const rules = extractRulesFromValues(parameters, parameters.start_date);
+            const data = await getModelDebounced({
+                ...formatParametersForModel(parameters),
+                rules: formatRulesForModel(rules, parameters),
+            });
             const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
             setValues({ ...data, I });
             setLoading(false);
