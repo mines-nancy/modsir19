@@ -187,15 +187,6 @@ const InstructionsButton = () => {
                         )}
                         {tab === 1 && (
                             <FormattedText>
-                                <h2 className={classes.warning}>ATTENTION</h2>
-                                <p className={classes.warning}>
-                                    Les paramètres utilisés sont des valeurs arbitraires choisies
-                                    pour les besoins de la démonstration. Les résultats de cette
-                                    simulation n’ont donc qu’une valeur pédagogique pour aider à
-                                    comprendre les mécanismes d’une épidémie, et ne sont en aucun
-                                    cas le reflet de la réalité, ni au niveau d’un territoire, ni au
-                                    niveau national.
-                                </p>
                                 <h2>Le R0 :</h2>
                                 <p>
                                     Le <strong>taux de reproduction</strong>, appelé R0, représente

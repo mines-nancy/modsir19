@@ -409,7 +409,7 @@ const Legend = ({
                                 'Soins intensifs',
                                 'Soins medicaux',
                             ])}
-                            label="Hospitalisés"
+                            label="Hospitalisés Réa"
                             value={Number.isInteger(H) ? formatNumber(H) : H}
                             color={colors.intensive_care.bg}
                         />
