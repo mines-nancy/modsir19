@@ -9,7 +9,7 @@ import { makeStyles, Toolbar, AppBar, Typography, CircularProgress } from '@mate
 import './Simulation.css';
 import {
     formatParametersForModel,
-    formatRulesForModel,
+    formatRuleForModel,
     defaultParameters as defaultParametersValues,
 } from './common';
 import api from '../../api';
@@ -108,19 +108,27 @@ const eventstoTimeframes = (events) =>
         label: event.name,
     }));
 
-const extractRulesFromValues = (values, startDate) =>
+const extractRulesFromValues = (values, parameters) =>
     Object.keys(values).reduce((rules, key) => {
         if (key.startsWith('rule_')) {
             const [, date, ...field] = key.split('_');
             const fieldName = field.join('_');
-            const dayDiff = differenceInDays(endOfDay(new Date(date)), startOfDay(startDate));
+            const dayDiff = differenceInDays(
+                endOfDay(new Date(date)),
+                startOfDay(parameters.start_date),
+            );
 
-            rules.push({
-                date: dayDiff,
-                type: 'change_field',
-                field: fieldName,
-                value: values[key],
-            });
+            const rulesToAdd = formatRuleForModel(
+                {
+                    date: dayDiff,
+                    type: 'change_field',
+                    field: fieldName,
+                    value: values[key],
+                },
+                parameters,
+            );
+
+            rulesToAdd.forEach((rule) => rules.push(rule));
         }
 
         return rules;
@@ -199,10 +207,11 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             setLoading(true);
-            const rules = extractRulesFromValues(parameters, parameters.start_date);
+            const rules = extractRulesFromValues(parameters, parameters);
+
             const data = await getModelDebounced({
                 ...formatParametersForModel(parameters),
-                rules: formatRulesForModel(rules, parameters),
+                rules,
             });
             const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
             setValues({ ...data, I });
