@@ -7,26 +7,26 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, Toolbar, AppBar, Typography, CircularProgress } from '@material-ui/core';
 
 import './Simulation.css';
-import { formatParametersForModel, defaultParameters as defaultParametersValues } from './common';
+import {
+    formatParametersForModel,
+    formatRuleForModel,
+    defaultParameters as defaultParametersValues,
+} from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import ConfigurationDrawer from './configuration/ConfigurationDrawer';
+import { differenceInDays, endOfDay, startOfDay } from 'date-fns';
 
-const getModel = async (parameters) => {
-    const { data } = await api.get('/get_sir_h_timeframe', {
-        params: { parameters: { list: [parameters] } },
+const getModel = async ({ rules, ...parameters }) => {
+    const { data } = await api.get('/get_sir_h_rules', {
+        params: {
+            parameters,
+            rules: { list: rules || [] },
+        },
     });
-
-    // example:
-    // const res = await api.get('/get_sir_h_rules', {
-    //     params: {
-    //         parameters: { ...timeframes[0] },
-    //         rules: { list: [{ date: 12, type: 'change_field', field: 'beta', value: 0.5 }] },
-    //     },
-    // });
 
     return data;
 };
@@ -108,6 +108,32 @@ const eventstoTimeframes = (events) =>
         label: event.name,
     }));
 
+const extractRulesFromValues = (values, parameters) =>
+    Object.keys(values).reduce((rules, key) => {
+        if (key.startsWith('rule_')) {
+            const [, date, ...field] = key.split('_');
+            const fieldName = field.join('_');
+            const dayDiff = differenceInDays(
+                endOfDay(new Date(date)),
+                startOfDay(parameters.start_date),
+            );
+
+            const rulesToAdd = formatRuleForModel(
+                {
+                    date: dayDiff,
+                    type: 'change_field',
+                    field: fieldName,
+                    value: values[key],
+                },
+                parameters,
+            );
+
+            return rules.concat(rulesToAdd);
+        }
+
+        return rules;
+    }, []);
+
 const Simulation = () => {
     const chartRef = useRef(null);
     const [loading, setLoading] = useState(false);
@@ -181,7 +207,12 @@ const Simulation = () => {
     useEffect(() => {
         (async () => {
             setLoading(true);
-            const data = await getModelDebounced(formatParametersForModel(parameters));
+            const rules = extractRulesFromValues(parameters, parameters);
+
+            const data = await getModelDebounced({
+                ...formatParametersForModel(parameters),
+                rules,
+            });
             const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
             setValues({ ...data, I });
             setLoading(false);
