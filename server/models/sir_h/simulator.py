@@ -9,7 +9,7 @@ def run_sir_h(parameters, rules, data_chu=dict(), specific_series=None):
         called by labs
         can be called with mutable parameters
         do not use cache
-        specific_series sublist of ['SE', 'R', 'INCUB', 'I', 'IH', 'SM',  'SI', 'SS', 'DC']
+        specific_series sublist of ['SE', 'R', 'INCUB', 'IR', 'IH', 'SM',  'SI', 'SS', 'DC']
     """
     state = State(parameters)
     lim_time = state.parameter('lim_time')

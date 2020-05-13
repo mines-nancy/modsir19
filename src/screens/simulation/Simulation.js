@@ -177,11 +177,13 @@ const Simulation = () => {
         };
     }, [drawerRef, refreshLines]);
 
+    const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
     useEffect(() => {
         (async () => {
             setLoading(true);
             const data = await getModelDebounced(formatParametersForModel(parameters));
-            setValues(data);
+            const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
+            setValues({ ...data, I });
             setLoading(false);
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps

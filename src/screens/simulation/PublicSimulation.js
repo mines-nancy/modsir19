@@ -297,7 +297,7 @@ const Legend = ({
     const H = Math.round(values.SI[i]);
     const DC = Math.round(values.DC[i]);
     const SE = Math.round(values.SE[i]);
-    const M = Math.round(values.I[i] + values.INCUB[i]);
+    const M = Math.round(values.IR[i] + values.IH[i] + values.INCUB[i]);
 
     const DCPercent = Math.round((DC / total) * 100);
     const RPercent = Math.round((R / total) * 100);
@@ -613,7 +613,7 @@ const PublicSimulation = () => {
         SE: values.SE,
         DC: values.DC,
         R: values.R,
-        I: zip([values.I, values.INCUB]).map(([a, b]) => a + b),
+        I: zip([values.IR, values.IH, values.INCUB]).map(([a, b, c]) => a + b + c),
         SI: values.SI,
     };
 

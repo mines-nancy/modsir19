@@ -55,6 +55,7 @@ const convertRules = (rules, j_0) =>
         date: differenceInDays(endOfDay(rule.date), startOfDay(j_0)),
     }));
 
+const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 const getModel = async (parameters) => {
     const newRules = convertRules(parameters.rules, parameters.j_0);
     const timeframes = newRules.map(({ field, value, date }) => {
@@ -63,13 +64,15 @@ const getModel = async (parameters) => {
         return modifiedParameters;
     });
     const initialParameters = { ...parameters, pc_sm_dc: 0, start_time: 0 };
-    return await api.get('/get_sir_h_timeframe', {
+    const data = await api.get('/get_sir_h_timeframe', {
         params: {
             parameters: {
                 list: [initialParameters, ...timeframes],
             },
         },
     });
+    const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
+    return { ...data, I };
 };
 
 const getModelDebounced = AwesomeDebouncePromise(getModel, 500);
