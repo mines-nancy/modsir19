@@ -572,6 +572,7 @@ const PublicSimulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(timeframes)]);
 
+    // initialize zoom to fit SI curve
     const [firstLoad, setFirstLoad] = useState(true);
     useEffect(() => {
         if (values && firstLoad) {
@@ -617,10 +618,27 @@ const PublicSimulation = () => {
         SI: values.SI,
     };
 
+    const visibleValues = Object.keys(mergedValues).reduce(
+        (acc, key) => {
+            if (Math.max(...mergedValues[key]) <= 10.0 * zoom) {
+                acc[key] = mergedValues[key];
+            } else if (acc[key]) {
+                // do nothing: data should always be displayed and not be replaced by [0,...,0]
+            } else {
+                acc[key] = Array.from({ length: mergedValues[key].length }, (v, i) => 0);
+            }
+            return acc;
+        },
+        {
+            SI: values.SI, // should always be displayed
+        },
+    );
+
     const handleLegendClick = (key) => {
         const max = Math.max(...mergedValues[key]);
         if (zoom === max) {
-            setZoom(timeframes[0].population);
+            // curve to display when clicking twice on a legend
+            setZoom(Math.max(...values.SI));
         } else {
             setZoom(max);
         }
@@ -649,15 +667,6 @@ const PublicSimulation = () => {
             },
         },
     };
-
-    const visibleValues = Object.keys(mergedValues).reduce((acc, key) => {
-        if (Math.max(...mergedValues[key]) <= 10.0 * zoom) {
-            acc[key] = mergedValues[key];
-        } else {
-            acc[key] = Array.from({ length: mergedValues[key].length }, (v, i) => 0);
-        }
-        return acc;
-    }, {});
 
     return (
         <>
