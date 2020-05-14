@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
-
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
-
+import { difference, pick } from 'lodash';
 import { makeStyles, Toolbar, AppBar, Typography, CircularProgress } from '@material-ui/core';
+import { differenceInDays, endOfDay, startOfDay, format } from 'date-fns';
 
 import './Simulation.css';
-import {
-    formatParametersForModel,
-    formatRuleForModel,
-    defaultParameters as defaultParametersValues,
-} from './common';
 import api from '../../api';
 import Chart from './Chart';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import ConfigurationDrawer from './configuration/ConfigurationDrawer';
-import { differenceInDays, endOfDay, startOfDay } from 'date-fns';
+
+import {
+    formatParametersForModel,
+    formatRuleForModel,
+    defaultParameters as defaultParametersValues,
+} from './common';
 
 const getModel = async ({ rules, ...parameters }) => {
     const { data } = await api.get('/get_sir_h_rules', {
@@ -134,6 +134,47 @@ const extractRulesFromValues = (values, parameters) =>
         return rules;
     }, []);
 
+const buildHashKeyDict = (obj) =>
+    Object.keys(obj).reduce(
+        (agg, key) => ({ ...agg, [`${key}_${JSON.stringify(obj[key])}`]: key }),
+        {},
+    );
+
+const extractV1Data = ([parameters, ...data]) => {
+    const parametersHashKeyDict = buildHashKeyDict(parameters);
+    const newParameters = { ...parameters };
+
+    const events = data.reduce((agg, timeframe) => {
+        const timeframeHashKeyDict = buildHashKeyDict(timeframe);
+
+        const diffKeys = Object.values(
+            pick(
+                timeframeHashKeyDict,
+                difference(Object.keys(timeframeHashKeyDict), Object.keys(parametersHashKeyDict)),
+            ),
+        );
+
+        const { start_date, name, ...changes } = pick(timeframe, diffKeys);
+        const simpleDate = format(start_date, 'yyyy-MM-dd');
+
+        // Populate event data which is in parameters in the same time
+        Object.keys(changes).forEach((key) => {
+            newParameters[`rule_${simpleDate}_${key}`] = changes[key];
+        });
+
+        return {
+            ...agg,
+            [simpleDate]: {
+                name,
+                date: start_date,
+                changes: Object.keys(changes),
+            },
+        };
+    }, {});
+
+    return { parameters: newParameters, events };
+};
+
 const Simulation = () => {
     const chartRef = useRef(null);
     const [loading, setLoading] = useState(false);
@@ -160,13 +201,9 @@ const Simulation = () => {
         max: parameters.population,
     });
 
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
+    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-    const handleSubmit = (values) => {
-        setParameters(values);
-    };
+    const handleSubmit = (values) => setParameters(values);
 
     const refreshLines = (() => {
         let refreshing = false;
@@ -220,6 +257,13 @@ const Simulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(parameters)]);
 
+    const handleImport = ({ version, data }) => {
+        const { events, parameters } = version === 1 ? extractV1Data(data) : data;
+
+        setEvents(events);
+        setParameters(parameters);
+    };
+
     const chartSize = windowWidth
         ? windowWidth < 1280 // lg
             ? windowWidth - 90
@@ -251,8 +295,8 @@ const Simulation = () => {
                     <Typography variant="h6" noWrap style={{ flexGrow: 1 }}>
                         Projet MODSIR19
                     </Typography>
-                    <ExportButton parameters={parameters} />
-                    <ImportButton setParameters={setParameters} />
+                    <ExportButton data={{ parameters, events }} />
+                    <ImportButton onImport={handleImport} />
                     {typeof loading !== 'undefined' && (
                         <div className={classes.loadingContainer}>
                             {loading && (
@@ -288,7 +332,6 @@ const Simulation = () => {
                     </div>
                 )}
             </main>
-
             <ConfigurationDrawer
                 mobileOpen={mobileOpen}
                 handleDrawerToggle={handleDrawerToggle}

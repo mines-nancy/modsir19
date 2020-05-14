@@ -82,7 +82,7 @@ const ConfigurationForm = ({
                                     }}
                                 >
                                     <Tab label="configuration" />
-                                    <Tab label="évènements" />
+                                    <Tab label={`évènements (${Object.keys(events).length})`} />
                                 </Tabs>
                             </AppBar>
                             {tab === 0 && (

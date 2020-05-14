@@ -18,13 +18,22 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ExportButton = ({ parameters }) => {
+const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+const jsonParseDate = (key, value) => {
+    if (typeof value === 'string' && dateFormat.test(value)) {
+        return new Date(value);
+    }
+
+    return value;
+};
+
+export const ExportButton = ({ data, name = null }) => {
     const classes = useStyles();
 
     const handleExport = () => {
         const json = JSON.stringify({
-            version: 1,
-            data: parameters,
+            version: 2,
+            data,
         });
 
         const el = document.createElement('a');
@@ -51,9 +60,7 @@ export const ExportButton = ({ parameters }) => {
     );
 };
 
-const parseDate = (parameters) => ({ ...parameters, start_date: new Date(parameters.start_date) });
-
-export const ImportButton = ({ setParameters }) => {
+export const ImportButton = ({ onImport }) => {
     const classes = useStyles();
     const [error, setError] = useState(false);
 
@@ -62,6 +69,7 @@ export const ImportButton = ({ setParameters }) => {
         el.setAttribute('type', 'file');
         el.setAttribute('accept', 'application/json,.json');
         el.style.display = 'none';
+
         el.onchange = () => {
             try {
                 const file = el.files[0];
@@ -69,8 +77,7 @@ export const ImportButton = ({ setParameters }) => {
 
                 reader.onload = (evt) => {
                     try {
-                        const content = evt.target.result;
-                        setParameters(parseDate(JSON.parse(content).data));
+                        onImport(JSON.parse(evt.target.result, jsonParseDate));
                     } catch (e) {
                         setError(true);
                     }
