@@ -57,18 +57,13 @@ const convertRules = (rules, j_0) =>
 
 const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 const getModel = async (parameters) => {
-    const newRules = convertRules(parameters.rules, parameters.j_0);
-    const timeframes = newRules.map(({ field, value, date }) => {
-        const modifiedParameters = { ...parameters, pc_sm_dc: 0, start_time: date };
-        modifiedParameters[field] = value;
-        return modifiedParameters;
-    });
-    const initialParameters = { ...parameters, pc_sm_dc: 0, start_time: 0 };
-    const data = await api.get('/get_sir_h_timeframe', {
+    const { rules, ...restParameters } = parameters;
+    const newRules = convertRules(rules, parameters.j_0);
+    const initialParameters = { ...restParameters, pc_sm_dc: 0, start_time: 0 };
+    const { data } = await api.get('/get_sir_h_rules', {
         params: {
-            parameters: {
-                list: [initialParameters, ...timeframes],
-            },
+            parameters: initialParameters,
+            rules: { list: newRules },
         },
     });
     const I = zip([data.IR, data.IH]).map(([a, b]) => a + b);
@@ -82,8 +77,8 @@ export const SirPlusHView = () => {
     const [values, setValues] = React.useState();
 
     const handleSlidersChange = React.useCallback(async (parameters) => {
-        const response = await getModelDebounced(parameters);
-        setValues({ ...response.data, j_0: parameters.j_0 });
+        const data = await getModelDebounced(parameters);
+        setValues({ ...data, j_0: parameters.j_0 });
     }, []);
 
     return (

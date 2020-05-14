@@ -16,6 +16,7 @@ import { useTranslate } from 'react-polyglot';
 import { SelectFieldWithDate } from './SelectFieldWithDate';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import MixerConvolution from './MixerConvolution';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -249,6 +250,7 @@ const initialState = {
     rules: [
         {
             name: 'rule-1',
+            type: 'change_field',
             field: 'beta',
             value: round2digits(r0_quarantine / 9.0),
             date: new Date(2020, 2, 16),
@@ -541,6 +543,21 @@ export default function SirPlusHSliders({ onChange }) {
                             </Button>
                         </Grid>
                     </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <ExpansionPanel
+                expanded={expanded === 'panel5'}
+                onChange={handlePannelChange('panel5')}
+            >
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2bh-content"
+                    id="panel2bh-header"
+                >
+                    <Typography className={classes.heading}>Mixer Convolution</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                    <MixerConvolution />
                 </ExpansionPanelDetails>
             </ExpansionPanel>
         </div>

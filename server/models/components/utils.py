@@ -35,3 +35,13 @@ def compute_residuals(khi_tab):
     for k in range(len(khi_tab)):
         residuals.append(residuals[k] - khi_tab[k])
     return residuals
+
+
+def compute_area_and_expectation(khi_tab, residuals):
+    area = 0
+    expectations = []
+    for k in range(len(khi_tab)):
+        area += (residuals[k] + residuals[k + 1]) / 2
+        expectations.append((k + 1) * khi_tab[k])
+
+    return area, sum(expectations), sum(khi_tab)
