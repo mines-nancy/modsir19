@@ -36,12 +36,8 @@ const useStyles = makeStyles((theme) => ({
     verticalSlider: {
         height: 150,
     },
-    analysisTitle: {
-        textAlign: 'center',
-        marginBottom: 10,
-        height: 24,
-        position: 'relative',
-        top: '-15px',
+    formControl: {
+        width: '100%',
     },
 }));
 
@@ -55,7 +51,7 @@ const SelectField = ({
 
     return (
         <FormControl className={classes.formControl}>
-            <InputLabel id="select-shema-label">Schéma</InputLabel>
+            <InputLabel id="select-shema-label">{label}</InputLabel>
             <Select
                 {...props}
                 {...restInput}
@@ -151,7 +147,7 @@ const initialDms = 6;
 const initialState = {
     coefficients: Array.from({ length: initialDms }, (v, i) => (i < initialDms - 1 ? 100 : 0)),
     dms: initialDms,
-    schema: 'Libre',
+    schema: 'Personnalisé',
 };
 const MixerConvolution = ({ onChange }) => {
     const classes = useStyles();
@@ -162,7 +158,7 @@ const MixerConvolution = ({ onChange }) => {
     const [detailsOpened, setDetailsOpened] = useState(false);
 
     const handleSubmit = async ({ coefficients, dms, schema, ...rest }) => {
-        if (schema === 'Libre') {
+        if (schema === 'Personnalisé') {
             setCoefficients(coefficients);
             const response = await getKiAnalysisDebounced({
                 ki: coefficientsToKi(coefficients),
@@ -208,22 +204,17 @@ const MixerConvolution = ({ onChange }) => {
                         <div>
                             <AutoSave save={handleSubmit} debounce={200} />
                             <Grid container spacing={1}>
-                                <Grid item xs={12} className={classes.analysisTitle}>
-                                    {kiAnalysis ? (
-                                        <Typography>
-                                            Aire = {round2digits(kiAnalysis.area)} Espérance ={' '}
-                                            {round2digits(kiAnalysis.expectation)}
-                                        </Typography>
-                                    ) : (
-                                        'Calcul en cours..'
-                                    )}
-                                </Grid>
                                 <Grid item xs={3}>
                                     <Field
                                         name="schema"
                                         label="Modèle de séjour"
                                         component={SelectField}
-                                        options={['Libre', 'Retard', 'Exponentielle', 'Binomiale']}
+                                        options={[
+                                            'Personnalisé',
+                                            'Retard',
+                                            'Exponentielle',
+                                            'Binomiale',
+                                        ]}
                                     />
                                 </Grid>
                                 <Grid item xs={9}>
@@ -234,7 +225,7 @@ const MixerConvolution = ({ onChange }) => {
                                         unit=""
                                         max="21"
                                         step={0.1}
-                                        disabled={state.values.schema === 'Libre'}
+                                        disabled={state.values.schema === 'Personnalisé'}
                                     />
                                 </Grid>
                                 <Grid item xs={12} style={{ marginTop: 20 }}>
@@ -288,7 +279,17 @@ const MixerConvolution = ({ onChange }) => {
                                             aria-controls="panel1bh-content"
                                         >
                                             <Typography className={classes.heading}>
-                                                Visualisation
+                                                Visualisation (
+                                                {kiAnalysis ? (
+                                                    <span>
+                                                        Aire = {round2digits(kiAnalysis.area)}{' '}
+                                                        Espérance ={' '}
+                                                        {round2digits(kiAnalysis.expectation)}
+                                                    </span>
+                                                ) : (
+                                                    'Calcul en cours..'
+                                                )}
+                                                )
                                             </Typography>
                                         </ExpansionPanelSummary>
                                         <ExpansionPanelDetails>
