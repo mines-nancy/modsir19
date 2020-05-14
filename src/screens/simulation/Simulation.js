@@ -18,7 +18,7 @@ import { useWindowSize } from '../../utils/useWindowSize';
 import { ImportButton, ExportButton } from './ExportImport';
 import { ZoomSlider, useZoom } from './ZoomSlider';
 import ConfigurationDrawer from './configuration/ConfigurationDrawer';
-import { differenceInDays, endOfDay, startOfDay } from 'date-fns';
+import { differenceInDays, endOfDay, startOfDay, format } from 'date-fns';
 
 const getModel = async ({ rules, ...parameters }) => {
     const { data } = await api.get('/get_sir_h_rules', {
@@ -160,13 +160,9 @@ const Simulation = () => {
         max: parameters.population,
     });
 
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
+    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-    const handleSubmit = (values) => {
-        setParameters(values);
-    };
+    const handleSubmit = (values) => setParameters(values);
 
     const refreshLines = (() => {
         let refreshing = false;
@@ -220,6 +216,20 @@ const Simulation = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [JSON.stringify(parameters)]);
 
+    const handleImport = ({ version, data }) => {
+        if (version === 1) {
+            // There's no events, everything is in "data" on v1
+            setParameters(data);
+            setEvents([]); // clear events
+            return;
+        }
+
+        const { events, parameters } = data;
+
+        setEvents(events);
+        setParameters(parameters);
+    };
+
     const chartSize = windowWidth
         ? windowWidth < 1280 // lg
             ? windowWidth - 90
@@ -251,8 +261,8 @@ const Simulation = () => {
                     <Typography variant="h6" noWrap style={{ flexGrow: 1 }}>
                         Projet MODSIR19
                     </Typography>
-                    <ExportButton parameters={parameters} />
-                    <ImportButton setParameters={setParameters} />
+                    <ExportButton data={{ parameters, events }} />
+                    <ImportButton onImport={handleImport} />
                     {typeof loading !== 'undefined' && (
                         <div className={classes.loadingContainer}>
                             {loading && (
@@ -288,7 +298,6 @@ const Simulation = () => {
                     </div>
                 )}
             </main>
-
             <ConfigurationDrawer
                 mobileOpen={mobileOpen}
                 handleDrawerToggle={handleDrawerToggle}
