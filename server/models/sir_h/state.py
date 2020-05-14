@@ -82,7 +82,7 @@ class State:
         return int(self.parameter(name))
 
     def delay(self, name):
-        return int(self.parameter(name))
+        return self.parameter(name)
 
     def coefficient(self, name):
         return float(self.parameter(name))
@@ -100,16 +100,19 @@ class State:
                          'dm_sm': 'SM',
                          'dm_si': 'SI',
                          'dm_ss': 'SS'}
-        if field_name in ['dm_r', 'dm_h', 'dm_sm', 'dm_ss']:
-            self.box(box_to_update[field_name]).set_output_coefficients(
-                compute_khi_exp(self.delay(field_name)))
-        elif field_name in ['dm_incub']:
-            self.box(box_to_update[field_name]).set_output_coefficients(
-                compute_khi_delay(self.delay(field_name)))
-        elif field_name in ['dm_si']:
-            print(f'no update for: {field_name}')
+        if field_name in box_to_update:
+            if isinstance(self.delay(field_name), int) or isinstance(self.delay(field_name), float):
+                if field_name == 'dm_incub':
+                    ki = compute_khi_delay(self.delay(field_name))
+                elif field_name == 'dm_si':
+                    ki = compute_khi_binom(self.delay(field_name))
+                else:
+                    ki = compute_khi_exp(self.delay(field_name))
+            else:
+                ki = self.delay(field_name)
+            self.box(box_to_update[field_name]).set_output_coefficients(ki)
 
-        #print(f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
+        # print(f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
     def force_move(self, src, dest, value):
         if value <= 0:

@@ -5,11 +5,10 @@ from flask import Flask, jsonify, json, request
 from flask_cors import CORS, cross_origin
 import numpy as np
 
-from models.sir_h.simulator import cached_run_sir_h
+from models.sir_h.simulator import run_sir_h
 from models.rule import RuleChangeField, RuleForceMove
 from models.components.utils import compute_residuals, compute_area_and_expectation, compute_khi_delay, compute_khi_exp, compute_khi_binom
 from functools import lru_cache
-from frozendict import frozendict
 
 
 app = Flask(__name__)
@@ -21,7 +20,6 @@ def min_max(value, min_value, max_value):
     return max(min_value, min(value, max_value))
 
 
-@lru_cache(maxsize=128)
 def extract_from_parameters(parameters):
     start_time = int(parameters['start_time'])
 
@@ -38,22 +36,15 @@ def extract_from_parameters(parameters):
     filtered_parameters['population'] = min_max(
         parameters['population'], 1000, 100000000)
     filtered_parameters['lim_time'] = min_max(parameters['lim_time'], 0, 1000)
-    filtered_parameters['dm_incub'] = min_max(parameters['dm_incub'], 1, 100)
-    filtered_parameters['dm_r'] = min_max(parameters['dm_r'], 1, 100)
-    filtered_parameters['dm_h'] = min_max(parameters['dm_h'], 1, 100)
-    filtered_parameters['dm_sm'] = min_max(parameters['dm_sm'], 1, 100)
-    filtered_parameters['dm_si'] = min_max(parameters['dm_si'], 1, 100)
-    filtered_parameters['dm_ss'] = min_max(parameters['dm_ss'], 1, 100)
 
     filtered_parameters['integer_flux'] = False
-    return start_time, frozendict(filtered_parameters)
+    return start_time, filtered_parameters
 
 
-@lru_cache(maxsize=128)
 def extract_from_rules(request_rules):
     rules = []
     if len(request_rules) > 1000:
-        return tuple(rules)
+        return rules
 
     for rule in request_rules:
         date = rule['date']
@@ -67,15 +58,14 @@ def extract_from_rules(request_rules):
             dest = rule['dest']
             value = rule['value']
             rules.append(RuleForceMove(date, src, dest, value))
-    return tuple(rules)
+    return rules
 
 
-@lru_cache(maxsize=128)
 def build_rules_from_parameters(parameters_list):
     rules = []
 
     if len(parameters_list) > 100:
-        return tuple(rules)
+        return rules
 
     for index, parameters_timeframe in enumerate(parameters_list):
         if index > 0:
@@ -83,7 +73,7 @@ def build_rules_from_parameters(parameters_list):
                 parameters_timeframe)
             for key in parameters:
                 rules.append(RuleChangeField(start_time, key, parameters[key]))
-    return tuple(rules)
+    return rules
 
 # SIR+H model with timeframe
 # parameters= {list:[{start_time:xxx, population:xxx, patient0:xxx, ...}]}
@@ -92,13 +82,12 @@ def build_rules_from_parameters(parameters_list):
 def get_sir_h_timeframe():
     request_parameters = json.loads(request.args.get('parameters'))
     # print('get_sir_h_timeframe parameters', request_parameters)
-    parameters_list = tuple([frozendict(d)
-                             for d in request_parameters['list']])
+    parameters_list = request_parameters['list']
 
     rules = build_rules_from_parameters(parameters_list)
     start_time, parameters = extract_from_parameters(parameters_list[0])
 
-    lists = cached_run_sir_h(parameters, rules)
+    lists = run_sir_h(parameters, rules)
     return jsonify(lists)
 
 # SIR+H model with rules
@@ -111,14 +100,12 @@ def get_sir_h_rules():
     print(
         f'request_parameters={request_parameters} request_rules={request_rules}')
 
-    start_time, parameters = extract_from_parameters(
-        frozendict(request_parameters))
-    rules = extract_from_rules(
-        tuple([frozendict(rule) for rule in request_rules['list']]))
+    start_time, parameters = extract_from_parameters(request_parameters)
+    rules = extract_from_rules(request_rules['list'])
 
     print(f'parameters={parameters} rules={rules}')
 
-    lists = cached_run_sir_h(parameters, rules)
+    lists = run_sir_h(parameters, rules)
     return jsonify(lists)
 
 
