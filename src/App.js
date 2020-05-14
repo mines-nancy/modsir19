@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { I18n } from 'react-polyglot';
+import 'custom-event-polyfill';
 
 import messages from './i18n/messages';
 import ProHome from './screens/pro/Home';

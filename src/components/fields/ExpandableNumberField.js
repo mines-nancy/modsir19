@@ -6,7 +6,6 @@ import {
     makeStyles,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import 'custom-event-polyfill';
 
 import NumberField from './NumberField';
 
