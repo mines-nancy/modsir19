@@ -23,6 +23,7 @@ import { parametersEditableInEvents } from '../../../parameters.json';
 import ProportionField from '../../../components/fields/ProportionField';
 import { SwitchPercentField } from '../../../components/fields/SwitchPercentField';
 import DurationField from '../../../components/fields/DurationField';
+import MixerConvolution from '../../../components/sirPlusH/MixerConvolution';
 
 const useStyles = makeStyles((theme) => ({
     stepIcon: {
@@ -98,6 +99,14 @@ export const getControlField = (change, date, classes) => {
                 rightColor={pcAttributes[rightName].color}
                 pieMode={false}
             />
+        );
+    }
+
+    if (change === 'dm_incub') {
+        return (
+            <Field name={`${baseName}_${change}`}>
+                {({ input }) => <MixerConvolution onChange={input.onChange} />}
+            </Field>
         );
     }
 
@@ -192,7 +201,6 @@ const Event = ({ event, onDelete, onRename }) => {
 
         if (input) {
             input.focus();
-
             input.addEventListener('keydown', handleKeyPress);
         }
 
