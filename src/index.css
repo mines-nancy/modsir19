@@ -39,3 +39,8 @@ code {
 .c3-area {
   opacity: 0.5!important;
 }
+
+/* Fix leader line height on IE11 */
+svg.leader-line {
+  overflow: hidden !important;
+}
