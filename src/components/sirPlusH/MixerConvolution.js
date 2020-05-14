@@ -212,8 +212,8 @@ const MixerConvolution = ({ onChange }) => {
                                         options={[
                                             'Personnalisé',
                                             'Retard',
-                                            'Exponentielle',
-                                            'Binomiale',
+                                            'Exponentiel',
+                                            'Binomial',
                                         ]}
                                     />
                                 </Grid>
