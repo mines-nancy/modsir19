@@ -19,9 +19,10 @@ import {
     IconButton,
 } from '@material-ui/core';
 
-import ProportionField from '../../../components/fields/ProportionField';
 import { parametersEditableInEvents } from '../../../parameters.json';
+import ProportionField from '../../../components/fields/ProportionField';
 import { SwitchPercentField } from '../../../components/fields/SwitchPercentField';
+import DurationField from '../../../components/fields/DurationField';
 
 const useStyles = makeStyles((theme) => ({
     stepIcon: {
@@ -100,6 +101,10 @@ export const getControlField = (change, date, classes) => {
         );
     }
 
+    if (change.startsWith('dm_')) {
+        return <Field name={`${baseName}_${change}`} component={DurationField} />;
+    }
+
     return null;
 };
 
@@ -111,6 +116,12 @@ export const availableParameters = [
     'pcswitch_pc_sm_out-pc_sm_dc',
     'pcswitch_pc_si_dc-pc_si_out',
     'pcswitch_pc_h_r-pc_h_ss',
+    'dm_incub',
+    'dm_r',
+    'dm_h',
+    'dm_sm',
+    'dm_si',
+    'dm_ss',
 ];
 
 const StepIcon = () => {
