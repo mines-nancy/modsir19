@@ -119,7 +119,7 @@ const ConfigurationDrawer = forwardRef(
     ) => {
         const classes = useStyles();
         const theme = useTheme();
-        const small = useMediaQuery(theme.breakpoints.down('sm'));
+        const small = useMediaQuery(theme.breakpoints.down('md'));
 
         return (
             <aside className={classes.drawer}>
