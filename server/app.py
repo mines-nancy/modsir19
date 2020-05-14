@@ -15,6 +15,10 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+def min_max(value, min_value, max_value):
+    return max(min_value, min(value, max_value))
+
+
 @lru_cache(maxsize=128)
 def extract_from_parameters(parameters):
     start_time = int(parameters['start_time'])
@@ -28,14 +32,27 @@ def extract_from_parameters(parameters):
                        'pc_si_dc', 'pc_si_out',
                        'pc_h_ss', 'pc_h_r']
 
-    parameters = {key: parameters[key] for key in parameters_name}
-    parameters['integer_flux'] = False
-    return start_time, frozendict(parameters)
+    filtered_parameters = {key: parameters[key] for key in parameters_name}
+    filtered_parameters['population'] = min_max(
+        parameters['population'], 1000, 100000000)
+    filtered_parameters['lim_time'] = min_max(parameters['lim_time'], 0, 1000)
+    filtered_parameters['dm_incub'] = min_max(parameters['dm_incub'], 1, 100)
+    filtered_parameters['dm_r'] = min_max(parameters['dm_r'], 1, 100)
+    filtered_parameters['dm_h'] = min_max(parameters['dm_h'], 1, 100)
+    filtered_parameters['dm_sm'] = min_max(parameters['dm_sm'], 1, 100)
+    filtered_parameters['dm_si'] = min_max(parameters['dm_si'], 1, 100)
+    filtered_parameters['dm_ss'] = min_max(parameters['dm_ss'], 1, 100)
+
+    filtered_parameters['integer_flux'] = False
+    return start_time, frozendict(filtered_parameters)
 
 
 @lru_cache(maxsize=128)
 def extract_from_rules(request_rules):
     rules = []
+    if len(request_rules) > 1000:
+        return tuple(rules)
+
     for rule in request_rules:
         date = rule['date']
         ruletype = rule['type']
@@ -54,6 +71,10 @@ def extract_from_rules(request_rules):
 @lru_cache(maxsize=128)
 def build_rules_from_parameters(parameters_list):
     rules = []
+
+    if len(parameters_list) > 100:
+        return tuple(rules)
+
     for index, parameters_timeframe in enumerate(parameters_list):
         if index > 0:
             start_time, parameters = extract_from_parameters(
