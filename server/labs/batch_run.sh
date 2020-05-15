@@ -39,9 +39,9 @@ done
 
 convert -delay 200,1000 $(find "${out_path}" -name \*.png | sort) "${out_path}/demo.gif"
 
-cp -- "$(find "${out_path}" -name \*_prediction_\*csv | sort | head -1)" "${out_path}/predictions.csv"
+cp -- "$(find "${out_path}" -name \*prediction_\*csv | sort | head -1)" "${out_path}/predictions.csv"
 
-for f in $(find "${out_path}" -name \*_prediction_\*csv | sort); do
+for f in $(find "${out_path}" -name \*prediction_\*csv | sort); do
   cut "${f}" -d , -f 4,5 | paste "${out_path}/predictions.csv" - -d, > "${out_path}/tmp_predictions.csv"
   mv "${out_path}/tmp_predictions.csv" "${out_path}/predictions.csv"
 done
