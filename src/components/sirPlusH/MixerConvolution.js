@@ -186,7 +186,7 @@ const MixerConvolution = ({ onChange }) => {
         if (coefficients) {
             onChange(coefficientsToKi(coefficients));
         }
-    }, [JSON.stringify(coefficients), onChange]);
+    }, [JSON.stringify(coefficients)]);
 
     return (
         <div>
