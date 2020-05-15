@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # The code on gaussian processes gas been adapted from Imperial College's CO493
 # "Probabilistic Inference" lead by Dr. Mark Van der Wilk
+"""
+    Authors: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+             Paul Festor
 
-""" Invoke as python -m labs.gaussian_process.gp_in_practice [options] from the server directory to run the simulator
+    Invoke as python -m labs.gaussian_process.gp_in_practice [options] from the server directory to run the simulator
 """
 
 import matplotlib.pyplot as plt
@@ -20,60 +23,38 @@ from bisect import bisect
 from labs.defaults import get_default_params
 
 '''
-    Fonction d'interpolation linéaire.parameters
-
-    xs : ordonnées dont on souhaite approximer la valoeur
-    array : liste de points de référence
-'''
-
-
-def continuous_from_array(xs: np.ndarray, array: [float]) -> np.ndarray:
-    interpolation = list()
-
-    for x in list(xs.flatten()):
-        x -= decalage
-        x_idx = int(x)
-        if x_idx >= len(array) - 1:
-            interpolation.append(array[-1] + (array[-1] - array[-2]) * (x - len(array) + 1))
-        elif x_idx < 0:
-            interpolation.append(array[0] + (array[1] - array[0]) * x)
-        else:
-            lhs = array[x_idx]
-            rhs = array[x_idx + 1]
-            interpolation.append(lhs + (rhs - lhs) * (x - x_idx))
-
-    return np.array(interpolation).reshape(-1, 1)
-
-
-'''
-    Fonction d'interpolation linéaire.parameters
+    Fonction d'interpolation linéaire
 
     xs : ordonnées dont on souhaite approximer la valeur
-    array : liste de points de référence sous forme de tuples (x,y) triée de façon croissante selon x
+    array : liste de points de référence [x,y] sous forme de vecteur numpy triée de façon croissante selon x
 '''
 
+def continuous_from_array_opt(xs: np.ndarray, data: np.ndarray) -> np.ndarray:
+    """ @TODO currently np.interpolate expands as constant value beyond boundaries, to be changed to continue
+        linear interpolation """
+    return np.interp(xs, data[:, 0], data[:, 1]).reshape(-1, 1)
 
-def continuous_from_array_2D(xs: np.ndarray, data: [(float, float)]) -> np.ndarray:
+def continuous_from_array(xs: np.ndarray, data: np.ndarray) -> np.ndarray:
     interpolation = list()
 
     for x in list(xs.flatten()):
-        x_idx = bisect(data, (x, 0))
+        x_idx = bisect(data[:,0], x)
         # print("2D (x,x_idx) ",x,x_idx)
         if x_idx >= len(data) - 1:
-            lhs = data[-2][1]
-            rhs = data[-1][1]
-            interpolation.append(lhs + (rhs - lhs) * (x - data[-2][0]) / (data[-1][0] - data[-2][0]))
+            lhs = data[-2,1]
+            rhs = data[-1,1]
+            interpolation.append(lhs + (rhs - lhs) * (x - data[-2,0]) / (data[-1,0] - data[-2,0]))
         elif x_idx <= 0:
-            lhs = data[0][1]
-            rhs = data[1][1]
-            interpolation.append(lhs + (rhs - lhs) * (x - data[1][0]) / (data[0][0] - data[1][0]))
+            lhs = data[0,1]
+            rhs = data[1,1]
+            interpolation.append(lhs + (rhs - lhs) * (x - data[1,0]) / (data[0,0] - data[1,0]))
         else:
-            lhs = data[x_idx - 1][1]
-            rhs = data[x_idx][1]
+            lhs = data[x_idx - 1,1]
+            rhs = data[x_idx,1]
             # v = lhs + (rhs - lhs)*(x - data[x_idx][0])/(data[x_idx+1][0] - data[x_idx][0])
             # v = lhs + (rhs - lhs)*(x - data[x_idx-1][0])/(data[x_idx-1][0] - data[x_idx][0])
             # print("2D ", lhs, v, rhs)
-            interpolation.append(lhs + (rhs - lhs) * (x - data[x_idx - 1][0]) / (data[x_idx][0] - data[x_idx - 1][0]))
+            interpolation.append(lhs + (rhs - lhs) * (x - data[x_idx - 1,0]) / (data[x_idx,0] - data[x_idx - 1,0]))
 
     return np.array(interpolation).reshape(-1, 1)
 
@@ -113,7 +94,8 @@ if __name__ == '__main__':
         if not os.path.exists(outputdir):
             os.mkdir(outputdir)
 
-        timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
+        # timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
+        timestamp = ''
 
         if args.save:
             basename = outputdir + timestamp + args.save
@@ -156,8 +138,6 @@ if __name__ == '__main__':
     read_prior_values = None
     if args.prior:
         read_prior_values = pd.read_csv(args.prior[0], sep=',').to_numpy()
-        read_prior_values = list(map(tuple, read_prior_values))
-        read_prior_values.sort()
         prior_values = read_prior_values
     else:
         decalage = 47
@@ -185,13 +165,15 @@ if __name__ == '__main__':
                                 139.4514863496153,
                                 136.0747885821544, 132.712614060573, 129.3761574889298, 126.07466307459195,
                                 122.81569592779188]
-        prior_values = [(x, y) for (x, y) in
-                        zip(range(0 + decalage, len(default_prior_values) + decalage), default_prior_values)]
+        prior_values = np.array([[x, y] for (x, y) in
+                        zip(range(0 + decalage, len(default_prior_values) + decalage), default_prior_values)]).reshape([-1, 2])
 
-    prior_mean_2D = lambda x: continuous_from_array_2D(x, prior_values)
+    prior_mean_2D = lambda x: continuous_from_array(x, prior_values)
 
-    gp = GaussianProcess(kernel, target_x_train, target_y_train, prior_mean=(lambda x: x))
-    gp.prior_mean = lambda x: continuous_from_array_2D(x, prior_values)
+    # gp = GaussianProcess(kernel, target_x_train, target_y_train, prior_mean=(lambda x: x))
+    gp = GaussianProcess(kernel, target_x_train, target_y_train, prior_mean=(lambda x: continuous_from_array(x, prior_values)))
+
+    gp.prior_mean = lambda x: continuous_from_array(x, prior_values)
     opt_params = gp.optimise_parameters().x
     gp.set_kernel_parameters(*opt_params)
 

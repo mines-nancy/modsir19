@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+    Author: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+
+"""
+
 from typing import Dict
 from models.rule import RuleChangeField
 
@@ -16,9 +22,9 @@ class ModelParameters:
     def __init__(self):
         dm_r = 9
 
-        r0 = 2.85
-        r0_confinement = 0.532
-        r0_deconfinement = 0.9
+        r0 = 3.0
+        r0_confinement = 0.6 # lockdown_r0 dans parameters.json du front
+        r0_deconfinement = 1.4 # deconfinement_r0 dans le parameters.json du front
 
         self._day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
         t_confinement = 75 - self._day0  # 16/03/2020 -> 01/01 + 75
@@ -29,7 +35,7 @@ class ModelParameters:
         pc_sm_si = 0.207
 
         self._parameters = dict({'population': 1000000,
-                                 'patient0': 40,
+                                 'patient0': 15,
                                  'lim_time': 250,
                                  'r': 1.0,
                                  'time': [t_confinement, t_deconfinement],
@@ -47,7 +53,7 @@ class ModelParameters:
                                  'pc_h_ss': 0.2, 'pc_h_r': 0.8,
                                  'integer_flux': False})
 
-        # number of days since 01/01/2020 -> number of residents in SI
+        # number of days since 01/01/2020 -> number of residents in SI ("corrected values" by 1.5 factor)
         self._data_chu_rea = {46: 1.5, 47: None, 48: None, 49: None,
                               50: None, 51: None, 52: None, 53: 1.5, 54: 1.5,
                               55: 1.5, 56: 1.5, 57: 1.5, 58: 1.5, 59: 3,

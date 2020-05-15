@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+"""
+    Author: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+
+"""
+
 import unittest
 from tempfile import NamedTemporaryFile
 from os import remove

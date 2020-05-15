@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-""" This is mainly demo code showing how to invoke the MODSIR19 simulator with
+"""
+    Author: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+
+    This is mainly demo code showing how to invoke the MODSIR19 simulator with
     default parameters
     python -m labs.run_simulator [options] from the server directory to run the simulator
 """
@@ -25,7 +28,11 @@ if __name__ == "__main__":
                         help='pathname to parameter set (JSON)')
 
     data_choice_options = ['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC']
-    data_choice_options += ['input_' + s for s in data_choice_options]
+    data_choice_options_input = ['input_' + s for s in data_choice_options]
+    data_choice_options_output = ['output_' + s for s in data_choice_options]
+    data_choice_options += data_choice_options_input
+    data_choice_options += data_choice_options_output
+
     parser.add_argument('-o', metavar='curve', choices=data_choice_options, nargs='+', default=['SI'],
                         help=f'list of curve identifiers to output (in  {data_choice_options})')
 
