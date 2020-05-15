@@ -19,7 +19,7 @@ measures="labs/data/Entrees_Rea_mai_corrige_avg.csv"
 variables="labs/data/default_opt_variables.json"
 model="disc"
 algo="least-squares"
-steps=20
+steps=1
 
 for i in $(seq 5 ${steps} 55);
 do
