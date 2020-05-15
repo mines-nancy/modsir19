@@ -35,12 +35,12 @@ const useStyles = makeStyles((theme) => ({
     card: {
         backgroundColor: '#eee',
         maxWidth: '100%',
-        maxHeight: '100%',
+        maxHeight: '100vh',
         overflowY: 'scroll',
         [theme.breakpoints.up('md')]: {
             minWidth: 600,
             maxWidth: 800,
-            maxHeight: '90%',
+            maxHeight: '90vh',
             padding: theme.spacing(1),
         },
     },
