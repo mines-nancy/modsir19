@@ -146,9 +146,9 @@ def get_ki_from_schema():
     print(f'duration={duration} max={max_days}')
     if schema == 'Retard':
         ki = compute_khi_delay(int(duration))
-    elif schema == 'Exponentielle':
+    elif schema == 'Exponentiel':
         ki = compute_khi_exp(duration, max_days)
-    elif schema == 'Binomiale':
+    elif schema == 'Binomial':
         ki = compute_khi_binom(duration, max_days)
     else:
         ki = max_days*[0]

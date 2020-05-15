@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
+
 import {
     IconButton,
-    createStyles,
     makeStyles,
     Typography,
     FormControl,
     InputLabel,
     Select,
     MenuItem,
+    Grid,
+    ExpansionPanel,
+    ExpansionPanelSummary,
+    ExpansionPanelDetails,
 } from '@material-ui/core';
+
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import RemoveCoefficient from '@material-ui/icons/RemoveOutlined';
 import AddCoefficient from '@material-ui/icons/AddOutlined';
 
@@ -24,14 +30,16 @@ import VerticalProportionField from './VerticalProportionField';
 import ProportionField from '../fields/ProportionField';
 import AutoSave from '../fields/AutoSave';
 import api from '../../api';
+import { useEffect } from 'react';
 
-const useStyles = makeStyles((theme) =>
-    createStyles({
-        verticalSlider: {
-            height: 200,
-        },
-    }),
-);
+const useStyles = makeStyles((theme) => ({
+    verticalSlider: {
+        height: 150,
+    },
+    formControl: {
+        width: '100%',
+    },
+}));
 
 const SelectField = ({
     label,
@@ -43,7 +51,7 @@ const SelectField = ({
 
     return (
         <FormControl className={classes.formControl}>
-            <InputLabel id="select-shema-label">Schéma</InputLabel>
+            <InputLabel id="select-shema-label">{label}</InputLabel>
             <Select
                 {...props}
                 {...restInput}
@@ -139,7 +147,7 @@ const initialDms = 6;
 const initialState = {
     coefficients: Array.from({ length: initialDms }, (v, i) => (i < initialDms - 1 ? 100 : 0)),
     dms: initialDms,
-    schema: 'Libre',
+    schema: 'Personnalisé',
 };
 const MixerConvolution = ({ onChange }) => {
     const classes = useStyles();
@@ -147,9 +155,10 @@ const MixerConvolution = ({ onChange }) => {
     const [initialValues, setInitialValues] = useState(initialState);
     const [coefficients, setCoefficients] = useState();
     const [kiAnalysis, setKiAnalysis] = useState();
+    const [detailsOpened, setDetailsOpened] = useState(false);
 
     const handleSubmit = async ({ coefficients, dms, schema, ...rest }) => {
-        if (schema === 'Libre') {
+        if (schema === 'Personnalisé') {
             setCoefficients(coefficients);
             const response = await getKiAnalysisDebounced({
                 ki: coefficientsToKi(coefficients),
@@ -171,6 +180,14 @@ const MixerConvolution = ({ onChange }) => {
         }
     };
 
+    const toggleDetails = () => setDetailsOpened((opened) => !opened);
+
+    useEffect(() => {
+        if (coefficients) {
+            onChange(coefficients);
+        }
+    }, [JSON.stringify(coefficients)]);
+
     return (
         <div>
             <Form
@@ -184,73 +201,114 @@ const MixerConvolution = ({ onChange }) => {
                 render={({ form }) => {
                     const state = form.getState();
                     return (
-                        <div className={classes.form}>
+                        <div>
                             <AutoSave save={handleSubmit} debounce={200} />
-                            <FieldArray name="coefficients">
-                                {({ fields }) => {
-                                    return (
-                                        <>
-                                            <div className={classes.verticalSlider}>
-                                                {fields.map((v, i) => (
-                                                    <Field
-                                                        name={`coefficients[${i}]`}
-                                                        component={VerticalProportionField}
-                                                        unit=""
-                                                        valueLabelDisplay="auto"
-                                                        orientation="vertical"
-                                                    />
-                                                ))}
+                            <Grid container spacing={1}>
+                                <Grid item xs={3}>
+                                    <Field
+                                        name="schema"
+                                        label="Modèle de séjour"
+                                        component={SelectField}
+                                        options={[
+                                            'Personnalisé',
+                                            'Retard',
+                                            'Exponentiel',
+                                            'Binomial',
+                                        ]}
+                                    />
+                                </Grid>
+                                <Grid item xs={9}>
+                                    <Field
+                                        name="dms"
+                                        label="Durée moyenne de séjour"
+                                        component={ProportionField}
+                                        unit=""
+                                        max="21"
+                                        step={0.1}
+                                        disabled={state.values.schema === 'Personnalisé'}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} style={{ marginTop: 20 }}>
+                                    <FieldArray name="coefficients">
+                                        {({ fields }) => {
+                                            return (
+                                                <>
+                                                    <div className={classes.verticalSlider}>
+                                                        {fields.map((v, i) => (
+                                                            <Field
+                                                                name={`coefficients[${i}]`}
+                                                                component={VerticalProportionField}
+                                                                unit=""
+                                                                valueLabelDisplay="auto"
+                                                                orientation="vertical"
+                                                                style={{ padding: '0 11px' }}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                    <div>
+                                                        <IconButton
+                                                            aria-label="delete"
+                                                            color="primary"
+                                                            disabled={fields.length <= 1}
+                                                            onClick={() => fields.pop()}
+                                                        >
+                                                            <RemoveCoefficient />
+                                                        </IconButton>
+                                                        <IconButton
+                                                            aria-label="add"
+                                                            color="primary"
+                                                            disabled={fields.length >= 21}
+                                                            onClick={() => fields.push(0)}
+                                                        >
+                                                            <AddCoefficient />
+                                                        </IconButton>
+                                                    </div>
+                                                </>
+                                            );
+                                        }}
+                                    </FieldArray>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <ExpansionPanel
+                                        expanded={detailsOpened}
+                                        onChange={toggleDetails}
+                                        elevation={1}
+                                    >
+                                        <ExpansionPanelSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1bh-content"
+                                        >
+                                            <Typography className={classes.heading}>
+                                                Visualisation (
+                                                {kiAnalysis ? (
+                                                    <span>
+                                                        Aire = {round2digits(kiAnalysis.area)}{' '}
+                                                        Espérance ={' '}
+                                                        {round2digits(kiAnalysis.expectation)}
+                                                    </span>
+                                                ) : (
+                                                    'Calcul en cours..'
+                                                )}
+                                                )
+                                            </Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails>
+                                            <div style={{ width: 450, height: 250 }}>
+                                                <Bar
+                                                    data={data({ values: coefficients })}
+                                                    width={450}
+                                                    height={250}
+                                                    options={options}
+                                                />
                                             </div>
-                                            <div>
-                                                <IconButton
-                                                    aria-label="delete"
-                                                    color="primary"
-                                                    disabled={fields.length <= 1}
-                                                    onClick={() => fields.pop()}
-                                                >
-                                                    <RemoveCoefficient />
-                                                </IconButton>
-                                                <IconButton
-                                                    aria-label="add"
-                                                    color="primary"
-                                                    disabled={fields.length >= 21}
-                                                    onClick={() => fields.push(0)}
-                                                >
-                                                    <AddCoefficient />
-                                                </IconButton>
-                                            </div>
-                                        </>
-                                    );
-                                }}
-                            </FieldArray>
-
-                            <Field
-                                name="dms"
-                                label="Durée moyenne de séjour"
-                                component={ProportionField}
-                                unit=""
-                                max="21"
-                                step={0.1}
-                                disabled={state.values.schema === 'Libre'}
-                            />
-                            <Field
-                                name="schema"
-                                label="Modèle de séjour"
-                                component={SelectField}
-                                options={['Libre', 'Retard', 'Exponentielle', 'Binomiale']}
-                            />
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                </Grid>
+                            </Grid>
                         </div>
                     );
                 }}
             />
-
-            <Bar data={data({ values: coefficients })} width="300" height="300" options={options} />
-            {kiAnalysis && (
-                <Typography>
-                    Aire = {round2digits(kiAnalysis.area)} Espérance ={' '}
-                    {round2digits(kiAnalysis.expectation)}
-                </Typography>
-            )}
         </div>
     );
 };
