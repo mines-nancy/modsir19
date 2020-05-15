@@ -101,18 +101,18 @@ class State:
                          'dm_si': 'SI',
                          'dm_ss': 'SS'}
         if field_name in box_to_update:
-            if isinstance(self.delay(field_name), int) or isinstance(self.delay(field_name), float):
+            if isinstance(value, int) or isinstance(value, float):
                 if field_name == 'dm_incub':
-                    ki = compute_khi_delay(self.delay(field_name))
+                    ki = compute_khi_delay(value)
                 elif field_name == 'dm_si':
-                    ki = compute_khi_binom(self.delay(field_name))
+                    ki = compute_khi_binom(value)
                 else:
-                    ki = compute_khi_exp(self.delay(field_name))
-            else:
-                ki = self.delay(field_name)
+                    ki = compute_khi_exp(value)
+            elif isinstance(value, list):
+                ki = value
             self.box(box_to_update[field_name]).set_output_coefficients(ki)
 
-        # print(f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
+        # print( f'time = {self.time} new coeff {field_name} = {value} type={type(value)}')
 
     def force_move(self, src, dest, value):
         if value <= 0:

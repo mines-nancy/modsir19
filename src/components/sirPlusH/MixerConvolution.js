@@ -184,9 +184,9 @@ const MixerConvolution = ({ onChange }) => {
 
     useEffect(() => {
         if (coefficients) {
-            onChange(coefficients);
+            onChange(coefficientsToKi(coefficients));
         }
-    }, [JSON.stringify(coefficients)]);
+    }, [JSON.stringify(coefficients), onChange]);
 
     return (
         <div>

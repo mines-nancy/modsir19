@@ -20,24 +20,58 @@ def min_max(value, min_value, max_value):
     return max(min_value, min(value, max_value))
 
 
+def normalize_field(field_name, value):
+    pc_name = ['pc_ir', 'pc_ih',
+               'pc_sm', 'pc_si',
+               'pc_sm_si', 'pc_sm_dc', 'pc_sm_out',
+               'pc_si_dc', 'pc_si_out',
+               'pc_h_ss', 'pc_h_r']
+
+    dm_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
+
+    if isinstance(value, list):
+        return value
+
+    if isinstance(value, str):
+        value = float(value)
+
+    if field_name == 'population':
+        return int(min_max(value, 1000, 10000000))
+    elif field_name == 'patient0':
+        return int(min_max(value, 1, 1000))
+    elif field_name == 'lim_time':
+        return int(min_max(value, 1, 1000))
+    elif field_name == 'kpe':
+        return float(min_max(value, 0, 1))
+    elif field_name == 'beta':
+        return float(min_max(value, 0, 5))
+    elif field_name == 'r':
+        return float(min_max(value, 0, 5))
+    elif field_name in dm_name:
+        return float(min_max(value, 1, 40))
+    elif field_name in pc_name:
+        return float(min_max(value, 0, 1))
+
+
 def extract_from_parameters(parameters):
     start_time = int(parameters['start_time'])
 
-    parameters_name = ["population", "patient0", "lim_time",
-                       'dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss',
-                       'kpe', 'r', 'beta',
-                       'pc_ir', 'pc_ih',
-                       'pc_sm', 'pc_si',
-                       'pc_sm_si', 'pc_sm_dc', 'pc_sm_out',
-                       'pc_si_dc', 'pc_si_out',
-                       'pc_h_ss', 'pc_h_r']
+    pc_name = ['pc_ir', 'pc_ih',
+               'pc_sm', 'pc_si',
+               'pc_sm_si', 'pc_sm_dc', 'pc_sm_out',
+               'pc_si_dc', 'pc_si_out',
+               'pc_h_ss', 'pc_h_r']
 
-    filtered_parameters = {key: parameters[key] for key in parameters_name}
-    filtered_parameters['population'] = min_max(
-        parameters['population'], 1000, 100000000)
-    filtered_parameters['lim_time'] = min_max(parameters['lim_time'], 0, 1000)
+    dm_name = ['dm_incub', 'dm_r', 'dm_h', 'dm_sm', 'dm_si', 'dm_ss']
+    parameters_name = ['population', 'patient0', 'lim_time',
+                       'kpe', 'r', 'beta'] + dm_name + pc_name
+
+    filtered_parameters = {key: normalize_field(
+        key, parameters[key]) for key in parameters_name}
 
     filtered_parameters['integer_flux'] = False
+
+    print(f'filtered parameters={filtered_parameters}')
     return start_time, filtered_parameters
 
 
@@ -49,15 +83,17 @@ def extract_from_rules(request_rules):
     for rule in request_rules:
         date = rule['date']
         ruletype = rule['type']
+        value = rule['value']
         if ruletype == 'change_field':
             field = rule['field']
-            value = rule['value']
+            value = normalize_field(field, value)
             rules.append(RuleChangeField(date, field, value))
         elif ruletype == 'force_move':
             src = rule['src']
             dest = rule['dest']
-            value = rule['value']
+            value = int(value) if isinstance(value, str) else value
             rules.append(RuleForceMove(date, src, dest, value))
+    print(f'rules={rules}')
     return rules
 
 
@@ -103,8 +139,6 @@ def get_sir_h_rules():
     start_time, parameters = extract_from_parameters(request_parameters)
     rules = extract_from_rules(request_rules['list'])
 
-    print(f'parameters={parameters} rules={rules}')
-
     lists = run_sir_h(parameters, rules)
     return jsonify(lists)
 
@@ -124,13 +158,13 @@ def get_ki_analysis():
 @app.route('/get_ki_from_schema', methods=["GET"])
 def get_ki_from_schema():
     request_parameters = json.loads(request.args.get('parameters'))
-    print(f'request_parameters={request_parameters}')
+    # print(f'request_parameters={request_parameters}')
 
     schema = request_parameters['schema']
     duration = request_parameters['duration']
     max_days = request_parameters['max_days']
 
-    print(f'duration={duration} max={max_days}')
+    # print(f'duration={duration} max={max_days}')
     if schema == 'Retard':
         ki = compute_khi_delay(int(duration))
     elif schema == 'Exponentiel':
