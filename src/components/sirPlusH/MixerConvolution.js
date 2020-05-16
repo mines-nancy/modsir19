@@ -1,3 +1,7 @@
+/**
+ * @author Pierre-Etienne Moreau
+ * @email Pierre-Etienne.Moreau@univ-lorraine.fr
+ */
 import React, { useState } from 'react';
 
 import {
