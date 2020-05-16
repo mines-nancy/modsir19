@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-""" Invoke as python -m labs.model_fit.optimise [options] from the server directory to run the simulator
+"""
+    Authors: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+             Paul Festor
+             Romain Pajda
+
+    Invoke as python -m labs.model_fit.optimise [options] from the server directory to run the simulator
 """
 import re
 from typing import Dict
@@ -89,7 +94,10 @@ if __name__ == "__main__":
                         help='input file containing measured parameters (CSV format)')
 
     data_choice_options = ['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC']
-    data_choice_options += ['input_' + s for s in data_choice_options]
+    data_choice_options_input = ['input_' + s for s in data_choice_options]
+    data_choice_options_output = ['output_' + s for s in data_choice_options]
+    data_choice_options += data_choice_options_input
+    data_choice_options += data_choice_options_output
 
     parser.add_argument('-d', '--data', metavar='data',
                         choices=data_choice_options, nargs=1, default=['SI'],
@@ -163,7 +171,8 @@ if __name__ == "__main__":
         if not os.path.exists(outputdir):
             mkdir(outputdir)
 
-        timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
+        # timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
+        timestamp=''
 
         if args.save:
             basename = outputdir + timestamp + args.save
@@ -197,15 +206,17 @@ if __name__ == "__main__":
     if args.variables:
         with open(args.variables[0]) as json_file:
             opt_variables = json.load(json_file)
-            json_file.close()
-        params_init_min_max = opt_variables
+
+        params_init_min_max = dict()
+        for k,v in opt_variables.items():
+            params_init_min_max[k] = tuple(v)
     else:
-        params_init_min_max = {"beta": (3.31 / 9, 2.0 / 9, 5.0 / 9),
-                               "beta_post": (0.4 / 9, 0.1 / 9, 2.0 / 9),
-                               "patient0": (40, 1, 100),
-                               "dm_r": (9, 6, 21),
-                               "dm_incub": (4, 5, 7),
-                               # "m_factor": (1.0, 0.8, 1.2)
+        params_init_min_max = {"beta": (3.0 / 9, 2.0 / 9, 5.0 / 9),
+                               "beta_post": (0.6 / 9, 0.1 / 9, 2.0 / 9),
+                               "patient0": (15, 1, 50),
+                               # "dm_r": (9, 6, 21),
+                               "dm_incub": (4, 3, 7),
+                               "m_factor": (1.0, 0.1, 2)
                                }  # form: {parameter: (initial guess, minimum value, max value)}
 
     ''' @TODO we are currently assuming x_data goes by integer increments/values. This need not be true '''

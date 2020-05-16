@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+#
+# Author: Paul Festor
+#
 # The code on gaussian processes gas been adapted from Imperial College's CO493
-# "Probabilistic Inferrence" lead by Dr. Mark Van der Wilk
+# "Probabilistic Inference" lead by Dr. Mark Van der Wilk
 
 from typing import Tuple
 
@@ -10,7 +13,7 @@ import scipy.optimize
 from scipy.stats import norm, multivariate_normal
 
 from .kernels.abstract_kernel import Kernel
-#from objective_functions.abstract_objective_function import ObjectiveFunction
+# from objective_functions.abstract_objective_function import ObjectiveFunction
 
 
 class GaussianProcess(object):

@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+    Author: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+
+"""
+
 import filecmp
 import os
 import subprocess

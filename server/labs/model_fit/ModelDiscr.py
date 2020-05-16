@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-''' SIR+H model based on discrete transitional states '''
+"""
+    Author: Bart.Lamiroy@univ-lorraine.fr
+
+    SIR+H model based on discrete transitional states
+"""
 from typing import Dict, List
 
 import numpy as np

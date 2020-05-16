@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-# The code on gaussian processes gas been adapted from Imperial College's CO493
-# "Probabilistic Inference" lead by Dr. Mark Van der Wilk
-"""
-    Authors: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
-             Paul Festor
 
-    Invoke as python -m labs.gaussian_process.gp_in_practice [options] from the server directory to run the simulator
+""" Invoke as python -m labs.gaussian_process.skikit_gp [options] from the server directory to run the simulator
 """
 
+import time
 import matplotlib.pyplot as plt
 import numpy as np
 
 from .gaussian_process import GaussianProcess
 from .kernels.gaussian_kernel import GaussianKernel
+
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import DotProduct, WhiteKernel, RBF, RationalQuadratic
 
 import argparse
 import os.path
@@ -23,38 +22,46 @@ from bisect import bisect
 from labs.defaults import get_default_params
 
 '''
-    Fonction d'interpolation linéaire
+    Fonction d'interpolation linéaire.parameters
 
-    xs : ordonnées dont on souhaite approximer la valeur
-    array : liste de points de référence [x,y] sous forme de vecteur numpy triée de façon croissante selon x
+    xs : ordonnées dont on souhaite approximer la valoeur
+    array : liste de points de référence
 '''
 
-def continuous_from_array_opt(xs: np.ndarray, data: np.ndarray) -> np.ndarray:
-    """ @TODO currently np.interpolate expands as constant value beyond boundaries, to be changed to continue
-        linear interpolation """
-    return np.interp(xs, data[:, 0], data[:, 1]).reshape(-1, 1)
 
 def continuous_from_array(xs: np.ndarray, data: np.ndarray) -> np.ndarray:
+    return np.interp(xs, data[:, 0], data[:, 1])
+
+
+'''
+    Fonction d'interpolation linéaire.parameters
+
+    xs : ordonnées dont on souhaite approximer la valeur
+    array : liste de points de référence sous forme de tuples (x,y) triée de façon croissante selon x
+'''
+
+
+def continuous_from_array_2D(xs: np.ndarray, data: [(float, float)]) -> np.ndarray:
     interpolation = list()
 
     for x in list(xs.flatten()):
-        x_idx = bisect(data[:,0], x)
+        x_idx = bisect(data, (x, 0))
         # print("2D (x,x_idx) ",x,x_idx)
         if x_idx >= len(data) - 1:
-            lhs = data[-2,1]
-            rhs = data[-1,1]
-            interpolation.append(lhs + (rhs - lhs) * (x - data[-2,0]) / (data[-1,0] - data[-2,0]))
+            lhs = data[-2][1]
+            rhs = data[-1][1]
+            interpolation.append(lhs + (rhs - lhs) * (x - data[-2][0]) / (data[-1][0] - data[-2][0]))
         elif x_idx <= 0:
-            lhs = data[0,1]
-            rhs = data[1,1]
-            interpolation.append(lhs + (rhs - lhs) * (x - data[1,0]) / (data[0,0] - data[1,0]))
+            lhs = data[0][1]
+            rhs = data[1][1]
+            interpolation.append(lhs + (rhs - lhs) * (x - data[1][0]) / (data[0][0] - data[1][0]))
         else:
-            lhs = data[x_idx - 1,1]
-            rhs = data[x_idx,1]
+            lhs = data[x_idx - 1][1]
+            rhs = data[x_idx][1]
             # v = lhs + (rhs - lhs)*(x - data[x_idx][0])/(data[x_idx+1][0] - data[x_idx][0])
             # v = lhs + (rhs - lhs)*(x - data[x_idx-1][0])/(data[x_idx-1][0] - data[x_idx][0])
             # print("2D ", lhs, v, rhs)
-            interpolation.append(lhs + (rhs - lhs) * (x - data[x_idx - 1,0]) / (data[x_idx,0] - data[x_idx - 1,0]))
+            interpolation.append(lhs + (rhs - lhs) * (x - data[x_idx - 1][0]) / (data[x_idx][0] - data[x_idx - 1][0]))
 
     return np.array(interpolation).reshape(-1, 1)
 
@@ -94,19 +101,12 @@ if __name__ == '__main__':
         if not os.path.exists(outputdir):
             os.mkdir(outputdir)
 
-        # timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
-        timestamp = ''
+        timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
 
         if args.save:
             basename = outputdir + timestamp + args.save
         else:
             basename = outputdir + timestamp + 'commando_covid_predict'
-
-    ''' @TODO find out what all these parameters actually mean '''
-    kernel = GaussianKernel(10, 1, 1)
-    initial_dataset = np.arange(0, 10).reshape([-1, 1])
-    evaluations = 3 * initial_dataset
-    gp = GaussianProcess(kernel, initial_dataset, evaluations)
 
     default_data = get_default_params()['data']['data_chu_rea']
     day0 = get_default_params()['data']['day0']
@@ -138,6 +138,8 @@ if __name__ == '__main__':
     read_prior_values = None
     if args.prior:
         read_prior_values = pd.read_csv(args.prior[0], sep=',').to_numpy()
+        read_prior_values = list(map(tuple, read_prior_values))
+        read_prior_values.sort()
         prior_values = read_prior_values
     else:
         decalage = 47
@@ -165,29 +167,113 @@ if __name__ == '__main__':
                                 139.4514863496153,
                                 136.0747885821544, 132.712614060573, 129.3761574889298, 126.07466307459195,
                                 122.81569592779188]
-        prior_values = np.array([[x, y] for (x, y) in
-                        zip(range(0 + decalage, len(default_prior_values) + decalage), default_prior_values)]).reshape([-1, 2])
+        prior_values = [(x, y) for (x, y) in
+                        zip(range(0 + decalage, len(default_prior_values) + decalage), default_prior_values)]
 
-    prior_mean_2D = lambda x: continuous_from_array(x, prior_values)
+    ''' @TODO find out what all these parameters actually mean '''
+    ''' SkiKit-Learn '''
+    # np_priors = np.ndarray([[x, y] for (x, y) in prior_values])
+    np_priors = np.array([[x, y] for (x, y) in prior_values]).reshape([-1, 2])
 
-    # gp = GaussianProcess(kernel, target_x_train, target_y_train, prior_mean=(lambda x: x))
-    gp = GaussianProcess(kernel, target_x_train, target_y_train, prior_mean=(lambda x: continuous_from_array(x, prior_values)))
+    time_start_np_gp = time.clock()
 
-    gp.prior_mean = lambda x: continuous_from_array(x, prior_values)
-    opt_params = gp.optimise_parameters().x
-    gp.set_kernel_parameters(*opt_params)
+    # kernel = DotProduct() + WhiteKernel()
+    kernel = 1.0 * RationalQuadratic(length_scale=1.0, alpha=0.1)
+    # kernel = GaussianKernel(10, 1, 1)
+    # kernel = RBF()
 
-    plot_range = np.arange(start_date, start_date + total_simulation_size + 10, 0.1)
+    np_priors_x = np.array(np_priors[:,0])[:, np.newaxis]
+    np_priors_y = np.array(np_priors[:,1])[:, np.newaxis]
 
-    gp_mean = gp.mean(plot_range).flatten()
-    gp_std = gp.std(plot_range).flatten()
+    gpr = GaussianProcessRegressor(kernel=kernel)
 
-    gp_predictions = gp.mean(target[train_sample_size:, 0]).flatten()
-    gp_std_predictions = gp.std(target[train_sample_size:, 0]).flatten()
+    # Plot prior
+    #
 
-    if not args.noplot:
+    gpr.fit(np_priors_x, np_priors_y)
 
-        plt.plot(plot_range, prior_mean_2D(plot_range), "r--", label="Estimation a priori")
+    plt.figure(figsize=(8, 8))
+    plt.subplot(2, 1, 1)
+
+    X_ = np.linspace(0 + decalage, len(np_priors)-1 + decalage, len(np_priors))
+
+    y_mean, y_std = gpr.predict(X_[:, np.newaxis], return_std=True)
+    plt.plot(X_, y_mean, 'r--', zorder=9)
+    plt.fill_between(X_, (y_mean - y_std[:, np.newaxis]).flatten(), (y_mean + y_std[:, np.newaxis]).flatten(),
+                     alpha=0.2, color='k')
+
+    plt.title("Prior (kernel:  %s)" % kernel, fontsize=12)
+
+    # Generate data and fit GP
+
+    X = target_x_train[:, np.newaxis]
+    y = target_y_train[:, np.newaxis]-continuous_from_array(X,np_priors)
+
+    gpr.fit(X, y)
+
+    # Plot posterior
+    y_mean, y_std = gpr.predict(X_[:, np.newaxis], return_std=True)
+    y_mean = y_mean + continuous_from_array(X_, np_priors)[:, np.newaxis]
+    plt.plot(X_, y_mean, 'r', zorder=9)
+
+    plt.fill_between(X_, (y_mean - y_std[:, np.newaxis]).flatten(), (y_mean + y_std[:, np.newaxis]).flatten(),
+                     alpha=0.4, color='b')
+    plt.fill_between(X_, (y_mean - 3*y_std[:, np.newaxis]).flatten(), (y_mean + 3*y_std[:, np.newaxis]).flatten(),
+                     alpha=0.1, color='b')
+
+    y_samples = gpr.sample_y(X_[:, np.newaxis], 10)
+    '''
+    plt.plot(X_, y_samples, lw=1)
+    '''
+    plt.scatter(target[:, 0], target[:, 1], marker='+', c='m', s=50, zorder=10, edgecolors=(0, 0, 0))
+    plt.scatter(X[:, 0], target_y_train[:, np.newaxis], marker='+', c='g', s=50, zorder=10, edgecolors=(0, 0, 0))
+
+    plt.title("Posterior (kernel: %s)\n Log-Likelihood: %.3f"
+              % (gpr.kernel_, gpr.log_marginal_likelihood(gpr.kernel_.theta)),
+              fontsize=12)
+    plt.ylim(-1, 1.2 * np.max(target[:, 1]))
+
+    time_stop_np_gp = time.clock()
+
+    print(f'Execution numpy GP : {time_stop_np_gp-time_start_np_gp}')
+
+
+
+
+
+
+
+
+
+
+    ''' Paul '''
+    Paul = not False
+
+    time_start_pf_gp = time.clock()
+
+    kernel = GaussianKernel(10, 1, 1)
+
+    i = np.linspace(50, 75, 60)
+    a = np.array([[x, y] for (x, y) in prior_values]).reshape([-1, 2])
+
+    if Paul:
+        plot_range = np.arange(start_date, start_date + total_simulation_size, 0.1)
+
+        gp = GaussianProcess(kernel, target_x_train, target_y_train,
+                             prior_mean=lambda x: continuous_from_array_2D(x, prior_values))
+        opt_params = gp.optimise_parameters().x
+        gp.set_kernel_parameters(*opt_params)
+
+        gp_mean = gp.mean(plot_range).flatten()
+        gp_std = gp.std(plot_range).flatten()
+
+        gp_predictions = gp.mean(target_x_train).flatten()
+        gp_std_predictions = gp.std(target_x_train).flatten()
+
+    if not args.noplot and Paul:
+
+        plt.subplot(2, 1, 2)
+        plt.plot(plot_range, continuous_from_array_2D(plot_range, prior_values), "r--", label="Estimation a priori")
 
         if args.beautify:
             plt.plot(plot_range, gp_mean, "r", label="GP posterior mean")
@@ -230,10 +316,16 @@ if __name__ == '__main__':
         plt.title("Prédiction avec processus gaussien")
         plt.legend()
 
+        time_stop_pf_gp = time.clock()
+
+        print(f'Execution Paul GP : {time_stop_pf_gp - time_start_pf_gp}')
+
         if save_output:
             plt.savefig(basename)
         if not args.silentplot:
             plt.show()
+
+
 
     if save_output:
         results = pd.DataFrame({'date': target[:, 0], 'value': target[:, 1]})
