@@ -19,7 +19,7 @@ def compute_khi_delay(duration):
     if duration <= 1:
         return [1]
     else:
-        return [0]*(duration-2) + [0.5, 0.5]
+        return [0]*(int(duration)-2) + [0.5, 0.5]
 
 
 def compute_khi_linear(duration):

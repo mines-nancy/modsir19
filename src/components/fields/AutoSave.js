@@ -8,9 +8,8 @@ import { isEqual } from 'lodash';
 // Mixed with the following
 // https://codesandbox.io/s/5w4yrpyo7k?from-embed
 
-let previousValues = {};
-
 const AutoSave = ({ values, save, debounce }) => {
+    let previousValues = {};
     useEffect(() => {
         let timeout;
 

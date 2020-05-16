@@ -1,3 +1,7 @@
+/**
+ * @author Pierre-Etienne Moreau
+ * @email Pierre-Etienne.Moreau@univ-lorraine.fr
+ */
 import React, { useState } from 'react';
 
 import {
@@ -25,6 +29,7 @@ import { FieldArray } from 'react-final-form-arrays';
 
 import { Bar } from 'react-chartjs-2';
 import AwesomeDebouncePromise from 'awesome-debounce-promise';
+import { isEqual } from 'lodash';
 
 import VerticalProportionField from './VerticalProportionField';
 import ProportionField from '../fields/ProportionField';
@@ -157,36 +162,64 @@ const MixerConvolution = ({ onChange }) => {
     const [kiAnalysis, setKiAnalysis] = useState();
     const [detailsOpened, setDetailsOpened] = useState(false);
 
-    const handleSubmit = async ({ coefficients, dms, schema, ...rest }) => {
-        if (schema === 'Personnalisé') {
-            setCoefficients(coefficients);
-            const response = await getKiAnalysisDebounced({
-                ki: coefficientsToKi(coefficients),
-            });
-            setKiAnalysis(response.data);
-        } else {
-            const response = await getKiFromSchema({
-                schema,
-                duration: dms,
-                max_days: Math.min(21, Math.max(coefficients.length, 2 * Math.ceil(dms))),
-            });
-            setCoefficients(kiToCoefficients(response.data.ki));
-            setKiAnalysis(response.data);
-            setInitialValues({
-                coefficients: kiToCoefficients(response.data.ki).map(round2digits),
-                dms,
-                schema,
+    const [lastSubmit, setLastSubmit] = useState({});
+
+    const handleSubmit = async ({
+        coefficients: submitCoefficients,
+        dms: submitDms,
+        schema: submitSchema,
+        ...rest
+    }) => {
+        const {
+            coefficients: lastSubmitCoefficients,
+            dms: lastSubmitDms,
+            schema: latsSubmitSchema,
+        } = lastSubmit;
+
+        if (
+            lastSubmitDms !== submitDms ||
+            latsSubmitSchema !== submitSchema ||
+            !isEqual(lastSubmitCoefficients, submitCoefficients)
+        ) {
+            if (submitSchema === 'Personnalisé') {
+                setCoefficients(submitCoefficients);
+                const response = await getKiAnalysis({
+                    ki: coefficientsToKi(submitCoefficients),
+                });
+                setKiAnalysis(response.data);
+            } else {
+                const response = await getKiFromSchema({
+                    schema: submitSchema,
+                    duration: submitDms,
+                    max_days: Math.min(
+                        21,
+                        Math.max(submitCoefficients.length, 2 * Math.ceil(submitDms)),
+                    ),
+                });
+                setCoefficients(kiToCoefficients(response.data.ki));
+                setKiAnalysis(response.data);
+                setInitialValues({
+                    coefficients: kiToCoefficients(response.data.ki).map(round2digits),
+                    dms: submitDms,
+                    schema: submitSchema,
+                });
+            }
+            setLastSubmit({
+                coefficients: submitCoefficients,
+                dms: submitDms,
+                schema: submitSchema,
             });
         }
     };
 
     const toggleDetails = () => setDetailsOpened((opened) => !opened);
 
+    const stringifyCoefficients = JSON.stringify(coefficients);
     useEffect(() => {
         if (coefficients) {
-            onChange(coefficients);
+            onChange(coefficientsToKi(coefficients));
         }
-    }, [JSON.stringify(coefficients)]);
+    }, [stringifyCoefficients]);
 
     return (
         <div>
@@ -287,20 +320,22 @@ const MixerConvolution = ({ onChange }) => {
                                                         {round2digits(kiAnalysis.expectation)}
                                                     </span>
                                                 ) : (
-                                                    'Calcul en cours..'
-                                                )}
+                                                        'Calcul en cours..'
+                                                    )}
                                                 )
                                             </Typography>
                                         </ExpansionPanelSummary>
                                         <ExpansionPanelDetails>
-                                            <div style={{ width: 450, height: 250 }}>
-                                                <Bar
-                                                    data={data({ values: coefficients })}
-                                                    width={450}
-                                                    height={250}
-                                                    options={options}
-                                                />
-                                            </div>
+                                            {detailsOpened && coefficients && (
+                                                <div style={{ width: 450, height: 250 }}>
+                                                    <Bar
+                                                        data={data({ values: coefficients })}
+                                                        width={450}
+                                                        height={250}
+                                                        options={options}
+                                                    />
+                                                </div>
+                                            )}
                                         </ExpansionPanelDetails>
                                     </ExpansionPanel>
                                 </Grid>

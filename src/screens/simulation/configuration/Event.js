@@ -102,16 +102,21 @@ export const getControlField = (change, date, classes) => {
         );
     }
 
-    if (change === 'dm_incub') {
+    // if (change === 'dm_incub') {
+    //     return (
+    //         <Field name={`${baseName}_${change}`}>
+    //             {({ input }) => <MixerConvolution onChange={input.onChange} />}
+    //         </Field>
+    //     );
+    // }
+
+    if (change.startsWith('dm_')) {
+        // return <Field name={`${baseName}_${change}`} component={DurationField} />;
         return (
             <Field name={`${baseName}_${change}`}>
                 {({ input }) => <MixerConvolution onChange={input.onChange} />}
             </Field>
         );
-    }
-
-    if (change.startsWith('dm_')) {
-        return <Field name={`${baseName}_${change}`} component={DurationField} />;
     }
 
     return null;
@@ -235,15 +240,15 @@ const Event = ({ event, onDelete, onRename }) => {
                         </Tooltip>
                     </>
                 ) : (
-                    <>
-                        <div className={classes.eventName}>{event.name}</div>{' '}
-                        <Tooltip title="Editer le nom de la période">
-                            <IconButton onClick={handleEditName} size="small">
-                                <Edit fontSize="small" />
-                            </IconButton>
-                        </Tooltip>
-                    </>
-                )}
+                        <>
+                            <div className={classes.eventName}>{event.name}</div>{' '}
+                            <Tooltip title="Editer le nom de la période">
+                                <IconButton onClick={handleEditName} size="small">
+                                    <Edit fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </>
+                    )}
             </StepLabel>
             <StepContent classes={{ root: classes.stepContent }}>
                 {event.changes.map((change) => (
