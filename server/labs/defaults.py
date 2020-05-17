@@ -1,7 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-    Author: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+    This file is part of MODSIR19.
 
+    MODSIR19 is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    MODSIR19 is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
+
+    Copyright (c) 2020 Bart Lamiroy
+    e-mail: Bart.Lamiroy@univ-lorraine.fr
 """
 
 from typing import Dict
@@ -23,8 +38,8 @@ class ModelParameters:
         dm_r = 9
 
         r0 = 3.0
-        r0_confinement = 0.6 # lockdown_r0 dans parameters.json du front
-        r0_deconfinement = 1.4 # deconfinement_r0 dans le parameters.json du front
+        r0_confinement = 0.6  # lockdown_r0 dans parameters.json du front
+        r0_deconfinement = 1.4  # deconfinement_r0 dans le parameters.json du front
 
         self._day0 = 5  # start of simulation: 06/01/2020 => 5 days from 01/01/2020
         t_confinement = 75 - self._day0  # 16/03/2020 -> 01/01 + 75

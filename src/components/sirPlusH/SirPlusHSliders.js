@@ -1,3 +1,7 @@
+/**
+ * @author Pierre-Etienne Moreau
+ * @email Pierre-Etienne.Moreau@univ-lorraine.fr
+ */
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
