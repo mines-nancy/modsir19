@@ -16,7 +16,7 @@
     along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
 
     Copyright (c) 2020 Pierre-Etienne Moreau
-    e-mail: Pierre-Etienne.Moreau@loria.fr
+    e-mail: Pierre-Etienne.Moreau@univ-lorraine.fr
 """
 
 from models.components.utils import compute_residuals, compute_area_and_expectation, compute_khi_exp, compute_khi_binom, compute_khi_linear, compute_khi_delay

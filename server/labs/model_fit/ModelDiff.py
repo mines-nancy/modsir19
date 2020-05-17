@@ -16,7 +16,7 @@
     along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
 
     Copyright (c) 2020 Pierre-Etienne Moreau, Bart Lamiroy
-    e-mail: Pierre-Etienne.Moreau@loria.fr, Bart.Lamiroy@univ-lorraine.fr
+    e-mail: Pierre-Etienne.Moreau@univ-lorraine.fr, Bart.Lamiroy@univ-lorraine.fr
 """
 
 """ SEIR model based on differential equations extended to hospitalisation """
