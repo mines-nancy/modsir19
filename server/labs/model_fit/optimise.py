@@ -15,7 +15,7 @@
     You should have received a copy of the GNU Lesser General Public License
     along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
 
-    Copyright (c) 2020 Bart Lamiro, Paul Festor, Romain Pajda
+    Copyright (c) 2020 Bart Lamiroy, Paul Festor, Romain Pajda
     e-mail: Bart.Lamiroy@univ-lorraine.fr, romainpajda@gmail.com, paul.festor2@etu.univ-lorraine.fr
 """
 

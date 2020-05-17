@@ -21,14 +21,10 @@
 
 """
     This is mainly demo code showing how to invoke the MODSIR19 simulator with
-    default parameters
+    default parameters or with provided file of stored parameters
     python -m labs.run_simulator [options] from the server directory to run the simulator
 """
 
-
-''' This is mainly demo code showing how to invoke the MODSIR19 simulator with
-    default parameters or with provided file of stored parameters
-'''
 import numpy as np
 import matplotlib.pyplot as plt
 import csv

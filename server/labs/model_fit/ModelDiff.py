@@ -59,7 +59,7 @@ def deriv(compartiments, t, beta, parameters: Dict[str, any]) -> tuple:
          de l'évolution du patient vers d'autres services ou vers la sortie
     '''
     dm_CD = parameters['dm_si']  # durée moyenne en réa avant décès
-    dm_CR = parameters['dm_si']  #  durée moyenne en réa avant rétablissement
+    dm_CR = parameters['dm_si']  # durée moyenne en réa avant rétablissement
 
     pc_ir = parameters['pc_ir']
     pc_si = parameters['pc_si']
