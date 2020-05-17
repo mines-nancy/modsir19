@@ -1,11 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-    Authors: Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
-             Paul Festor
-             Romain Pajda
+    This file is part of MODSIR19.
 
-    Invoke as python -m labs.model_fit.optimise [options] from the server directory to run the simulator
+    MODSIR19 is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    MODSIR19 is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
+
+    Copyright (c) 2020 Bart Lamiro, Paul Festor, Romain Pajda
+    e-mail: Bart.Lamiroy@univ-lorraine.fr, romainpajda@gmail.com, paul.festor2@etu.univ-lorraine.fr
 """
+
+""" Invoke as python -m labs.model_fit.optimise [options] from the server directory to run the simulator """
+
+
+
+
 import re
 from typing import Dict
 import numpy as np
@@ -13,27 +31,24 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import lmfit
-
 import json
-
 import os.path
 from os import mkdir
 import datetime
 import argparse
-
 from models.rule import RuleChangeField
 from labs.defaults import get_default_params, import_json, export_json
 from .ModelDiff import model_diff
 from .ModelDiscr import model_disc
-
-
 def plotter(time_indexes: np.ndarray, series: Dict[str, np.ndarray], x_ticks=None) -> None:
     series_label_base = {'SE': 'Susceptibles', 'INCUB': 'Incubés', 'I': 'Infectés', 'SI': 'Soins Intensifs',
                          'SM': 'Soins Médicaux', 'SS': 'Soins de Suite', 'R': 'Rétablis',
                          'DC': 'Décédés'}
 
-    series_label_in = {'input_' + k: v + ' IN' for k, v in series_label_base.items()}
-    series_label_out = {'output_' + k: v + ' OUT' for k, v in series_label_base.items()}
+    series_label_in = {'input_' + k: v +
+                       ' IN' for k, v in series_label_base.items()}
+    series_label_out = {'output_' + k: v +
+                        ' OUT' for k, v in series_label_base.items()}
 
     series_label = {**series_label_base, **series_label_in, **series_label_out}
 
@@ -93,7 +108,8 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,
                         help='input file containing measured parameters (CSV format)')
 
-    data_choice_options = ['SE', 'INCUB', 'IR', 'IH', 'SM', 'SI', 'SS', 'R', 'DC']
+    data_choice_options = ['SE', 'INCUB', 'IR',
+                           'IH', 'SM', 'SI', 'SS', 'R', 'DC']
     data_choice_options_input = ['input_' + s for s in data_choice_options]
     data_choice_options_output = ['output_' + s for s in data_choice_options]
     data_choice_options += data_choice_options_input
@@ -110,7 +126,8 @@ if __name__ == "__main__":
                         default=['least-squares'],
                         help="Simulator model to use : differential, discrete state with integer flux, discrete state "
                              "with continuous flux ('model' value in 'diff', 'disc', 'disc_int')")
-    parser.add_argument('--noplot', action='store_true', help="do not display obtained curves")
+    parser.add_argument('--noplot', action='store_true',
+                        help="do not display obtained curves")
     parser.add_argument('-s', '--save', metavar='prefix', default='', type=str, nargs='?',
                         help='filename prefix to output obtained curve points in .csv file format')
     parser.add_argument('-n', metavar='points', type=int, nargs=1,
@@ -134,7 +151,8 @@ if __name__ == "__main__":
         target = read_target
     else:
         default_data = default_model_params['data']['data_chu_rea']
-        target = np.array([[x - day0, y] for (x, y) in default_data.items() if y]).reshape([-1, 2])
+        target = np.array([[x - day0, y]
+                           for (x, y) in default_data.items() if y]).reshape([-1, 2])
 
     if args.n:
         target = target[:args.n[0], ]
@@ -153,7 +171,8 @@ if __name__ == "__main__":
     ''' @TODO the following hack is ugly and requires models to return data at the
         sames positions as those indexed below ... it would be better if models returned
         their data as a dictionary '''
-    series_index = {'SE': 1, 'INCUB': 2, 'I': 3, 'SM': 4, 'SI': 5, 'R': 6, 'DC': 7}
+    series_index = {'SE': 1, 'INCUB': 2, 'I': 3,
+                    'SM': 4, 'SI': 5, 'R': 6, 'DC': 7}
 
     if args.path:
         outputdir = args.path[0] + '/'
@@ -172,12 +191,13 @@ if __name__ == "__main__":
             mkdir(outputdir)
 
         # timestamp = datetime.datetime.now().strftime("%y%m%d_%H%M%S_")
-        timestamp=''
+        timestamp = ''
 
         if args.save:
             basename = outputdir + timestamp + args.save
         else:
-            basename = outputdir + timestamp + 'commando_covid_fit_' + args.model[0] + '_' + optim
+            basename = outputdir + timestamp + \
+                'commando_covid_fit_' + args.model[0] + '_' + optim
 
     ''' defining simulator model functions '''
     if args.model[0] == 'diff':
@@ -193,22 +213,23 @@ if __name__ == "__main__":
     full_data_tokens = args.data
     ''' plotting the baseline output of the simulator, before optimisation '''
     if not args.noplot:
-        plotter(*simulator_model_func(model_parameters, simple_data_tokens).values())
+        plotter(*simulator_model_func(model_parameters,
+                                      simple_data_tokens).values())
 
     ''' Setting up the variables on which the optimisation is to run.
-    
+
         params_init_min_max is a dictionary, the key() labels of which will appear with the same name in **kwargs
         passed to simulator_model_func() later on. These labels are supposed to be those used by the simulator as
-        defined in defaults.py . The value() part is a tuple with 3 values (init, min, max) expressing the initial 
+        defined in defaults.py . The value() part is a tuple with 3 values (init, min, max) expressing the initial
         value of the variable, and the min/max bounds it is allowed to evolve during optimisation.
-    
+
         @TODO add computation of proportional default min/max values if non provided '''
     if args.variables:
         with open(args.variables[0]) as json_file:
             opt_variables = json.load(json_file)
 
         params_init_min_max = dict()
-        for k,v in opt_variables.items():
+        for k, v in opt_variables.items():
             params_init_min_max[k] = tuple(v)
     else:
         params_init_min_max = {"beta": (3.0 / 9, 2.0 / 9, 5.0 / 9),
@@ -225,20 +246,19 @@ if __name__ == "__main__":
 
     ''' defining the optimisation helper functions optimize() and fitter() '''
 
-
     def optimize(x_values, y_values, fitter_function):
         mod = lmfit.Model(fitter_function)
         for kwarg, (init, mini, maxi) in params_init_min_max.items():
-            mod.set_param_hint(str(kwarg), value=init, min=mini, max=maxi, vary=True)
+            mod.set_param_hint(str(kwarg), value=init,
+                               min=mini, max=maxi, vary=True)
 
         params = mod.make_params()
         return mod.fit(y_values, params, method=optim, x=x_values)
 
-
     def fitter(x, **kwargs):
-        ret = simulator_model_func(model_parameters, simple_data_tokens, **kwargs)
+        ret = simulator_model_func(
+            model_parameters, simple_data_tokens, **kwargs)
         return ret['series'][full_data_tokens[0]][x]
-
 
     ''' run the oprimisation '''
     result = optimize(x_data, y_data, fitter)
@@ -263,13 +283,15 @@ if __name__ == "__main__":
         opt_rules = [r for r in model_rules]
         try:
             t_confinement = get_default_params()['other']['confinement']
-            opt_rules += [RuleChangeField(t_confinement, 'beta', opt_parameters['beta_post'])]
+            opt_rules += [RuleChangeField(t_confinement,
+                                          'beta', opt_parameters['beta_post'])]
         except KeyError:
             pass
 
         try:
             t_deconfinement = get_default_params()['other']['deconfinement']
-            opt_rules += [RuleChangeField(t_deconfinement, 'beta', opt_parameters['beta_end'])]
+            opt_rules += [RuleChangeField(t_deconfinement,
+                                          'beta', opt_parameters['beta_end'])]
         except KeyError:
             pass
 
@@ -287,4 +309,5 @@ if __name__ == "__main__":
         first_date = np.datetime64('2020-01-06')
         x_ticks = pd.date_range(start=first_date, periods=full_days, freq="D")
 
-        plotter(*simulator_model_func(model_parameters, simple_data_tokens, **result.best_values).values(), x_ticks=x_ticks)
+        plotter(*simulator_model_func(model_parameters, simple_data_tokens,
+                                      **result.best_values).values(), x_ticks=x_ticks)

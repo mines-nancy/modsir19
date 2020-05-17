@@ -1,18 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-    Author: Bart.Lamiroy@univ-lorraine.fr
+    This file is part of MODSIR19.
 
-    SIR+H model based on discrete transitional states
+    MODSIR19 is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    MODSIR19 is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
+
+    Copyright (c) 2020 Bart Lamiroy
+    e-mail: Bart.Lamiroy@univ-lorraine.fr
 """
+
+""" SIR+H model based on discrete transitional states """
+
+
+
+
 from typing import Dict, List
-
 import numpy as np
-
 from models.sir_h.simulator import run_sir_h
 from models.rule import RuleChangeField
 from labs.defaults import get_default_params
-
-
 def model_disc(model_params: Dict[str, any], series: List[str] = None, **kwargs: Dict[str, any]) -> Dict[str, any]:
     parameters = dict(model_params['parameters'])
     other_arguments = dict(kwargs)
@@ -29,7 +45,8 @@ def model_disc(model_params: Dict[str, any], series: List[str] = None, **kwargs:
         t_end = parameters['t_end']
 
     if not 'beta_post' in parameters.keys():
-        parameters['beta_post'] = get_default_params()['other']['r0_confinement'] / parameters['dm_r']
+        parameters['beta_post'] = get_default_params(
+        )['other']['r0_confinement'] / parameters['dm_r']
     if not 'beta_end' in parameters.keys():
         parameters['beta_end'] = 1.2 / parameters['dm_r']
 

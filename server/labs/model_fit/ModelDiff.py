@@ -1,20 +1,33 @@
 # -*- coding: utf-8 -*-
 """
-    Authors:
-        Pierre-Etienne Moreau (Pierre-Etienne.Moreau@univ-lorraine.fr)
-        Bart Lamiroy (Bart.Lamiroy@univ-lorraine.fr)
+    This file is part of MODSIR19.
 
-    SEIR model based on differential equations extended to hospitalisation
+    MODSIR19 is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    MODSIR19 is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with MODSIR19.  If not, see <https://www.gnu.org/licenses/>.
+
+    Copyright (c) 2020 Pierre-Etienne Moreau, Bart Lamiroy
+    e-mail: Pierre-Etienne.Moreau@loria.fr, Bart.Lamiroy@univ-lorraine.fr
 """
 
-from typing import Dict, List
+""" SEIR model based on differential equations extended to hospitalisation """
 
+
+
+
+from typing import Dict, List
 import numpy as np
 from scipy.integrate import odeint
-
 from labs.defaults import get_default_params
-
-
 def deriv(compartiments, t, beta, parameters: Dict[str, any]) -> tuple:
     """
         I = IR + IH - infectés
@@ -37,8 +50,10 @@ def deriv(compartiments, t, beta, parameters: Dict[str, any]) -> tuple:
         de l'évolution du patient vers d'autres services ou vers la sortie
     '''
     dm_MC = parameters['dm_sm']  # durée de séjour moyenne en médecine avant transfert en réa
-    dm_MR = parameters['dm_sm']  # durée de séjour moyenne en médecine avant rétablissement
-    dm_MD = parameters['dm_sm']  #  durée de séjour moyenne en médecine avant décès
+    # durée de séjour moyenne en médecine avant rétablissement
+    dm_MR = parameters['dm_sm']
+    #  durée de séjour moyenne en médecine avant décès
+    dm_MD = parameters['dm_sm']
 
     ''' On considère ici que les temps de séjour en réa sont indépendants
          de l'évolution du patient vers d'autres services ou vers la sortie
@@ -49,9 +64,11 @@ def deriv(compartiments, t, beta, parameters: Dict[str, any]) -> tuple:
     pc_ir = parameters['pc_ir']
     pc_si = parameters['pc_si']
     pc_IM = (1 - pc_ir) * (1 - pc_si)
-    np.testing.assert_almost_equal(pc_IM, parameters['pc_ih'] * parameters['pc_sm'])
+    np.testing.assert_almost_equal(
+        pc_IM, parameters['pc_ih'] * parameters['pc_sm'])
     pc_IC = (1 - pc_ir) * pc_si
-    np.testing.assert_almost_equal(pc_IC, parameters['pc_ih'] * parameters['pc_si'])
+    np.testing.assert_almost_equal(
+        pc_IC, parameters['pc_ih'] * parameters['pc_si'])
     np.testing.assert_almost_equal(pc_ir + pc_IC + pc_IM, 1.0)
 
     pc_sm_si = parameters['pc_sm_si']
@@ -69,13 +86,17 @@ def deriv(compartiments, t, beta, parameters: Dict[str, any]) -> tuple:
 
     dEdt = beta(t) * I * SE / total_nb - 1 / dm_incub * INCUB
 
-    dIdt = 1 / dm_incub * INCUB - gamma * pc_ir * I - 1 / dm_IC * pc_IC * I - 1 / dm_IM * pc_IM * I
+    dIdt = 1 / dm_incub * INCUB - gamma * pc_ir * I - \
+        1 / dm_IC * pc_IC * I - 1 / dm_IM * pc_IM * I
 
-    dMdt = 1 / dm_IM * pc_IM * I - 1 / dm_MD * pc_sm_dc * SM - 1 / dm_MC * pc_sm_si * SM - 1 / dm_MR * pc_sm_out * SM
+    dMdt = 1 / dm_IM * pc_IM * I - 1 / dm_MD * pc_sm_dc * SM - \
+        1 / dm_MC * pc_sm_si * SM - 1 / dm_MR * pc_sm_out * SM
 
-    dCdt = 1 / dm_IC * pc_IC * I + 1 / dm_MC * pc_sm_si * SM - 1 / dm_CD * pc_si_dc * SI - 1 / dm_CR * pc_si_out * SI
+    dCdt = 1 / dm_IC * pc_IC * I + 1 / dm_MC * pc_sm_si * SM - \
+        1 / dm_CD * pc_si_dc * SI - 1 / dm_CR * pc_si_out * SI
 
-    dRdt = gamma * pc_ir * I + 1 / dm_CR * pc_si_out * SI + 1 / dm_MR * pc_sm_out * SM
+    dRdt = gamma * pc_ir * I + 1 / dm_CR * \
+        pc_si_out * SI + 1 / dm_MR * pc_sm_out * SM
 
     dDdt = 1 / dm_CD * pc_si_dc * SI + 1 / dm_MD * pc_sm_dc * SM
 
@@ -101,7 +122,8 @@ def model_diff(parameters: Dict[str, any], series: List[str] = None, **kwargs: D
         t_end = parameters['t_end']
 
     if 'beta_post' not in parameters.keys():
-        parameters['beta_post'] = get_default_params()['other']['r0_confinement'] / parameters['dm_r']
+        parameters['beta_post'] = get_default_params(
+        )['other']['r0_confinement'] / parameters['dm_r']
     if 'beta_end' not in parameters.keys():
         parameters['beta_end'] = 1.2 / parameters['dm_r']
 
@@ -109,7 +131,9 @@ def model_diff(parameters: Dict[str, any], series: List[str] = None, **kwargs: D
         'R0_start']
     r0_confinement = parameters['beta_post'] * parameters['dm_r'] if 'R0_confinement' not in parameters.keys() else \
         parameters['R0_confinement']
-    r0_end = parameters['beta_end'] * parameters['dm_r'] if 'R0_end' not in parameters.keys() else parameters['R0_end']
+    r0_end = parameters['beta_end'] * \
+        parameters['dm_r'] if 'R0_end' not in parameters.keys(
+    ) else parameters['R0_end']
 
     gamma = 1.0 / parameters['dm_r']  # dmg dm_IR
 
@@ -127,7 +151,8 @@ def model_diff(parameters: Dict[str, any], series: List[str] = None, **kwargs: D
 
     n_population = parameters['population']
 
-    y0 = n_population - parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
+    y0 = n_population - \
+        parameters['patient0'], parameters['patient0'], 0.0, 0.0, 0.0, 0.0, 0.0
     t = np.linspace(0, parameters['lim_time'] - 1, parameters['lim_time'])
 
     ret = odeint(deriv, y0, t, args=(beta, parameters))
