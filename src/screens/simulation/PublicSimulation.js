@@ -261,8 +261,8 @@ const BackButton = ({ onClick }) => (
 const Legend = ({
     date: { date, index },
     values,
-    onLegendEnter = () => {},
-    onLegendLeave = () => {},
+    onLegendEnter = () => { },
+    onLegendLeave = () => { },
     onLegendClick,
     mobile,
     total,
@@ -318,18 +318,18 @@ const Legend = ({
                         </Typography>
                     </>
                 ) : (
-                    <>
-                        <strong>
-                            {date
-                                ? `Population au ${format(date, 'dd/MM/yyyy')}`
-                                : 'Population impactée '}
-                            <br />
-                        </strong>
-                        <Typography color="textSecondary" gutterBottom>
-                            sur un échantillon de {Intl.NumberFormat().format(total)} individus
+                        <>
+                            <strong>
+                                {date
+                                    ? `Population au ${format(date, 'dd/MM/yyyy')}`
+                                    : 'Population impactée '}
+                                <br />
+                            </strong>
+                            <Typography color="textSecondary" gutterBottom>
+                                sur un échantillon de {Intl.NumberFormat().format(total)} individus
                         </Typography>
-                    </>
-                )}
+                        </>
+                    )}
             </div>
             <div className={classes.legendBlockContainer}>
                 <Typography gutterBottom>
@@ -381,7 +381,7 @@ const Legend = ({
                                     <div>{`${Number.isInteger(R) ? formatNumber(R) : R}`}</div>
                                     <div className={classes.legendPercent}>{`${
                                         RPercent < 1 ? '< 1%' : `${RPercent}%`
-                                    }`}</div>
+                                        }`}</div>
                                 </div>
                             }
                             color={colors.recovered.bg}
@@ -423,7 +423,7 @@ const Legend = ({
                                     <div>{`${Number.isInteger(DC) ? formatNumber(DC) : DC}`}</div>
                                     <div className={classes.legendPercent}>{`${
                                         DCPercent < 1 ? '< 1%' : `${DCPercent}%`
-                                    }`}</div>
+                                        }`}</div>
                                 </div>
                             }
                             color={colors.death.bg}
@@ -456,37 +456,37 @@ const getTimeframesFromValues = ({
     deconfinement_enabled,
     deconfinement_start_date,
 }) => [
-    {
-        ...defaultParameters,
-        population: initialValues.population,
-        patient0: initialValues.patient0,
-        r0: initial_r0,
-        start_date: initial_start_date,
-        name: '', // Before lockdown
-        lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: true,
-    },
-    {
-        ...defaultParameters,
-        population: initialValues.population,
-        patient0: initialValues.patient0,
-        r0: lockdown_r0,
-        start_date: lockdown_start_date,
-        name: 'Confinement',
-        lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: lockdown_enabled,
-    },
-    {
-        ...defaultParameters,
-        population: initialValues.population,
-        patient0: initialValues.patient0,
-        r0: deconfinement_r0,
-        start_date: deconfinement_start_date,
-        name: 'Déconfinement',
-        lim_time: 365 + differenceInDays(new Date(), initial_start_date),
-        enabled: deconfinement_enabled,
-    },
-];
+        {
+            ...defaultParameters,
+            population: initialValues.population,
+            patient0: initialValues.patient0,
+            r0: initial_r0,
+            start_date: initial_start_date,
+            name: '', // Before lockdown
+            lim_time: 365 + differenceInDays(new Date(), initial_start_date),
+            enabled: true,
+        },
+        {
+            ...defaultParameters,
+            population: initialValues.population,
+            patient0: initialValues.patient0,
+            r0: lockdown_r0,
+            start_date: lockdown_start_date,
+            name: 'Confinement',
+            lim_time: 365 + differenceInDays(new Date(), initial_start_date),
+            enabled: lockdown_enabled,
+        },
+        {
+            ...defaultParameters,
+            population: initialValues.population,
+            patient0: initialValues.patient0,
+            r0: deconfinement_r0,
+            start_date: deconfinement_start_date,
+            name: 'Déconfinement',
+            lim_time: 365 + differenceInDays(new Date(), initial_start_date),
+            enabled: deconfinement_enabled,
+        },
+    ];
 
 const decorator = createDecorator({
     field: 'lockdown_enabled',
@@ -576,7 +576,7 @@ const PublicSimulation = () => {
     const [firstLoad, setFirstLoad] = useState(true);
     useEffect(() => {
         if (values && firstLoad) {
-            setZoom(Math.max(...values.SI));
+            setZoom(Math.max(...values.SI, config.intensive_care_capacity));
             setFirstLoad(false);
         }
     }, [values, firstLoad, setZoom]);
@@ -616,6 +616,7 @@ const PublicSimulation = () => {
         R: values.R,
         I: zip([values.IR, values.IH, values.INCUB]).map(([a, b, c]) => a + b + c),
         SI: values.SI,
+        SICapacity: values.SI.map((x) => config.intensive_care_capacity),
     };
 
     const visibleValues = Object.keys(mergedValues).reduce(
@@ -631,6 +632,7 @@ const PublicSimulation = () => {
         },
         {
             SI: values.SI, // should always be displayed
+            SICapacity: values.SI.map((x) => config.intensive_care_capacity),
         },
     );
 
@@ -638,7 +640,7 @@ const PublicSimulation = () => {
         const max = Math.max(...mergedValues[key]);
         if (zoom === max) {
             // curve to display when clicking twice on a legend
-            setZoom(Math.max(...values.SI));
+            setZoom(Math.max(...values.SI, config.intensive_care_capacity));
         } else {
             setZoom(max);
         }
@@ -709,18 +711,18 @@ const PublicSimulation = () => {
                                 size={
                                     small
                                         ? {
-                                              width: windowWidth,
-                                              height: windowWidth * 0.7, // mobile scale
-                                          }
+                                            width: windowWidth,
+                                            height: windowWidth * 0.7, // mobile scale
+                                        }
                                         : {
-                                              height:
-                                                  windowHeight -
-                                                  (showAlert ? 48 : 0) /* alert header */ -
-                                                  140 /* form */ -
-                                                  36 /* footer */ -
-                                                  54 /* legend */,
-                                              width: windowWidth - 100,
-                                          }
+                                            height:
+                                                windowHeight -
+                                                (showAlert ? 48 : 0) /* alert header */ -
+                                                140 /* form */ -
+                                                36 /* footer */ -
+                                                54 /* legend */,
+                                            width: windowWidth - 100,
+                                        }
                                 }
                                 customConfig={chartConfig}
                                 ref={chartRef}

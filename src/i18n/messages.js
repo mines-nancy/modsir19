@@ -133,6 +133,7 @@ const messages = {
             normal_care: 'soins medicaux',
             following_hospitalized: 'soins de suite',
             intensive_care: 'soins intensifs',
+            intensive_care_capacity: 'capacité soins intensifs',
             exit_intensive_care: 'sortie soins intensifs',
             dead: 'décédés',
         },

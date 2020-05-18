@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 
 const data = ({ t, values, startDate }) => {
-    const { SE, INCUB, R, I, SM, SI, SS, DC } = values;
+    const { SE, INCUB, R, I, SM, SI, SICapacity, SS, DC } = values;
     const datasets = [
         SE && {
             label: capitalize(t('chart.exposed')),
@@ -47,6 +47,11 @@ const data = ({ t, values, startDate }) => {
             label: capitalize(t('chart.intensive_care')),
             data: SI,
             backgroundColor: colors.intensive_care.main,
+        },
+        SICapacity && {
+            label: capitalize(t('chart.intensive_care_capacity')),
+            data: SICapacity,
+            backgroundColor: colors.intensive_care_capacity.main,
         },
         SM && {
             label: capitalize(t('chart.normal_care')),

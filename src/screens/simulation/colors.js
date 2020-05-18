@@ -24,6 +24,11 @@ export default {
         bg: 'rgba(255, 88, 132, 0.8)',
         light: 'rgba(255, 88, 132, 0.5)',
     },
+    intensive_care_capacity: {
+        main: 'rgba(255, 88, 132,0.2)',
+        bg: 'rgba(255, 88, 132, 0.0)',
+        light: 'rgba(255, 88, 132, 0.0)',
+    },
     following_care: {
         main: 'rgb(54, 162, 235)',
         bg: 'rgba(54, 162, 235, 0.8)',
