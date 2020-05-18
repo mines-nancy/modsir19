@@ -5,7 +5,6 @@ help:
 
 install:
 	npm install
-	cd server && $(MAKE) install
 
 start:
 	npm run start
