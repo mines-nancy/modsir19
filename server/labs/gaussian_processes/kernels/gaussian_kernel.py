@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # The code on gaussian processes gas been adapted from Imperial College's CO493
-# "Probabilistic Inferrence" lead by Dr. Mark Van der Wilk
+# "Probabilistic Inference" lead by Dr. Mark Van der Wilk
 
 import numpy as np
 
 from .abstract_kernel import Kernel
+from .abstract_kernel_scikit import SKernel
 
-
+""" @BUG replacing parent class Kernel with SKernel gives different behaviour ... """
 class GaussianKernel(Kernel):
     def __init__(self,
                  log_amplitude: float,
@@ -38,9 +39,11 @@ class GaussianKernel(Kernel):
 
         return covariance_matrix
 
+    ''' Unneeded here, since covered in parent class ...
     def __call__(self,
                  X: np.ndarray,
-                 Y: np.ndarray,
+                 Y: np.ndarray=None,
+                 eval_gradient=False
                  ) -> np.ndarray:
         return self.get_covariance_matrix(X, Y)
-
+    '''

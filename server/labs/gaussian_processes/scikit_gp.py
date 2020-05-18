@@ -179,7 +179,7 @@ if __name__ == '__main__':
 
     # kernel = DotProduct() + WhiteKernel()
     kernel = 1.0 * RationalQuadratic(length_scale=1.0, alpha=0.1)
-    # kernel = GaussianKernel(10, 1, 1)
+    #kernel = GaussianKernel(10, 1, 1)
     # kernel = RBF()
 
     np_priors_x = np.array(np_priors[:,0])[:, np.newaxis]
@@ -197,7 +197,12 @@ if __name__ == '__main__':
 
     X_ = np.linspace(0 + decalage, len(np_priors)-1 + decalage, len(np_priors))
 
-    y_mean, y_std = gpr.predict(X_[:, np.newaxis], return_std=True)
+    """ @BUG line below is what we need, but it gives an error """
+    # y_mean, y_std = gpr.predict(X_[:, np.newaxis], return_std=True)
+    """ @TOTO be able to remove 2 following lines and have above @BUG solved """
+    y_mean = gpr.predict(X_[:, np.newaxis], return_std=False)
+    y_std = np.zeros(len(y_mean))
+
     plt.plot(X_, y_mean, 'r--', zorder=9)
     plt.fill_between(X_, (y_mean - y_std[:, np.newaxis]).flatten(), (y_mean + y_std[:, np.newaxis]).flatten(),
                      alpha=0.2, color='k')
@@ -207,12 +212,17 @@ if __name__ == '__main__':
     # Generate data and fit GP
 
     X = target_x_train[:, np.newaxis]
-    y = target_y_train[:, np.newaxis]-continuous_from_array(X,np_priors)
+    y = target_y_train[:, np.newaxis]-continuous_from_array(X, np_priors)
 
     gpr.fit(X, y)
 
     # Plot posterior
-    y_mean, y_std = gpr.predict(X_[:, np.newaxis], return_std=True)
+    """ @BUG line below is what we need, but it gives an error """
+    # y_mean, y_std = gpr.predict(X_[:, np.newaxis], return_std=True)
+    """ @TOTO be able to remove 2 following lines and have above @BUG solved """
+    y_mean = gpr.predict(X_[:, np.newaxis], return_std=False)
+    y_std = np.zeros(len(y_mean))
+
     y_mean = y_mean + continuous_from_array(X_, np_priors)[:, np.newaxis]
     plt.plot(X_, y_mean, 'r', zorder=9)
 
@@ -267,8 +277,8 @@ if __name__ == '__main__':
         gp_mean = gp.mean(plot_range).flatten()
         gp_std = gp.std(plot_range).flatten()
 
-        gp_predictions = gp.mean(target_x_train).flatten()
-        gp_std_predictions = gp.std(target_x_train).flatten()
+    gp_predictions = gp.mean(target[train_sample_size:, 0]).flatten()
+    gp_std_predictions = gp.std(target[train_sample_size:, 0]).flatten()
 
     if not args.noplot and Paul:
 
