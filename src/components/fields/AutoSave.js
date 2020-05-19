@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormSpy } from 'react-final-form';
 import { isEqual } from 'lodash';
 
@@ -9,12 +9,12 @@ import { isEqual } from 'lodash';
 // https://codesandbox.io/s/5w4yrpyo7k?from-embed
 
 const AutoSave = ({ values, save, debounce }) => {
-    let previousValues = {};
+    const [previousValues, setPreviousValues] = useState();
     useEffect(() => {
         let timeout;
 
         if (!isEqual(previousValues, values)) {
-            previousValues = values;
+            setPreviousValues(values);
             timeout = setTimeout(() => save(values), debounce);
         }
 

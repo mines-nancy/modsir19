@@ -20,7 +20,7 @@ import { useTranslate } from 'react-polyglot';
 import { SelectFieldWithDate } from './SelectFieldWithDate';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import MixerConvolution from './MixerConvolution';
+import MixerConvolution from '../../components/fields/MixerConvolution';
 
 const useStyles = makeStyles((theme) =>
     createStyles({

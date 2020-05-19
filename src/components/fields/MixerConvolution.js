@@ -32,8 +32,8 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 import { isEqual } from 'lodash';
 
 import VerticalProportionField from './VerticalProportionField';
-import ProportionField from '../fields/ProportionField';
-import AutoSave from '../fields/AutoSave';
+import ProportionField from './ProportionField';
+import AutoSave from './AutoSave';
 import api from '../../api';
 import { useEffect } from 'react';
 
