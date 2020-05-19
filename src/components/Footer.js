@@ -26,7 +26,7 @@ export const Footer = () => {
                         Mentions Légales
                     </Typography>
                 </Link>
-                <a href="https://github.com/mines-nancy/commando-covid">
+                <a href="https://github.com/mines-nancy/modsir19">
                     <Typography className={classes.link} variant="subtitle2">
                         GitHub
                     </Typography>
