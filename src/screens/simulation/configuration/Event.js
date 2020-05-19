@@ -23,7 +23,7 @@ import { parametersEditableInEvents } from '../../../parameters.json';
 import ProportionField from '../../../components/fields/ProportionField';
 import { SwitchPercentField } from '../../../components/fields/SwitchPercentField';
 import DurationField from '../../../components/fields/DurationField';
-import MixerConvolution from '../../../components/sirPlusH/MixerConvolution';
+import MixerConvolution from '../../../components/fields/MixerConvolution';
 
 const useStyles = makeStyles((theme) => ({
     stepIcon: {
