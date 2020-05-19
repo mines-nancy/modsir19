@@ -7,6 +7,8 @@ import c3 from 'c3';
 import 'c3/c3.css';
 
 import colors from './colors';
+import './Chart.css';
+import parameters from '../../parameters.json';
 
 const generateDateInterval = (startDate, numberOfDays) =>
     eachDayOfInterval({
@@ -218,6 +220,16 @@ const Chart = React.forwardRef(
                             text: timeframe.label,
                             class: 'draggable-line',
                         })),
+                    },
+                    y: {
+                        lines: [
+                            {
+                                value: parameters.intensive_care_capacity,
+                                text: 'Capacité maximale en réanimation',
+                                position: 'start',
+                                class: 'color-grid',
+                            },
+                        ],
                     },
                 },
                 legend: {
