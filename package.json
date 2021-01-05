@@ -13,7 +13,7 @@
         "@testing-library/react": "^9.5.0",
         "@testing-library/user-event": "^7.2.1",
         "awesome-debounce-promise": "^2.1.0",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "c3": "^0.7.15",
         "chart.js": "^2.9.3",
         "custom-event-polyfill": "^1.0.7",
